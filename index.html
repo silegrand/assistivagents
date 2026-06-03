@@ -745,6 +745,7 @@ footer {
     <span class="nav-brand-sub">Frailty Geography Intelligence</span>
   </a>
   <ul class="nav-links">
+    <li><a href="#how-it-works">How it works</a></li>
     <li><a href="#tools">Tools</a></li>
     <li><a href="#architecture">Architecture</a></li>
     <li><a href="#data">Data</a></li>
@@ -781,24 +782,153 @@ footer {
     <div class="icb-stats">
       <div class="icb-stat">
         <span class="icb-val">1,917</span>
-        <span class="icb-label">Falls Admissions 65+ / 100k</span>
+        <span class="icb-label">Falls admissions 65+ / 100k ▲ England</span>
       </div>
       <div class="icb-stat">
-        <span class="icb-val">10.7 / 12.3</span>
-        <span class="icb-label">HLE at 65 · M / F · yrs</span>
+        <span class="icb-val">543</span>
+        <span class="icb-label">Hip fractures 65+ / 100k ▲ England</span>
       </div>
       <div class="icb-stat">
-        <span class="icb-val">6.2%</span>
-        <span class="icb-label">Loneliness · Kent adults</span>
+        <span class="icb-val">129.4</span>
+        <span class="icb-label">Antidepressants / 1,000 pts ▲ England</span>
       </div>
       <div class="icb-stat">
-        <span class="icb-val">155.2</span>
-        <span class="icb-label">Self-harm / 100k ▲ Eng avg</span>
+        <span class="icb-val">62.3%</span>
+        <span class="icb-label">Dementia diagnosis rate ▼ England avg</span>
       </div>
     </div>
-    <span class="icb-source">NHS Kent &amp; Medway ICB QKS · OHID PHOF · 6 May 2026</span>
+    <span class="icb-source">NHS Kent &amp; Medway ICB QKS · NHS Fingertips + NHSBSA EPD · Mar–Jun 2026 · 14 real signals</span>
   </div>
 </div>
+
+<!-- EXPLAINER -->
+<section id="how-it-works" style="background:var(--bg);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-kicker">How it works</div>
+    <h2 class="section-title">What is a FEP score?</h2>
+    <p class="section-lead">
+      You don't need to be a data scientist to use these tools. Here's what's happening under the hood — in plain English.
+    </p>
+
+    <!-- Analogy card -->
+    <div style="background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--sage);border-radius:8px;padding:1.25rem 1.5rem;margin-bottom:2rem;max-width:640px">
+      <p style="margin:0;color:var(--text);line-height:1.75;font-size:0.975rem">
+        Think of it like a credit score — but for <strong>frailty risk in a community</strong>. We look at 17 different things about an area. Each one gets a number between 0 and 100, where <strong>50 means exactly average for England</strong>. Higher than 50 means that area has more risk than England average. We then blend all 17 together — some counted more heavily than others — to get one final score.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:2.5rem">
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--sage-pale);color:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">1</div>
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We measure 17 things</h3>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Falls, hip fractures, winter deaths, loneliness, dementia diagnosis rate, antidepressant prescribing and more — all from real NHS sources.</p>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">2</div>
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We put them on one scale</h3>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Each signal is converted to a 0–100 number. 50 = England average. 60 = 20% worse than England. This lets us compare falls rates and prescribing side by side.</p>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--sage-pale);color:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">3</div>
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We weight by importance</h3>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Living alone at 75+ carries 13% of the final score — the strongest single predictor. Diuretic prescribing carries 1%. All 17 weights add up to exactly 100%.</p>
+      </div>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">4</div>
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">One score per district</h3>
+        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">The weighted average of all 17 signals becomes the FEP score. A score of 65 means that district is substantially more at-risk than England across multiple measures simultaneously.</p>
+      </div>
+
+    </div>
+
+    <!-- Risk bands -->
+    <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:1rem">What each risk level means</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;margin-bottom:2.5rem">
+      <div style="border-left:4px solid #c04828;background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
+        <div style="font-size:1.1rem;font-weight:700;color:#c04828">70+</div>
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Critical</div>
+        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Multiple acute signals. Immediate priority for outreach and screening.</div>
+      </div>
+      <div style="border-left:4px solid var(--amber);background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--amber)">55–69</div>
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">High</div>
+        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Consistently above England average. Priority zone for commissioner action.</div>
+      </div>
+      <div style="border-left:4px solid #1d6fb8;background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
+        <div style="font-size:1.1rem;font-weight:700;color:#1d6fb8">40–54</div>
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Moderate</div>
+        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Mixed signals. Monitor and plan proactive outreach for next 12 months.</div>
+      </div>
+      <div style="border-left:4px solid var(--sage);background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--sage)">0–39</div>
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Low</div>
+        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Below England average. Not zero risk — lower relative priority.</div>
+      </div>
+    </div>
+
+    <!-- District hotspot table -->
+    <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">Current Kent &amp; Medway district scores</h3>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">Ranked highest to lowest. Scores are grounded against 14 real NHS signals — refreshed quarterly.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem">
+      <table style="width:100%;border-collapse:collapse;font-size:0.875rem">
+        <thead>
+          <tr style="border-bottom:1px solid var(--border)">
+            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">District</th>
+            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Score</th>
+            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Risk</th>
+            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;width:40%">Relative to England</th>
+          </tr>
+        </thead>
+        <tbody id="district-table-body"></tbody>
+      </table>
+    </div>
+    <p style="font-size:0.8rem;color:var(--muted)">→ <a href="layer2-map-pdf.html" style="color:var(--sage)">Open the map</a> to see these scores visualised on the district boundaries and export a commissioner briefing PDF.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var districts=[
+    {name:'Thanet',fep:65,risk:'high'},
+    {name:'Folkestone & Hythe',fep:61,risk:'high'},
+    {name:'Dover',fep:59,risk:'high'},
+    {name:'Swale',fep:57,risk:'high'},
+    {name:'Medway',fep:55,risk:'high'},
+    {name:'Gravesham',fep:53,risk:'moderate'},
+    {name:'Ashford',fep:50,risk:'moderate'},
+    {name:'Canterbury',fep:47,risk:'moderate'},
+    {name:'Dartford',fep:47,risk:'moderate'},
+    {name:'Maidstone',fep:45,risk:'moderate'},
+    {name:'Tonbridge & Malling',fep:42,risk:'moderate'},
+    {name:'Sevenoaks',fep:34,risk:'low'},
+    {name:'Tunbridge Wells',fep:31,risk:'low'},
+  ];
+  var riskColor={high:'#ba7517',moderate:'#1d6fb8',low:'#2d6b47',critical:'#c04828'};
+  var riskLabel={high:'High',moderate:'Moderate',low:'Low',critical:'Critical'};
+  var tbody=document.getElementById('district-table-body');
+  if(!tbody)return;
+  districts.forEach(function(d,i){
+    var barW=Math.round((d.fep/100)*100);
+    var barColor=d.fep>=70?'#c04828':d.fep>=55?'#ba7517':d.fep>=40?'#1d6fb8':'#2d6b47';
+    var bg=i%2===0?'':'background:rgba(0,0,0,0.02)';
+    tbody.innerHTML+=`<tr style="border-bottom:1px solid var(--border);${bg}">
+      <td style="padding:0.6rem 1rem;font-weight:500;color:var(--text)">${d.name}</td>
+      <td style="padding:0.6rem 1rem;font-weight:700;color:${barColor}">${d.fep}</td>
+      <td style="padding:0.6rem 1rem"><span style="font-size:0.75rem;padding:2px 8px;border-radius:99px;background:${barColor}18;color:${barColor};font-weight:600">${riskLabel[d.risk]}</span></td>
+      <td style="padding:0.6rem 1rem">
+        <div style="background:var(--border);border-radius:4px;height:6px;overflow:hidden">
+          <div style="width:${barW}%;height:6px;background:${barColor};border-radius:4px"></div>
+        </div>
+      </td>
+    </tr>`;
+  });
+})();
+</script>
 
 <!-- TOOLS -->
 <section id="tools">
@@ -857,10 +987,10 @@ footer {
             polypharmacy, or isolation as the dominant signal.
           </p>
           <div class="tool-card-features">
-            <span class="tool-feature">Six adjustable signal weight sliders</span>
+            <span class="tool-feature">17 adjustable signal weight sliders</span>
             <span class="tool-feature">Ranked FEP table across 18 Kent zones</span>
             <span class="tool-feature">Signal contribution breakdown per zone</span>
-            <span class="tool-feature">Uncertainty flagging — fewer than 4 signals</span>
+            <span class="tool-feature">Uncertainty flagging — fewer than 8 signals</span>
             <span class="tool-feature">Automated recommended actions per zone</span>
           </div>
           <span class="tool-card-cta">Open Scoring Engine → </span>
