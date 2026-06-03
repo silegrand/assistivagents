@@ -870,6 +870,35 @@ input[type=range]::-webkit-slider-thumb:hover {
   .detail-body { grid-template-columns: 1fr; }
   .signal-breakdown { grid-column: span 1; }
 }
+
+/* ── WEATHER RISK BANNER ─────────────────────────────────────────────── */
+.weather-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  transition: background 0.4s, color 0.4s;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+.weather-banner.status-green  { background: #f0f7f2; color: #1a3a2a; border-left: 3px solid #2d6b47; }
+.weather-banner.status-yellow { background: #fefce8; color: #713f12; border-left: 3px solid #ca8a04; }
+.weather-banner.status-amber  { background: #fff7ed; color: #7c2d12; border-left: 3px solid #ea580c; }
+.weather-banner.status-red    { background: #fef2f2; color: #7f1d1d; border-left: 3px solid #dc2626; }
+.weather-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.status-green  .weather-dot { background: #2d6b47; }
+.status-yellow .weather-dot { background: #ca8a04; }
+.status-amber  .weather-dot { background: #ea580c; }
+.status-red    .weather-dot { background: #dc2626; animation: wpulse 1.2s ease-in-out infinite; }
+@keyframes wpulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+.weather-label { font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; flex-shrink: 0; min-width: 80px; }
+.weather-msg  { flex: 1; }
+.weather-temp { font-weight: 500; flex-shrink: 0; margin-left: 0.5rem; }
+.weather-src  { opacity: 0.45; flex-shrink: 0; font-size: 0.55rem; }
 </style>
 </head>
 <body>
@@ -889,6 +918,15 @@ input[type=range]::-webkit-slider-thumb:hover {
     <span class="meta-badge">ICB Data: OHID May 2026</span>
     <span class="meta-badge live">Engine Ready</span>
   </div>
+</div>
+
+<!-- WEATHER RISK BANNER — always visible, four alert states -->
+<div class="weather-banner status-green" id="weather-banner">
+  <div class="weather-dot" id="weather-dot"></div>
+  <span class="weather-label" id="weather-label">Checking…</span>
+  <span class="weather-msg"   id="weather-msg">Fetching live weather data for Kent &amp; Medway…</span>
+  <span class="weather-temp"  id="weather-temp"></span>
+  <span class="weather-src">Open-Meteo · UKHSA · Met Office UKV</span>
 </div>
 
 <!-- REAL KENT ICB DATA PANEL -->
@@ -1500,7 +1538,92 @@ function toggleKentPanel() {
   toggle.textContent = grid.classList.contains('collapsed') ? '▼ Show ICB Data' : '▲ Hide';
 }
 
+// ── WEATHER RISK BANNER ───────────────────────────────────────────────
+// Open-Meteo UK API — free, no key, Met Office UKV 2km model
+// Centroid of Kent & Medway ICB: ~51.27°N, 0.52°E
+// Always visible — escalates Green → Yellow → Amber → Red as
+// UKHSA/Met Office thresholds are breached, flagging elevated
+// medication risk for anticholinergic, diuretic, and hypnotic signals.
+async function fetchWeatherRisk() {
+  const banner = document.getElementById('weather-banner');
+  const label  = document.getElementById('weather-label');
+  const msg    = document.getElementById('weather-msg');
+  const tempEl = document.getElementById('weather-temp');
+
+  const HEAT_RED    = 32;
+  const HEAT_AMBER  = 26;
+  const HEAT_YELLOW = 22;
+  const COLD_RED    = 2;
+  const COLD_AMBER  = 8;
+  const COLD_YELLOW = 12;
+
+  function set(cls, lbl, text, tmp) {
+    banner.className = 'weather-banner ' + cls;
+    label.textContent = lbl;
+    msg.innerHTML = text;
+    if (tmp) tempEl.textContent = tmp;
+  }
+
+  try {
+    const r = await fetch(
+      'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=51.27&longitude=0.52' +
+      '&current=temperature_2m,apparent_temperature' +
+      '&daily=temperature_2m_max,temperature_2m_min' +
+      '&timezone=Europe%2FLondon&forecast_days=3&models=ukmo_seamless'
+    );
+    const d    = await r.json();
+    const temp = Math.round(d.current.temperature_2m);
+    const feel = Math.round(d.current.apparent_temperature);
+    const maxT = Math.round(d.daily.temperature_2m_max[0]);
+    const minT = Math.round(d.daily.temperature_2m_min[0]);
+    const tStr = `${temp}°C · feels ${feel}°C`;
+
+    if (maxT >= HEAT_RED) {
+      set('status-red', 'Red · Heat',
+        `<strong>Heat emergency — max ${maxT}°C.</strong> ` +
+        `Patients on anticholinergics (antidepressants, anxiolytics, bladder antimuscarinics), diuretics or ACE/ARBs at acute risk of hyperthermia and dehydration. ` +
+        `High-FEP districts are immediate priority for welfare checks and medication review.`, tStr);
+    } else if (maxT >= HEAT_AMBER) {
+      set('status-amber', 'Amber · Heat',
+        `<strong>Heat stress — max ${maxT}°C.</strong> ` +
+        `Anticholinergic burden impairs thermoregulation. Diuretic and ACE/ARB users face electrolyte depletion. ` +
+        `Prioritise Thanet, Folkestone &amp; Hythe, Dover in this scoring run.`, tStr);
+    } else if (maxT >= HEAT_YELLOW) {
+      set('status-yellow', 'Yellow · Heat',
+        `<strong>Warm — ${maxT}°C forecast.</strong> ` +
+        `No immediate alert. Monitor high-FEP coastal districts. ` +
+        `Above 26°C, anticholinergic and diuretic risk escalates for this population.`, tStr);
+    } else if (minT <= COLD_RED) {
+      set('status-red', 'Red · Cold',
+        `<strong>Severe cold — overnight min ${minT}°C.</strong> ` +
+        `Hypothermia risk elevated for older adults on diuretics or sedatives. ` +
+        `Kent winter mortality index already above England average (9.8 vs 8.7). Activate Cold Weather Plan.`, tStr);
+    } else if (minT <= COLD_AMBER) {
+      set('status-amber', 'Amber · Cold',
+        `<strong>Cold alert — overnight min ${minT}°C.</strong> ` +
+        `Falls risk elevated. Kent falls admissions 65+ above England average (1,917 vs 1,870 per 100k). ` +
+        `Hypnotics and anxiolytics increase fall risk on icy mornings. Monitor Thanet, Folkestone, Dover.`, tStr);
+    } else if (minT <= COLD_YELLOW) {
+      set('status-yellow', 'Yellow · Cold',
+        `<strong>Cool — ${minT}°C overnight.</strong> ` +
+        `No immediate alert. Falls and medication risk at background level. ` +
+        `Below 8°C, diuretic and hypnotic risk escalates.`, tStr);
+    } else {
+      set('status-green', 'Green · Clear',
+        `No weather-health risk threshold active. Today: ${maxT}°C high / ${minT}°C low. ` +
+        `Banner escalates Yellow → Amber → Red as UKHSA/Met Office thresholds are breached, ` +
+        `flagging elevated medication risk for anticholinergic, diuretic, and hypnotic prescribing districts.`, tStr);
+    }
+  } catch(e) {
+    set('status-green', 'Weather',
+      'Live weather data unavailable. When active: banner escalates Green → Yellow → Amber → Red ' +
+      'as UKHSA/Met Office thresholds are breached, flagging elevated medication risk for high-FEP districts.', '');
+  }
+}
+
 // ── START ─────────────────────────────────────────────────────────────
+fetchWeatherRisk();
 init();
 </script>
 </body>
