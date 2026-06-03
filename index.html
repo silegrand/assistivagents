@@ -851,7 +851,7 @@ footer {
           </div>
           <div class="tool-card-title">FEP Scoring Engine</div>
           <p class="tool-card-desc">
-            Configure signal weights across six public data domains, run the
+            Configure signal weights across 17 public data domains, run the
             composite scoring model, and explore ranked zone results. Supports
             commissioner-configurable weighting — adjust to prioritise deprivation,
             polypharmacy, or isolation as the dominant signal.
@@ -889,7 +889,8 @@ footer {
           <div class="arch-layer-num l1">L1</div>
           <div class="arch-layer-info">
             <div class="arch-layer-title">Population Signal Ingestion</div>
-            <div class="arch-layer-desc">ONS Census 2021, NHS Fingertips, IMD 2019, DWP benefits data, CQC register, GP dispensing data. Eight public sources normalised to a common spatial index.</div>
+            <div class="arch-layer-desc">ONS Census 2021, NHS Fingertips (10 indicators confirmed), IMD 2019, CQC register, NHSBSA English Prescribing Dataset (7 signal groups confirmed — including anticholinergic burden). 17 signals total — 14 real, 3 synthetic.</div>
+            <span class="arch-layer-badge badge-active">Active — 14 real signals confirmed</span>
             <span class="arch-layer-badge badge-active">Active — data confirmed</span>
           </div>
         </div>
@@ -900,7 +901,8 @@ footer {
           <div class="arch-layer-num l2">L2</div>
           <div class="arch-layer-info">
             <div class="arch-layer-title">Composite FEP Scoring — <em>this tool</em></div>
-            <div class="arch-layer-desc">Weighted composite index generating a Frailty Emergence Probability score per district. Geographic heat map. Commissioner briefing export. ICB baseline grounding.</div>
+            <div class="arch-layer-desc">Weighted composite index (17 signals, 14 real) generating a Frailty Emergence Probability score per district. Geographic heat map. Commissioner briefing export. ICB baseline grounding via NHS Fingertips + NHSBSA EPD.</div>
+            <span class="arch-layer-badge badge-active">Active — prototype deployed</span>
             <span class="arch-layer-badge badge-active">Active — prototype deployed</span>
           </div>
         </div>
@@ -986,10 +988,10 @@ footer {
         <span class="data-card-tag">Live — confirmed</span>
       </div>
       <div class="data-card">
-        <div class="data-card-source">NHS · Free</div>
-        <div class="data-card-name">GP Dispensing Data</div>
-        <div class="data-card-desc">Polypharmacy rates (5+ medications) by practice. Strong clinical frailty marker. Published by NHS Business Services Authority.</div>
-        <span class="data-card-tag">Practice level — confirmed</span>
+        <div class="data-card-source">NHSBSA · Free</div>
+        <div class="data-card-name">English Prescribing Dataset</div>
+        <div class="data-card-desc">18M rows/month. 7 signal groups including hypnotics, antidepressants, bisphosphonates, anxiolytics, and bladder antimuscarinics. Kent 57,660 rows confirmed Mar 2026.</div>
+        <span class="data-card-tag">Practice level — confirmed ✓</span>
       </div>
     </div>
   </div>
@@ -1030,47 +1032,47 @@ footer {
     </div>
 
     <div class="kent-data-panel">
-      <div class="kdp-title">NHS Kent &amp; Medway ICB · QKS · Real Data · OHID May 2026</div>
+      <div class="kdp-title">NHS Kent &amp; Medway ICB · QKS · Real Data · NHS Fingertips + NHSBSA EPD 2026</div>
       <div class="kdp-row">
         <span class="kdp-label">Falls Admissions 65+</span>
         <div style="text-align:right">
           <div class="kdp-val">1,917 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
-          <div class="kdp-comp kdp-better">▼ vs England 1,958</div>
+          <div class="kdp-comp kdp-worse">▲ vs England 1,870</div>
         </div>
       </div>
       <div class="kdp-row">
-        <span class="kdp-label">Healthy Life Expectancy 65</span>
+        <span class="kdp-label">Hip Fractures 65+</span>
         <div style="text-align:right">
-          <div class="kdp-val">10.7 / 12.3 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">yrs</span></div>
-          <div class="kdp-comp kdp-better">▲ vs England 10.1 / 11.1</div>
+          <div class="kdp-val">543 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
+          <div class="kdp-comp kdp-worse">▲ vs England 491</div>
         </div>
       </div>
       <div class="kdp-row">
-        <span class="kdp-label">Loneliness — adults 16+</span>
+        <span class="kdp-label">Antidepressants / 1,000 pts</span>
         <div style="text-align:right">
-          <div class="kdp-val">6.2%</div>
-          <div class="kdp-comp kdp-better">▼ vs England 6.8%</div>
+          <div class="kdp-val">129.4</div>
+          <div class="kdp-comp kdp-worse">▲ vs England 110.0</div>
         </div>
       </div>
       <div class="kdp-row">
-        <span class="kdp-label">Fuel Poverty</span>
+        <span class="kdp-label">Dementia Diagnosis Rate</span>
         <div style="text-align:right">
-          <div class="kdp-val">11.0%</div>
-          <div class="kdp-comp kdp-better">▼ vs England 11.4%</div>
+          <div class="kdp-val">62.3%</div>
+          <div class="kdp-comp kdp-worse">▼ vs England 66.3%</div>
         </div>
       </div>
       <div class="kdp-row">
-        <span class="kdp-label">Self-Harm Admissions</span>
+        <span class="kdp-label">Winter Mortality Index</span>
         <div style="text-align:right">
-          <div class="kdp-val">155.2 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
-          <div class="kdp-comp kdp-worse">▲ vs England 126.2</div>
+          <div class="kdp-val">9.8</div>
+          <div class="kdp-comp kdp-worse">▲ vs England 8.7</div>
         </div>
       </div>
       <div class="kdp-row">
-        <span class="kdp-label">Falls Admissions 80+</span>
+        <span class="kdp-label">Hypnotics / 1,000 pts</span>
         <div style="text-align:right">
-          <div class="kdp-val">4,694 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
-          <div class="kdp-comp kdp-better">▼ vs England 4,866</div>
+          <div class="kdp-val">12.2</div>
+          <div class="kdp-comp kdp-worse">▲ vs England 10.2</div>
         </div>
       </div>
     </div>
@@ -1088,7 +1090,7 @@ footer {
     </ul>
     <div class="footer-note">
       Frailty Geography Intelligence · Layer 2 Prototype · June 2026 ·
-      Zone FEP scores use calibrated synthetic data grounded against OHID ICB baselines ·
+      FEP scores grounded against 14 real signals (NHS Fingertips + NHSBSA EPD) ·
       Sub-ICB live data linkage: Phase 2 ·
       Assistiv Systems Limited is registered in England and Wales
     </div>
