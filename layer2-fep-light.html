@@ -959,57 +959,89 @@ input[type=range]::-webkit-slider-thumb:hover {
       <div class="sidebar-section-title">Signal Weights</div>
 
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">Over-75s Living Alone</span>
-          <span class="weight-val" id="w1-val">25%</span>
-        </div>
-        <div class="weight-desc">Strongest single demographic frailty proxy. ONS Census 2021.</div>
-        <input type="range" id="w1" min="0" max="50" value="25" oninput="updateWeight('w1')">
+        <div class="weight-header"><span class="weight-label">Over-75s Living Alone</span><span class="weight-val" id="w1-val">13%</span></div>
+        <div class="weight-desc">Demographic proxy. ONS Census 2021. Synthetic.</div>
+        <input type="range" id="w1" min="0" max="40" value="13" oninput="updateWeight('w1')">
       </div>
-
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">Unplanned Admissions Rate</span>
-          <span class="weight-val" id="w2-val">20%</span>
-        </div>
-        <div class="weight-desc">Outcome signal. Already in crisis trajectory. NHS Fingertips.</div>
-        <input type="range" id="w2" min="0" max="50" value="20" oninput="updateWeight('w2')">
+        <div class="weight-header"><span class="weight-label">Falls Admissions 65+</span><span class="weight-val" id="w2-val">12%</span></div>
+        <div class="weight-desc">Kent 1,917 vs England 1,870 ▲. NHS Fingertips 22401. Real.</div>
+        <input type="range" id="w2" min="0" max="40" value="12" oninput="updateWeight('w2')">
       </div>
-
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">Polypharmacy Prevalence</span>
-          <span class="weight-val" id="w3-val">20%</span>
-        </div>
-        <div class="weight-desc">5+ medications. Clinical frailty marker. NHS dispensing data.</div>
-        <input type="range" id="w3" min="0" max="50" value="20" oninput="updateWeight('w3')">
+        <div class="weight-header"><span class="weight-label">Hip Fracture Rate 65+</span><span class="weight-val" id="w3-val">9%</span></div>
+        <div class="weight-desc">Kent 543 vs England 491 ▲. NHS Fingertips 41401. Real.</div>
+        <input type="range" id="w3" min="0" max="40" value="9" oninput="updateWeight('w3')">
       </div>
-
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">Deprivation Score (IMD)</span>
-          <span class="weight-val" id="w4-val">15%</span>
-        </div>
-        <div class="weight-desc">Access and vulnerability amplifier. MHCLG IMD 2019.</div>
-        <input type="range" id="w4" min="0" max="50" value="15" oninput="updateWeight('w4')">
+        <div class="weight-header"><span class="weight-label">Deprivation (IMD)</span><span class="weight-val" id="w4-val">8%</span></div>
+        <div class="weight-desc">Access and vulnerability amplifier. MHCLG IMD 2019. Synthetic.</div>
+        <input type="range" id="w4" min="0" max="40" value="8" oninput="updateWeight('w4')">
       </div>
-
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">DWP Attendance Allowance</span>
-          <span class="weight-val" id="w5-val">10%</span>
-        </div>
-        <div class="weight-desc">Functional limitation indicator. DWP geographic data.</div>
-        <input type="range" id="w5" min="0" max="50" value="10" oninput="updateWeight('w5')">
+        <div class="weight-header"><span class="weight-label">Winter Mortality Index</span><span class="weight-val" id="w5-val">8%</span></div>
+        <div class="weight-desc">Kent 9.8 vs England 8.7 ▲. NHS Fingertips 90360. Real.</div>
+        <input type="range" id="w5" min="0" max="40" value="8" oninput="updateWeight('w5')">
       </div>
-
       <div class="weight-row">
-        <div class="weight-header">
-          <span class="weight-label">Care Home Capacity Gap</span>
-          <span class="weight-val" id="w6-val">10%</span>
-        </div>
-        <div class="weight-desc">High need, low provision. CQC register + population ratio.</div>
-        <input type="range" id="w6" min="0" max="50" value="10" oninput="updateWeight('w6')">
+        <div class="weight-header"><span class="weight-label">Care Home Gap</span><span class="weight-val" id="w6-val">7%</span></div>
+        <div class="weight-desc">High need, low provision. CQC register. Synthetic.</div>
+        <input type="range" id="w6" min="0" max="40" value="7" oninput="updateWeight('w6')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Loneliness Rate</span><span class="weight-val" id="w7-val">6%</span></div>
+        <div class="weight-desc">Kent 6.2% vs England 6.8% ▼. NHS Fingertips 94175. Real.</div>
+        <input type="range" id="w7" min="0" max="40" value="6" oninput="updateWeight('w7')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Dementia Diagnosis Rate</span><span class="weight-val" id="w8-val">6%</span></div>
+        <div class="weight-desc">Kent 62.3% vs England 66.3% ▼ (under-diagnosis = worse). Fingertips 92949. Real.</div>
+        <input type="range" id="w8" min="0" max="40" value="6" oninput="updateWeight('w8')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Hip Fractures 80+</span><span class="weight-val" id="w9-val">5%</span></div>
+        <div class="weight-desc">Kent 1,415 vs England 1,325 ▲. NHS Fingertips 41403. Real.</div>
+        <input type="range" id="w9" min="0" max="40" value="5" oninput="updateWeight('w9')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Social Isolation Rate</span><span class="weight-val" id="w10-val">5%</span></div>
+        <div class="weight-desc">Kent 49.1% vs England 46.9% ▲. NHS Fingertips 90280. Real.</div>
+        <input type="range" id="w10" min="0" max="40" value="5" oninput="updateWeight('w10')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Hypnotics Prescribing</span><span class="weight-val" id="w11-val">5%</span></div>
+        <div class="weight-desc">Kent 12.2 vs England 10.2 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w11" min="0" max="40" value="5" oninput="updateWeight('w11')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Antidepressant Rate</span><span class="weight-val" id="w12-val">5%</span></div>
+        <div class="weight-desc">Kent 129.4 vs England 110.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w12" min="0" max="40" value="5" oninput="updateWeight('w12')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Bisphosphonate Rate</span><span class="weight-val" id="w13-val">4%</span></div>
+        <div class="weight-desc">Kent 8.3 vs England 6.8 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w13" min="0" max="40" value="4" oninput="updateWeight('w13')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">1%</span></div>
+        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w14" min="0" max="20" value="1" oninput="updateWeight('w14')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">1%</span></div>
+        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w15" min="0" max="20" value="1" oninput="updateWeight('w15')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Anxiolytics Prescribing</span><span class="weight-val" id="w16-val">3%</span></div>
+        <div class="weight-desc">Benzodiazepines — anticholinergic burden, falls risk. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w16" min="0" max="20" value="3" oninput="updateWeight('w16')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">2%</span></div>
+        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. EPD Mar 2026. Real.</div>
+        <input type="range" id="w17" min="0" max="20" value="2" oninput="updateWeight('w17')">
       </div>
 
       <div class="weight-total">
@@ -1088,24 +1120,52 @@ const ZONES = [
 ];
 
 const SIGNAL_NAMES = [
-  "Over-75s Living Alone", "Unplanned Admissions", "Polypharmacy",
-  "Deprivation (IMD)", "DWP Attend. Allowance", "Care Home Gap"
+  "Over-75s Living Alone",       // 1  synthetic
+  "Falls Admissions 65+",        // 2  Fingertips real
+  "Hip Fracture Rate 65+",       // 3  Fingertips real
+  "Deprivation (IMD)",           // 4  synthetic
+  "Winter Mortality Index",      // 5  Fingertips real
+  "Care Home Gap",               // 6  synthetic
+  "Loneliness Rate",             // 7  Fingertips real
+  "Dementia Diagnosis Rate",     // 8  Fingertips real
+  "Hip Fractures 80+",           // 9  Fingertips real
+  "Social Isolation Rate",       // 10 Fingertips real
+  "Hypnotics Prescribing",       // 11 EPD real
+  "Antidepressant Rate",         // 12 EPD real
+  "Bisphosphonate Rate",         // 13 EPD real
+  "Diuretics Rate",              // 14 EPD real
+  "ACE/ARB Prescribing",         // 15 EPD real
+  "Anxiolytics Prescribing",     // 16 EPD real
+  "Bladder Antimuscarinic Rate", // 17 EPD real
 ];
 
 const SIGNAL_COLORS = [
-  "#3fb950", "#58a6ff", "#d29922", "#f0883e", "#bc8cff", "#ff7b72"
+  "#3fb950","#58a6ff","#d29922","#f0883e","#bc8cff","#ff7b72",
+  "#39d353","#79c0ff","#ffa657","#ff8080","#56d364","#4fc3f7",
+  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4"
 ];
 
 const SOURCE_DEFS = [
-  { name: "ONS Census 2021", tag: "Public · Free", id: "ons" },
-  { name: "NHS Fingertips API", tag: "API · Free", id: "fingertips" },
-  { name: "GP Dispensing Data", tag: "NHS · Free", id: "dispensing" },
-  { name: "IMD 2019 (MHCLG)", tag: "Public · Free", id: "imd" },
-  { name: "DWP Statistics", tag: "Public · Free", id: "dwp" },
-  { name: "CQC Register", tag: "API · Free", id: "cqc" },
+  { name: "ONS Census 2021",                  tag: "Public · Synthetic",  id: "ons" },
+  { name: "NHS Fingertips — Falls",            tag: "Real · 2024/25",      id: "ft_falls" },
+  { name: "NHS Fingertips — Hip Fractures",    tag: "Real · 2024/25",      id: "ft_hip" },
+  { name: "IMD 2019 (MHCLG)",                 tag: "Public · Synthetic",  id: "imd" },
+  { name: "NHS Fingertips — Winter Mortality", tag: "Real · 2021/22",      id: "ft_winter" },
+  { name: "CQC Register",                     tag: "Public · Synthetic",  id: "cqc" },
+  { name: "NHS Fingertips — Loneliness",       tag: "Real · 2021/22",      id: "ft_lone" },
+  { name: "NHS Fingertips — Dementia",         tag: "Real · 2026",         id: "ft_dem" },
+  { name: "NHS Fingertips — Hip 80+",          tag: "Real · 2024/25",      id: "ft_hip80" },
+  { name: "NHS Fingertips — Social Isolation", tag: "Real · 2024/25",      id: "ft_isol" },
+  { name: "NHSBSA EPD — Hypnotics",            tag: "Real · Mar 2026",     id: "epd_hyp" },
+  { name: "NHSBSA EPD — Antidepressants",      tag: "Real · Mar 2026",     id: "epd_antidep" },
+  { name: "NHSBSA EPD — Bisphosphonates",      tag: "Real · Mar 2026",     id: "epd_bis" },
+  { name: "NHSBSA EPD — Diuretics",            tag: "Real · Mar 2026",     id: "epd_diu" },
+  { name: "NHSBSA EPD — ACE/ARBs",             tag: "Real · Mar 2026",     id: "epd_ace" },
+  { name: "NHSBSA EPD — Anxiolytics",          tag: "Real · Mar 2026",     id: "epd_anx" },
+  { name: "NHSBSA EPD — Bladder Antimusc.",    tag: "Real · Mar 2026",     id: "epd_blad" },
 ];
 
-let enabledSources = new Set(['ons','fingertips','dispensing','imd','dwp','cqc']);
+let enabledSources = new Set(SOURCE_DEFS.map(s => s.id));
 let selectedZone = null;
 let currentResults = [];
 
@@ -1113,7 +1173,10 @@ let currentResults = [];
 
 function init() {
   renderSources();
-  updateWeight('w1');
+  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) updateWeight(id);
+  });
 }
 
 function renderSources() {
@@ -1147,8 +1210,11 @@ function updateWeight(id) {
 }
 
 function updateTotal() {
-  const ids = ['w1','w2','w3','w4','w5','w6'];
-  const total = ids.reduce((s,id) => s + parseInt(document.getElementById(id).value), 0);
+  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'];
+  const total = ids.reduce((s,id) => {
+    const el = document.getElementById(id);
+    return s + (el ? parseInt(el.value) : 0);
+  }, 0);
   const el = document.getElementById('weight-total');
   el.textContent = total + '%';
   el.className = 'weight-total-val ' + (Math.abs(total - 100) <= 5 ? 'ok' : 'warn');
@@ -1157,13 +1223,14 @@ function updateTotal() {
 // ── SCORING ENGINE ────────────────────────────────────────────────────
 
 function getWeights() {
-  return ['w1','w2','w3','w4','w5','w6'].map(id =>
-    parseInt(document.getElementById(id).value) / 100
-  );
+  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].map(id => {
+    const el = document.getElementById(id);
+    return el ? parseInt(el.value) / 100 : 0.06;
+  });
 }
 
 function scoreZone(zone, weights) {
-  const sourceIds = ['ons','fingertips','dispensing','imd','dwp','cqc'];
+  const sourceIds = SOURCE_DEFS.map(s => s.id);
   let weightedSum = 0;
   let totalWeight = 0;
   let availableSources = 0;
@@ -1190,7 +1257,7 @@ function scoreZone(zone, weights) {
   });
 
   const rawScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
-  const uncertain = availableSources < 4;
+  const uncertain = availableSources < 8;
 
   return {
     ...zone,
@@ -1359,7 +1426,7 @@ function showDetail(idx) {
 
   const uncBanner = r.uncertain ? `
     <div class="unc-banner">
-      ⚠ Low data confidence — only ${r.availableSources} of 6 signals available. Score should be treated as indicative only.
+      ⚠ Low data confidence — only ${r.availableSources} of 17 signals available.
     </div>` : '';
 
   document.getElementById('detail-placeholder').innerHTML = `
@@ -1367,7 +1434,7 @@ function showDetail(idx) {
       <div class="detail-header">
         <div>
           <div class="detail-zone-name">${r.name}</div>
-          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/6 signals active</div>
+          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/17 signals active</div>
         </div>
         <div style="display:flex;align-items:center;gap:0.75rem">
           <div class="detail-fep-badge">
