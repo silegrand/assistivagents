@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEP Scoring Engine — Assistiv Systems</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --border: #ddd8ce;
+  --border-soft: #e8e4dc;
+  --text: #1a2e1e;
+  --text-muted: #5a7260;
+  --text-dim: #9aaa9e;
+  --sage: #2d6b47;
+  --sage-dim: #1a3a2a;
+  --sage-pale: rgba(45,107,71,0.08);
+  --sage-mid: #4a7c5f;
+  --amber: #8a6200;
+  --amber-dim: #b8860b;
+  --amber-pale: rgba(184,134,11,0.09);
+  --red: #b91c1c;
+  --red-dim: #7f1d1d;
+  --red-pale: rgba(185,28,28,0.07);
+  --blue: #1d4ed8;
+  --blue-pale: rgba(29,78,216,0.07);
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Nunito', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--sage-dim);
+  border-bottom: 2px solid var(--sage);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  letter-spacing: -0.02em;
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: white;
+  font-weight: 600;
+}
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meta-badge {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.75);
+}
+
+.meta-badge.live {
+  border-color: rgba(255,255,255,0.5);
+  color: white;
+  background: rgba(255,255,255,0.12);
+}
+
+.meta-badge.live::before {
+  content: '● ';
+  font-size: 0.5rem;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: calc(100vh - 49px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sidebar-section-title {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Weight sliders */
+.weight-row {
+  margin-bottom: 0.85rem;
+}
+
+.weight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.3rem;
+}
+
+.weight-label {
+  font-size: 0.72rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.weight-val {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--sage);
+}
+
+.weight-desc {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  line-height: 1.35;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--sage);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+.weight-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.6rem;
+  background: var(--surface2);
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.weight-total-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.weight-total-val {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.weight-total-val.ok { color: var(--sage); }
+.weight-total-val.warn { color: var(--amber); }
+
+/* Data source toggles */
+.source-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.source-toggle:last-child { border-bottom: none; }
+
+.source-info { flex: 1; }
+
+.source-name {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.source-tag {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Toggle switch */
+.toggle {
+  width: 32px;
+  height: 18px;
+  background: var(--border);
+  border-radius: 9px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle.on { background: var(--sage-dim); }
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s;
+}
+
+.toggle.on::after { left: 17px; }
+
+/* Run button */
+.run-btn {
+  background: var(--sage-dim);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.run-btn:hover { background: var(--sage); transform: translateY(-1px); }
+.run-btn:active { transform: translateY(0); }
+.run-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+/* ── MAIN PANEL ── */
+.main {
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Summary stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.9rem 1rem;
+  animation: fadeIn 0.4s ease both;
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.stat-value {
+  font-family: var(--serif);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.stat-value.red { color: var(--red); }
+.stat-value.amber { color: var(--amber); }
+.stat-value.sage { color: var(--sage); }
+.stat-value.blue { color: var(--blue); }
+
+.stat-sub {
+  font-size: 0.63rem;
+  color: var(--text-muted);
+}
+
+/* Section header */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.section-title {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pill-btn {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pill-btn:hover, .pill-btn.active {
+  border-color: var(--sage-dim);
+  color: var(--sage);
+  background: var(--sage-pale);
+}
+
+/* ── ZONE TABLE ── */
+.zone-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.zone-table-header {
+  display: grid;
+  grid-template-columns: 2fr 80px 60px 60px 60px 60px 60px 90px 60px;
+  gap: 0;
+  padding: 0.5rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+.th {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.th:hover { color: var(--text); }
+
+.zone-rows { display: flex; flex-direction: column; }
+
+.zone-row {
+  display: grid;
+  grid-template-columns: 2fr 80px 60px 60px 60px 60px 60px 90px 60px;
+  gap: 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  align-items: center;
+  transition: background 0.12s;
+  animation: rowIn 0.35s ease both;
+  cursor: pointer;
+}
+
+.zone-row:last-child { border-bottom: none; }
+.zone-row:hover { background: var(--surface2); }
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.zone-name-col { display: flex; flex-direction: column; gap: 0.1rem; }
+.zone-name { font-size: 0.78rem; font-weight: 500; color: var(--text); }
+.zone-pcn { font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted); }
+
+/* FEP score bar */
+.fep-col { display: flex; align-items: center; gap: 0.5rem; }
+
+.fep-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.fep-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fep-num {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  min-width: 26px;
+  text-align: right;
+}
+
+/* Signal cells */
+.sig-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sig-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.sig-val {
+  font-family: var(--mono);
+  font-size: 0.63rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* Risk badge */
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 500;
+}
+
+.risk-critical { background: var(--red-pale); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
+.risk-high { background: rgba(210,153,34,0.12); color: var(--amber); border: 1px solid rgba(210,153,34,0.25); }
+.risk-moderate { background: var(--blue-pale); color: var(--blue); border: 1px solid rgba(88,166,255,0.25); }
+.risk-low { background: var(--sage-pale); color: var(--sage); border: 1px solid rgba(63,185,80,0.25); }
+
+/* Uncertainty */
+.uncertainty-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unc-icon {
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+.unc-icon.warn { color: var(--amber); opacity: 1; }
+
+/* ── DETAIL PANEL ── */
+.detail-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+.detail-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.detail-zone-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.detail-zone-meta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.detail-fep-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 0.6rem 1rem;
+  min-width: 80px;
+}
+
+.detail-fep-num {
+  font-family: var(--serif);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.detail-fep-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.detail-body {
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.signal-breakdown { grid-column: span 2; }
+
+.signal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.signal-row:last-child { border-bottom: none; }
+
+.signal-name {
+  font-size: 0.73rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.signal-raw {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 60px;
+  text-align: right;
+}
+
+.signal-contrib-bar {
+  width: 120px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.signal-contrib-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.signal-contrib-num {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  min-width: 30px;
+  text-align: right;
+}
+
+.signal-weight-badge {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  min-width: 28px;
+  text-align: center;
+}
+
+/* Recommendation card */
+.rec-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.85rem;
+}
+
+.rec-card-title {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.rec-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.rec-item::before {
+  content: '→';
+  color: var(--sage);
+  font-family: var(--mono);
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+/* Close button */
+.close-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.close-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* Uncertainty banner */
+.unc-banner {
+  background: rgba(210,153,34,0.08);
+  border: 1px solid rgba(210,153,34,0.2);
+  border-radius: 5px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--amber);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.4; }
+.empty-state-title { font-family: var(--serif); font-size: 1rem; margin-bottom: 0.35rem; color: var(--text); }
+.empty-state-desc { font-size: 0.75rem; line-height: 1.5; }
+
+/* Loading pulse */
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.loading { animation: pulse 1.2s ease infinite; }
+
+/* Watermark */
+.watermark {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text-dim);
+  text-align: center;
+  padding: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+/* ── KENT REAL DATA PANEL ── */
+.kent-panel {
+  background: var(--sage-dim);
+  border-bottom: 3px solid var(--sage-mid);
+  padding: 0.85rem 1.5rem;
+}
+
+.kent-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.kent-flag {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  margin-right: 0.75rem;
+}
+
+.kent-source {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.05em;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.kent-panel-toggle {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.65);
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 3px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.kent-panel-toggle:hover { color: white; border-color: rgba(255,255,255,0.5); }
+
+.kent-data-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.6rem;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  max-height: 200px;
+}
+
+.kent-data-grid.collapsed { max-height: 0; margin-bottom: 0; }
+
+.kent-datum {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 5px;
+  padding: 0.6rem 0.7rem;
+}
+
+.kent-datum-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+.kent-datum-value {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  margin-bottom: 0.15rem;
+}
+
+.kent-datum-unit {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 0.2rem;
+}
+
+.kent-datum-comp {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+}
+
+.kent-datum-comp.better { color: #86efac; }
+.kent-datum-comp.worse { color: #fca5a5; }
+.kent-datum-comp.neutral { color: rgba(255,255,255,0.5); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .kent-data-grid { grid-template-columns: repeat(2, 1fr); }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .zone-table-header, .zone-row { grid-template-columns: 2fr 80px 90px 60px; }
+  .zone-table-header .th:nth-child(n+3):not(:nth-child(4)):not(:nth-child(8)):not(:nth-child(9)),
+  .zone-row > *:nth-child(n+3):not(:nth-child(4)):not(:nth-child(8)):not(:nth-child(9)) { display: none; }
+  .detail-body { grid-template-columns: 1fr; }
+  .signal-breakdown { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-mark">AS</div>
+    <div>
+      <div class="brand-name">Assistiv Systems</div>
+      <div class="brand-sub">Frailty Geography Intelligence · Layer 2</div>
+    </div>
+  </div>
+  <div class="topbar-meta">
+    <span class="meta-badge">Kent · 18 Zones</span>
+    <span class="meta-badge">ICB Data: OHID May 2026</span>
+    <span class="meta-badge live">Engine Ready</span>
+  </div>
+</div>
+
+<!-- REAL KENT ICB DATA PANEL -->
+<div class="kent-panel">
+  <div class="kent-panel-header">
+    <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+      <span class="kent-flag">NHS Kent &amp; Medway ICB — QKS · Real Published Data</span>
+      <span class="kent-source">OHID Public Health Outcomes Framework · Published 6 May 2026</span>
+    </div>
+    <div class="kent-panel-toggle" onclick="toggleKentPanel()" id="kent-toggle">▲ Hide</div>
+  </div>
+  <div class="kent-data-grid" id="kent-data-grid">
+    <div class="kent-datum">
+      <div class="kent-datum-label">Falls Admissions 65+</div>
+      <div class="kent-datum-value">1,917</div>
+      <div class="kent-datum-unit">per 100,000 · 2024/25</div>
+      <div class="kent-datum-comp better">▼ vs England 1,958</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Falls Admissions 80+</div>
+      <div class="kent-datum-value">4,694</div>
+      <div class="kent-datum-unit">per 100,000 · 2024/25</div>
+      <div class="kent-datum-comp better">▼ vs England 4,866</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">HLE at 65 · Male</div>
+      <div class="kent-datum-value">10.7 yrs</div>
+      <div class="kent-datum-unit">healthy life expectancy</div>
+      <div class="kent-datum-comp better">▲ vs England 10.1</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">HLE at 65 · Female</div>
+      <div class="kent-datum-value">12.3 yrs</div>
+      <div class="kent-datum-unit">healthy life expectancy</div>
+      <div class="kent-datum-comp better">▲ vs England 11.1</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Loneliness</div>
+      <div class="kent-datum-value">6.2%</div>
+      <div class="kent-datum-unit">often/always · 16+ · 21-23</div>
+      <div class="kent-datum-comp better">▼ vs England 6.8%</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Fuel Poverty</div>
+      <div class="kent-datum-value">11.0%</div>
+      <div class="kent-datum-unit">low income · low energy · 2023</div>
+      <div class="kent-datum-comp better">▼ vs England 11.4%</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Self-Harm Admissions</div>
+      <div class="kent-datum-value">155.2</div>
+      <div class="kent-datum-unit">per 100,000 · 2022/23</div>
+      <div class="kent-datum-comp worse">▲ vs England 126.2</div>
+    </div>
+    <div class="kent-datum">
+      <div class="kent-datum-label">Zone Scores</div>
+      <div class="kent-datum-value" style="font-size:0.72rem;line-height:1.4;color:var(--text-muted);font-family:var(--sans)">ICB baselines confirmed. Zone FEP uses calibrated data. Sub-ICB linkage: Phase 2.</div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- Signal weights -->
+    <div>
+      <div class="sidebar-section-title">Signal Weights</div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">Over-75s Living Alone</span>
+          <span class="weight-val" id="w1-val">25%</span>
+        </div>
+        <div class="weight-desc">Strongest single demographic frailty proxy. ONS Census 2021.</div>
+        <input type="range" id="w1" min="0" max="50" value="25" oninput="updateWeight('w1')">
+      </div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">Unplanned Admissions Rate</span>
+          <span class="weight-val" id="w2-val">20%</span>
+        </div>
+        <div class="weight-desc">Outcome signal. Already in crisis trajectory. NHS Fingertips.</div>
+        <input type="range" id="w2" min="0" max="50" value="20" oninput="updateWeight('w2')">
+      </div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">Polypharmacy Prevalence</span>
+          <span class="weight-val" id="w3-val">20%</span>
+        </div>
+        <div class="weight-desc">5+ medications. Clinical frailty marker. NHS dispensing data.</div>
+        <input type="range" id="w3" min="0" max="50" value="20" oninput="updateWeight('w3')">
+      </div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">Deprivation Score (IMD)</span>
+          <span class="weight-val" id="w4-val">15%</span>
+        </div>
+        <div class="weight-desc">Access and vulnerability amplifier. MHCLG IMD 2019.</div>
+        <input type="range" id="w4" min="0" max="50" value="15" oninput="updateWeight('w4')">
+      </div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">DWP Attendance Allowance</span>
+          <span class="weight-val" id="w5-val">10%</span>
+        </div>
+        <div class="weight-desc">Functional limitation indicator. DWP geographic data.</div>
+        <input type="range" id="w5" min="0" max="50" value="10" oninput="updateWeight('w5')">
+      </div>
+
+      <div class="weight-row">
+        <div class="weight-header">
+          <span class="weight-label">Care Home Capacity Gap</span>
+          <span class="weight-val" id="w6-val">10%</span>
+        </div>
+        <div class="weight-desc">High need, low provision. CQC register + population ratio.</div>
+        <input type="range" id="w6" min="0" max="50" value="10" oninput="updateWeight('w6')">
+      </div>
+
+      <div class="weight-total">
+        <span class="weight-total-label">Total Weight</span>
+        <span class="weight-total-val ok" id="weight-total">100%</span>
+      </div>
+    </div>
+
+    <!-- Data sources -->
+    <div>
+      <div class="sidebar-section-title">Data Sources</div>
+      <div id="source-list"></div>
+    </div>
+
+    <!-- Run -->
+    <div>
+      <button class="run-btn" id="run-btn" onclick="runScoring()">▶ Run Scoring Engine</button>
+      <div class="watermark" style="margin-top:0.5rem">ICB baseline: OHID PHOF May 2026 · Zone scores: calibrated synthetic<br>Sub-ICB linkage via NHS Fingertips: Phase 2</div>
+    </div>
+
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div class="main" id="main-panel">
+    <div class="empty-state" id="empty-state">
+      <div class="empty-state-icon">◎</div>
+      <div class="empty-state-title">Scoring Engine Ready</div>
+      <div class="empty-state-desc">Configure signal weights, select data sources,<br>then run the engine to generate FEP scores<br>across Kent PCN zones.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SYNTHETIC KENT DATA ──────────────────────────────────────────────
+// 18 realistic Kent PCN zones with per-signal raw values
+// Signals: [alone75, unplanned, polypharmacy, deprivation, dwpAA, careGap]
+// All normalised 0–100 within-signal before weighting
+
+const ZONES = [
+  { name: "Margate Central", pcn: "Thanet North PCN", lsoa: "E01024439",
+    signals: [88, 82, 79, 91, 84, 88], sources: [1,1,1,1,1,1] },
+  { name: "Ramsgate West", pcn: "Thanet North PCN", lsoa: "E01024441",
+    signals: [81, 77, 71, 85, 78, 74], sources: [1,1,1,1,1,0] },
+  { name: "Folkestone Harbour", pcn: "Folkestone & Hythe PCN", lsoa: "E01024112",
+    signals: [79, 74, 68, 82, 71, 80], sources: [1,1,1,1,1,1] },
+  { name: "Dover Town Centre", pcn: "Dover PCN", lsoa: "E01024089",
+    signals: [76, 71, 72, 79, 74, 65], sources: [1,1,1,1,0,1] },
+  { name: "Herne Bay West", pcn: "Canterbury & Coastal PCN", lsoa: "E01024021",
+    signals: [74, 68, 64, 55, 68, 72], sources: [1,1,1,1,1,1] },
+  { name: "Sheerness & Minster", pcn: "Swale PCN", lsoa: "E01024355",
+    signals: [72, 65, 61, 72, 63, 69], sources: [1,1,1,1,1,1] },
+  { name: "Whitstable North", pcn: "Canterbury & Coastal PCN", lsoa: "E01024025",
+    signals: [70, 62, 58, 48, 61, 66], sources: [1,1,1,1,1,1] },
+  { name: "Sittingbourne Central", pcn: "Swale PCN", lsoa: "E01024360",
+    signals: [65, 61, 63, 65, 58, 58], sources: [1,1,1,1,0,1] },
+  { name: "Faversham & Ospringe", pcn: "Swale PCN", lsoa: "E01024368",
+    signals: [62, 55, 52, 38, 54, 61], sources: [1,1,1,1,1,1] },
+  { name: "Ashford South", pcn: "Ashford PCN", lsoa: "E01023901",
+    signals: [58, 52, 55, 58, 52, 55], sources: [1,1,0,1,1,1] },
+  { name: "Deal & Walmer", pcn: "Dover PCN", lsoa: "E01024095",
+    signals: [67, 58, 60, 44, 65, 62], sources: [1,1,1,1,1,1] },
+  { name: "Broadstairs", pcn: "Thanet South PCN", lsoa: "E01024445",
+    signals: [71, 63, 66, 52, 69, 58], sources: [1,0,1,1,1,1] },
+  { name: "Hythe & Sandgate", pcn: "Folkestone & Hythe PCN", lsoa: "E01024118",
+    signals: [63, 54, 57, 40, 60, 55], sources: [1,1,1,1,1,1] },
+  { name: "Canterbury St. Dunstans", pcn: "Canterbury & Coastal PCN", lsoa: "E01024035",
+    signals: [48, 44, 45, 35, 46, 42], sources: [1,1,1,0,1,1] },
+  { name: "Maidstone North", pcn: "Mid Kent PCN", lsoa: "E01024198",
+    signals: [44, 48, 50, 52, 42, 46], sources: [1,1,1,1,1,0] },
+  { name: "Tonbridge Central", pcn: "Tonbridge & Malling PCN", lsoa: "E01024398",
+    signals: [38, 40, 43, 38, 39, 40], sources: [1,1,1,1,1,1] },
+  { name: "Sevenoaks Rural", pcn: "Sevenoaks PCN", lsoa: "E01024340",
+    signals: [34, 35, 36, 22, 33, 38], sources: [1,1,1,1,1,1] },
+  { name: "Tunbridge Wells West", pcn: "Tunbridge Wells PCN", lsoa: "E01024420",
+    signals: [30, 32, 34, 28, 30, 32], sources: [1,1,1,1,1,1] },
+];
+
+const SIGNAL_NAMES = [
+  "Over-75s Living Alone", "Unplanned Admissions", "Polypharmacy",
+  "Deprivation (IMD)", "DWP Attend. Allowance", "Care Home Gap"
+];
+
+const SIGNAL_COLORS = [
+  "#3fb950", "#58a6ff", "#d29922", "#f0883e", "#bc8cff", "#ff7b72"
+];
+
+const SOURCE_DEFS = [
+  { name: "ONS Census 2021", tag: "Public · Free", id: "ons" },
+  { name: "NHS Fingertips API", tag: "API · Free", id: "fingertips" },
+  { name: "GP Dispensing Data", tag: "NHS · Free", id: "dispensing" },
+  { name: "IMD 2019 (MHCLG)", tag: "Public · Free", id: "imd" },
+  { name: "DWP Statistics", tag: "Public · Free", id: "dwp" },
+  { name: "CQC Register", tag: "API · Free", id: "cqc" },
+];
+
+let enabledSources = new Set(['ons','fingertips','dispensing','imd','dwp','cqc']);
+let selectedZone = null;
+let currentResults = [];
+
+// ── INIT ─────────────────────────────────────────────────────────────
+
+function init() {
+  renderSources();
+  updateWeight('w1');
+}
+
+function renderSources() {
+  const el = document.getElementById('source-list');
+  el.innerHTML = SOURCE_DEFS.map(s => `
+    <div class="source-toggle">
+      <div class="source-info">
+        <div class="source-name">${s.name}</div>
+        <div class="source-tag">${s.tag}</div>
+      </div>
+      <div class="toggle on" id="toggle-${s.id}" onclick="toggleSource('${s.id}')"></div>
+    </div>
+  `).join('');
+}
+
+function toggleSource(id) {
+  const el = document.getElementById(`toggle-${id}`);
+  if (enabledSources.has(id)) {
+    enabledSources.delete(id);
+    el.classList.remove('on');
+  } else {
+    enabledSources.add(id);
+    el.classList.add('on');
+  }
+}
+
+function updateWeight(id) {
+  const val = document.getElementById(id).value;
+  document.getElementById(`${id}-val`).textContent = val + '%';
+  updateTotal();
+}
+
+function updateTotal() {
+  const ids = ['w1','w2','w3','w4','w5','w6'];
+  const total = ids.reduce((s,id) => s + parseInt(document.getElementById(id).value), 0);
+  const el = document.getElementById('weight-total');
+  el.textContent = total + '%';
+  el.className = 'weight-total-val ' + (Math.abs(total - 100) <= 5 ? 'ok' : 'warn');
+}
+
+// ── SCORING ENGINE ────────────────────────────────────────────────────
+
+function getWeights() {
+  return ['w1','w2','w3','w4','w5','w6'].map(id =>
+    parseInt(document.getElementById(id).value) / 100
+  );
+}
+
+function scoreZone(zone, weights) {
+  const sourceIds = ['ons','fingertips','dispensing','imd','dwp','cqc'];
+  let weightedSum = 0;
+  let totalWeight = 0;
+  let availableSources = 0;
+  let contributions = [];
+
+  zone.signals.forEach((sig, i) => {
+    const sourceEnabled = enabledSources.has(sourceIds[i]);
+    const dataAvailable = zone.sources[i] === 1;
+    const active = sourceEnabled && dataAvailable;
+
+    if (active) {
+      weightedSum += sig * weights[i];
+      totalWeight += weights[i];
+      availableSources++;
+    }
+    contributions.push({
+      name: SIGNAL_NAMES[i],
+      raw: sig,
+      weight: weights[i],
+      active,
+      contrib: active ? (sig * weights[i]) : 0,
+      color: SIGNAL_COLORS[i]
+    });
+  });
+
+  const rawScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
+  const uncertain = availableSources < 4;
+
+  return {
+    ...zone,
+    fep: Math.round(rawScore),
+    contributions,
+    availableSources,
+    uncertain,
+    risk: rawScore >= 75 ? 'critical' : rawScore >= 60 ? 'high' : rawScore >= 45 ? 'moderate' : 'low'
+  };
+}
+
+function runScoring() {
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  btn.textContent = '⟳ Scoring…';
+  btn.classList.add('loading');
+
+  setTimeout(() => {
+    const weights = getWeights();
+    currentResults = ZONES.map(z => scoreZone(z, weights))
+      .sort((a, b) => b.fep - a.fep);
+
+    renderResults(currentResults);
+
+    btn.disabled = false;
+    btn.textContent = '↺ Rescore';
+    btn.classList.remove('loading');
+  }, 600);
+}
+
+// ── RENDER RESULTS ────────────────────────────────────────────────────
+
+function fepColor(score) {
+  if (score >= 75) return 'var(--red)';
+  if (score >= 60) return 'var(--amber)';
+  if (score >= 45) return 'var(--blue)';
+  return 'var(--sage)';
+}
+
+function renderResults(results) {
+  const main = document.getElementById('main-panel');
+  const critical = results.filter(r => r.risk === 'critical').length;
+  const high = results.filter(r => r.risk === 'high').length;
+  const uncertain = results.filter(r => r.uncertain).length;
+  const avgFep = Math.round(results.reduce((s,r) => s + r.fep, 0) / results.length);
+
+  main.innerHTML = `
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Critical Risk Zones</div>
+        <div class="stat-value red">${critical}</div>
+        <div class="stat-sub">FEP ≥ 75 · Immediate outreach</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">High Risk Zones</div>
+        <div class="stat-value amber">${high}</div>
+        <div class="stat-sub">FEP 60–74 · Priority screening</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Mean FEP Score</div>
+        <div class="stat-value blue">${avgFep}</div>
+        <div class="stat-sub">Across ${results.length} Kent zones</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Low Confidence Zones</div>
+        <div class="stat-value sage">${uncertain}</div>
+        <div class="stat-sub">Fewer than 4 signals available</div>
+      </div>
+    </div>
+
+    <!-- Table controls -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Frailty Emergence Probability — Ranked Zones</div>
+        <div class="section-actions">
+          <button class="pill-btn active">All</button>
+          <button class="pill-btn" onclick="filterRisk('critical')">Critical</button>
+          <button class="pill-btn" onclick="filterRisk('high')">High</button>
+          <button class="pill-btn" onclick="filterRisk('uncertain')">Uncertain</button>
+        </div>
+      </div>
+
+      <!-- Zone table -->
+      <div class="zone-table">
+        <div class="zone-table-header">
+          <div class="th">Zone / PCN</div>
+          <div class="th">FEP Score</div>
+          <div class="th" title="Over-75s alone">Alone75</div>
+          <div class="th" title="Unplanned admissions">Unplan.</div>
+          <div class="th" title="Polypharmacy">Poly.</div>
+          <div class="th" title="Deprivation">IMD</div>
+          <div class="th" title="Attendance Allowance">DWP</div>
+          <div class="th">Risk Tier</div>
+          <div class="th" title="Data confidence">Conf.</div>
+        </div>
+        <div class="zone-rows" id="zone-rows">
+          ${results.map((r, i) => renderRow(r, i)).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail panel placeholder -->
+    <div id="detail-placeholder"></div>
+  `;
+}
+
+function renderRow(r, i) {
+  const color = fepColor(r.fep);
+  const sigVals = r.contributions.map(c =>
+    `<div class="sig-cell"><span class="sig-val" style="color:${c.active ? c.color : 'var(--text-dim)'}">${c.active ? c.raw : '—'}</span></div>`
+  ).join('');
+
+  return `
+    <div class="zone-row" onclick="showDetail(${i})" style="animation-delay:${i * 0.04}s">
+      <div class="zone-name-col">
+        <span class="zone-name">${r.name}</span>
+        <span class="zone-pcn">${r.pcn}</span>
+      </div>
+      <div class="fep-col">
+        <div class="fep-bar-wrap">
+          <div class="fep-bar" style="width:${r.fep}%;background:${color}"></div>
+        </div>
+        <span class="fep-num" style="color:${color}">${r.fep}</span>
+      </div>
+      ${sigVals}
+      <div><span class="risk-badge risk-${r.risk}">${r.risk}</span></div>
+      <div class="uncertainty-col">
+        <span class="unc-icon ${r.uncertain ? 'warn' : ''}">${r.uncertain ? '⚠' : '✓'}</span>
+      </div>
+    </div>
+  `;
+}
+
+function filterRisk(tier) {
+  document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  let filtered;
+  if (tier === 'all') filtered = currentResults;
+  else if (tier === 'uncertain') filtered = currentResults.filter(r => r.uncertain);
+  else filtered = currentResults.filter(r => r.risk === tier);
+
+  document.getElementById('zone-rows').innerHTML =
+    filtered.map((r, i) => renderRow(r, i)).join('');
+}
+
+function showDetail(idx) {
+  const r = currentResults[idx];
+  const color = fepColor(r.fep);
+  const maxContrib = Math.max(...r.contributions.map(c => c.contrib));
+
+  const sigRows = r.contributions.map(c => `
+    <div class="signal-row">
+      <span class="signal-name" style="color:${c.active ? 'var(--text)' : 'var(--text-dim)'}">${c.name}</span>
+      <span class="signal-raw">${c.active ? c.raw + '/100' : 'No data'}</span>
+      <div class="signal-contrib-bar">
+        <div class="signal-contrib-fill" style="width:${maxContrib > 0 ? (c.contrib/maxContrib)*100 : 0}%;background:${c.active ? c.color : 'var(--border)'}"></div>
+      </div>
+      <span class="signal-contrib-num" style="color:${c.active ? c.color : 'var(--text-dim)'}">${c.active ? '+' + Math.round(c.contrib) : '—'}</span>
+      <span class="signal-weight-badge">${Math.round(c.weight*100)}%</span>
+    </div>
+  `).join('');
+
+  const recs = getRecommendations(r);
+
+  const uncBanner = r.uncertain ? `
+    <div class="unc-banner">
+      ⚠ Low data confidence — only ${r.availableSources} of 6 signals available. Score should be treated as indicative only.
+    </div>` : '';
+
+  document.getElementById('detail-placeholder').innerHTML = `
+    <div class="detail-panel">
+      <div class="detail-header">
+        <div>
+          <div class="detail-zone-name">${r.name}</div>
+          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/6 signals active</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <div class="detail-fep-badge">
+            <div class="detail-fep-num" style="color:${color}">${r.fep}</div>
+            <div class="detail-fep-label">FEP Score</div>
+          </div>
+          <div>
+            <span class="risk-badge risk-${r.risk}" style="font-size:0.65rem;padding:0.25rem 0.65rem">${r.risk.toUpperCase()} RISK</span>
+            <button class="close-btn" style="display:block;margin-top:0.4rem" onclick="closeDetail()">✕ Close</button>
+          </div>
+        </div>
+      </div>
+      <div class="detail-body">
+        <div class="signal-breakdown">
+          ${uncBanner}
+          <div class="sidebar-section-title" style="margin-bottom:0.5rem">Signal Contribution Breakdown</div>
+          ${sigRows}
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-title">Recommended Actions</div>
+          ${recs.map(r => `<div class="rec-item">${r}</div>`).join('')}
+        </div>
+        <div class="rec-card">
+          <div class="rec-card-title">Outreach Priority</div>
+          <div class="rec-item">Deploy resiliencetools.xyz screening within this zone</div>
+          <div class="rec-item">Identify community touchpoints via Layer 3 agent</div>
+          <div class="rec-item">Share FEP score with ${r.pcn} lead as commissioner briefing</div>
+          ${r.fep >= 70 ? '<div class="rec-item">Escalate to ICB population health team immediately</div>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detail-placeholder').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeDetail() {
+  document.getElementById('detail-placeholder').innerHTML = '';
+}
+
+function getRecommendations(r) {
+  const recs = [];
+  const high = r.contributions.filter(c => c.active && c.raw >= 75);
+
+  if (r.risk === 'critical') recs.push('Immediate outreach — highest priority zone in Kent cohort');
+  if (high.some(c => c.name.includes('Alone'))) recs.push('Social isolation primary driver — target voluntary sector and faith communities');
+  if (high.some(c => c.name.includes('Admissions'))) recs.push('Crisis pattern present — coordinate with A&E frequent attender programme');
+  if (high.some(c => c.name.includes('Polypharmacy'))) recs.push('High polypharmacy — pharmacy touchpoint is ideal screening entry point');
+  if (high.some(c => c.name.includes('Deprivation'))) recs.push('High deprivation — consider facilitated rather than digital-first screening');
+  if (high.some(c => c.name.includes('Care Home'))) recs.push('Significant care home capacity gap — flag to social care commissioning');
+  if (r.uncertain) recs.push('Improve data coverage before commissioning report — contact NHS ICB for missing signals');
+  if (recs.length === 0) recs.push('Routine monitoring — rescore next quarter');
+
+  return recs;
+}
+
+// ── KENT PANEL TOGGLE ────────────────────────────────────────────────
+function toggleKentPanel() {
+  const grid = document.getElementById('kent-data-grid');
+  const toggle = document.getElementById('kent-toggle');
+  grid.classList.toggle('collapsed');
+  toggle.textContent = grid.classList.contains('collapsed') ? '▼ Show ICB Data' : '▲ Hide';
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
