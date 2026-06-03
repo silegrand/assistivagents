@@ -524,6 +524,24 @@ body {
   #map { flex: 1; min-height: 200px; }
   .icb-stats { gap: 0.75rem; }
 }
+
+/* ── WEATHER RISK BANNER ─────────────────────────────────────────────── */
+.weather-banner {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.weather-banner.heat-warn  { background: #fef3c7; color: #92400e; display: flex; }
+.weather-banner.heat-alert { background: #fee2e2; color: #991b1b; display: flex; }
+.weather-banner.cold-warn  { background: #eff6ff; color: #1e40af; display: flex; }
+.weather-banner.cold-alert { background: #dbeafe; color: #1e3a8a; display: flex; }
+.weather-banner-icon { font-size: 1.1rem; }
+.weather-banner-text { flex: 1; line-height: 1.4; }
+.weather-banner-temp { font-size: 1rem; font-weight: 700; min-width: 3rem; text-align: right; }
 </style>
 </head>
 <body>
@@ -563,6 +581,13 @@ body {
     </div>
   </div>
   <div class="icb-source">OHID PHOF · NHS Kent &amp; Medway ICB QKS · Published 6 May 2026</div>
+</div>
+
+<!-- WEATHER RISK BANNER — live from Open-Meteo -->
+<div class="weather-banner" id="weather-banner">
+  <span class="weather-banner-icon" id="weather-icon">⚠</span>
+  <span class="weather-banner-text" id="weather-text"></span>
+  <span class="weather-banner-temp" id="weather-temp"></span>
 </div>
 
 <!-- MAIN -->
@@ -1183,7 +1208,79 @@ function exportPDF(districtName) {
   }, 100);
 }
 
+// ── WEATHER RISK LAYER ────────────────────────────────────────────────
+// Open-Meteo UK API — free, no key, Met Office UKV 2km model
+// Centroid of Kent & Medway ICB: ~51.27°N, 0.52°E
+async function fetchWeatherRisk() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast' +
+      '?latitude=51.27&longitude=0.52' +
+      '&current=temperature_2m,apparent_temperature' +
+      '&daily=temperature_2m_max,temperature_2m_min' +
+      '&timezone=Europe%2FLondon&forecast_days=3' +
+      '&models=ukmo_seamless';
+
+    const res  = await fetch(url);
+    const data = await res.json();
+    const temp = Math.round(data.current.temperature_2m);
+    const feel = Math.round(data.current.apparent_temperature);
+    const maxT = Math.round(data.daily.temperature_2m_max[0]);
+    const minT = Math.round(data.daily.temperature_2m_min[0]);
+
+    const banner = document.getElementById('weather-banner');
+    const icon   = document.getElementById('weather-icon');
+    const text   = document.getElementById('weather-text');
+    const tempEl = document.getElementById('weather-temp');
+
+    // High-risk medications already in our model:
+    // anticholinergics (bladder_antimusc), antidepressants, diuretics, ACE/ARBs
+    // All above-average in Kent — making temperature risk amplified here
+
+    const HEAT_ALERT = 32;  // NHS Heat Health Alert threshold
+    const HEAT_WARN  = 26;  // UKHSA Amber heat threshold
+    const COLD_ALERT = 2;   // NICE cold-home / hypothermia threshold
+    const COLD_WARN  = 8;   // UKHSA Cold threshold
+
+    if (maxT >= HEAT_ALERT) {
+      banner.className = 'weather-banner heat-alert';
+      icon.textContent = '🔴';
+      text.innerHTML = '<strong>Heat emergency risk — Kent today ' + maxT + '°C.</strong> ' +
+        'Patients on anticholinergics, antidepressants, diuretics or ACE/ARBs at acute risk of hyperthermia and dehydration. ' +
+        'High-FEP districts (Thanet, Folkestone, Dover) are highest priority for welfare checks.';
+    } else if (maxT >= HEAT_WARN) {
+      banner.className = 'weather-banner heat-warn';
+      icon.textContent = '🟡';
+      text.innerHTML = '<strong>Heat stress risk elevated — forecast max ' + maxT + '°C.</strong> ' +
+        'Anticholinergic and diuretic prescribing districts flagged. ' +
+        'Kent prescribing rates are 1.2× England average — medication-heat interaction risk elevated.';
+    } else if (minT <= COLD_ALERT) {
+      banner.className = 'weather-banner cold-alert';
+      icon.textContent = '🔵';
+      text.innerHTML = '<strong>Severe cold risk — overnight min ' + minT + '°C.</strong> ' +
+        'Hypothermia risk elevated for older adults on diuretics or sedatives. ' +
+        'Winter mortality index already above England average (9.8 vs 8.7). ' +
+        'High-FEP coastal districts are priority for Cold Weather Plan activation.';
+    } else if (minT <= COLD_WARN) {
+      banner.className = 'weather-banner cold-warn';
+      icon.textContent = '🔷';
+      text.innerHTML = '<strong>Cold weather alert — overnight min ' + minT + '°C.</strong> ' +
+        'Falls risk elevated on cold mornings. Kent falls admissions 65+ already above England average. ' +
+        'Monitor Thanet, Folkestone & Hythe, Dover.';
+    } else {
+      // No threshold breached — show nothing
+      return;
+    }
+
+    tempEl.textContent = temp + '°C';
+
+  } catch(e) {
+    // Silent fail — weather is supplementary, never block core tool
+    console.warn('Weather fetch failed:', e);
+  }
+}
+
 // ── START ─────────────────────────────────────────────────────────────
+fetchWeatherRisk();
 loadBoundaries();
 </script>
 </body>
