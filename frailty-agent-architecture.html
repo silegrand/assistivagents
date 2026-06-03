@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frailty Intelligence Agent — System Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --ink: #0f1a14;
+    --paper: #f4f1eb;
+    --sage: #2d5a3d;
+    --sage-mid: #4a7c5f;
+    --sage-light: #8ab89a;
+    --sage-pale: #d4e8db;
+    --amber: #b87333;
+    --amber-light: #e8c49a;
+    --amber-pale: #f5ead8;
+    --signal: #c0392b;
+    --signal-pale: #f8ddd9;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Libre Baskerville', serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 1.2rem;
+    margin-bottom: 2.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .header-left h1 {
+    font-family: var(--serif);
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .header-left p {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--sage-mid);
+    margin-top: 0.3rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .header-right {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: #888;
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 1.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    padding: 0.8rem 1rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  /* LAYERS */
+  .layer {
+    margin-bottom: 1.2rem;
+    position: relative;
+  }
+
+  .layer-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0.25rem 0.6rem;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    border-radius: 2px;
+  }
+
+  .layer-label.l1 { background: var(--sage); color: white; }
+  .layer-label.l2 { background: var(--amber); color: white; }
+  .layer-label.l3 { background: #5b6fa8; color: white; }
+  .layer-label.l4 { background: var(--signal); color: white; }
+  .layer-label.l5 { background: var(--ink); color: white; }
+
+  .layer-inner {
+    border-left: 3px solid;
+    padding: 1rem 1.2rem;
+    border-radius: 0 6px 6px 0;
+  }
+
+  .layer-inner.l1 { border-color: var(--sage); background: #f0f7f2; }
+  .layer-inner.l2 { border-color: var(--amber); background: var(--amber-pale); }
+  .layer-inner.l3 { border-color: #5b6fa8; background: #f0f2fa; }
+  .layer-inner.l4 { border-color: var(--signal); background: var(--signal-pale); }
+  .layer-inner.l5 { border-color: var(--ink); background: #f0ede8; }
+
+  .layer-title {
+    font-family: var(--serif);
+    font-size: 1.0rem;
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+  }
+
+  .node-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .node {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .node-name {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.2rem;
+    text-transform: uppercase;
+  }
+
+  .node-desc {
+    font-size: 0.72rem;
+    color: #555;
+    line-height: 1.4;
+  }
+
+  .node-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+    margin-top: 0.3rem;
+  }
+
+  .tag-public { background: var(--sage-pale); color: var(--sage); }
+  .tag-api { background: #e8eaf6; color: #3949ab; }
+  .tag-partner { background: var(--amber-pale); color: var(--amber); }
+  .tag-proprietary { background: #fce4ec; color: #c2185b; }
+  .tag-inferred { background: #f3e5f5; color: #7b1fa2; }
+
+  .layer-note {
+    font-size: 0.74rem;
+    color: #555;
+    font-style: italic;
+    line-height: 1.5;
+    margin-top: 0.4rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #ccc;
+  }
+
+  /* CONNECTOR ARROWS */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0;
+    gap: 0.5rem;
+    margin: 0.2rem 0;
+  }
+
+  .connector-line {
+    height: 2px;
+    width: 40px;
+    background: #bbb;
+  }
+
+  .connector-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    background: var(--paper);
+    padding: 0.15rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+  }
+
+  .arrow-down {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #aaa;
+    line-height: 1;
+    padding: 0.15rem 0;
+  }
+
+  /* AGENT LOGIC PANEL */
+  .agent-panel {
+    background: var(--ink);
+    color: #e8e4dc;
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.2rem 0;
+  }
+
+  .agent-panel h3 {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage-light);
+    margin-bottom: 0.8rem;
+  }
+
+  .agent-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .agent-step {
+    border-left: 2px solid var(--sage-mid);
+    padding-left: 0.7rem;
+  }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    color: var(--sage-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .step-action {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin: 0.15rem 0 0.2rem;
+    color: #f0ece4;
+  }
+
+  .step-detail {
+    font-size: 0.68rem;
+    color: #a0a89c;
+    line-height: 1.45;
+  }
+
+  /* OUTPUT PANEL */
+  .outputs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.7rem;
+    margin-top: 0.6rem;
+  }
+
+  .output-card {
+    background: white;
+    border: 1px solid var(--ink);
+    border-radius: 5px;
+    padding: 0.8rem;
+  }
+
+  .output-card-icon {
+    font-size: 1.2rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .output-card-title {
+    font-family: var(--serif);
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .output-card-desc {
+    font-size: 0.7rem;
+    color: #555;
+    line-height: 1.45;
+  }
+
+  /* STRATEGIC INSIGHT BOX */
+  .insight-box {
+    border: 2px solid var(--sage);
+    background: white;
+    border-radius: 6px;
+    padding: 1.2rem 1.4rem;
+    margin-top: 2rem;
+  }
+
+  .insight-box h3 {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sage);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .insight-rows {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+  }
+
+  @media (max-width: 600px) {
+    .insight-rows { grid-template-columns: 1fr; }
+    .agent-steps { grid-template-columns: 1fr; }
+    .outputs-grid { grid-template-columns: 1fr; }
+  }
+
+  .insight-row {
+    font-size: 0.74rem;
+    line-height: 1.5;
+    color: #444;
+    padding: 0.6rem;
+    background: var(--sage-pale);
+    border-radius: 4px;
+  }
+
+  .insight-row strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sage);
+    margin-bottom: 0.25rem;
+  }
+
+  /* FOOTER */
+  .footer {
+    margin-top: 2.5rem;
+    border-top: 1px solid #ccc;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .footer-brand {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+  }
+
+  .footer-version {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: #bbb;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <h1>Frailty Geography Intelligence<br>Agent Architecture</h1>
+      <p>Assistiv Systems · Population-First Screening Model · V1.0</p>
+    </div>
+    <div class="header-right">
+      resiliencetools.xyz<br>
+      assistivsystems.com<br>
+      June 2026
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><div class="dot" style="background:#4a7c5f"></div> Layer 1 — Data Ingestion</div>
+    <div class="legend-item"><div class="dot" style="background:#b87333"></div> Layer 2 — Intelligence Synthesis</div>
+    <div class="legend-item"><div class="dot" style="background:#5b6fa8"></div> Layer 3 — Outreach Targeting</div>
+    <div class="legend-item"><div class="dot" style="background:#c0392b"></div> Layer 4 — Precision Screening</div>
+    <div class="legend-item"><div class="dot" style="background:#0f1a14"></div> Layer 5 — Triage & Action</div>
+  </div>
+
+  <!-- LAYER 1: DATA INGESTION -->
+  <div class="layer">
+    <div class="layer-label l1">Layer 1 — Population Signal Ingestion</div>
+    <div class="layer-inner l1">
+      <div class="layer-title">Public Data Sources & Digital Exhaust</div>
+      <div class="node-grid">
+        <div class="node">
+          <div class="node-name">ONS Census 2021</div>
+          <div class="node-desc">Over-75s living alone. LSOA granularity (~1,500 households)</div>
+          <span class="node-tag tag-public">Public · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">NHS Fingertips API</div>
+          <div class="node-desc">Frailty prevalence, unplanned admissions, falls rates by PCN</div>
+          <span class="node-tag tag-api">API · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">IMD 2019</div>
+          <div class="node-desc">Deprivation index. Strong frailty proxy. Ward + LSOA level</div>
+          <span class="node-tag tag-public">Public · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">DWP Benefits Data</div>
+          <div class="node-desc">Attendance Allowance & PIP claims by postcode district</div>
+          <span class="node-tag tag-public">Public · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">GP Registration Data</div>
+          <div class="node-desc">Patient counts by age band per practice. NHS published quarterly</div>
+          <span class="node-tag tag-api">API · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">CQC Register</div>
+          <div class="node-desc">Care home locations, capacity, ratings. Service gap indicator</div>
+          <span class="node-tag tag-api">API · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Pharmacy Dispensing</div>
+          <div class="node-desc">Polypharmacy rates (5+ meds) by practice. Strong frailty signal</div>
+          <span class="node-tag tag-public">Public · Free</span>
+        </div>
+        <div class="node">
+          <div class="node-name">ACORN / Mosaic</div>
+          <div class="node-desc">Geodemographic household classification. Vulnerability proxies</div>
+          <span class="node-tag tag-partner">Commercial · Licensed</span>
+        </div>
+      </div>
+      <div class="layer-note">⚠ Linkage challenge: datasets use different geographic units (LSOA, ward, PCN, postcode sector). The normalisation step is non-trivial — all must be mapped to a common spatial index before scoring.</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- LAYER 2: INTELLIGENCE SYNTHESIS -->
+  <div class="layer">
+    <div class="layer-label l2">Layer 2 — Composite Frailty Risk Scoring</div>
+    <div class="layer-inner l2">
+      <div class="layer-title">Geographic Intelligence Agent</div>
+
+      <div class="agent-panel">
+        <h3>Agent Logic — Scoring Pipeline</h3>
+        <div class="agent-steps">
+          <div class="agent-step">
+            <div class="step-num">Step 01</div>
+            <div class="step-action">Normalise Geography</div>
+            <div class="step-detail">Map all inputs to LSOA. Use ONS lookup tables for PCN → ward → LSOA crosswalk.</div>
+          </div>
+          <div class="agent-step">
+            <div class="step-num">Step 02</div>
+            <div class="step-action">Weight & Score</div>
+            <div class="step-detail">Apply domain-informed weights: age alone (high), polypharmacy (high), IMD (medium), DWP (medium), A&E rate (high).</div>
+          </div>
+          <div class="agent-step">
+            <div class="step-num">Step 03</div>
+            <div class="step-action">Composite Index</div>
+            <div class="step-detail">Generate Frailty Emergence Probability (FEP) score per LSOA on 0–100 scale.</div>
+          </div>
+          <div class="agent-step">
+            <div class="step-num">Step 04</div>
+            <div class="step-action">Service Gap Overlay</div>
+            <div class="step-detail">Cross-reference CQC capacity data. High FEP + low care provision = priority zones.</div>
+          </div>
+          <div class="agent-step">
+            <div class="step-num">Step 05</div>
+            <div class="step-action">Change Detection</div>
+            <div class="step-detail">Agent reruns quarterly. Flags LSOAs with rising FEP score — early trajectory signal.</div>
+          </div>
+          <div class="agent-step">
+            <div class="step-num">Step 06</div>
+            <div class="step-action">Uncertainty Flag</div>
+            <div class="step-detail">Marks zones where data is sparse or proxies are weak. Prevents false precision in commissioner reports.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layer-note">Output: ranked heat map of LSOAs by Frailty Emergence Probability. Exportable as GeoJSON for mapping, CSV for commissioners, or direct API feed to Layer 3.</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- LAYER 3: OUTREACH TARGETING -->
+  <div class="layer">
+    <div class="layer-label l3">Layer 3 — Community Touchpoint Identification</div>
+    <div class="layer-inner l3">
+      <div class="layer-title">Outreach Targeting Agent</div>
+      <div class="node-grid">
+        <div class="node">
+          <div class="node-name">GP Surgeries</div>
+          <div class="node-desc">Anchor point. PCN-funded proactive outreach duty for over-75s</div>
+          <span class="node-tag tag-partner">PCN Contract</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Pharmacies</div>
+          <div class="node-desc">High-frequency contact for older adults. Polypharmacy patients already identified</div>
+          <span class="node-tag tag-partner">Community</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Libraries</div>
+          <div class="node-desc">Trusted civic space. Digital access points. Often already run wellbeing sessions</div>
+          <span class="node-tag tag-partner">LA Partnership</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Faith Communities</div>
+          <div class="node-desc">Older demographic concentration. High trust. Lunch clubs, coffee mornings</div>
+          <span class="node-tag tag-partner">Voluntary Sector</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Food Banks / VCSE</div>
+          <div class="node-desc">Reaches under-served populations. IMD-correlated. High-need intersection</div>
+          <span class="node-tag tag-partner">VCSE</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Domiciliary Care</div>
+          <div class="node-desc">Carers already in homes. Natural facilitated screening opportunity</div>
+          <span class="node-tag tag-proprietary">Assistiv Network</span>
+        </div>
+      </div>
+      <div class="layer-note">Agent maps touchpoints within each priority LSOA using Google Places API + LA open data. Outputs a ranked outreach plan: which venues, in which order, with estimated population reach per venue.</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- LAYER 4: PRECISION SCREENING -->
+  <div class="layer">
+    <div class="layer-label l4">Layer 4 — Precision Screening Deployment</div>
+    <div class="layer-inner l4">
+      <div class="layer-title">resiliencetools.xyz — Deployed at Touchpoint</div>
+      <div class="node-grid">
+        <div class="node">
+          <div class="node-name">Voice-First Screener</div>
+          <div class="node-desc">PRISMA-7 + FRAIL Scale. Self-administered or facilitated. Gives before it asks.</div>
+          <span class="node-tag tag-proprietary">Live</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Carer Observational</div>
+          <div class="node-desc">Completed by domiciliary carer, family member, or pharmacist. Parallel signal.</div>
+          <span class="node-tag tag-proprietary">Live</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Triple Tap Intelligence</div>
+          <div class="node-desc">Synthesises self-report + carer observation + population signal into unified frailty profile</div>
+          <span class="node-tag tag-proprietary">Core IP</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Frailty Profile Radar</div>
+          <div class="node-desc">Visual SVG output. Shareable with GP, family, or care coordinator.</div>
+          <span class="node-tag tag-proprietary">Live</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Three-Layer Consent</div>
+          <div class="node-desc">Data minimisation. Individual controls what is shared and with whom.</div>
+          <span class="node-tag tag-proprietary">Clinical Design</span>
+        </div>
+        <div class="node">
+          <div class="node-name">Pattern Safety Interrupts</div>
+          <div class="node-desc">Detects minimisation. Routes to safety pathway if crisis indicators present.</div>
+          <span class="node-tag tag-proprietary">Clinical Design</span>
+        </div>
+      </div>
+      <div class="layer-note">Context injection: each screening session receives the LSOA FEP score as background context. Agent calibrates sensitivity thresholds accordingly — higher-risk zones trigger lower referral thresholds.</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- LAYER 5: TRIAGE & ACTION -->
+  <div class="layer">
+    <div class="layer-label l5">Layer 5 — Triage, Referral & Population Intelligence</div>
+    <div class="layer-inner l5">
+      <div class="layer-title">Action & Feedback Loop</div>
+      <div class="outputs-grid">
+        <div class="output-card">
+          <div class="output-card-icon">🏥</div>
+          <div class="output-card-title">Clinical Referral</div>
+          <div class="output-card-desc">Single or dual-person referral to GP / geriatric service with Frailty Profile Radar attached</div>
+        </div>
+        <div class="output-card">
+          <div class="output-card-icon">📊</div>
+          <div class="output-card-title">Population Dashboard</div>
+          <div class="output-card-desc">PCN / ICB commissioner view. Aggregate trends, screening uptake, referral rates by LSOA</div>
+        </div>
+        <div class="output-card">
+          <div class="output-card-icon">🔁</div>
+          <div class="output-card-title">FEP Score Feedback</div>
+          <div class="output-card-desc">Anonymised screening outcomes fed back to Layer 2. Validates and recalibrates composite scores over time</div>
+        </div>
+        <div class="output-card">
+          <div class="output-card-icon">🏠</div>
+          <div class="output-card-title">Assistiv Onboarding</div>
+          <div class="output-card-desc">High-need individuals routed into Design Your Life — graduated sensor installation pathway</div>
+        </div>
+        <div class="output-card">
+          <div class="output-card-icon">📍</div>
+          <div class="output-card-title">Outreach Efficacy Report</div>
+          <div class="output-card-desc">Which touchpoints yielded highest screening uptake and referral conversion. Informs next cycle.</div>
+        </div>
+        <div class="output-card">
+          <div class="output-card-icon">⚠️</div>
+          <div class="output-card-title">Safety Escalation</div>
+          <div class="output-card-desc">Immediate routing to social care / crisis team where pattern interrupts fire during screening</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STRATEGIC INSIGHT -->
+  <div class="insight-box">
+    <h3>⚙ Strategic Positioning</h3>
+    <div class="insight-rows">
+      <div class="insight-row">
+        <strong>PCN Statutory Duty</strong>
+        PCNs must proactively identify and support their over-75 population. This architecture gives them the geographic intelligence layer they currently lack, plus the screening tool to act on it. Funded pathway.
+      </div>
+      <div class="insight-row">
+        <strong>Health Innovation KSS</strong>
+        Layer 2 composite scoring + Layer 3 outreach map is a standalone commissioner-facing product. Demonstrable to Matt Peach before full platform is built.
+      </div>
+      <div class="insight-row">
+        <strong>IP Boundary</strong>
+        Data sources are public. The value — and the IP — is in the FEP scoring algorithm, the Layer 2→3 routing logic, and the Triple Tap synthesis. Defensible.
+      </div>
+      <div class="insight-row">
+        <strong>Feedback Loop = Moat</strong>
+        Every screening outcome recalibrates the FEP model. Over time, Assistiv's scoring outperforms generic deprivation proxies. The dataset becomes the competitive advantage.
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-brand">Assistiv Systems Limited · Faversham, Kent</div>
+    <div class="footer-version">Architecture V1.0 · June 2026 · Confidential</div>
+  </div>
+
+</div>
+</body>
+</html>
