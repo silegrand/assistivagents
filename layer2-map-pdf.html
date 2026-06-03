@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frailty Geography Map — Kent &amp; Medway · Assistiv Systems</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --surface2: #f0ede6;
+  --border: #ddd8ce;
+  --text: #1a2e1e;
+  --text-muted: #5a7260;
+  --text-dim: #9aaa9e;
+  --forest: #1a3a2a;
+  --sage: #2d6b47;
+  --sage-mid: #4a7c5f;
+  --sage-pale: rgba(45,107,71,0.08);
+  --amber: #8a6200;
+  --amber-light: #b8860b;
+  --red: #b91c1c;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Nunito', sans-serif;
+
+  /* FEP colour scale */
+  --fep-critical: #991b1b;
+  --fep-high:     #b45309;
+  --fep-moderate: #1d4ed8;
+  --fep-low:      #166534;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--forest);
+  padding: 0.6rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 1000;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.brand-name {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.01em;
+}
+
+.brand-sub {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.65);
+}
+
+.badge.live {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.4);
+  color: white;
+}
+
+.badge.live::before { content: '● '; font-size: 0.45rem; }
+
+/* ── ICB BANNER ── */
+.icb-banner {
+  background: var(--sage);
+  padding: 0.4rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.icb-stats {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.icb-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.icb-stat-val {
+  font-family: var(--serif);
+  font-size: 1.0rem;
+  font-weight: 700;
+  color: white;
+}
+
+.icb-stat-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.icb-source {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.04em;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── MAP ── */
+#map {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* Override Leaflet attribution */
+.leaflet-control-attribution {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  background: rgba(247,245,240,0.85) !important;
+  color: var(--text-muted) !important;
+}
+
+.leaflet-control-zoom a {
+  color: var(--forest) !important;
+  font-family: var(--mono) !important;
+}
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 320px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 0.6rem 0.5rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.panel-tab.active {
+  color: var(--sage);
+  border-bottom-color: var(--sage);
+  background: var(--surface);
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+/* ── LEGEND ── */
+.legend-section { margin-bottom: 1.25rem; }
+
+.legend-title {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.45rem;
+}
+
+.legend-swatch {
+  width: 28px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-text { font-size: 0.72rem; color: var(--text); }
+.legend-sub { font-family: var(--mono); font-size: 0.6rem; color: var(--text-muted); }
+
+/* ── DISTRICT DETAIL ── */
+.district-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border);
+}
+
+.district-name {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
+}
+
+.district-meta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.fep-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.fep-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+}
+
+.fep-circle-val {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.fep-circle-label {
+  font-family: var(--mono);
+  font-size: 0.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.risk-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.risk-critical { background: #fef2f2; color: var(--fep-critical); border: 1px solid #fecaca; }
+.risk-high     { background: #fffbeb; color: var(--fep-high); border: 1px solid #fde68a; }
+.risk-moderate { background: #eff6ff; color: var(--fep-moderate); border: 1px solid #bfdbfe; }
+.risk-low      { background: #f0fdf4; color: var(--fep-low); border: 1px solid #bbf7d0; }
+
+/* Signal bars */
+.signals-grid { margin-top: 0.75rem; }
+
+.signal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.signal-item:last-child { border-bottom: none; }
+
+.signal-name { font-size: 0.7rem; color: var(--text); flex: 1; }
+
+.signal-bar-wrap {
+  width: 80px;
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.signal-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+.signal-val {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Recommendations */
+.rec-list { margin-top: 0.75rem; }
+
+.rec-item {
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1.45;
+  color: var(--text);
+  padding: 0.3rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.rec-item:last-child { border-bottom: none; }
+
+.rec-arrow {
+  color: var(--sage);
+  font-family: var(--mono);
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+}
+
+.empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+.empty-title {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.empty-desc { font-size: 0.72rem; line-height: 1.5; }
+
+/* ── RANKED LIST TAB ── */
+.ranked-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.1s;
+  margin: 0 -1rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.ranked-item:hover { background: var(--surface2); }
+.ranked-item:last-child { border-bottom: none; }
+
+.ranked-num {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  min-width: 16px;
+}
+
+.ranked-name { font-size: 0.75rem; font-weight: 500; flex: 1; color: var(--text); }
+
+.ranked-bar-wrap {
+  width: 60px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.ranked-bar { height: 100%; border-radius: 2px; }
+
+.ranked-val {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  min-width: 26px;
+  text-align: right;
+}
+
+/* Loading overlay */
+.map-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(247,245,240,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  gap: 0.75rem;
+  transition: opacity 0.4s;
+}
+
+.map-loading.hidden { opacity: 0; pointer-events: none; }
+
+.loader-ring {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--sage);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Leaflet tooltip override */
+.leaflet-tooltip {
+  font-family: var(--mono) !important;
+  font-size: 0.65rem !important;
+  background: var(--forest) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 4px !important;
+  padding: 0.3rem 0.6rem !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+}
+
+.leaflet-tooltip::before { border-top-color: var(--forest) !important; }
+
+/* Export button */
+.export-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--forest);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.export-btn:hover { background: var(--sage); transform: translateY(-1px); }
+.export-btn:active { transform: translateY(0); }
+.export-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+@media (max-width: 768px) {
+  .side-panel { width: 100%; height: 40vh; border-left: none; border-top: 1px solid var(--border); }
+  .main { flex-direction: column; }
+  #map { flex: 1; min-height: 200px; }
+  .icb-stats { gap: 0.75rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <span class="brand-name">Assistiv Systems</span>
+    <span class="brand-sub">Frailty Geography Intelligence · Layer 2 · Map View</span>
+  </div>
+  <div class="topbar-right">
+    <span class="badge">Kent &amp; Medway · 12 Districts</span>
+    <span class="badge">ONS LAD 2023</span>
+    <span class="badge live">Live Boundaries</span>
+  </div>
+</div>
+
+<!-- ICB BANNER — real NHS data -->
+<div class="icb-banner">
+  <div class="icb-stats">
+    <div class="icb-stat">
+      <span class="icb-stat-val">1,917</span>
+      <span class="icb-stat-label">Falls Admissions 65+ / 100k</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">10.7 / 12.3</span>
+      <span class="icb-stat-label">HLE at 65 · M / F · yrs</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">6.2%</span>
+      <span class="icb-stat-label">Loneliness Rate</span>
+    </div>
+    <div class="icb-stat">
+      <span class="icb-stat-val">155.2</span>
+      <span class="icb-stat-label">Self-harm / 100k ▲</span>
+    </div>
+  </div>
+  <div class="icb-source">OHID PHOF · NHS Kent &amp; Medway ICB QKS · Published 6 May 2026</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- MAP -->
+  <div style="position:relative;flex:1;">
+    <div id="map"></div>
+    <div class="map-loading" id="map-loading">
+      <div class="loader-ring"></div>
+      Loading Kent boundaries
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="side-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-detail" onclick="switchTab('detail')">District Detail</div>
+      <div class="panel-tab" id="tab-ranked" onclick="switchTab('ranked')">Ranked Zones</div>
+      <div class="panel-tab" id="tab-legend" onclick="switchTab('legend')">Legend</div>
+    </div>
+    <div class="panel-content" id="panel-content">
+      <div class="empty-state">
+        <div class="empty-icon">🗺</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any district on the map to see its Frailty Emergence Probability breakdown and recommended actions.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+// ONS LAD codes for Kent districts + Medway
+// FEP scores and signal values (calibrated synthetic, ICB-grounded)
+const DISTRICTS = {
+  'E07000106': { name: 'Thanet',              fep: 82, risk: 'critical', signals: [88,82,79,91,84,88], pop75: 18200 },
+  'E07000108': { name: 'Folkestone & Hythe',  fep: 76, risk: 'critical', signals: [79,74,68,82,71,80], pop75: 14100 },
+  'E07000105': { name: 'Dover',               fep: 73, risk: 'high',     signals: [76,71,72,79,74,65], pop75: 13800 },
+  'E07000110': { name: 'Swale',               fep: 68, risk: 'high',     signals: [72,65,61,72,63,69], pop75: 15200 },
+  'E06000035': { name: 'Medway',              fep: 65, risk: 'high',     signals: [67,63,61,68,60,66], pop75: 19400 },
+  'E07000112': { name: 'Shepway (archived)',  fep: 64, risk: 'high',     signals: [70,62,58,48,61,66], pop75: 12900 },
+  'E07000103': { name: 'Ashford',             fep: 57, risk: 'moderate', signals: [58,52,55,58,52,55], pop75: 13600 },
+  'E07000109': { name: 'Sevenoaks',           fep: 38, risk: 'low',      signals: [34,35,36,22,33,38], pop75: 12100 },
+  'E07000104': { name: 'Canterbury',          fep: 48, risk: 'moderate', signals: [48,44,45,35,46,42], pop75: 16300 },
+  'E07000107': { name: 'Gravesham',           fep: 62, risk: 'high',     signals: [65,58,60,52,60,62], pop75: 11800 },
+  'E07000111': { name: 'Tonbridge & Malling', fep: 41, risk: 'low',      signals: [38,40,43,38,39,40], pop75: 13100 },
+  'E07000102': { name: 'Tunbridge Wells',     fep: 33, risk: 'low',      signals: [30,32,34,28,30,32], pop75: 11200 },
+  'E07000101': { name: 'Dartford',            fep: 54, risk: 'moderate', signals: [52,50,55,58,48,50], pop75: 10800 },
+  'E07000100': { name: 'Maidstone',           fep: 46, risk: 'moderate', signals: [44,48,50,52,42,46], pop75: 16700 },
+};
+
+const SIGNAL_NAMES = ['Over-75s Alone','Unplanned Admissions','Polypharmacy','Deprivation (IMD)','DWP Allow.','Care Home Gap'];
+const SIGNAL_COLORS = ['#2d6b47','#1d4ed8','#b45309','#7c3aed','#0e7490','#b91c1c'];
+
+function fepColor(score) {
+  if (score >= 75) return '#991b1b';
+  if (score >= 60) return '#b45309';
+  if (score >= 45) return '#1d4ed8';
+  return '#166534';
+}
+
+function fepFill(score) {
+  if (score >= 75) return 'rgba(153,27,27,0.55)';
+  if (score >= 60) return 'rgba(180,83,9,0.45)';
+  if (score >= 45) return 'rgba(29,78,216,0.35)';
+  return 'rgba(22,101,52,0.3)';
+}
+
+// ── MAP INIT ──────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [51.18, 0.62],
+  zoom: 10,
+  zoomControl: true,
+  attributionControl: true,
+});
+
+// Clean OSM tile layer — muted style
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors · © CARTO · ONS Open Geography',
+  subdomains: 'abcd',
+  maxZoom: 16,
+}).addTo(map);
+
+let geojsonLayer = null;
+let selectedLayer = null;
+let currentTab = 'detail';
+let allFeatures = [];
+
+// ── LOAD ONS BOUNDARIES ───────────────────────────────────────────────
+async function loadBoundaries() {
+  const ladCodes = Object.keys(DISTRICTS).join("','");
+  const url = `https://services1.arcgis.com/ESMARspQHYMw9BZ9/arcgis/rest/services/Local_Authority_Districts_December_2023_Boundaries_UK_BGC/FeatureServer/0/query`
+    + `?where=LAD23CD+IN+('${ladCodes}')`
+    + `&outFields=LAD23CD,LAD23NM`
+    + `&outSR=4326`
+    + `&f=geojson`
+    + `&geometryPrecision=4`;
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('ONS API error');
+    const data = await res.json();
+
+    allFeatures = data.features
+      .filter(f => DISTRICTS[f.properties.LAD23CD])
+      .map(f => ({
+        ...f,
+        properties: {
+          ...f.properties,
+          ...DISTRICTS[f.properties.LAD23CD]
+        }
+      }));
+
+    renderMap({ type: 'FeatureCollection', features: allFeatures });
+    renderRankedList();
+    document.getElementById('map-loading').classList.add('hidden');
+
+  } catch (err) {
+    // Fallback: show error with retry option
+    document.getElementById('map-loading').innerHTML = `
+      <div style="text-align:center;padding:1rem">
+        <div style="font-size:1.5rem;margin-bottom:0.5rem">⚠</div>
+        <div style="margin-bottom:0.5rem">Could not load ONS boundaries</div>
+        <div style="font-size:0.6rem;color:#9aaa9e;margin-bottom:0.75rem">${err.message}</div>
+        <button onclick="loadBoundaries()" style="font-family:var(--mono);font-size:0.6rem;padding:0.35rem 0.75rem;background:var(--sage);color:white;border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em">Retry</button>
+      </div>`;
+  }
+}
+
+// ── RENDER MAP LAYER ──────────────────────────────────────────────────
+function renderMap(geojson) {
+  if (geojsonLayer) map.removeLayer(geojsonLayer);
+
+  geojsonLayer = L.geoJSON(geojson, {
+    style: feature => ({
+      fillColor: fepFill(feature.properties.fep),
+      fillOpacity: 1,
+      color: '#1a3a2a',
+      weight: 1.5,
+      opacity: 0.7,
+    }),
+    onEachFeature: (feature, layer) => {
+      const d = feature.properties;
+      layer.bindTooltip(
+        `<strong>${d.name}</strong><br>FEP ${d.fep} · ${d.risk.toUpperCase()}`,
+        { sticky: true, direction: 'top' }
+      );
+      layer.on('click', () => selectDistrict(feature, layer));
+      layer.on('mouseover', () => {
+        if (layer !== selectedLayer) {
+          layer.setStyle({ weight: 2.5, color: '#1a3a2a', fillOpacity: 0.95 });
+        }
+      });
+      layer.on('mouseout', () => {
+        if (layer !== selectedLayer) {
+          layer.setStyle({ weight: 1.5, color: '#1a3a2a', fillOpacity: 1 });
+        }
+      });
+    }
+  }).addTo(map);
+
+  map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+}
+
+// ── SELECT DISTRICT ───────────────────────────────────────────────────
+function selectDistrict(feature, layer) {
+  // Reset previous
+  if (selectedLayer) {
+    selectedLayer.setStyle({ weight: 1.5, color: '#1a3a2a', fillOpacity: 1 });
+  }
+  selectedLayer = layer;
+  layer.setStyle({ weight: 3, color: '#1a2e1e', fillOpacity: 1 });
+  layer.bringToFront();
+
+  switchTab('detail');
+  renderDetailPanel(feature.properties);
+}
+
+// ── DETAIL PANEL ──────────────────────────────────────────────────────
+function renderDetailPanel(d) {
+  const color = fepColor(d.fep);
+  const maxSig = Math.max(...d.signals);
+  const recs = getRecommendations(d);
+
+  document.getElementById('panel-content').innerHTML = `
+    <div class="district-header">
+      <div class="district-name">${d.name}</div>
+      <div class="district-meta">Kent · Pop. 75+ est. ${d.pop75.toLocaleString()} · ONS LAD 2023</div>
+    </div>
+
+    <div class="fep-display">
+      <div class="fep-circle" style="color:${color}">
+        <span class="fep-circle-val" style="color:${color}">${d.fep}</span>
+        <span class="fep-circle-label">FEP</span>
+      </div>
+      <div>
+        <span class="risk-pill risk-${d.risk}">${d.risk} risk</span>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:0.35rem;line-height:1.4">
+          Frailty Emergence Probability<br>
+          <span style="font-family:var(--mono);font-size:0.6rem">0 = lowest · 100 = highest</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-title" style="margin-top:0.75rem">Signal Breakdown</div>
+    <div class="signals-grid">
+      ${d.signals.map((val, i) => `
+        <div class="signal-item">
+          <span class="signal-name">${SIGNAL_NAMES[i]}</span>
+          <div class="signal-bar-wrap">
+            <div class="signal-bar" style="width:${val}%;background:${SIGNAL_COLORS[i]}"></div>
+          </div>
+          <span class="signal-val">${val}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="legend-title" style="margin-top:0.85rem">Recommended Actions</div>
+    <div class="rec-list">
+      ${recs.map(r => `
+        <div class="rec-item">
+          <span class="rec-arrow">→</span>
+          <span>${r}</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div style="margin-top:1rem;padding:0.65rem;background:var(--surface2);border-radius:5px;border:1px solid var(--border)">
+      <div class="legend-title" style="margin-bottom:0.4rem">Next Step</div>
+      <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.5">
+        Deploy resiliencetools.xyz screening at highest-priority touchpoints in ${d.name}. 
+        Layer 3 agent will identify specific venues within this district.
+      </div>
+    </div>
+
+    <button class="export-btn" onclick="exportPDF('${d.name.replace(/'/g,"\\'")}')">
+      ↓ Download Commissioner Briefing PDF
+    </button>
+  `;
+}
+
+function getRecommendations(d) {
+  const recs = [];
+  if (d.risk === 'critical') recs.push('Immediate outreach priority — highest FEP in Kent cohort');
+  if (d.signals[0] >= 75) recs.push('Social isolation dominant — target faith communities and lunch clubs');
+  if (d.signals[1] >= 70) recs.push('Crisis pattern active — coordinate with A&E frequent attender programme');
+  if (d.signals[2] >= 70) recs.push('High polypharmacy — pharmacy-led screening is optimal entry point');
+  if (d.signals[3] >= 75) recs.push('High deprivation — facilitated rather than digital-first screening');
+  if (d.signals[5] >= 70) recs.push('Care home capacity gap — flag to social care commissioning');
+  if (recs.length === 0) recs.push('Routine monitoring — rescore quarterly');
+  recs.push(`Brief NHS ${d.name} PCN lead with FEP score and signal breakdown`);
+  return recs;
+}
+
+// ── RANKED LIST ───────────────────────────────────────────────────────
+function renderRankedList() {
+  const sorted = Object.entries(DISTRICTS)
+    .sort((a, b) => b[1].fep - a[1].fep);
+
+  const html = sorted.map(([code, d], i) => `
+    <div class="ranked-item" onclick="zoomToDistrict('${code}')">
+      <span class="ranked-num">${i + 1}</span>
+      <span class="ranked-name">${d.name}</span>
+      <div class="ranked-bar-wrap">
+        <div class="ranked-bar" style="width:${d.fep}%;background:${fepColor(d.fep)}"></div>
+      </div>
+      <span class="ranked-val" style="color:${fepColor(d.fep)}">${d.fep}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('panel-content').dataset.ranked = html;
+}
+
+function zoomToDistrict(code) {
+  if (!geojsonLayer) return;
+  geojsonLayer.eachLayer(layer => {
+    if (layer.feature.properties.LAD23CD === code) {
+      map.fitBounds(layer.getBounds(), { padding: [60, 60] });
+      selectDistrict(layer.feature, layer);
+    }
+  });
+}
+
+// ── LEGEND ───────────────────────────────────────────────────────────
+function renderLegend() {
+  return `
+    <div class="legend-section">
+      <div class="legend-title">FEP Score — Risk Tiers</div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(153,27,27,0.55);border:1px solid #991b1b"></div>
+        <div><div class="legend-text">Critical Risk</div><div class="legend-sub">FEP ≥ 75 · Immediate outreach</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(180,83,9,0.45);border:1px solid #b45309"></div>
+        <div><div class="legend-text">High Risk</div><div class="legend-sub">FEP 60–74 · Priority screening</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(29,78,216,0.35);border:1px solid #1d4ed8"></div>
+        <div><div class="legend-text">Moderate Risk</div><div class="legend-sub">FEP 45–59 · Monitor &amp; screen</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(22,101,52,0.3);border:1px solid #166534"></div>
+        <div><div class="legend-text">Low Risk</div><div class="legend-sub">FEP &lt; 45 · Routine review</div></div>
+      </div>
+    </div>
+
+    <div class="legend-section">
+      <div class="legend-title">Scoring Signals</div>
+      ${SIGNAL_NAMES.map((name, i) => `
+        <div class="legend-item">
+          <div class="legend-swatch" style="background:${SIGNAL_COLORS[i]};border-radius:2px;height:10px;width:18px;flex-shrink:0"></div>
+          <div class="legend-sub">${name}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="legend-section">
+      <div class="legend-title">Data Sources</div>
+      <div style="font-size:0.68rem;color:var(--text-muted);line-height:1.6">
+        <div>Map boundaries: ONS LAD Dec 2023 BGC</div>
+        <div>ICB baselines: OHID PHOF, May 2026</div>
+        <div>Zone FEP scores: calibrated synthetic</div>
+        <div>Sub-ICB linkage: Phase 2</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+
+  const content = document.getElementById('panel-content');
+
+  if (tab === 'legend') {
+    content.innerHTML = renderLegend();
+  } else if (tab === 'ranked') {
+    content.innerHTML = content.dataset.ranked || '<div class="empty-state"><div class="empty-desc">Loading districts...</div></div>';
+  } else {
+    // detail tab — keep whatever is showing or show empty state
+    if (!content.querySelector('.district-header')) {
+      content.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🗺</div>
+          <div class="empty-title">Select a district</div>
+          <div class="empty-desc">Click any district on the map to see its FEP breakdown.</div>
+        </div>`;
+    }
+  }
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────
+function exportPDF(districtName) {
+  const btn = document.querySelector('.export-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ Generating...'; }
+
+  setTimeout(() => {
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      // Find district data
+      const entry = Object.entries(DISTRICTS).find(([,d]) => d.name === districtName);
+      if (!entry) return;
+      const [code, d] = entry;
+
+      const W = 210; // A4 width mm
+      const FOREST = [26, 58, 42];
+      const SAGE   = [45, 107, 71];
+      const AMBER  = [138, 98, 0];
+      const RED    = [185, 28, 28];
+      const BLUE   = [29, 78, 216];
+      const GREEN  = [22, 101, 52];
+      const LIGHT  = [247, 245, 240];
+      const BORDER = [221, 216, 206];
+      const TEXT   = [26, 46, 30];
+      const MUTED  = [90, 114, 96];
+
+      const riskColor = d.fep >= 75 ? RED : d.fep >= 60 ? AMBER : d.fep >= 45 ? BLUE : GREEN;
+      const riskLabel = d.risk.charAt(0).toUpperCase() + d.risk.slice(1);
+      const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      // ── PAGE 1: COVER ──────────────────────────────────────────────
+
+      // Forest header band
+      doc.setFillColor(...FOREST);
+      doc.rect(0, 0, W, 48, 'F');
+
+      // Brand
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(9);
+      doc.setFont('helvetica','normal');
+      doc.text('ASSISTIV SYSTEMS · FRAILTY GEOGRAPHY INTELLIGENCE', 15, 14);
+
+      // Title
+      doc.setFontSize(22);
+      doc.setFont('helvetica','bold');
+      doc.text('Commissioner Briefing', 15, 27);
+
+      // Subtitle
+      doc.setFontSize(10);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(200, 220, 210);
+      doc.text('Frailty Emergence Probability · District Analysis · Kent & Medway ICB', 15, 35);
+
+      // Date right-aligned
+      doc.setFontSize(8);
+      doc.setTextColor(160, 190, 170);
+      doc.text(today, W - 15, 14, { align: 'right' });
+
+      // ── DISTRICT NAME CARD ─────────────────────────────────────────
+      doc.setFillColor(...LIGHT);
+      doc.rect(0, 48, W, 1, 'F');
+
+      doc.setFillColor(255,255,255);
+      doc.rect(15, 58, W - 30, 52, 'F');
+      doc.setDrawColor(...BORDER);
+      doc.setLineWidth(0.3);
+      doc.rect(15, 58, W - 30, 52);
+
+      // District name
+      doc.setTextColor(...TEXT);
+      doc.setFontSize(28);
+      doc.setFont('helvetica','bold');
+      doc.text(d.name, 25, 78);
+
+      // ONS code
+      doc.setFontSize(8);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(...MUTED);
+      doc.text(`ONS LAD Code: ${code}  ·  Est. population 75+: ${d.pop75.toLocaleString()}`, 25, 86);
+
+      // FEP score circle (drawn manually)
+      const cx = W - 45, cy = 84, r = 18;
+      doc.setFillColor(...riskColor);
+      doc.circle(cx, cy, r, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(22);
+      doc.setFont('helvetica','bold');
+      doc.text(String(d.fep), cx, cy + 4, { align: 'center' });
+      doc.setFontSize(6.5);
+      doc.setFont('helvetica','normal');
+      doc.text('FEP SCORE', cx, cy + 11, { align: 'center' });
+
+      // Risk tier pill
+      doc.setFillColor(...riskColor);
+      doc.roundedRect(25, 92, 36, 8, 2, 2, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica','bold');
+      doc.text(`${riskLabel.toUpperCase()} RISK`, 43, 97.5, { align: 'center' });
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica','normal');
+      doc.setTextColor(...MUTED);
+      doc.text('Frailty Emergence Probability: 0 = lowest risk · 100 = highest risk', 25, 106);
+
+      // ── ICB REAL DATA BANNER ───────────────────────────────────────
+      doc.setFillColor(...SAGE);
+      doc.rect(15, 120, W - 30, 28, 'F');
+
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(7);
+      doc.setFont('helvetica','bold');
+      doc.text('NHS KENT & MEDWAY ICB — REAL DATA BASELINE', 20, 128);
+
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7);
+      doc.setTextColor(200, 230, 215);
+      doc.text('Source: OHID Public Health Outcomes Framework · Published 6 May 2026', 20, 134);
+
+      // ICB stats row
+      const icbStats = [
+        { val: '1,917', label: 'Falls Admissions 65+\nper 100,000 · 2024/25', comp: '▼ vs England 1,958' },
+        { val: '10.7 / 12.3', label: 'Healthy Life Expectancy 65\nyrs M / F · 2022-24', comp: '▲ vs England 10.1 / 11.1' },
+        { val: '6.2%', label: 'Loneliness Rate\n16+ adults · 2021-23', comp: '▼ vs England 6.8%' },
+        { val: '155.2', label: 'Self-Harm Admissions\nper 100,000 · 2022/23', comp: '▲ vs England 126.2' },
+      ];
+
+      const statW = (W - 40) / 4;
+      icbStats.forEach((s, i) => {
+        const sx = 20 + i * statW;
+        doc.setTextColor(255,255,255);
+        doc.setFontSize(9);
+        doc.setFont('helvetica','bold');
+        doc.text(s.val, sx, 142);
+        doc.setFontSize(6);
+        doc.setFont('helvetica','normal');
+        doc.setTextColor(180, 215, 200);
+        // comp indicator
+        const compColor = s.comp.startsWith('▼') ? [134, 239, 172] : [252, 165, 165];
+        doc.setTextColor(...compColor);
+        doc.text(s.comp, sx, 146);
+      });
+
+      // ── SIGNAL BREAKDOWN ───────────────────────────────────────────
+      doc.setFillColor(...LIGHT);
+      doc.rect(15, 158, W - 30, 7, 'F');
+      doc.setTextColor(...MUTED);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica','bold');
+      doc.text('SIGNAL BREAKDOWN', 20, 163);
+
+      const sigColors = [
+        [45,107,71], [29,78,216], [180,83,9], [124,58,237], [14,116,144], [185,28,28]
+      ];
+
+      d.signals.forEach((val, i) => {
+        const y = 172 + i * 12;
+        // Label
+        doc.setTextColor(...TEXT);
+        doc.setFontSize(8);
+        doc.setFont('helvetica','normal');
+        doc.text(SIGNAL_NAMES[i], 20, y);
+
+        // Raw value
+        doc.setTextColor(...MUTED);
+        doc.setFontSize(7.5);
+        doc.text(`${val}/100`, W - 20, y, { align: 'right' });
+
+        // Bar background
+        const barX = 80, barW = 95, barH = 3.5;
+        doc.setFillColor(...BORDER);
+        doc.rect(barX, y - 3, barW, barH, 'F');
+
+        // Bar fill
+        doc.setFillColor(...sigColors[i]);
+        doc.rect(barX, y - 3, barW * (val / 100), barH, 'F');
+      });
+
+      // ── RECOMMENDATIONS ────────────────────────────────────────────
+      const recY = 172 + 6 * 12 + 8;
+      doc.setFillColor(...LIGHT);
+      doc.rect(15, recY, W - 30, 7, 'F');
+      doc.setTextColor(...MUTED);
+      doc.setFontSize(7.5);
+      doc.setFont('helvetica','bold');
+      doc.text('RECOMMENDED ACTIONS', 20, recY + 5);
+
+      const recs = getRecommendations(d);
+      recs.forEach((rec, i) => {
+        const ry = recY + 14 + i * 9;
+        if (ry > 275) return; // page boundary guard
+        doc.setFillColor(...riskColor);
+        doc.circle(21, ry - 1.5, 1.5, 'F');
+        doc.setTextColor(...TEXT);
+        doc.setFontSize(8);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(rec, W - 50);
+        doc.text(lines[0], 26, ry);
+        if (lines[1]) doc.text(lines[1], 26, ry + 5);
+      });
+
+      // ── PAGE FOOTER ────────────────────────────────────────────────
+      doc.setDrawColor(...BORDER);
+      doc.setLineWidth(0.3);
+      doc.line(15, 282, W - 15, 282);
+      doc.setTextColor(...MUTED);
+      doc.setFontSize(6.5);
+      doc.setFont('helvetica','normal');
+      doc.text('Assistiv Systems Limited · resiliencetools.xyz · Confidential Commissioner Briefing', 15, 288);
+      doc.text('Page 1 of 2', W - 15, 288, { align: 'right' });
+
+      // ── PAGE 2 ─────────────────────────────────────────────────────
+      doc.addPage();
+
+      // Header
+      doc.setFillColor(...FOREST);
+      doc.rect(0, 0, W, 18, 'F');
+      doc.setTextColor(255,255,255);
+      doc.setFontSize(9);
+      doc.setFont('helvetica','bold');
+      doc.text(`${d.name} · FEP ${d.fep} · ${riskLabel} Risk`, 15, 11);
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(8);
+      doc.setTextColor(180, 210, 195);
+      doc.text('Methodology & Data Sources', W - 15, 11, { align: 'right' });
+
+      // Methodology
+      let my = 30;
+      const sections = [
+        {
+          title: 'About the Frailty Emergence Probability (FEP) Score',
+          body: 'The FEP score is a composite index (0-100) derived from six public data signals, weighted by domain-informed coefficients and normalised across Kent districts. It identifies areas where older adults are most likely to be experiencing emerging frailty before crisis presentation. A higher score indicates a greater concentration of risk factors; it is not a clinical diagnosis.'
+        },
+        {
+          title: 'Scoring Signals & Weights',
+          body: 'Over-75s Living Alone (25%) — ONS Census 2021, LSOA level. Strongest single demographic frailty proxy.\nUnplanned Hospital Admissions Rate (20%) — NHS Fingertips. Crisis trajectory indicator.\nPolypharmacy Prevalence, 5+ medications (20%) — NHS dispensing data. Clinical frailty marker.\nDeprivation Score, IMD 2019 (15%) — MHCLG. Access and vulnerability amplifier.\nDWP Attendance Allowance Rate (10%) — DWP geographic data. Functional limitation indicator.\nCare Home Capacity Gap (10%) — CQC register. High need, low provision signal.'
+        },
+        {
+          title: 'ICB Baseline Data',
+          body: 'The ICB-level indicators shown in this briefing are real published data from the OHID Public Health Outcomes Framework for NHS Kent and Medway ICB (QKS), published 6 May 2026. District-level FEP scores use calibrated synthetic data grounded against ICB baselines. Sub-ICB data linkage via NHS Fingertips API is planned for Phase 2.'
+        },
+        {
+          title: 'Recommended Next Steps',
+          body: '1. Share this briefing with the PCN clinical lead for ' + d.name + '.\n2. Use the Layer 3 Outreach Agent to identify specific community touchpoints within this district.\n3. Deploy resiliencetools.xyz screening at priority venues.\n4. Feed anonymised screening outcomes back to recalibrate the FEP model.\n5. Rescore all districts quarterly or following significant data updates.'
+        },
+        {
+          title: 'Confidentiality & Use',
+          body: 'This document is produced for NHS commissioning purposes. District FEP scores are based on publicly available aggregate data and contain no personal or identifiable information. The scoring methodology and composite index are proprietary to Assistiv Systems Limited. Not for onward distribution without consent.'
+        }
+      ];
+
+      sections.forEach(s => {
+        // Section title bar
+        doc.setFillColor(...LIGHT);
+        doc.rect(15, my, W - 30, 7, 'F');
+        doc.setDrawColor(...BORDER);
+        doc.setLineWidth(0.2);
+        doc.rect(15, my, W - 30, 7);
+        doc.setTextColor(...MUTED);
+        doc.setFontSize(7.5);
+        doc.setFont('helvetica','bold');
+        doc.text(s.title.toUpperCase(), 20, my + 5);
+        my += 10;
+
+        // Body text
+        doc.setTextColor(...TEXT);
+        doc.setFontSize(8);
+        doc.setFont('helvetica','normal');
+        const lines = doc.splitTextToSize(s.body, W - 40);
+        doc.text(lines, 20, my);
+        my += lines.length * 4.5 + 6;
+      });
+
+      // Footer p2
+      doc.setDrawColor(...BORDER);
+      doc.line(15, 282, W - 15, 282);
+      doc.setTextColor(...MUTED);
+      doc.setFontSize(6.5);
+      doc.text('Assistiv Systems Limited · resiliencetools.xyz · Confidential Commissioner Briefing', 15, 288);
+      doc.text('Page 2 of 2', W - 15, 288, { align: 'right' });
+
+      // ── SAVE ──────────────────────────────────────────────────────
+      const filename = `FEP-Commissioner-Briefing-${d.name.replace(/[^a-zA-Z0-9]/g,'-')}-${new Date().toISOString().slice(0,10)}.pdf`;
+      doc.save(filename);
+
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = '↓ Download Commissioner Briefing PDF'; }
+    }
+  }, 100);
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+loadBoundaries();
+</script>
+</body>
+</html>
