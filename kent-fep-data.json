@@ -1,13 +1,15 @@
 {
   "meta": {
-    "generated": "2026-06-03T11:37:00.686661+00:00",
-    "description": "Kent & Medway FEP scores -- Assistiv Systems Layer 2",
+    "generated": "2026-06-03T12:15:28.067810+00:00",
+    "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
+    "version": "2.1 \u2014 anticholinergic burden signals added",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real -- 14 real signals",
+    "data_quality": "real \u2014 17 real signals of 17 total",
     "signals_real": [
       "falls_65",
       "falls_65_79",
+      "falls_80",
       "winter_mortality",
       "loneliness",
       "social_isolation",
@@ -16,10 +18,12 @@
       "hip_fractures_80",
       "fuel_poverty",
       "hypnotics",
+      "anxiolytics",
       "antidepressants",
       "bisphosphonates",
       "diuretics",
-      "ace_arb"
+      "ace_arb",
+      "bladder_antimusc"
     ],
     "signals_synthetic": [
       "alone_75",
@@ -41,16 +45,18 @@
       "Antidepressant Rate",
       "Bisphosphonate Rate",
       "Diuretics Rate",
-      "ACE/ARB Prescribing"
+      "ACE/ARB Prescribing",
+      "Anxiolytics Prescribing",
+      "Bladder Antimuscarinic Rate"
     ],
     "weights": [
-      0.14,
       0.13,
-      0.1,
+      0.12,
       0.09,
       0.08,
+      0.08,
       0.07,
-      0.07,
+      0.06,
       0.06,
       0.05,
       0.05,
@@ -58,13 +64,19 @@
       0.05,
       0.04,
       0.01,
-      0.01
+      0.01,
+      0.03,
+      0.02
     ],
     "sources": {
       "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py",
-      "epd": "NHSBSA English Prescribing Dataset -- Mar 2026",
-      "demographic": "ONS Census 2021 | IMD 2019 | CQC register"
+      "epd": "NHSBSA English Prescribing Dataset \u2014 Mar 2026",
+      "demographic": "ONS Census 2021 \u00b7 IMD 2019 \u00b7 CQC register"
     },
+    "new_in_v2": [
+      "anxiolytics (BNF 0401020) \u2014 benzodiazepines, anticholinergic burden proxy",
+      "bladder_antimusc (BNF 0704010) \u2014 oxybutynin/solifenacin/tolterodine, anticholinergic burden proxy"
+    ],
     "note": "District scores = ICB real values x demographic profiles. Sub-ICB linkage Phase 2."
   },
   "icb_baseline": {
@@ -84,9 +96,9 @@
         "label": "Falls admissions 65-79"
       },
       "falls_80": {
-        "value": null,
-        "england": null,
-        "period": null,
+        "value": 4693.94,
+        "england": 4791.79,
+        "period": "2024/25",
         "source": "NHS Fingertips indicator 22403",
         "label": "Falls admissions 80+"
       },
@@ -149,7 +161,19 @@
         "substances": 11,
         "ratio": 1.195,
         "period": "Mar 2026",
-        "source": "NHSBSA EPD EPD_SNOMED_MAR2026"
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
+      },
+      "anxiolytics": {
+        "rate_per_1000": 6.192,
+        "england": 8.5,
+        "items": 11764,
+        "qty": 357792,
+        "substances": 5,
+        "ratio": 0.728,
+        "period": "Mar 2026",
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "literature estimate"
       },
       "antidepressants": {
         "rate_per_1000": 129.445,
@@ -159,7 +183,8 @@
         "substances": 28,
         "ratio": 1.177,
         "period": "Mar 2026",
-        "source": "NHSBSA EPD EPD_SNOMED_MAR2026"
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
       },
       "bisphosphonates": {
         "rate_per_1000": 8.288,
@@ -169,7 +194,8 @@
         "substances": 6,
         "ratio": 1.219,
         "period": "Mar 2026",
-        "source": "NHSBSA EPD EPD_SNOMED_MAR2026"
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
       },
       "diuretics": {
         "rate_per_1000": 2.912,
@@ -179,7 +205,8 @@
         "substances": 1,
         "ratio": 1.165,
         "period": "Mar 2026",
-        "source": "NHSBSA EPD EPD_SNOMED_MAR2026"
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
       },
       "ace_arb": {
         "rate_per_1000": 118.616,
@@ -189,7 +216,19 @@
         "substances": 36,
         "ratio": 1.249,
         "period": "Mar 2026",
-        "source": "NHSBSA EPD EPD_SNOMED_MAR2026"
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
+      },
+      "bladder_antimusc": {
+        "rate_per_1000": 15.679,
+        "england": 4.2,
+        "items": 29791,
+        "qty": 1080526,
+        "substances": 5,
+        "ratio": 3.733,
+        "period": "Mar 2026",
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "literature estimate"
       }
     }
   },
@@ -214,7 +253,9 @@
         73.5,
         74.3,
         69.8,
-        73.6
+        73.6,
+        46.6,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -231,7 +272,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 18200
     },
@@ -255,7 +298,9 @@
         67.6,
         68.2,
         64.0,
-        68.6
+        68.6,
+        43.7,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -272,7 +317,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 14100
     },
@@ -296,7 +343,9 @@
         65.9,
         67.0,
         62.9,
-        67.4
+        67.4,
+        41.9,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -313,14 +362,16 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 13800
     },
     {
       "name": "Swale",
       "lad_code": "E07000113",
-      "fep": 56,
+      "fep": 57,
       "risk": "high",
       "signals": [
         56.0,
@@ -337,7 +388,9 @@
         63.5,
         65.8,
         61.1,
-        65.5
+        65.5,
+        40.0,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -354,15 +407,17 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 15200
     },
     {
       "name": "Medway",
       "lad_code": "E06000035",
-      "fep": 54,
-      "risk": "moderate",
+      "fep": 55,
+      "risk": "high",
       "signals": [
         53.0,
         53.9,
@@ -378,7 +433,9 @@
         61.7,
         63.3,
         59.4,
-        63.6
+        63.6,
+        38.6,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -395,14 +452,16 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 19400
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "fep": 52,
+      "fep": 53,
       "risk": "moderate",
       "signals": [
         50.0,
@@ -419,7 +478,9 @@
         57.6,
         60.9,
         58.2,
-        62.4
+        62.4,
+        36.4,
+        100
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -436,7 +497,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 11800
     },
@@ -460,7 +523,9 @@
         55.9,
         58.5,
         55.3,
-        59.3
+        59.3,
+        34.6,
+        95.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -477,7 +542,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 13600
     },
@@ -501,7 +568,9 @@
         52.9,
         54.8,
         51.2,
-        54.9
+        54.9,
+        32.8,
+        90.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -518,14 +587,16 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 16300
     },
     {
       "name": "Dartford",
       "lad_code": "E07000108",
-      "fep": 46,
+      "fep": 47,
       "risk": "moderate",
       "signals": [
         44.0,
@@ -542,7 +613,9 @@
         51.7,
         53.6,
         51.2,
-        54.9
+        54.9,
+        32.0,
+        88.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -559,7 +632,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 10800
     },
@@ -583,7 +658,9 @@
         50.0,
         51.8,
         49.5,
-        53.0
+        53.0,
+        30.9,
+        85.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -600,14 +677,16 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 16700
     },
     {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
-      "fep": 41,
+      "fep": 42,
       "risk": "moderate",
       "signals": [
         39.0,
@@ -624,7 +703,9 @@
         45.9,
         48.7,
         46.6,
-        49.9
+        49.9,
+        28.4,
+        78.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -641,14 +722,16 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 13100
     },
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
-      "fep": 33,
+      "fep": 34,
       "risk": "low",
       "signals": [
         32.5,
@@ -665,7 +748,9 @@
         36.5,
         39.6,
         37.8,
-        40.6
+        40.6,
+        22.6,
+        62.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -682,7 +767,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 12100
     },
@@ -706,7 +793,9 @@
         32.3,
         36.5,
         34.9,
-        37.4
+        37.4,
+        20.0,
+        55.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -723,7 +812,9 @@
         "Antidepressant Rate",
         "Bisphosphonate Rate",
         "Diuretics Rate",
-        "ACE/ARB Prescribing"
+        "ACE/ARB Prescribing",
+        "Anxiolytics Prescribing",
+        "Bladder Antimuscarinic Rate"
       ],
       "pop75": 11200
     }
