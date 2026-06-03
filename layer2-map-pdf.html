@@ -527,21 +527,86 @@ body {
 
 /* ── WEATHER RISK BANNER ─────────────────────────────────────────────── */
 .weather-banner {
-  display: none;
+  display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.6rem 1.25rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding: 0.5rem 1.25rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  transition: background 0.4s, color 0.4s;
+  flex-shrink: 0;
 }
-.weather-banner.heat-warn  { background: #fef3c7; color: #92400e; display: flex; }
-.weather-banner.heat-alert { background: #fee2e2; color: #991b1b; display: flex; }
-.weather-banner.cold-warn  { background: #eff6ff; color: #1e40af; display: flex; }
-.weather-banner.cold-alert { background: #dbeafe; color: #1e3a8a; display: flex; }
-.weather-banner-icon { font-size: 1.1rem; }
-.weather-banner-text { flex: 1; line-height: 1.4; }
-.weather-banner-temp { font-size: 1rem; font-weight: 700; min-width: 3rem; text-align: right; }
+
+/* Green — no risk threshold breached, banner always visible */
+.weather-banner.status-green {
+  background: #f0f7f2;
+  color: #1a3a2a;
+  border-left: 3px solid #2d6b47;
+}
+
+/* Yellow — mild risk, UKHSA yellow threshold */
+.weather-banner.status-yellow {
+  background: #fefce8;
+  color: #713f12;
+  border-left: 3px solid #ca8a04;
+}
+
+/* Amber — elevated risk, UKHSA amber threshold */
+.weather-banner.status-amber {
+  background: #fff7ed;
+  color: #7c2d12;
+  border-left: 3px solid #ea580c;
+}
+
+/* Red — emergency, UKHSA red / NHS heat emergency */
+.weather-banner.status-red {
+  background: #fef2f2;
+  color: #7f1d1d;
+  border-left: 3px solid #dc2626;
+}
+
+.weather-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-green  .weather-status-dot { background: #2d6b47; }
+.status-yellow .weather-status-dot { background: #ca8a04; }
+.status-amber  .weather-status-dot { background: #ea580c; }
+.status-red    .weather-status-dot { background: #dc2626; animation: pulse-dot 1.2s ease-in-out infinite; }
+
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.weather-banner-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 72px;
+}
+
+.weather-banner-text { flex: 1; line-height: 1.5; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.02em; }
+.weather-banner-temp {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 3.5rem;
+  text-align: right;
+  flex-shrink: 0;
+}
+.weather-banner-source {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -583,11 +648,13 @@ body {
   <div class="icb-source">OHID PHOF · NHS Kent &amp; Medway ICB QKS · Published 6 May 2026</div>
 </div>
 
-<!-- WEATHER RISK BANNER — live from Open-Meteo -->
-<div class="weather-banner" id="weather-banner">
-  <span class="weather-banner-icon" id="weather-icon">⚠</span>
-  <span class="weather-banner-text" id="weather-text"></span>
-  <span class="weather-banner-temp" id="weather-temp"></span>
+<!-- WEATHER RISK BANNER — always visible, four alert states -->
+<div class="weather-banner status-green" id="weather-banner">
+  <div class="weather-status-dot" id="weather-dot"></div>
+  <span class="weather-banner-label" id="weather-label">Checking…</span>
+  <span class="weather-banner-text"  id="weather-text">Fetching live weather data for Kent &amp; Medway…</span>
+  <span class="weather-banner-temp"  id="weather-temp"></span>
+  <span class="weather-banner-source">Open-Meteo · UKHSA · Met Office UKV</span>
 </div>
 
 <!-- MAIN -->
@@ -1211,7 +1278,34 @@ function exportPDF(districtName) {
 // ── WEATHER RISK LAYER ────────────────────────────────────────────────
 // Open-Meteo UK API — free, no key, Met Office UKV 2km model
 // Centroid of Kent & Medway ICB: ~51.27°N, 0.52°E
+// Banner is ALWAYS visible — green when safe, escalating to red.
+// This lets commissioners understand the system is live and see
+// what an alert state looks like before one fires.
 async function fetchWeatherRisk() {
+  const banner  = document.getElementById('weather-banner');
+  const label   = document.getElementById('weather-label');
+  const text    = document.getElementById('weather-text');
+  const tempEl  = document.getElementById('weather-temp');
+
+  // UKHSA/Met Office thresholds for frailty-relevant medication risk
+  // Heat: anticholinergic burden (antidepressants, anxiolytics, bladder antimusc)
+  //       impairs thermoregulation; diuretics/ACE-ARB accelerate dehydration
+  // Cold: hypnotics/anxiolytics increase fall risk on icy surfaces;
+  //       diuretics + cold diuresis = electrolyte disturbance
+  const HEAT_RED    = 32;   // NHS Heat Health Alert — acute medication toxicity risk
+  const HEAT_AMBER  = 26;   // UKHSA Amber heat — elevated anticholinergic risk
+  const HEAT_YELLOW = 22;   // Warm — monitoring threshold for high-FEP districts
+  const COLD_RED    = 2;    // NICE cold-home / hypothermia threshold
+  const COLD_AMBER  = 8;    // UKHSA Cold alert — falls + diuretic risk elevated
+  const COLD_YELLOW = 12;   // Cool — monitoring threshold, Kent winter mortality above England
+
+  function setStatus(statusClass, labelText, message, tempStr) {
+    banner.className = `weather-banner ${statusClass}`;
+    label.textContent = labelText;
+    text.innerHTML = message;
+    if (tempStr) tempEl.textContent = tempStr;
+  }
+
   try {
     const url = 'https://api.open-meteo.com/v1/forecast' +
       '?latitude=51.27&longitude=0.52' +
@@ -1226,55 +1320,73 @@ async function fetchWeatherRisk() {
     const feel = Math.round(data.current.apparent_temperature);
     const maxT = Math.round(data.daily.temperature_2m_max[0]);
     const minT = Math.round(data.daily.temperature_2m_min[0]);
+    const tempStr = `${temp}°C feels ${feel}°C`;
 
-    const banner = document.getElementById('weather-banner');
-    const icon   = document.getElementById('weather-icon');
-    const text   = document.getElementById('weather-text');
-    const tempEl = document.getElementById('weather-temp');
+    // ── HEAT THRESHOLDS ──────────────────────────────────────────────
+    if (maxT >= HEAT_RED) {
+      setStatus('status-red', 'Red · Heat',
+        `<strong>Heat emergency — forecast max ${maxT}°C.</strong> ` +
+        `Patients on anticholinergics (antidepressants, anxiolytics, bladder antimuscarinics), diuretics, or ACE/ARBs at acute risk of hyperthermia and dehydration. ` +
+        `Kent prescribing rates for these signals are above England average. ` +
+        `High-FEP districts (Thanet, Folkestone &amp; Hythe, Dover) are immediate priority for welfare checks and medication review.`,
+        tempStr);
 
-    // High-risk medications already in our model:
-    // anticholinergics (bladder_antimusc), antidepressants, diuretics, ACE/ARBs
-    // All above-average in Kent — making temperature risk amplified here
+    } else if (maxT >= HEAT_AMBER) {
+      setStatus('status-amber', 'Amber · Heat',
+        `<strong>Heat stress risk elevated — forecast max ${maxT}°C.</strong> ` +
+        `Anticholinergic burden (antidepressants, anxiolytics, bladder antimuscarinics) impairs thermoregulation in older adults. ` +
+        `Diuretic and ACE/ARB users face accelerated electrolyte depletion. ` +
+        `Prioritise outreach to Thanet (FEP 63), Folkestone &amp; Hythe (57), Dover (57).`,
+        tempStr);
 
-    const HEAT_ALERT = 32;  // NHS Heat Health Alert threshold
-    const HEAT_WARN  = 26;  // UKHSA Amber heat threshold
-    const COLD_ALERT = 2;   // NICE cold-home / hypothermia threshold
-    const COLD_WARN  = 8;   // UKHSA Cold threshold
+    } else if (maxT >= HEAT_YELLOW) {
+      setStatus('status-yellow', 'Yellow · Heat',
+        `<strong>Warm weather — monitoring threshold reached (${maxT}°C).</strong> ` +
+        `No immediate alert. Monitor high-FEP coastal districts. ` +
+        `If temperature rises above 26°C, anticholinergic and diuretic risk escalates for this population.`,
+        tempStr);
 
-    if (maxT >= HEAT_ALERT) {
-      banner.className = 'weather-banner heat-alert';
-      icon.textContent = '🔴';
-      text.innerHTML = '<strong>Heat emergency risk — Kent today ' + maxT + '°C.</strong> ' +
-        'Patients on anticholinergics, antidepressants, diuretics or ACE/ARBs at acute risk of hyperthermia and dehydration. ' +
-        'High-FEP districts (Thanet, Folkestone, Dover) are highest priority for welfare checks.';
-    } else if (maxT >= HEAT_WARN) {
-      banner.className = 'weather-banner heat-warn';
-      icon.textContent = '🟡';
-      text.innerHTML = '<strong>Heat stress risk elevated — forecast max ' + maxT + '°C.</strong> ' +
-        'Anticholinergic and diuretic prescribing districts flagged. ' +
-        'Kent prescribing rates are 1.2× England average — medication-heat interaction risk elevated.';
-    } else if (minT <= COLD_ALERT) {
-      banner.className = 'weather-banner cold-alert';
-      icon.textContent = '🔵';
-      text.innerHTML = '<strong>Severe cold risk — overnight min ' + minT + '°C.</strong> ' +
-        'Hypothermia risk elevated for older adults on diuretics or sedatives. ' +
-        'Winter mortality index already above England average (9.8 vs 8.7). ' +
-        'High-FEP coastal districts are priority for Cold Weather Plan activation.';
-    } else if (minT <= COLD_WARN) {
-      banner.className = 'weather-banner cold-warn';
-      icon.textContent = '🔷';
-      text.innerHTML = '<strong>Cold weather alert — overnight min ' + minT + '°C.</strong> ' +
-        'Falls risk elevated on cold mornings. Kent falls admissions 65+ already above England average. ' +
-        'Monitor Thanet, Folkestone & Hythe, Dover.';
+    // ── COLD THRESHOLDS ──────────────────────────────────────────────
+    } else if (minT <= COLD_RED) {
+      setStatus('status-red', 'Red · Cold',
+        `<strong>Severe cold — overnight min ${minT}°C.</strong> ` +
+        `Hypothermia risk elevated for older adults on diuretics or sedatives (hypnotics, anxiolytics). ` +
+        `Kent winter mortality index already above England average (9.8 vs 8.7). ` +
+        `Activate Cold Weather Plan. High-FEP coastal districts are immediate priority.`,
+        tempStr);
+
+    } else if (minT <= COLD_AMBER) {
+      setStatus('status-amber', 'Amber · Cold',
+        `<strong>Cold weather alert — overnight min ${minT}°C.</strong> ` +
+        `Falls risk elevated on cold and icy mornings. Kent falls admissions 65+ are above England average (1,917 vs 1,870 per 100k). ` +
+        `Hypnotics and anxiolytics increase sedation-related fall risk. ` +
+        `Monitor Thanet, Folkestone &amp; Hythe, Dover.`,
+        tempStr);
+
+    } else if (minT <= COLD_YELLOW) {
+      setStatus('status-yellow', 'Yellow · Cold',
+        `<strong>Cool weather — monitoring threshold (${minT}°C overnight).</strong> ` +
+        `No immediate alert. Falls and medication risk at normal background level. ` +
+        `If overnight temperature drops below 8°C, diuretic and hypnotic risk escalates.`,
+        tempStr);
+
+    // ── GREEN — no threshold breached ────────────────────────────────
     } else {
-      // No threshold breached — show nothing
-      return;
+      setStatus('status-green', 'Green · Clear',
+        `No weather-health risk threshold active for Kent &amp; Medway. ` +
+        `Today: ${maxT}°C high / ${minT}°C low. ` +
+        `Banner escalates to Yellow → Amber → Red as temperature thresholds are breached, ` +
+        `flagging elevated medication risk for anticholinergic, diuretic, and hypnotic prescribing districts.`,
+        tempStr);
     }
 
-    tempEl.textContent = temp + '°C';
-
   } catch(e) {
-    // Silent fail — weather is supplementary, never block core tool
+    // Fail visibly but gently — explain rather than hide
+    setStatus('status-green', 'Weather',
+      'Live weather data unavailable — check connection. ' +
+      'When active: banner escalates Green → Yellow → Amber → Red as UKHSA/Met Office thresholds are breached, ' +
+      'flagging elevated medication risk for high-FEP districts.',
+      '');
     console.warn('Weather fetch failed:', e);
   }
 }
