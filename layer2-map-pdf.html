@@ -165,6 +165,7 @@ body {
   flex: 1;
   position: relative;
   z-index: 1;
+  height: 100%;
 }
 
 /* Override Leaflet attribution */
@@ -567,7 +568,7 @@ body {
 <div class="main">
 
   <!-- MAP -->
-  <div style="position:relative;flex:1;">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
     <div id="map"></div>
     <div class="map-loading" id="map-loading">
       <div class="loader-ring"></div>
