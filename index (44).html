@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frailty Geography Intelligence — Assistiv Systems</title>
+<meta name="description" content="A population-first frailty identification system for NHS commissioners. Composite scoring, geographic heat mapping, and precision screening deployment across Kent and Medway.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --forest:      #1a3a2a;
+  --sage:        #2d6b47;
+  --sage-mid:    #4a7c5f;
+  --sage-pale:   #e8f2ec;
+  --amber:       #8a6200;
+  --amber-light: #b8860b;
+  --amber-pale:  #fdf3dc;
+  --red:         #b91c1c;
+  --red-pale:    #fef2f2;
+  --blue:        #1d4ed8;
+  --blue-pale:   #eff6ff;
+  --bg:          #f7f5f0;
+  --surface:     #ffffff;
+  --border:      #ddd8ce;
+  --text:        #1a2e1e;
+  --text-muted:  #5a7260;
+  --text-dim:    #9aaa9e;
+  --mono:   'DM Mono', monospace;
+  --serif:  'Cormorant Garamond', serif;
+  --sans:   'Nunito', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--forest);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
+.nav-brand-name {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 0.01em;
+}
+
+.nav-brand-sub {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: white; }
+
+.nav-badge {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--forest);
+  padding: 5rem 2rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--sage-mid), var(--amber-light), var(--sage-mid));
+}
+
+.hero-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.hero-kicker {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.kicker-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sage-mid);
+  flex-shrink: 0;
+}
+
+.hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: rgba(255,255,255,0.65);
+}
+
+.hero-lead {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.7);
+  max-width: 620px;
+  line-height: 1.65;
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: white;
+  color: var(--forest);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.65rem 1.25rem;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--sage-pale);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: rgba(255,255,255,0.8);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.65rem 1.25rem;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.25);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.6);
+  color: white;
+}
+
+/* ── ICB STRIP ── */
+.icb-strip {
+  background: var(--sage);
+  padding: 0.85rem 2rem;
+}
+
+.icb-strip-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.icb-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.icb-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.icb-val {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.icb-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+
+.icb-source {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.04em;
+}
+
+/* ── SECTIONS ── */
+section {
+  padding: 4rem 2rem;
+}
+
+.section-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.section-kicker {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin-bottom: 1rem;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--sage);
+}
+
+.section-lead {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  line-height: 1.65;
+  margin-bottom: 2.5rem;
+}
+
+/* ── TOOL CARDS ── */
+.tool-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.tool-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tool-card:hover {
+  border-color: var(--sage-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,58,42,0.1);
+}
+
+.tool-card-accent {
+  height: 4px;
+  background: var(--forest);
+}
+
+.tool-card-accent.amber { background: linear-gradient(90deg, var(--forest), var(--amber-light)); }
+.tool-card-accent.sage  { background: linear-gradient(90deg, var(--forest), var(--sage-mid)); }
+
+.tool-card-body { padding: 1.5rem; }
+
+.tool-card-icon {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.tool-card-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-pill {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.4rem;
+  border-radius: 20px;
+}
+
+.status-live    { background: var(--sage-pale); color: var(--sage); border: 1px solid rgba(45,107,71,0.2); }
+.status-proto   { background: var(--amber-pale); color: var(--amber); border: 1px solid rgba(138,98,0,0.2); }
+
+.tool-card-title {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+}
+
+.tool-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+.tool-card-features {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.25rem;
+}
+
+.tool-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.tool-feature::before {
+  content: '→';
+  color: var(--sage);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.tool-card-cta {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--forest);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  transition: gap 0.15s;
+}
+
+.tool-card:hover .tool-card-cta { gap: 0.6rem; }
+
+/* ── ARCHITECTURE SECTION ── */
+.arch-strip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.arch-layers {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+
+.arch-layers::before {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: var(--border);
+}
+
+.arch-layer {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  flex: 1;
+}
+
+.arch-layer-num {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.arch-layer-num.l1 { background: var(--sage-pale); color: var(--sage); border: 2px solid var(--sage-mid); }
+.arch-layer-num.l2 { background: var(--amber-pale); color: var(--amber); border: 2px solid var(--amber-light); }
+.arch-layer-num.l3 { background: var(--blue-pale, #eff6ff); color: var(--blue); border: 2px solid var(--blue); }
+.arch-layer-num.l4 { background: var(--red-pale); color: var(--red); border: 2px solid var(--red); }
+
+.arch-layer-info { padding-top: 0.25rem; }
+
+.arch-layer-title {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.arch-layer-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.arch-layer-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+  margin-top: 0.3rem;
+}
+
+.badge-active   { background: var(--sage-pale); color: var(--sage); }
+.badge-planned  { background: var(--amber-pale); color: var(--amber); }
+
+/* ── DATA SECTION ── */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.data-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 1.2rem;
+}
+
+.data-card-source {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.data-card-name {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.3rem;
+}
+
+.data-card-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.data-card-tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+  margin-top: 0.5rem;
+  background: var(--sage-pale);
+  color: var(--sage);
+}
+
+/* ── COMMISSIONER SECTION ── */
+.commissioner-section {
+  background: var(--forest);
+  padding: 4rem 2rem;
+}
+
+.commissioner-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.comm-title {
+  font-family: var(--serif);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: white;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+}
+
+.comm-title em { font-style: italic; color: rgba(255,255,255,0.55); }
+
+.comm-body {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.65;
+  margin-bottom: 1.5rem;
+}
+
+.comm-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.comm-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.45;
+}
+
+.comm-point-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sage-mid);
+  flex-shrink: 0;
+  margin-top: 0.45rem;
+}
+
+.kent-data-panel {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.kdp-title {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.kdp-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.kdp-row:last-child { border-bottom: none; }
+
+.kdp-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.55);
+}
+
+.kdp-val {
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+}
+
+.kdp-comp {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+}
+
+.kdp-better { color: #86efac; }
+.kdp-worse  { color: #fca5a5; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--forest);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 2rem;
+}
+
+.footer-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-brand {
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.25rem;
+  list-style: none;
+}
+
+.footer-links a {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: rgba(255,255,255,0.7); }
+
+.footer-note {
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 0.04em;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .tool-cards { grid-template-columns: 1fr; }
+  .data-grid  { grid-template-columns: 1fr 1fr; }
+  .commissioner-inner { grid-template-columns: 1fr; gap: 2rem; }
+  .arch-layers { flex-direction: column; }
+  nav .nav-links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="#">
+    <span class="nav-brand-name">Assistiv Systems</span>
+    <span class="nav-brand-sub">Frailty Geography Intelligence</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#tools">Tools</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#data">Data</a></li>
+    <li><a href="#commissioner">For Commissioners</a></li>
+    <li><a href="https://www.resiliencetools.xyz" target="_blank">resiliencetools.xyz ↗</a></li>
+  </ul>
+  <span class="nav-badge">Layer 2 · Prototype</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-kicker">
+      <span class="kicker-dot"></span>
+      Population-First Frailty Identification · Kent &amp; Medway ICB
+    </div>
+    <h1>Finding frailty <em>before</em><br>the system has to respond.</h1>
+    <p class="hero-lead">
+      A geographic intelligence layer for NHS commissioners. Identifies where concentrations
+      of emerging frailty are most likely to be, then routes precision screening to those
+      communities — before crisis, not after.
+    </p>
+    <div class="hero-actions">
+      <a href="layer2-map-pdf.html" class="btn-primary">→ Open Map View</a>
+      <a href="layer2-fep-light.html" class="btn-secondary">↗ Scoring Engine</a>
+      <a href="https://www.resiliencetools.xyz" target="_blank" class="btn-secondary">resiliencetools.xyz ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- ICB STRIP -->
+<div class="icb-strip">
+  <div class="icb-strip-inner">
+    <div class="icb-stats">
+      <div class="icb-stat">
+        <span class="icb-val">1,917</span>
+        <span class="icb-label">Falls Admissions 65+ / 100k</span>
+      </div>
+      <div class="icb-stat">
+        <span class="icb-val">10.7 / 12.3</span>
+        <span class="icb-label">HLE at 65 · M / F · yrs</span>
+      </div>
+      <div class="icb-stat">
+        <span class="icb-val">6.2%</span>
+        <span class="icb-label">Loneliness · Kent adults</span>
+      </div>
+      <div class="icb-stat">
+        <span class="icb-val">155.2</span>
+        <span class="icb-label">Self-harm / 100k ▲ Eng avg</span>
+      </div>
+    </div>
+    <span class="icb-source">NHS Kent &amp; Medway ICB QKS · OHID PHOF · 6 May 2026</span>
+  </div>
+</div>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="section-inner">
+    <div class="section-kicker">Layer 2 Tool Suite</div>
+    <h2 class="section-title">Two tools. <em>One intelligence layer.</em></h2>
+    <p class="section-lead">
+      The scoring engine builds the geographic risk picture. The map turns it into
+      something a commissioner can act on immediately — and export as a briefing document
+      for a PCN meeting.
+    </p>
+
+    <div class="tool-cards">
+
+      <!-- MAP TOOL -->
+      <a href="layer2-map-pdf.html" class="tool-card">
+        <div class="tool-card-accent sage"></div>
+        <div class="tool-card-body">
+          <span class="tool-card-icon">🗺</span>
+          <div class="tool-card-label">
+            Primary Tool
+            <span class="status-pill status-proto">Prototype</span>
+          </div>
+          <div class="tool-card-title">Frailty Heat Map</div>
+          <p class="tool-card-desc">
+            Live ONS district boundaries for Kent and Medway, colour-coded by
+            Frailty Emergence Probability score. Click any district for signal
+            breakdown and recommendations. Download a commissioner briefing PDF
+            in one click.
+          </p>
+          <div class="tool-card-features">
+            <span class="tool-feature">Real ONS LAD 2023 boundaries via live API</span>
+            <span class="tool-feature">FEP heat map — red / amber / blue / green tiers</span>
+            <span class="tool-feature">Signal breakdown for each of 14 districts</span>
+            <span class="tool-feature">One-click PDF commissioner briefing export</span>
+            <span class="tool-feature">ICB real data banner — OHID PHOF May 2026</span>
+          </div>
+          <span class="tool-card-cta">Open Map → </span>
+        </div>
+      </a>
+
+      <!-- SCORING ENGINE -->
+      <a href="layer2-fep-light.html" class="tool-card">
+        <div class="tool-card-accent amber"></div>
+        <div class="tool-card-body">
+          <span class="tool-card-icon">⚙</span>
+          <div class="tool-card-label">
+            Scoring Engine
+            <span class="status-pill status-proto">Prototype</span>
+          </div>
+          <div class="tool-card-title">FEP Scoring Engine</div>
+          <p class="tool-card-desc">
+            Configure signal weights across six public data domains, run the
+            composite scoring model, and explore ranked zone results. Supports
+            commissioner-configurable weighting — adjust to prioritise deprivation,
+            polypharmacy, or isolation as the dominant signal.
+          </p>
+          <div class="tool-card-features">
+            <span class="tool-feature">Six adjustable signal weight sliders</span>
+            <span class="tool-feature">Ranked FEP table across 18 Kent zones</span>
+            <span class="tool-feature">Signal contribution breakdown per zone</span>
+            <span class="tool-feature">Uncertainty flagging — fewer than 4 signals</span>
+            <span class="tool-feature">Automated recommended actions per zone</span>
+          </div>
+          <span class="tool-card-cta">Open Scoring Engine → </span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-kicker">System Architecture</div>
+    <h2 class="section-title">Five layers. <em>One proactive pathway.</em></h2>
+    <p class="section-lead">
+      This tool suite is Layer 2 of a five-layer population frailty intelligence system.
+      Each layer feeds the next — from public data ingestion through to clinical triage
+      and feedback.
+    </p>
+
+    <div class="arch-strip">
+      <div style="display:flex;flex-direction:column;gap:0.25rem">
+
+        <div class="arch-layer">
+          <div class="arch-layer-num l1">L1</div>
+          <div class="arch-layer-info">
+            <div class="arch-layer-title">Population Signal Ingestion</div>
+            <div class="arch-layer-desc">ONS Census 2021, NHS Fingertips, IMD 2019, DWP benefits data, CQC register, GP dispensing data. Eight public sources normalised to a common spatial index.</div>
+            <span class="arch-layer-badge badge-active">Active — data confirmed</span>
+          </div>
+        </div>
+
+        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-num l2">L2</div>
+          <div class="arch-layer-info">
+            <div class="arch-layer-title">Composite FEP Scoring — <em>this tool</em></div>
+            <div class="arch-layer-desc">Weighted composite index generating a Frailty Emergence Probability score per district. Geographic heat map. Commissioner briefing export. ICB baseline grounding.</div>
+            <span class="arch-layer-badge badge-active">Active — prototype deployed</span>
+          </div>
+        </div>
+
+        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-num l3">L3</div>
+          <div class="arch-layer-info">
+            <div class="arch-layer-title">Community Touchpoint Identification</div>
+            <div class="arch-layer-desc">Routes outreach to GP surgeries, pharmacies, libraries, faith communities, and VCSE organisations within priority zones. Google Places API integration.</div>
+            <span class="arch-layer-badge badge-planned">Planned — Phase 2</span>
+          </div>
+        </div>
+
+        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-num l4">L4</div>
+          <div class="arch-layer-info">
+            <div class="arch-layer-title">Precision Screening — resiliencetools.xyz</div>
+            <div class="arch-layer-desc">Voice-first PRISMA-7 screening, carer observational report, Triple Tap Intelligence synthesis, Frailty Profile Radar. Context-injected with zone FEP score to calibrate sensitivity thresholds.</div>
+            <span class="arch-layer-badge badge-active">Active — live at resiliencetools.xyz</span>
+          </div>
+        </div>
+
+        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
+
+        <div class="arch-layer">
+          <div class="arch-layer-num l1" style="background:#f0ede6;color:#5a7260;border-color:#ddd8ce">L5</div>
+          <div class="arch-layer-info">
+            <div class="arch-layer-title">Triage, Referral &amp; Feedback Loop</div>
+            <div class="arch-layer-desc">Clinical referral, population dashboard, Assistiv onboarding pathway, safety escalation. Anonymised screening outcomes recalibrate the FEP model — the dataset becomes the competitive advantage.</div>
+            <span class="arch-layer-badge badge-planned">Planned — Phase 3</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DATA SOURCES -->
+<section id="data">
+  <div class="section-inner">
+    <div class="section-kicker">Data Sources</div>
+    <h2 class="section-title">Public data. <em>Defensible intelligence.</em></h2>
+    <p class="section-lead">
+      Every signal in the FEP model uses publicly available data — free to access,
+      citable in a commissioner briefing, and updatable without licensing costs.
+      The value is in the composite, not the inputs.
+    </p>
+
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-card-source">ONS · Free</div>
+        <div class="data-card-name">Census 2021</div>
+        <div class="data-card-desc">Over-75s living alone at LSOA level. Strongest single demographic frailty proxy. ~1,500 households per zone.</div>
+        <span class="data-card-tag">Live — confirmed</span>
+      </div>
+      <div class="data-card">
+        <div class="data-card-source">OHID · Free API</div>
+        <div class="data-card-name">NHS Fingertips</div>
+        <div class="data-card-desc">Falls admissions, unplanned hospitalisations, healthy life expectancy. ICB-level data confirmed. Sub-ICB linkage in Phase 2.</div>
+        <span class="data-card-tag">ICB level — confirmed</span>
+      </div>
+      <div class="data-card">
+        <div class="data-card-source">MHCLG · Free</div>
+        <div class="data-card-name">IMD 2019</div>
+        <div class="data-card-desc">Index of Multiple Deprivation. Access and vulnerability amplifier. Available at ward and LSOA level across all Kent districts.</div>
+        <span class="data-card-tag">Live — confirmed</span>
+      </div>
+      <div class="data-card">
+        <div class="data-card-source">DWP · Free</div>
+        <div class="data-card-name">Attendance Allowance</div>
+        <div class="data-card-desc">DWP benefit claims by postcode district. Functional limitation indicator. Published quarterly, geographic granularity confirmed.</div>
+        <span class="data-card-tag">Live — confirmed</span>
+      </div>
+      <div class="data-card">
+        <div class="data-card-source">CQC · Free API</div>
+        <div class="data-card-name">Care Home Register</div>
+        <div class="data-card-desc">Care home locations, capacity, and CQC ratings. Service gap indicator — high FEP plus low care provision identifies priority zones.</div>
+        <span class="data-card-tag">Live — confirmed</span>
+      </div>
+      <div class="data-card">
+        <div class="data-card-source">NHS · Free</div>
+        <div class="data-card-name">GP Dispensing Data</div>
+        <div class="data-card-desc">Polypharmacy rates (5+ medications) by practice. Strong clinical frailty marker. Published by NHS Business Services Authority.</div>
+        <span class="data-card-tag">Practice level — confirmed</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMISSIONER SECTION -->
+<div class="commissioner-section" id="commissioner">
+  <div class="commissioner-inner">
+    <div>
+      <h2 class="comm-title">Built for PCN leads<br>and <em>ICB commissioners.</em></h2>
+      <p class="comm-body">
+        PCNs have a statutory duty to proactively identify and support their over-75
+        population. This tool gives them the geographic intelligence layer they currently
+        lack — and the screening pathway to act on it.
+      </p>
+      <div class="comm-points">
+        <div class="comm-point">
+          <span class="comm-point-dot"></span>
+          <span>Shows <em>where</em> emerging frailty is concentrated, before people present to services</span>
+        </div>
+        <div class="comm-point">
+          <span class="comm-point-dot"></span>
+          <span>Exportable PDF briefing — ready for a PCN meeting or ICB commissioning conversation</span>
+        </div>
+        <div class="comm-point">
+          <span class="comm-point-dot"></span>
+          <span>Commissioner-configurable weights — adjust the model to reflect local priorities</span>
+        </div>
+        <div class="comm-point">
+          <span class="comm-point-dot"></span>
+          <span>Grounded in real OHID data — citable, dated, and transparently sourced</span>
+        </div>
+        <div class="comm-point">
+          <span class="comm-point-dot"></span>
+          <span>Routes directly into resiliencetools.xyz community screening pathway</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kent-data-panel">
+      <div class="kdp-title">NHS Kent &amp; Medway ICB · QKS · Real Data · OHID May 2026</div>
+      <div class="kdp-row">
+        <span class="kdp-label">Falls Admissions 65+</span>
+        <div style="text-align:right">
+          <div class="kdp-val">1,917 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
+          <div class="kdp-comp kdp-better">▼ vs England 1,958</div>
+        </div>
+      </div>
+      <div class="kdp-row">
+        <span class="kdp-label">Healthy Life Expectancy 65</span>
+        <div style="text-align:right">
+          <div class="kdp-val">10.7 / 12.3 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">yrs</span></div>
+          <div class="kdp-comp kdp-better">▲ vs England 10.1 / 11.1</div>
+        </div>
+      </div>
+      <div class="kdp-row">
+        <span class="kdp-label">Loneliness — adults 16+</span>
+        <div style="text-align:right">
+          <div class="kdp-val">6.2%</div>
+          <div class="kdp-comp kdp-better">▼ vs England 6.8%</div>
+        </div>
+      </div>
+      <div class="kdp-row">
+        <span class="kdp-label">Fuel Poverty</span>
+        <div style="text-align:right">
+          <div class="kdp-val">11.0%</div>
+          <div class="kdp-comp kdp-better">▼ vs England 11.4%</div>
+        </div>
+      </div>
+      <div class="kdp-row">
+        <span class="kdp-label">Self-Harm Admissions</span>
+        <div style="text-align:right">
+          <div class="kdp-val">155.2 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
+          <div class="kdp-comp kdp-worse">▲ vs England 126.2</div>
+        </div>
+      </div>
+      <div class="kdp-row">
+        <span class="kdp-label">Falls Admissions 80+</span>
+        <div style="text-align:right">
+          <div class="kdp-val">4,694 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
+          <div class="kdp-comp kdp-better">▼ vs England 4,866</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-brand">Assistiv Systems Limited · Faversham, Kent</span>
+    <ul class="footer-links">
+      <li><a href="layer2-map-pdf.html">Map View</a></li>
+      <li><a href="layer2-fep-light.html">Scoring Engine</a></li>
+      <li><a href="https://www.resiliencetools.xyz" target="_blank">resiliencetools.xyz</a></li>
+    </ul>
+    <div class="footer-note">
+      Frailty Geography Intelligence · Layer 2 Prototype · June 2026 ·
+      Zone FEP scores use calibrated synthetic data grounded against OHID ICB baselines ·
+      Sub-ICB live data linkage: Phase 2 ·
+      Assistiv Systems Limited is registered in England and Wales
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
