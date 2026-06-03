@@ -1,11 +1,13 @@
 {
   "meta": {
-    "generated": "2026-06-03T15:10:11.303610+00:00",
+    "generated": "2026-06-03T20:53:07.225917+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
-    "version": "3.0 \u2014 sub-ICB EPD linkage at practice level",
+    "version": "4.0 \u2014 weather-health alert integration",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 17 real signals of 17 total",
+    "signals_real_count": 17,
+    "signals_modelled_count": 3,
+    "data_quality": "17 real signals \u00b7 3 modelled (synthetic) of 17 total",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -25,7 +27,7 @@
       "ace_arb",
       "bladder_antimusc"
     ],
-    "signals_synthetic": [
+    "signals_modelled": [
       "alone_75",
       "deprivation_imd",
       "care_home_gap"
@@ -72,16 +74,28 @@
       "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py",
       "epd": "NHSBSA EPD practice-level \u2014 Mar 2026",
       "epd_method": "Practice POSTCODE (col 13) \u2192 district via POSTCODE_TO_DISTRICT",
-      "demographic": "ONS Census 2021 \u00b7 IMD 2019 \u00b7 CQC register"
+      "demographic": "ONS Census 2021 \u00b7 IMD 2019 \u00b7 CQC register",
+      "weather": "UKHSA Weather-Health Alerting / Met Office"
     },
-    "new_in_v3": [
-      "EPD signals computed at district level using practice POSTCODE (col 13)",
-      "practice_district_cache: 234 practices mapped",
-      "unmapped practices: 14 (expect <5 for in-ICB practices)",
-      "PROFILES multiplier retained only for non-EPD signals (indices 0\u20139)",
-      "DISTRICT_LIST_SIZES replace single KENT_LIST_SIZE for EPD rate normalisation"
+    "new_in_v4": [
+      "UKHSA/Met Office Weather-Health Alert fetched at run time",
+      "fep_weather field: weather-uplifted FEP for live map display",
+      "weather_alert block added to JSON root for Layer 4 context injection",
+      "data_quality metadata corrected: 14 real, 3 modelled (was incorrectly '17 real')",
+      "Scratch cells (ambulance/emergency search) removed from production notebook"
     ],
-    "note": "EPD: district-level actual. Fingertips + synthetic: ICB \u00d7 demographic profile. Phase 2: MSOA Fingertips linkage."
+    "note": "fep = base score (weather-independent, use for longitudinal comparison). fep_weather = live score including weather uplift (use for operational map display). EPD: district-level actual. Fingertips + modelled: ICB \u00d7 demographic profile. Phase 2: MSOA Fingertips linkage."
+  },
+  "weather_alert": {
+    "alert_level": "green",
+    "alert_type": "heat",
+    "region": "South East England",
+    "fetched_at": "2026-06-03T20:49:41.090886+00:00",
+    "source": "UKHSA Weather-Health Alerting / Met Office",
+    "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
+    "med_risk_signals": [],
+    "fep_uplift": 0,
+    "layer4_context": ""
   },
   "icb_baseline": {
     "fingertips": {
@@ -241,7 +255,9 @@
       "name": "Thanet",
       "lad_code": "E07000114",
       "fep": 63,
+      "fep_weather": 63,
       "risk": "high",
+      "risk_weather": "high",
       "signals": [
         65.0,
         64.1,
@@ -345,7 +361,9 @@
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
       "fep": 57,
+      "fep_weather": 57,
       "risk": "high",
+      "risk_weather": "high",
       "signals": [
         61.0,
         60.5,
@@ -449,7 +467,9 @@
       "name": "Dover",
       "lad_code": "E07000108",
       "fep": 57,
+      "fep_weather": 57,
       "risk": "high",
+      "risk_weather": "high",
       "signals": [
         59.0,
         59.0,
@@ -553,7 +573,9 @@
       "name": "Swale",
       "lad_code": "E07000113",
       "fep": 54,
+      "fep_weather": 54,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         56.0,
         56.4,
@@ -657,7 +679,9 @@
       "name": "Medway",
       "lad_code": "E06000035",
       "fep": 54,
+      "fep_weather": 54,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         53.0,
         53.9,
@@ -761,7 +785,9 @@
       "name": "Gravesham",
       "lad_code": "E07000109",
       "fep": 53,
+      "fep_weather": 53,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         50.0,
         50.3,
@@ -865,7 +891,9 @@
       "name": "Ashford",
       "lad_code": "E07000105",
       "fep": 50,
+      "fep_weather": 50,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         48.0,
         48.7,
@@ -969,7 +997,9 @@
       "name": "Canterbury",
       "lad_code": "E07000106",
       "fep": 50,
+      "fep_weather": 50,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         45.0,
         46.2,
@@ -1073,7 +1103,9 @@
       "name": "Maidstone",
       "lad_code": "E07000110",
       "fep": 48,
+      "fep_weather": 48,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         42.5,
         43.6,
@@ -1177,7 +1209,9 @@
       "name": "Dartford",
       "lad_code": "E07000107",
       "fep": 46,
+      "fep_weather": 46,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         44.0,
         45.1,
@@ -1281,7 +1315,9 @@
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
       "fep": 41,
+      "fep_weather": 41,
       "risk": "moderate",
+      "risk_weather": "moderate",
       "signals": [
         39.0,
         40.0,
@@ -1385,7 +1421,9 @@
       "name": "Sevenoaks",
       "lad_code": "E07000111",
       "fep": 38,
+      "fep_weather": 38,
       "risk": "low",
+      "risk_weather": "low",
       "signals": [
         32.5,
         33.3,
@@ -1489,7 +1527,9 @@
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
       "fep": 34,
+      "fep_weather": 34,
       "risk": "low",
+      "risk_weather": "low",
       "signals": [
         29.0,
         29.8,
