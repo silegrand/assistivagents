@@ -1647,7 +1647,7 @@ init();
 }
 #ada-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
 #ada-btn .ada-label { font-size: 9px; letter-spacing: .1em; font-weight: 600; opacity: .85; }
-#ada-btn .ada-icon  { font-size: 18px; line-height: 1; }
+#ada-btn .ada-icon  { font-size: 18px; line-height: 1; color: var(--sage, #2d6b47); }
 
 /* ── Ada panel ─────────────────────────────────────────────────── */
 #ada-panel {
@@ -1792,8 +1792,67 @@ init();
 
 <script>
 // ── ADA CONFIGURATION ─────────────────────────────────────────────────────────
-// Update WORKER_URL after deploying your Cloudflare Worker
 const ADA_WORKER_URL = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const ADA_JSON_URL   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+
+let adaLiveData = null;  // populated on first open from GitHub JSON
+
+// Fetch the live FEP JSON from GitHub — called once on first panel open
+async function adaFetchLiveData() {
+  try {
+    const r = await fetch(ADA_JSON_URL);
+    adaLiveData = await r.json();
+    console.log('Ada: live data loaded —', adaLiveData?.meta?.version, adaLiveData?.districts?.length, 'districts');
+  } catch(e) {
+    console.warn('Ada: could not fetch live JSON', e);
+  }
+}
+
+// Build a compact data summary to inject into system prompt
+function adaBuildDataSummary() {
+  if (!adaLiveData) return 'Live JSON not yet loaded — using DOM context only.';
+
+  const meta      = adaLiveData.meta || {};
+  const districts = adaLiveData.districts || [];
+  const baseline  = adaLiveData.icb_baseline || {};
+
+  const lines = [];
+  lines.push(`DATA VERSION: ${meta.version || '?'} | Generated: ${meta.generated?.substring(0,10) || '?'}`);
+  lines.push(`Real signals: ${meta.data_quality || '?'}`);
+  lines.push('');
+
+  // District scores — full table
+  lines.push('DISTRICT FEP SCORES (live from kent-fep-data.json):');
+  districts.forEach(d => {
+    lines.push(`  ${d.name}: FEP ${d.fep} (${d.risk}) | pop75: ${d.pop75?.toLocaleString() || '?'}`);
+    // Top 3 highest signals for context
+    if (d.signals && d.signal_names) {
+      const scored = d.signal_names.map((n,i) => ({n, v: d.signals[i] || 0}))
+        .filter(x => x.v !== 50)
+        .sort((a,b) => b.v - a.v)
+        .slice(0,3);
+      if (scored.length) lines.push(`    Highest signals: ${scored.map(x => `${x.n} (${x.v})`).join(', ')}`);
+    }
+  });
+
+  // ICB baseline real values
+  const ft = baseline.fingertips || {};
+  const rx = baseline.prescribing || {};
+  if (Object.keys(ft).length > 0) {
+    lines.push('\nICB BASELINE — NHS Fingertips real values:');
+    Object.entries(ft).forEach(([k,v]) => {
+      if (v?.value) lines.push(`  ${k}: ${v.value} vs England ${v.england} (${v.period})`);
+    });
+  }
+  if (Object.keys(rx).length > 0) {
+    lines.push('\nICB BASELINE — NHSBSA prescribing real values (per 1,000 patients):');
+    Object.entries(rx).forEach(([k,v]) => {
+      if (v?.rate_per_1000) lines.push(`  ${k}: ${v.rate_per_1000}/1k vs England ${v.england}/1k | ratio ${v.ratio} (${v.period})`);
+    });
+  }
+
+  return lines.join('\n');
+}
 
 const ADA_STARTERS = [
   'What does a FEP score of 63 actually mean for real people?',
@@ -1823,6 +1882,8 @@ WHAT YOU SHOULD EXPLAIN CLEARLY:
 - What commissioners or clinical teams could actually DO with this information
 - The honest limitations: district-level data, not individual patients; prescribing rates are population averages; the model is a triage tool, not a diagnosis
 
+IMPORTANT: You DO have live access to the current tool state. The section below labelled "LIVE TOOL CONTEXT" is read directly from the page the user is looking at right now — it contains the actual zone names, FEP scores, and active signals. Use this data confidently when answering questions. Never say you don't have access to the current scores — you do.
+
 WHAT YOU MUST NOT DO:
 - Never give specific clinical advice about individual patients
 - Never claim the model predicts individual outcomes
@@ -1840,33 +1901,57 @@ let adaBusy       = false;
 // ── CONTEXT READER ────────────────────────────────────────────────────────────
 function adaGetContext() {
   const lines = [];
-  // Read current zone results from the DOM
+
+  // Read current zone results — use actual rendered class names
   const rows = document.querySelectorAll('.zone-row');
   if (rows.length > 0) {
-    lines.push('CURRENT SCORING ENGINE STATE:');
+    lines.push(`CURRENT SCORING ENGINE — ${rows.length} zones computed:`);
     rows.forEach(row => {
       const name  = row.querySelector('.zone-name')?.textContent?.trim();
-      const score = row.querySelector('.zone-fep')?.textContent?.trim();
-      const risk  = row.querySelector('.zone-risk')?.textContent?.trim();
-      if (name && score) lines.push(`  ${name}: FEP ${score} (${risk || ''})`);
+      const score = row.querySelector('.fep-num')?.textContent?.trim();
+      const risk  = row.querySelector('.risk-badge')?.textContent?.trim();
+      const unc   = row.querySelector('.unc-icon.warn') ? ' [low confidence]' : '';
+      if (name && score) lines.push(`  ${name}: FEP ${score} (${risk || ''})${unc}`);
     });
+  } else {
+    lines.push('Scoring engine loaded — click Run to compute zone scores.');
   }
-  // Active signals from weight sliders
+
+  // Detail panel if open
+  const detailName = document.querySelector('.detail-zone-name')?.textContent?.trim();
+  const detailFep  = document.querySelector('.detail-fep-val')?.textContent?.trim();
+  if (detailName) {
+    lines.push(`\nUSER IS VIEWING DETAIL FOR: ${detailName}${detailFep ? ' (FEP ' + detailFep + ')' : ''}`);
+    // Signal breakdown from detail panel
+    const sigRows = document.querySelectorAll('.sig-row');
+    if (sigRows.length > 0) {
+      lines.push('Signal breakdown:');
+      sigRows.forEach(row => {
+        const sigName = row.querySelector('.sig-name')?.textContent?.trim();
+        const sigVal  = row.querySelector('.sig-val')?.textContent?.trim();
+        if (sigName && sigVal) lines.push(`  ${sigName}: ${sigVal}`);
+      });
+    }
+  }
+
+  // Active signal weights
   const activeSignals = [];
   SIGNAL_NAMES.forEach((name, i) => {
     const el = document.getElementById(`w${i+1}`);
     if (el && parseInt(el.value) > 0) activeSignals.push(`${name} (${el.value}%)`);
   });
   if (activeSignals.length > 0) {
-    lines.push(`\nACTIVE SIGNALS: ${activeSignals.slice(0,8).join(', ')}${activeSignals.length > 8 ? ` + ${activeSignals.length-8} more` : ''}`);
+    lines.push(`\nACTIVE SIGNALS (${activeSignals.length}): ${activeSignals.slice(0,6).join(', ')}${activeSignals.length > 6 ? ` + ${activeSignals.length-6} more` : ''}`);
   }
+
   // Weather banner if active
   const wb = document.getElementById('weather-banner');
-  if (wb && wb.style.display !== 'none' && !wb.className.includes('hidden')) {
+  if (wb && wb.className && !wb.className.includes('hidden') && wb.style.display !== 'none') {
     const wtext = document.getElementById('weather-text')?.textContent;
-    if (wtext) lines.push(`\nWEATHER ALERT ACTIVE: ${wtext.substring(0,120)}`);
+    if (wtext) lines.push(`\nWEATHER ALERT: ${wtext.substring(0,120)}`);
   }
-  return lines.length > 0 ? lines.join('\n') : 'Scoring engine loaded — no results computed yet.';
+
+  return lines.join('\n');
 }
 
 // ── TOGGLE ────────────────────────────────────────────────────────────────────
@@ -1874,7 +1959,9 @@ function adaToggle() {
   adaOpen = !adaOpen;
   const panel = document.getElementById('ada-panel');
   panel.classList.toggle('open', adaOpen);
-  if (adaOpen && adaHistory.length === 0) adaGreet();
+  if (adaOpen && adaHistory.length === 0) {
+    adaFetchLiveData().then(() => adaGreet());
+  }
 }
 
 // ── GREETING ──────────────────────────────────────────────────────────────────
@@ -1931,9 +2018,12 @@ async function adaSendText(text) {
   adaScrollBottom();
   document.getElementById('ada-send').disabled = true;
 
-  // Build system prompt with live context
+  // Build system prompt with live JSON data + DOM context
   const systemWithContext = ADA_SYSTEM_PROMPT +
-    '\n\n---\nLIVE TOOL CONTEXT (read from page right now):\n' + adaGetContext();
+    '\n\n---\nLIVE DATA FROM kent-fep-data.json (fetched directly from GitHub):\n' +
+    adaBuildDataSummary() +
+    '\n\n---\nLIVE TOOL CONTEXT (read from page DOM right now):\n' +
+    adaGetContext();
 
   try {
     const resp = await fetch(ADA_WORKER_URL, {
@@ -1941,7 +2031,7 @@ async function adaSendText(text) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model:      'claude-haiku-4-5-20251001',
-        max_tokens: 600,
+        max_tokens: 800,
         system:     systemWithContext,
         messages:   adaHistory,
       }),
