@@ -1063,14 +1063,14 @@ input[type=range]::-webkit-slider-thumb:hover {
         <input type="range" id="w13" min="0" max="40" value="4" oninput="updateWeight('w13')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">0%</span></div>
-        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. Weight zeroed in v5 — retained for reporting. NHSBSA EPD Mar 2026. Real.</div>
-        <input type="range" id="w14" min="0" max="20" value="0" oninput="updateWeight('w14')">
+        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">1%</span></div>
+        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w14" min="0" max="20" value="1" oninput="updateWeight('w14')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">0%</span></div>
-        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. Weight zeroed in v5 — retained for reporting. NHSBSA EPD Mar 2026. Real.</div>
-        <input type="range" id="w15" min="0" max="20" value="0" oninput="updateWeight('w15')">
+        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">1%</span></div>
+        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w15" min="0" max="20" value="1" oninput="updateWeight('w15')">
       </div>
       <div class="weight-row">
         <div class="weight-header"><span class="weight-label">Anxiolytics Prescribing</span><span class="weight-val" id="w16-val">3%</span></div>
@@ -1078,14 +1078,9 @@ input[type=range]::-webkit-slider-thumb:hover {
         <input type="range" id="w16" min="0" max="20" value="3" oninput="updateWeight('w16')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">1%</span></div>
-        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. Reduced 2%→1% in v5. EPD Mar 2026. Real.</div>
-        <input type="range" id="w17" min="0" max="20" value="1" oninput="updateWeight('w17')">
-      </div>
-      <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">Oral Nutritional Supplements ↑ v5</span><span class="weight-val" id="w18-val">3%</span></div>
-        <div class="weight-desc">Fortisip, Ensure, Fresubin — BNF 090402. Direct FRAIL Scale signal (Loss of weight). NICE NG22: prescribed when BMI &lt;18.5 or &gt;10% unintentional weight loss. NHSBSA EPD Mar 2026. Real.</div>
-        <input type="range" id="w18" min="0" max="20" value="3" oninput="updateWeight('w18')">
+        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">2%</span></div>
+        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. EPD Mar 2026. Real.</div>
+        <input type="range" id="w17" min="0" max="20" value="2" oninput="updateWeight('w17')">
       </div>
 
       <div class="weight-total">
@@ -1181,13 +1176,12 @@ const SIGNAL_NAMES = [
   "ACE/ARB Prescribing",         // 15 EPD real
   "Anxiolytics Prescribing",     // 16 EPD real
   "Bladder Antimuscarinic Rate", // 17 EPD real
-  "Oral Nutritional Supplements",// 18 EPD real ← NEW v5 (BNF 090402)
 ];
 
 const SIGNAL_COLORS = [
   "#3fb950","#58a6ff","#d29922","#f0883e","#bc8cff","#ff7b72",
   "#39d353","#79c0ff","#ffa657","#ff8080","#56d364","#4fc3f7",
-  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4","#a3e635"
+  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4"
 ];
 
 const SOURCE_DEFS = [
@@ -1208,7 +1202,6 @@ const SOURCE_DEFS = [
   { name: "NHSBSA EPD — ACE/ARBs",             tag: "Real · Mar 2026",     id: "epd_ace" },
   { name: "NHSBSA EPD — Anxiolytics",          tag: "Real · Mar 2026",     id: "epd_anx" },
   { name: "NHSBSA EPD — Bladder Antimusc.",    tag: "Real · Mar 2026",     id: "epd_blad" },
-  { name: "NHSBSA EPD — Oral Nutritional Supp.", tag: "Real · Mar 2026 · v5", id: "epd_ons" },
 ];
 
 let enabledSources = new Set(SOURCE_DEFS.map(s => s.id));
@@ -1219,7 +1212,7 @@ let currentResults = [];
 
 function init() {
   renderSources();
-  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'].forEach(id => {
+  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].forEach(id => {
     const el = document.getElementById(id);
     if (el) updateWeight(id);
   });
@@ -1256,7 +1249,7 @@ function updateWeight(id) {
 }
 
 function updateTotal() {
-  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'];
+  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'];
   const total = ids.reduce((s,id) => {
     const el = document.getElementById(id);
     return s + (el ? parseInt(el.value) : 0);
@@ -1269,7 +1262,7 @@ function updateTotal() {
 // ── SCORING ENGINE ────────────────────────────────────────────────────
 
 function getWeights() {
-  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'].map(id => {
+  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].map(id => {
     const el = document.getElementById(id);
     return el ? parseInt(el.value) / 100 : 0.06;
   });
@@ -1633,449 +1626,364 @@ async function fetchWeatherRisk() {
 fetchWeatherRisk();
 init();
 </script>
-</body>
-</html>
 
 <!-- ═══════════════════════════════════════════════════════════════════
-     ADA — Assistiv Data Assistant · ExplainerBot · v1.0
-     Floating chat widget for the FEP Scoring Engine.
-     Calls Anthropic Claude Sonnet via the artifact API proxy.
-     Context-injected: current district scores + active signals.
+     ADA — Assistiv Intelligence ExplainerBot
+     Floating chat widget · reads live scoring engine context
+     Proxied via Cloudflare Worker — no API key in browser
      ═══════════════════════════════════════════════════════════════════ -->
-
 <style>
-/* ── ADA WIDGET ───────────────────────────────────────────────────── */
-#ada-fab {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 2000;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--sage-dim);
-  border: 2px solid var(--sage);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(15,35,24,0.35);
-  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-  flex-direction: column;
-  gap: 2px;
-}
-#ada-fab:hover { transform: scale(1.06); box-shadow: 0 6px 28px rgba(15,35,24,0.45); background: var(--sage); }
-#ada-fab .fab-icon { font-size: 1.2rem; line-height: 1; }
-#ada-fab .fab-label {
+/* ── Ada button ─────────────────────────────────────────────────── */
+#ada-btn {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9000;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--forest); color: #fff;
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 2px;
+  transition: transform 0.18s, box-shadow 0.18s;
   font-family: var(--mono);
-  font-size: 0.38rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.7);
 }
+#ada-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+#ada-btn .ada-label { font-size: 9px; letter-spacing: .1em; font-weight: 600; opacity: .85; }
+#ada-btn .ada-icon  { font-size: 18px; line-height: 1; }
 
+/* ── Ada panel ─────────────────────────────────────────────────── */
 #ada-panel {
-  position: fixed;
-  bottom: 5rem;
-  right: 1.5rem;
-  z-index: 1999;
-  width: 380px;
-  max-width: calc(100vw - 2rem);
-  max-height: 560px;
+  position: fixed; bottom: 5rem; right: 1.5rem; z-index: 9000;
+  width: 360px; max-width: calc(100vw - 2rem);
+  height: 520px; max-height: calc(100vh - 7rem);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 12px 48px rgba(15,35,24,0.2);
-  display: none;
-  flex-direction: column;
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.22);
+  display: none; flex-direction: column;
   overflow: hidden;
   font-family: var(--sans);
-  animation: adaSlideIn 0.22s ease;
 }
-#ada-panel.open { display: flex; }
-
-@keyframes adaSlideIn {
-  from { opacity: 0; transform: translateY(12px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+#ada-panel.open { display: flex; animation: adaIn .22s ease; }
+@keyframes adaIn {
+  from { opacity:0; transform: translateY(12px) scale(.97); }
+  to   { opacity:1; transform: translateY(0)   scale(1);    }
 }
 
+/* Header */
 .ada-header {
-  background: var(--sage-dim);
-  padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: var(--forest);
+  padding: .75rem 1rem;
+  display: flex; align-items: center; gap: .6rem;
   flex-shrink: 0;
 }
 .ada-avatar {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: var(--sage);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
 }
 .ada-header-text { flex: 1; }
-.ada-name {
-  font-family: var(--serif);
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: white;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-}
-.ada-role {
-  font-family: var(--mono);
-  font-size: 0.48rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-}
+.ada-header-name  { font-size: 13px; font-weight: 600; color: #fff; }
+.ada-header-sub   { font-size: 10px; color: rgba(255,255,255,.6); }
 .ada-close {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.4);
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.2rem;
-  transition: color 0.15s;
-  line-height: 1;
+  background: none; border: none; color: rgba(255,255,255,.7);
+  cursor: pointer; font-size: 18px; line-height: 1;
+  padding: 0; margin: 0;
 }
-.ada-close:hover { color: white; }
+.ada-close:hover { color: #fff; }
 
+/* Messages */
 .ada-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0.9rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  scroll-behavior: smooth;
+  flex: 1; overflow-y: auto;
+  padding: .75rem 1rem;
+  display: flex; flex-direction: column; gap: .6rem;
 }
-
 .ada-msg {
-  max-width: 88%;
-  line-height: 1.55;
-  font-size: 0.82rem;
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  animation: adaMsgIn 0.18s ease;
+  max-width: 88%; padding: .55rem .8rem;
+  border-radius: 10px; font-size: 12.5px; line-height: 1.55;
+  animation: msgIn .18s ease;
 }
-@keyframes adaMsgIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+@keyframes msgIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+.ada-msg.ada  { background: var(--sage-pale,#eaf3ee); color: var(--text); align-self: flex-start; }
+.ada-msg.user { background: var(--forest); color: #fff; align-self: flex-end; }
+.ada-msg.ada strong { color: var(--forest); }
 
-.ada-msg.assistant {
-  background: var(--surface2);
-  color: var(--text);
-  border: 1px solid var(--border-soft);
-  align-self: flex-start;
-  border-bottom-left-radius: 2px;
-}
-.ada-msg.user {
-  background: var(--sage-dim);
-  color: white;
-  align-self: flex-end;
-  border-bottom-right-radius: 2px;
-}
-.ada-msg.thinking {
-  background: var(--surface2);
-  border: 1px solid var(--border-soft);
-  align-self: flex-start;
-  color: var(--text-muted);
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-.ada-dots { display: flex; gap: 3px; }
-.ada-dots span {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--text-dim);
-  animation: adaDot 1.2s infinite;
-}
-.ada-dots span:nth-child(2) { animation-delay: 0.2s; }
-.ada-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes adaDot { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
-
-/* Quick-start prompts */
+/* Starters */
 .ada-starters {
-  padding: 0 1rem 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  padding: 0 1rem .75rem;
+  display: flex; flex-direction: column; gap: .4rem;
   flex-shrink: 0;
 }
 .ada-starter {
-  background: var(--surface2);
+  background: none;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.45rem 0.75rem;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-  font-family: var(--sans);
+  border-radius: 8px;
+  padding: .45rem .75rem;
+  text-align: left; cursor: pointer;
+  font-size: 11.5px; color: var(--text-muted);
+  transition: background .12s, border-color .12s;
 }
-.ada-starter:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--sage); }
+.ada-starter:hover { background: var(--sage-pale,#eaf3ee); border-color: var(--sage); color: var(--text); }
 
+/* Thinking */
+.ada-thinking {
+  display: flex; gap: 4px; padding: .55rem .8rem;
+  background: var(--sage-pale,#eaf3ee);
+  border-radius: 10px; align-self: flex-start;
+}
+.ada-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sage); opacity: .5;
+  animation: dot 1.2s infinite;
+}
+.ada-dot:nth-child(2) { animation-delay: .2s; }
+.ada-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 0%,80%,100%{opacity:.2;transform:scale(.8);} 40%{opacity:1;transform:scale(1);} }
+
+/* Input */
 .ada-input-row {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
+  display: flex; gap: .5rem;
+  padding: .6rem 1rem;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
-  background: var(--surface);
 }
 #ada-input {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  font-family: var(--sans);
-  font-size: 0.82rem;
-  color: var(--text);
-  background: var(--bg);
-  outline: none;
-  resize: none;
-  min-height: 38px;
-  max-height: 100px;
-  transition: border-color 0.15s;
+  flex: 1; border: 1px solid var(--border);
+  border-radius: 8px; padding: .45rem .7rem;
+  font-size: 12.5px; font-family: var(--sans);
+  background: var(--bg); color: var(--text);
+  outline: none; resize: none;
 }
 #ada-input:focus { border-color: var(--sage); }
-#ada-input::placeholder { color: var(--text-dim); }
 #ada-send {
-  background: var(--sage-dim);
-  border: none;
-  color: white;
-  border-radius: 6px;
-  width: 38px;
-  height: 38px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-  transition: background 0.15s;
-  flex-shrink: 0;
+  background: var(--forest); color: #fff;
+  border: none; border-radius: 8px;
+  padding: .45rem .75rem; cursor: pointer;
+  font-size: 13px;
+  transition: background .12s;
 }
 #ada-send:hover { background: var(--sage); }
-#ada-send:disabled { opacity: 0.4; cursor: not-allowed; }
+#ada-send:disabled { opacity: .4; cursor: default; }
 </style>
 
-<!-- ADA FAB BUTTON -->
-<button id="ada-fab" onclick="adaToggle()" aria-label="Open Ada — data explainer">
-  <span class="fab-icon">✦</span>
-  <span class="fab-label">Ada</span>
+<!-- Ada toggle button -->
+<button id="ada-btn" onclick="adaToggle()" aria-label="Open Ada — Assistiv Intelligence">
+  <span class="ada-icon">✦</span>
+  <span class="ada-label">ADA</span>
 </button>
 
-<!-- ADA PANEL -->
-<div id="ada-panel" role="dialog" aria-label="Ada — Assistiv Data Assistant">
+<!-- Ada panel -->
+<div id="ada-panel" role="dialog" aria-label="Ada — Assistiv Intelligence">
   <div class="ada-header">
     <div class="ada-avatar">✦</div>
     <div class="ada-header-text">
-      <div class="ada-name">Ada</div>
-      <div class="ada-role">Assistiv Data Assistant · FEP Scoring Engine</div>
+      <div class="ada-header-name">Ada</div>
+      <div class="ada-header-sub">Assistiv Intelligence · here to help you understand the data</div>
     </div>
-    <button class="ada-close" onclick="adaToggle()" aria-label="Close Ada">✕</button>
+    <button class="ada-close" onclick="adaToggle()" aria-label="Close Ada">×</button>
   </div>
-
   <div class="ada-messages" id="ada-messages"></div>
-
-  <div class="ada-starters" id="ada-starters">
-    <button class="ada-starter" onclick="adaStarter(this)">What does the FEP score actually mean?</button>
-    <button class="ada-starter" onclick="adaStarter(this)">Why does Thanet score so much higher than Tunbridge Wells?</button>
-    <button class="ada-starter" onclick="adaStarter(this)">What should a commissioner do with this information?</button>
-    <button class="ada-starter" onclick="adaStarter(this)">Explain oral nutritional supplements as a frailty signal</button>
-  </div>
-
+  <div class="ada-starters" id="ada-starters"></div>
   <div class="ada-input-row">
-    <textarea id="ada-input" placeholder="Ask Ada about the data…" rows="1"
+    <textarea id="ada-input" rows="1" placeholder="Ask Ada about the data…"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adaSend();}"></textarea>
-    <button id="ada-send" onclick="adaSend()" aria-label="Send">↑</button>
+    <button id="ada-send" onclick="adaSend()">↑</button>
   </div>
 </div>
 
 <script>
-// ── ADA EXPLAINERBOT ──────────────────────────────────────────────────────────
+// ── ADA CONFIGURATION ─────────────────────────────────────────────────────────
+// Update WORKER_URL after deploying your Cloudflare Worker
+const ADA_WORKER_URL = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
 
-const ADA_MODEL   = 'claude-sonnet-4-20250514';
-const ADA_MAX_TOK = 600;
+const ADA_STARTERS = [
+  'What does a FEP score of 63 actually mean for real people?',
+  'Why do oral nutritional supplements tell us about frailty?',
+  'Which district needs the most urgent attention and why?',
+  'What action should a commissioner take based on this data?',
+];
 
-let adaOpen     = false;
-let adaHistory  = [];
-let adaBusy     = false;
-let adaGreeted  = false;
+const ADA_SYSTEM_PROMPT = `You are Ada, an AI assistant built by Assistiv Systems to help people understand frailty intelligence data. Your job is to explain what the data means for real people — older adults, carers, communities — in plain, warm, human language.
 
-// ── Build context from the live scoring engine state ──────────────────────────
+TONE: Always default to plain English. Never use jargon unless the person uses it first. Be honest about limitations. Be warm but precise.
+
+WHAT YOU KNOW:
+- FEP (Frailty Emergence Probability) score: 0-100 composite score per district. 50 = England average. Higher = more risk. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+.
+- 21 signals across 3 categories: 10 from NHS Fingertips (outcomes data — falls admissions, hip fractures, winter mortality, dementia diagnosis, loneliness, social isolation, fuel poverty), 11 from NHSBSA prescribing data (hypnotics, antidepressants, bisphosphonates, diuretics, ACE/ARBs, anxiolytics, bladder antimuscarinics, oral nutritional supplements, anti-dementia drugs, denosumab, Parkinson's drugs), 3 synthetic (living alone over-75s, deprivation, care home gap).
+- Oral Nutritional Supplements (Ensure, Fortisip) are prescribed when someone is genuinely failing to maintain weight — this is a highly specific frailty marker. High prescribing rates in an area mean significant numbers of people experiencing physical decline.
+- Anti-dementia drugs (donepezil, memantine) track actual dementia treatment prevalence — different from diagnosis rates, which can be affected by under-diagnosis.
+- Parkinson's drugs in an area indicate Parkinson's disease prevalence — a condition that significantly accelerates physical frailty and falls risk.
+- Denosumab is an injectable bone protection drug given for severe osteoporosis or after a fracture — it indicates higher frailty severity than oral bisphosphonates.
+- The weather banner (when active) flags temperature-medication interactions — older people on anticholinergics, diuretics, and antidepressants are at acute risk during heat and cold events.
+- Kent & Medway context: Thanet, Folkestone & Hythe, Dover, and Swale consistently score highest. Coastal east Kent has higher deprivation, older demographics, and above-average prescribing across almost all signals. Sevenoaks and Tunbridge Wells score lowest — affluent commuter belt.
+- Data is refreshed quarterly. Current data is from NHSBSA Mar 2026 and NHS Fingertips 2024/25-2026.
+
+WHAT YOU SHOULD EXPLAIN CLEARLY:
+- What a specific FEP score means in human terms (not just numbers)
+- Why a specific signal matters clinically (connect prescribing to real patient experience)
+- What commissioners or clinical teams could actually DO with this information
+- The honest limitations: district-level data, not individual patients; prescribing rates are population averages; the model is a triage tool, not a diagnosis
+
+WHAT YOU MUST NOT DO:
+- Never give specific clinical advice about individual patients
+- Never claim the model predicts individual outcomes
+- Never be dismissive of the data's limitations
+- Never be overly technical unless the person clearly wants that
+
+When someone asks about a specific district, lead with what that score means for the real people living there, then explain the signals driving it.`;
+
+// ── ADA STATE ─────────────────────────────────────────────────────────────────
+let adaOpen       = false;
+let adaHistory    = [];
+let adaStartersOn = true;
+let adaBusy       = false;
+
+// ── CONTEXT READER ────────────────────────────────────────────────────────────
 function adaGetContext() {
-  // Pull current results from the page if available
+  const lines = [];
+  // Read current zone results from the DOM
   const rows = document.querySelectorAll('.zone-row');
-  let districtSummary = '';
   if (rows.length > 0) {
-    const top5 = [];
-    rows.forEach((row, i) => {
-      if (i >= 5) return;
-      const name  = row.querySelector('.zone-name')?.textContent?.trim() || '';
-      const score = row.querySelector('.zone-score')?.textContent?.trim() || '';
-      const risk  = row.querySelector('.risk-badge')?.textContent?.trim() || '';
-      if (name) top5.push(`${name}: FEP ${score} (${risk})`);
+    lines.push('CURRENT SCORING ENGINE STATE:');
+    rows.forEach(row => {
+      const name  = row.querySelector('.zone-name')?.textContent?.trim();
+      const score = row.querySelector('.zone-fep')?.textContent?.trim();
+      const risk  = row.querySelector('.zone-risk')?.textContent?.trim();
+      if (name && score) lines.push(`  ${name}: FEP ${score} (${risk || ''})`);
     });
-    if (top5.length) districtSummary = `Current top districts by FEP score: ${top5.join(', ')}.`;
   }
-
-  // Pull active weight values
-  const weightIds = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10',
-                     'w11','w12','w13','w14','w15','w16','w17','w18'];
-  const signalLabels = [
-    'Over-75s Living Alone (13%)','Falls Admissions 65+ (12%)','Hip Fracture Rate 65+ (9%)',
-    'Deprivation/IMD (8%)','Winter Mortality Index (8%)','Care Home Gap (7%)',
-    'Loneliness Rate (6%)','Dementia Diagnosis Rate (6%)','Hip Fractures 80+ (5%)',
-    'Social Isolation (5%)','Hypnotics (5%)','Antidepressants (5%)','Bisphosphonates (4%)',
-    'Diuretics (0%)','ACE/ARB (0%)','Anxiolytics (3%)','Bladder Antimuscarinics (1%)',
-    'Oral Nutritional Supplements (3%)'
-  ];
-  const activeWeights = weightIds.map((id, i) => {
-    const val = parseInt(document.getElementById(id)?.value || '0');
-    return val > 0 ? signalLabels[i] : null;
-  }).filter(Boolean);
-
-  return `You are Ada, the Assistiv Data Assistant — a warm, plain-English explainer embedded in the Assistiv Systems FEP Scoring Engine for NHS Kent and Medway.
-
-CONTEXT — what the user is looking at right now:
-This is a tool that scores 13 districts in Kent and Medway on their Frailty Emergence Probability (FEP) — a composite measure of how likely older adults in each area are to be at risk of frailty. Scores are on a 0–100 scale where 50 = England average. Higher scores mean higher risk.
-${districtSummary}
-Active signal weights: ${activeWeights.join(', ')}.
-
-ABOUT THE FEP MODEL:
-- 18 signals drawn from NHS Fingertips, NHSBSA prescribing data (EPD), ONS Census 2021, IMD deprivation index, and CQC care home register
-- All normalised to 0–100 (50 = England average), then weighted and combined
-- Signal 18 (Oral Nutritional Supplements, 3%) was added in v5 — it is a direct FRAIL Scale signal because NICE NG22 states that GPs prescribe these (Fortisip, Ensure, Fresubin) only when a patient has BMI below 18.5 or has lost more than 10% of their body weight — a confirmed clinical marker of the 'Loss of weight' component of the FRAIL Scale
-- Coastal east Kent (Thanet, Dover, Folkestone & Hythe) score highest because they combine coastal deprivation, older demographics, higher prescribing rates, and above-average winter mortality
-- Sevenoaks and Tunbridge Wells score lowest — more affluent, younger demographic profile, lower prescribing rates
-
-ABOUT THE WIDER SYSTEM:
-- Layer 2 (this tool) feeds into Layer 4: RESILIENCE community screening at resiliencetools.xyz
-- A companion Carer Burden Index (CBI) scores the same 13 districts on carer stress signals
-- The FEP × CBI quadrant map shows where frailty risk and carer burden converge simultaneously
-- Weather alerts from UKHSA/Met Office uplift scores for high-risk districts when heat or cold thresholds are breached
-
-YOUR BEHAVIOUR:
-- Always explain in plain English first. Never use jargon unless the user asks for technical detail
-- Be honest about what the data can and cannot tell us — it is a triage tool, not a diagnosis
-- Keep answers concise: 3–5 sentences for simple questions, up to 8 for complex ones
-- Never make clinical recommendations — signpost to clinicians and commissioners
-- If asked about a specific district, be specific using the data above
-- Be warm, direct, and confident — you are explaining a real system built on real NHS data
-- Do not mention that you are built on Claude or refer to Anthropic`;
+  // Active signals from weight sliders
+  const activeSignals = [];
+  SIGNAL_NAMES.forEach((name, i) => {
+    const el = document.getElementById(`w${i+1}`);
+    if (el && parseInt(el.value) > 0) activeSignals.push(`${name} (${el.value}%)`);
+  });
+  if (activeSignals.length > 0) {
+    lines.push(`\nACTIVE SIGNALS: ${activeSignals.slice(0,8).join(', ')}${activeSignals.length > 8 ? ` + ${activeSignals.length-8} more` : ''}`);
+  }
+  // Weather banner if active
+  const wb = document.getElementById('weather-banner');
+  if (wb && wb.style.display !== 'none' && !wb.className.includes('hidden')) {
+    const wtext = document.getElementById('weather-text')?.textContent;
+    if (wtext) lines.push(`\nWEATHER ALERT ACTIVE: ${wtext.substring(0,120)}`);
+  }
+  return lines.length > 0 ? lines.join('\n') : 'Scoring engine loaded — no results computed yet.';
 }
 
-// ── UI helpers ────────────────────────────────────────────────────────────────
+// ── TOGGLE ────────────────────────────────────────────────────────────────────
 function adaToggle() {
   adaOpen = !adaOpen;
   const panel = document.getElementById('ada-panel');
   panel.classList.toggle('open', adaOpen);
-  if (adaOpen && !adaGreeted) {
-    adaGreeted = true;
-    adaAppendMsg('assistant',
-      'Hello — I\'m Ada, the Assistiv data assistant. I can explain what the FEP scores mean, ' +
-      'why specific signals matter clinically, and what commissioners can do with this information. ' +
-      'What would you like to understand?'
-    );
-  }
-  if (adaOpen) setTimeout(() => document.getElementById('ada-input')?.focus(), 100);
+  if (adaOpen && adaHistory.length === 0) adaGreet();
 }
 
-function adaAppendMsg(role, text) {
-  const msgs  = document.getElementById('ada-messages');
-  const div   = document.createElement('div');
-  div.className = `ada-msg ${role}`;
-  div.textContent = text;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  return div;
+// ── GREETING ──────────────────────────────────────────────────────────────────
+function adaGreet() {
+  adaAddMessage('ada',
+    "Hi, I'm <strong>Ada</strong> — I'm here to help you make sense of the frailty data on this page. " +
+    "Whether you're a commissioner, a clinician, or just curious, I'll explain what the scores mean for real people in plain English. " +
+    "What would you like to understand?"
+  );
+  renderStarters();
 }
 
-function adaAppendThinking() {
-  const msgs = document.getElementById('ada-messages');
-  const div  = document.createElement('div');
-  div.className = 'ada-msg thinking';
-  div.id = 'ada-thinking';
-  div.innerHTML = '<span>Ada is thinking</span><div class="ada-dots"><span></span><span></span><span></span></div>';
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
+// ── STARTERS ─────────────────────────────────────────────────────────────────
+function renderStarters() {
+  const el = document.getElementById('ada-starters');
+  if (!adaStartersOn) { el.innerHTML = ''; return; }
+  el.innerHTML = ADA_STARTERS.map(s =>
+    `<button class="ada-starter" onclick="adaUseStarter(this,'${s.replace(/'/g,"\\'")}')">
+       ${s}
+     </button>`
+  ).join('');
 }
 
-function adaRemoveThinking() {
-  document.getElementById('ada-thinking')?.remove();
+function adaUseStarter(btn, text) {
+  adaStartersOn = false;
+  document.getElementById('ada-starters').innerHTML = '';
+  adaSendText(text);
 }
 
-function adaHideStarters() {
-  const s = document.getElementById('ada-starters');
-  if (s) s.style.display = 'none';
-}
-
-function adaStarter(btn) {
-  const text = btn.textContent;
-  adaHideStarters();
-  adaSendMessage(text);
-}
-
-// ── Send ──────────────────────────────────────────────────────────────────────
-async function adaSend() {
+// ── SEND ─────────────────────────────────────────────────────────────────────
+function adaSend() {
   const input = document.getElementById('ada-input');
-  const text  = (input?.value || '').trim();
+  const text  = input.value.trim();
   if (!text || adaBusy) return;
   input.value = '';
-  adaHideStarters();
-  adaSendMessage(text);
+  adaStartersOn = false;
+  document.getElementById('ada-starters').innerHTML = '';
+  adaSendText(text);
 }
 
-async function adaSendMessage(text) {
+async function adaSendText(text) {
   if (adaBusy) return;
   adaBusy = true;
+
+  adaAddMessage('user', text);
+  adaHistory.push({ role: 'user', content: text });
+
+  // Thinking indicator
+  const thinking = document.createElement('div');
+  thinking.className = 'ada-thinking';
+  thinking.innerHTML = '<div class="ada-dot"></div><div class="ada-dot"></div><div class="ada-dot"></div>';
+  thinking.id = 'ada-thinking';
+  document.getElementById('ada-messages').appendChild(thinking);
+  adaScrollBottom();
   document.getElementById('ada-send').disabled = true;
 
-  adaAppendMsg('user', text);
-  adaHistory.push({ role: 'user', content: text });
-  adaAppendThinking();
+  // Build system prompt with live context
+  const systemWithContext = ADA_SYSTEM_PROMPT +
+    '\n\n---\nLIVE TOOL CONTEXT (read from page right now):\n' + adaGetContext();
 
   try {
-    const resp = await fetch('https://assistiv-proxy.YOUR-SUBDOMAIN.workers.dev', {
+    const resp = await fetch(ADA_WORKER_URL, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model:      ADA_MODEL,
-        max_tokens: ADA_MAX_TOK,
-        system:     adaGetContext(),
+        model:      'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        system:     systemWithContext,
         messages:   adaHistory,
-      })
+      }),
     });
 
     const data = await resp.json();
-    const reply = data?.content?.find(b => b.type === 'text')?.text
-      || 'I had trouble fetching a response — please try again.';
+    const reply = data?.content?.[0]?.text || 'Sorry, I couldn\'t get a response — please try again.';
 
-    adaRemoveThinking();
-    adaAppendMsg('assistant', reply);
+    // Remove thinking
+    document.getElementById('ada-thinking')?.remove();
+
+    adaAddMessage('ada', reply);
     adaHistory.push({ role: 'assistant', content: reply });
 
-    // Cap history at 20 turns to manage context
+    // Keep history manageable
     if (adaHistory.length > 20) adaHistory = adaHistory.slice(-20);
 
-  } catch(e) {
-    adaRemoveThinking();
-    adaAppendMsg('assistant', 'Something went wrong connecting to the AI service. Please try again in a moment.');
-    console.error('Ada error:', e);
+  } catch (err) {
+    document.getElementById('ada-thinking')?.remove();
+    adaAddMessage('ada',
+      'I\'m having trouble connecting right now. Make sure the Cloudflare Worker is deployed and the worker URL is set correctly in the page.'
+    );
+    console.warn('Ada fetch error:', err);
   }
 
   adaBusy = false;
   document.getElementById('ada-send').disabled = false;
-  document.getElementById('ada-input')?.focus();
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function adaAddMessage(role, html) {
+  const el = document.createElement('div');
+  el.className = `ada-msg ${role}`;
+  el.innerHTML = html;
+  document.getElementById('ada-messages').appendChild(el);
+  adaScrollBottom();
+}
+
+function adaScrollBottom() {
+  const msgs = document.getElementById('ada-messages');
+  msgs.scrollTop = msgs.scrollHeight;
 }
 </script>
+</body>
+</html>
