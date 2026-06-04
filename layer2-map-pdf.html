@@ -525,7 +525,70 @@ body {
   .icb-stats { gap: 0.75rem; }
 }
 
-/* ── WEATHER RISK BANNER ─────────────────────────────────────────────── */
+/* ── ECONOMIC PANEL ─────────────────────────────────────────────────── */
+.econ-panel {
+  margin-top: 0.85rem;
+  background: linear-gradient(135deg, #f7f5f0 0%, #eef4f0 100%);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--sage);
+  border-radius: 0 8px 8px 0;
+  padding: 0.85rem 1rem;
+}
+.econ-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--sage);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.econ-range {
+  font-family: var(--mono);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+.econ-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-bottom: 0.65rem;
+  line-height: 1.4;
+}
+.econ-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 0.65rem;
+}
+.econ-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  padding: 0.2rem 0;
+  border-bottom: 1px dashed var(--border);
+}
+.econ-row:last-child { border-bottom: none; }
+.econ-row-val {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text);
+  font-weight: 500;
+}
+.econ-source {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.econ-source a { color: var(--sage); text-decoration: none; }
+
 .weather-banner {
   display: flex;
   align-items: center;
@@ -806,6 +869,123 @@ function selectDistrict(feature, layer) {
 }
 
 // ── DETAIL PANEL ──────────────────────────────────────────────────────
+// ── ECONOMIC COST MODEL ───────────────────────────────────────────────
+// NHS Reference Costs & published evidence — fully citable
+// Sources documented inline and in UI
+const ECON = {
+  // Hip fracture: 12-month NHS inpatient cost per patient
+  // Source: Lancet Healthy Longevity, July 2023 (n=178,757 patients, England & Wales)
+  hip_cost_per_patient: 14642,
+
+  // Falls emergency admission cost per episode
+  // Source: NHS Improvement data, uplifted to 2024/25 prices (~£2,600 × 1.18 CPI uplift)
+  falls_cost_per_episode: 3068,
+
+  // Preventability fractions — conservative estimates from systematic evidence
+  // BGS 'Fit for Frailty' guidance & NICE Falls Prevention Quality Standard QS86
+  hip_preventable_fraction: 0.28,    // 28% of hip fractures preventable with proactive intervention
+  falls_preventable_fraction: 0.30,  // 30% of falls admissions preventable
+
+  // FEP baseline England average = 50
+  // Districts above 50 have proportionally elevated risk
+  fep_england_avg: 50,
+
+  // Uncertainty range ±30% (acknowledges model limitations at district level)
+  uncertainty: 0.30,
+};
+
+function calcEconomicImpact(d) {
+  // Population-level incidence from our real Fingertips signals
+  // Falls admissions rate: from kent-fep-data.json ICB baseline signal 'falls_65'
+  // Kent ICB: 1917.36 per 100,000 population 65+
+  // Hip fracture rate: 542.97 per 100,000 population 65+
+  const pop75 = d.pop75 || 15000;
+
+  // FEP uplift factor — districts above England average are proportionally more at-risk
+  // Capped at 1.5x to avoid overstatement
+  const fepUplift = Math.min(1.5, 1 + Math.max(0, (d.fep - ECON.fep_england_avg) / 100));
+
+  // District-level incidence (per 100,000 × pop × uplift)
+  const fallsAdmissions  = Math.round((1917 / 100000) * pop75 * fepUplift);
+  const hipFractures     = Math.round((543  / 100000) * pop75 * fepUplift);
+
+  // Preventable episodes
+  const preventableFalls = Math.round(fallsAdmissions * ECON.falls_preventable_fraction);
+  const preventableHips  = Math.round(hipFractures    * ECON.hip_preventable_fraction);
+
+  // Costs
+  const fallsCost = preventableFalls * ECON.falls_cost_per_episode;
+  const hipCost   = preventableHips  * ECON.hip_cost_per_patient;
+  const totalMid  = fallsCost + hipCost;
+
+  // Uncertainty bounds
+  const totalLow  = Math.round(totalMid * (1 - ECON.uncertainty));
+  const totalHigh = Math.round(totalMid * (1 + ECON.uncertainty));
+
+  return {
+    fallsAdmissions, hipFractures,
+    preventableFalls, preventableHips,
+    fallsCost, hipCost,
+    totalMid, totalLow, totalHigh,
+    fepUplift: Math.round(fepUplift * 100) / 100,
+  };
+}
+
+function formatGBP(n) {
+  if (n >= 1000000) return '£' + (n / 1000000).toFixed(1) + 'm';
+  if (n >= 1000)    return '£' + (n / 1000).toFixed(0) + 'k';
+  return '£' + n.toLocaleString();
+}
+
+function renderEconomicPanel(d) {
+  const e = calcEconomicImpact(d);
+  return `
+    <div class="econ-panel">
+      <div class="econ-title">
+        <span>£</span> Cost of Inaction — Annual Estimate
+      </div>
+      <div class="econ-range">${formatGBP(e.totalLow)} – ${formatGBP(e.totalHigh)}</div>
+      <div class="econ-label">
+        Estimated preventable NHS expenditure annually in ${d.name} from frailty-related
+        falls admissions and hip fractures — based on district population, FEP score,
+        and published preventability evidence.
+      </div>
+
+      <div class="econ-breakdown">
+        <div class="econ-row">
+          <span>Estimated falls admissions 65+ (annual)</span>
+          <span class="econ-row-val">${e.fallsAdmissions.toLocaleString()}</span>
+        </div>
+        <div class="econ-row">
+          <span>Preventable falls admissions (30%)</span>
+          <span class="econ-row-val">${e.preventableFalls.toLocaleString()} · ${formatGBP(e.fallsCost)}</span>
+        </div>
+        <div class="econ-row">
+          <span>Estimated hip fractures 65+ (annual)</span>
+          <span class="econ-row-val">${e.hipFractures.toLocaleString()}</span>
+        </div>
+        <div class="econ-row">
+          <span>Preventable hip fractures (28%)</span>
+          <span class="econ-row-val">${e.preventableHips.toLocaleString()} · ${formatGBP(e.hipCost)}</span>
+        </div>
+        <div class="econ-row">
+          <span>FEP risk uplift vs England average</span>
+          <span class="econ-row-val">${e.fepUplift}×</span>
+        </div>
+      </div>
+
+      <div class="econ-source">
+        <strong>Methodology:</strong> Falls cost: NHS Improvement (£2,600, uplifted to 2024/25 prices).
+        Hip fracture cost: £14,642/patient (Lancet Healthy Longevity, July 2023, n=178,757).
+        Preventability fractions: BGS Fit for Frailty &amp; NICE QS86.
+        FEP uplift: district score relative to England average (50).
+        Uncertainty range ±30%. This is a population-level triage estimate — not a financial model.
+        <br><em>Does not include social care, long-term residential costs, or carer burden.</em>
+      </div>
+    </div>
+  `;
+}
+
 function renderDetailPanel(d) {
   const color = fepColor(d.fep);
   const maxSig = Math.max(...d.signals);
@@ -853,6 +1033,8 @@ function renderDetailPanel(d) {
         </div>
       `).join('')}
     </div>
+
+    ${renderEconomicPanel(d)}
 
     <div style="margin-top:1rem;padding:0.65rem;background:var(--surface2);border-radius:5px;border:1px solid var(--border)">
       <div class="legend-title" style="margin-bottom:0.4rem">Next Step</div>
@@ -1136,7 +1318,10 @@ function exportPDF(districtName) {
       doc.text('SIGNAL BREAKDOWN', 20, 163);
 
       const sigColors = [
-        [45,107,71], [29,78,216], [180,83,9], [124,58,237], [14,116,144], [185,28,28]
+        [45,107,71],[29,78,216],[180,83,9],[124,58,237],[14,116,144],[185,28,28],
+        [22,101,52],[147,51,234],[194,65,12],[3,105,161],[21,128,61],[30,64,175],
+        [146,64,14],[109,40,217],[6,95,70],[249,115,22],[6,182,212],
+        [167,139,250],[251,146,60],[52,211,153],[244,114,182]
       ];
 
       d.signals.forEach((val, i) => {
@@ -1212,10 +1397,22 @@ function exportPDF(districtName) {
 
       // Methodology
       let my = 30;
+      const e = calcEconomicImpact(d);
+      const econBody = `Estimated preventable NHS expenditure for ${d.name}: ${formatGBP(e.totalLow)}–${formatGBP(e.totalHigh)} annually.\n` +
+        `Preventable falls admissions: ${e.preventableFalls} episodes · ${formatGBP(e.fallsCost)}\n` +
+        `Preventable hip fractures: ${e.preventableHips} episodes · ${formatGBP(e.hipCost)}\n` +
+        `FEP risk uplift vs England average: ${e.fepUplift}x\n` +
+        `Sources: Falls cost NHS Improvement (uplifted to 2024/25). Hip fracture cost Lancet Healthy Longevity 2023 (n=178,757). ` +
+        `Preventability: BGS Fit for Frailty & NICE QS86. Uncertainty +/-30%. Population-level triage estimate only.`;
+
       const sections = [
         {
+          title: 'Cost of Inaction — Annual Economic Estimate',
+          body: econBody
+        },
+        {
           title: 'About the Frailty Emergence Probability (FEP) Score',
-          body: 'The FEP score is a composite index (0-100) derived from six public data signals, weighted by domain-informed coefficients and normalised across Kent districts. It identifies areas where older adults are most likely to be experiencing emerging frailty before crisis presentation. A higher score indicates a greater concentration of risk factors; it is not a clinical diagnosis.'
+          body: 'The FEP score is a composite index (0-100) derived from 21 public data signals, weighted by domain-informed coefficients and normalised across Kent districts. It identifies areas where older adults are most likely to be experiencing emerging frailty before crisis presentation. A higher score indicates a greater concentration of risk factors; it is not a clinical diagnosis.'
         },
         {
           title: 'Scoring Signals & Weights',
