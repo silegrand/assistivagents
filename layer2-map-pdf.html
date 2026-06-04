@@ -876,7 +876,7 @@ function getRecommendations(d) {
   if (d.signals[2] >= 70) recs.push('High polypharmacy — pharmacy-led screening is optimal entry point');
   if (d.signals[3] >= 75) recs.push('High deprivation — facilitated rather than digital-first screening');
   if (d.signals[5] >= 70) recs.push('Care home capacity gap — flag to social care commissioning');
-  if (recs.length === 0) recs.push('Routine monitoring — rescore quarterly');
+  if (recs.length === 0) recs.push('Routine monitoring — data refreshes daily, check back regularly');
   recs.push(`Brief NHS ${d.name} PCN lead with FEP score and signal breakdown`);
   return recs;
 }
@@ -1227,7 +1227,7 @@ function exportPDF(districtName) {
         },
         {
           title: 'Recommended Next Steps',
-          body: '1. Share this briefing with the PCN clinical lead for ' + d.name + '.\n2. Use the Layer 3 Outreach Agent to identify specific community touchpoints within this district.\n3. Deploy resiliencetools.xyz screening at priority venues.\n4. Feed anonymised screening outcomes back to recalibrate the FEP model.\n5. Rescore all districts quarterly or following significant data updates.'
+          body: '1. Share this briefing with the PCN clinical lead for ' + d.name + '.\n2. Use the Layer 3 Outreach Agent to identify specific community touchpoints within this district.\n3. Deploy resiliencetools.xyz screening at priority venues.\n4. Feed anonymised screening outcomes back to recalibrate the FEP model.\n5. Rescore all districts as data refreshes — Fingertips indicators update daily, EPD monthly.'
         },
         {
           title: 'Confidentiality & Use',
