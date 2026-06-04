@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FEP Trend History · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:  #1a3a2a;
+  --sage:    #2d6b47;
+  --sage2:   #4a7c5f;
+  --amber:   #8a6200;
+  --linen:   #f7f5f0;
+  --surface: #ffffff;
+  --border:  #d8e4dc;
+  --text:    #1a2420;
+  --muted:   #5a6b62;
+  --mono:    'DM Mono', monospace;
+  --serif:   'Cormorant Garamond', Georgia, serif;
+  --sans:    'Nunito', system-ui, sans-serif;
+  --risk-critical: #c04828;
+  --risk-high:     #b07010;
+  --risk-moderate: #1a6090;
+  --risk-low:      #2d6b47;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--linen);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--forest);
+  padding: 0.75rem 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.topbar a {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-family: var(--mono);
+  transition: color 0.15s;
+}
+.topbar a:hover { color: #fff; }
+.topbar-title {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  color: #fff;
+  flex: 1;
+}
+.topbar-badge {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+/* ── MAIN LAYOUT ── */
+.main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+/* ── CONTROLS ── */
+.controls {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex; gap: 1.5rem; align-items: flex-end; flex-wrap: wrap;
+}
+.ctrl-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.ctrl-label { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+select, .btn {
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--linen);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+select:focus { border-color: var(--sage); }
+.btn {
+  background: var(--forest);
+  color: #fff; border: none;
+  font-weight: 600;
+  padding: 0.45rem 1.25rem;
+}
+.btn:hover { background: var(--sage); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn-secondary {
+  background: var(--surface);
+  color: var(--forest);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--linen); }
+
+/* ── SNAPSHOT COUNT ── */
+.snapshot-info {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+/* ── TREND CHART ── */
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.card-title {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--forest);
+  margin-bottom: 1rem;
+}
+.chart-wrap {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+}
+canvas { width: 100% !important; }
+
+/* ── COMPARISON TABLE ── */
+.compare-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.compare-header {
+  background: var(--forest);
+  padding: 0.75rem 1.25rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.compare-header-title {
+  font-family: var(--serif);
+  font-size: 1rem;
+  color: #fff; flex: 1;
+}
+.date-pill {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 4px;
+  color: #fff;
+}
+.date-a { background: rgba(255,255,255,0.15); }
+.date-b { background: var(--sage); }
+
+table { width: 100%; border-collapse: collapse; }
+thead tr { border-bottom: 2px solid var(--border); }
+th {
+  padding: 0.6rem 1rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  background: var(--linen);
+}
+td {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f9fbf9; }
+
+.district-name { font-weight: 600; }
+.fep-val { font-family: var(--mono); font-weight: 500; font-size: 0.95rem; }
+.risk-pill {
+  display: inline-block;
+  font-size: 0.7rem; font-weight: 600;
+  padding: 2px 8px; border-radius: 99px;
+}
+.risk-critical { background: #fde8e2; color: var(--risk-critical); }
+.risk-high     { background: #fef3d8; color: var(--risk-high); }
+.risk-moderate { background: #e0f0fb; color: var(--risk-moderate); }
+.risk-low      { background: #e2f0e8; color: var(--risk-low); }
+
+.delta {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.delta-up   { color: var(--risk-critical); }
+.delta-down { color: var(--risk-low); }
+.delta-flat { color: var(--muted); }
+
+.spark {
+  display: flex; align-items: flex-end; gap: 2px;
+  height: 28px;
+}
+.spark-bar {
+  width: 8px;
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+/* ── LOADING / EMPTY ── */
+.state-msg {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.state-msg .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html">← Overview</a>
+  <div class="topbar-title">FEP Trend History</div>
+  <div class="live-dot"></div>
+  <span class="topbar-badge">Daily refresh</span>
+  <span class="topbar-badge">Kent &amp; Medway ICB</span>
+</div>
+
+<div class="main">
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">Compare date A</span>
+      <select id="date-a"></select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Compare date B</span>
+      <select id="date-b"></select>
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">District trend</span>
+      <select id="district-select">
+        <option value="all">All districts</option>
+        <option value="Thanet">Thanet</option>
+        <option value="Folkestone & Hythe">Folkestone & Hythe</option>
+        <option value="Dover">Dover</option>
+        <option value="Swale">Swale</option>
+        <option value="Medway">Medway</option>
+        <option value="Gravesham">Gravesham</option>
+        <option value="Ashford">Ashford</option>
+        <option value="Canterbury">Canterbury</option>
+        <option value="Dartford">Dartford</option>
+        <option value="Maidstone">Maidstone</option>
+        <option value="Tonbridge & Malling">Tonbridge & Malling</option>
+        <option value="Sevenoaks">Sevenoaks</option>
+        <option value="Tunbridge Wells">Tunbridge Wells</option>
+      </select>
+    </div>
+    <button class="btn" id="compare-btn" onclick="runCompare()">Compare</button>
+    <button class="btn btn-secondary" onclick="loadLatest()">Load Latest</button>
+    <span class="snapshot-info" id="snapshot-info">Loading snapshots…</span>
+  </div>
+
+  <!-- Trend chart -->
+  <div class="chart-card">
+    <div class="card-title">FEP Score Trend</div>
+    <div class="chart-wrap">
+      <canvas id="trend-canvas"></canvas>
+    </div>
+    <div id="chart-empty" class="state-msg">
+      <div class="icon">📈</div>
+      Select a district and load data to see the trend
+    </div>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="compare-card" id="compare-card">
+    <div class="compare-header">
+      <span class="compare-header-title">District Comparison</span>
+      <span class="date-pill date-a" id="label-a">Date A</span>
+      <span>→</span>
+      <span class="date-pill date-b" id="label-b">Date B</span>
+    </div>
+    <div id="compare-body">
+      <div class="state-msg">
+        <div class="icon">🗓</div>
+        Select two dates and click Compare
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Assistiv Systems · Kent &amp; Medway FEP Intelligence · Data: NHS Fingertips + NHSBSA EPD ·
+  Historic snapshots stored in <a href="https://github.com/silegrand/assistivagents/tree/main/history" target="_blank">GitHub</a>
+</footer>
+
+<script>
+const REPO    = 'silegrand/assistivagents';
+const RAW     = 'https://raw.githubusercontent.com/' + REPO + '/main/';
+const API     = 'https://api.github.com/repos/' + REPO + '/contents/history';
+
+let snapshots = [];   // [{date, filename, url}] sorted desc
+let cache     = {};   // date → parsed JSON
+let allDates  = [];
+
+const RISK_COLOR = { critical:'#c04828', high:'#b07010', moderate:'#1a6090', low:'#2d6b47' };
+const DISTRICT_COLORS = [
+  '#1a6090','#c04828','#2d6b47','#b07010','#6b3a9e',
+  '#c05090','#0a8080','#8b4513','#4a4a9e','#2d8050',
+  '#9e3a3a','#506b9e','#6b8b3a'
+];
+
+// ── INIT ─────────────────────────────────────────────────────────────
+async function init() {
+  document.getElementById('snapshot-info').textContent = 'Fetching snapshot list…';
+  try {
+    const r = await fetch(API + '?per_page=100');
+    const files = await r.json();
+
+    snapshots = files
+      .filter(f => f.name.match(/^kent-fep-\d{4}-\d{2}-\d{2}\.json$/))
+      .map(f => ({
+        date:     f.name.replace('kent-fep-','').replace('.json',''),
+        filename: f.name,
+        url:      RAW + 'history/' + f.name,
+      }))
+      .sort((a,b) => b.date.localeCompare(a.date));
+
+    // Also add today's current file
+    const todayEntry = {
+      date: 'latest',
+      filename: 'kent-fep-data.json',
+      url: RAW + 'kent-fep-data.json',
+      label: 'Latest (current)'
+    };
+    allDates = [todayEntry, ...snapshots];
+
+    document.getElementById('snapshot-info').textContent =
+      `${snapshots.length} snapshots available`;
+
+    // Populate date selectors
+    const selA = document.getElementById('date-a');
+    const selB = document.getElementById('date-b');
+    allDates.forEach((s, i) => {
+      const label = s.label || s.date;
+      selA.innerHTML += `<option value="${s.url}">${label}</option>`;
+      selB.innerHTML += `<option value="${s.url}" ${i===1?'selected':''}>${label}</option>`;
+    });
+
+    // Auto-load latest and draw initial trend
+    await loadLatest();
+
+  } catch(e) {
+    document.getElementById('snapshot-info').textContent = 'Could not load snapshots';
+    console.error(e);
+  }
+}
+
+// ── FETCH JSON (cached) ───────────────────────────────────────────────
+async function fetchSnap(url) {
+  if (cache[url]) return cache[url];
+  const r = await fetch(url);
+  const d = await r.json();
+  cache[url] = d;
+  return d;
+}
+
+// ── LOAD LATEST ───────────────────────────────────────────────────────
+async function loadLatest() {
+  if (allDates.length === 0) return;
+  const latest = allDates[0];
+  const data = await fetchSnap(latest.url);
+  drawTrend(data, 'Latest');
+  await runCompare();
+}
+
+// ── COMPARE ───────────────────────────────────────────────────────────
+async function runCompare() {
+  const urlA = document.getElementById('date-a').value;
+  const urlB = document.getElementById('date-b').value;
+  if (!urlA || !urlB) return;
+
+  document.getElementById('compare-btn').disabled = true;
+  document.getElementById('compare-btn').textContent = 'Loading…';
+
+  try {
+    const [dataA, dataB] = await Promise.all([fetchSnap(urlA), fetchSnap(urlB)]);
+
+    // Update labels
+    const dateA = dataA.meta?.generated?.substring(0,10) || 'Date A';
+    const dateB = dataB.meta?.generated?.substring(0,10) || 'Date B';
+    document.getElementById('label-a').textContent = dateA;
+    document.getElementById('label-b').textContent = dateB;
+
+    // Build lookup
+    const mapA = {}, mapB = {};
+    (dataA.districts || []).forEach(d => mapA[d.name] = d);
+    (dataB.districts || []).forEach(d => mapB[d.name] = d);
+
+    const allNames = [...new Set([
+      ...(dataA.districts || []).map(d=>d.name),
+      ...(dataB.districts || []).map(d=>d.name)
+    ])].sort((a,b) => (mapB[b]?.fep||0) - (mapB[a]?.fep||0));
+
+    // Draw table
+    let html = `<table>
+      <thead><tr>
+        <th>District</th>
+        <th>${dateA}</th>
+        <th>${dateB}</th>
+        <th>Change</th>
+        <th>Direction</th>
+        <th>Trend</th>
+      </tr></thead><tbody>`;
+
+    allNames.forEach((name, idx) => {
+      const dA = mapA[name];
+      const dB = mapB[name];
+      const fA = dA?.fep ?? '—';
+      const fB = dB?.fep ?? '—';
+      const delta = (typeof fA === 'number' && typeof fB === 'number') ? fB - fA : null;
+      const riskB = dB?.risk || dA?.risk || 'moderate';
+
+      let deltaHtml = '<span class="delta delta-flat">—</span>';
+      let dirHtml   = '—';
+      if (delta !== null) {
+        const cls = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
+        const sign = delta > 0 ? '+' : '';
+        deltaHtml = `<span class="delta ${cls}">${sign}${delta}</span>`;
+        dirHtml   = delta > 0 ? '↑ Rising' : delta < 0 ? '↓ Falling' : '→ Stable';
+      }
+
+      // Mini spark from history for this district
+      const sparkHtml = buildSpark(name, idx, fB);
+
+      html += `<tr>
+        <td class="district-name">${name}</td>
+        <td class="fep-val">${fA}</td>
+        <td class="fep-val"><span class="risk-pill risk-${riskB}">${fB}</span></td>
+        <td>${deltaHtml}</td>
+        <td style="font-size:0.8rem;color:var(--muted)">${dirHtml}</td>
+        <td>${sparkHtml}</td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    document.getElementById('compare-body').innerHTML = html;
+
+    // Draw trend for selected district
+    const sel = document.getElementById('district-select').value;
+    drawTrend(dataB, dateB, sel === 'all' ? null : sel);
+
+  } catch(e) {
+    document.getElementById('compare-body').innerHTML =
+      `<div class="state-msg"><div class="icon">⚠</div>Could not load comparison data</div>`;
+    console.error(e);
+  }
+
+  document.getElementById('compare-btn').disabled = false;
+  document.getElementById('compare-btn').textContent = 'Compare';
+}
+
+// ── SPARK BARS ────────────────────────────────────────────────────────
+function buildSpark(districtName, idx, currentFep) {
+  // Use cached data to build mini trend
+  const vals = allDates.slice(0,8).map(s => {
+    const d = cache[s.url];
+    if (!d) return null;
+    const dist = (d.districts || []).find(x => x.name === districtName);
+    return dist?.fep || null;
+  }).filter(v => v !== null).reverse();
+
+  if (vals.length < 2) return '<span style="color:var(--muted);font-size:0.75rem">—</span>';
+
+  const max = Math.max(...vals, 40);
+  const color = DISTRICT_COLORS[idx % DISTRICT_COLORS.length];
+
+  const bars = vals.map(v => {
+    const h = Math.max(2, Math.round((v / max) * 28));
+    return `<div class="spark-bar" style="height:${h}px;background:${color};opacity:0.7"></div>`;
+  }).join('');
+
+  return `<div class="spark">${bars}</div>`;
+}
+
+// ── TREND CHART ───────────────────────────────────────────────────────
+function drawTrend(latestData, dateLabel, filterDistrict) {
+  const canvas = document.getElementById('trend-canvas');
+  const empty  = document.getElementById('chart-empty');
+
+  // Collect all cached data points sorted by date
+  const dataPoints = allDates
+    .map(s => ({
+      date: s.date === 'latest' ? (latestData.meta?.generated?.substring(0,10) || 'Latest') : s.date,
+      data: cache[s.url]
+    }))
+    .filter(p => p.data)
+    .sort((a,b) => a.date.localeCompare(b.date));
+
+  if (dataPoints.length < 2) {
+    empty.style.display = 'block';
+    canvas.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  canvas.style.display = 'block';
+
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth;
+  const H = 220;
+  canvas.width  = W;
+  canvas.height = H;
+
+  const dates    = dataPoints.map(p => p.date);
+  const districts = filterDistrict
+    ? [filterDistrict]
+    : (latestData.districts || []).map(d => d.name);
+
+  const pad = { top:20, right:20, bottom:40, left:40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top  - pad.bottom;
+
+  // Grid
+  ctx.strokeStyle = '#e8f0ea';
+  ctx.lineWidth = 1;
+  [30,40,50,60,70,80].forEach(y => {
+    const yPos = pad.top + chartH - ((y-20) / 60) * chartH;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, yPos);
+    ctx.lineTo(pad.left + chartW, yPos);
+    ctx.stroke();
+    ctx.fillStyle = '#9aafa2';
+    ctx.font = '10px DM Mono, monospace';
+    ctx.fillText(y, 4, yPos + 4);
+  });
+
+  // Lines per district
+  districts.forEach((name, idx) => {
+    const color = DISTRICT_COLORS[idx % DISTRICT_COLORS.length];
+    const pts = dataPoints.map((p, xi) => {
+      const dist = (p.data.districts || []).find(d => d.name === name);
+      if (!dist) return null;
+      const x = pad.left + (xi / Math.max(dates.length-1, 1)) * chartW;
+      const y = pad.top + chartH - ((dist.fep - 20) / 60) * chartH;
+      return {x, y, fep: dist.fep};
+    }).filter(Boolean);
+
+    if (pts.length < 2) return;
+
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = districts.length === 1 ? 2.5 : 1.5;
+    ctx.lineJoin = 'round';
+    pts.forEach((p,i) => i===0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+
+    // Dots
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(p.x, p.y, districts.length === 1 ? 4 : 3, 0, Math.PI*2);
+      ctx.fill();
+    });
+
+    // Label at last point
+    const last = pts[pts.length-1];
+    ctx.fillStyle = color;
+    ctx.font = `600 11px Nunito, sans-serif`;
+    ctx.fillText(districts.length === 1 ? `${name} (${last.fep})` : last.fep, last.x + 5, last.y + 4);
+  });
+
+  // X axis dates
+  ctx.fillStyle = '#7a8f82';
+  ctx.font = '10px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(dates.length / 6));
+  dates.forEach((d, i) => {
+    if (i % step !== 0 && i !== dates.length-1) return;
+    const x = pad.left + (i / Math.max(dates.length-1,1)) * chartW;
+    ctx.fillText(d.substring(5), x, H - 8);
+  });
+}
+
+// ── RUN ──────────────────────────────────────────────────────────────
+init();
+
+// Redraw trend when district changes
+document.getElementById('district-select').addEventListener('change', () => {
+  const sel = document.getElementById('district-select').value;
+  const urlB = document.getElementById('date-b').value;
+  if (cache[urlB]) {
+    const data = cache[urlB];
+    drawTrend(data, '', sel === 'all' ? null : sel);
+  }
+});
+</script>
+</body>
+</html>
