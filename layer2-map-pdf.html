@@ -525,7 +525,67 @@ body {
   .icb-stats { gap: 0.75rem; }
 }
 
-/* ── ECONOMIC PANEL ─────────────────────────────────────────────────── */
+/* ── PRESCRIBING INTELLIGENCE PANEL ─────────────────────────────────── */
+.rx-panel {
+  margin-top: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid #1d4ed8;
+  border-radius: 0 8px 8px 0;
+  padding: 0.85rem 1rem;
+}
+.rx-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: #1d4ed8;
+  margin-bottom: 0.65rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.rx-signal-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.3rem 0.75rem;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 0.68rem;
+}
+.rx-signal-row:last-of-type { border-bottom: none; }
+.rx-sig-name { color: var(--text); font-weight: 500; }
+.rx-sig-rate { font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); text-align: right; }
+.rx-sig-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-align: center;
+  min-width: 38px;
+}
+.rx-high   { background: #fee2e2; color: #991b1b; }
+.rx-mod    { background: #fef3d8; color: #92400e; }
+.rx-ok     { background: #dcfce7; color: #166534; }
+.rx-low    { background: #e0f2fe; color: #075985; }
+.rx-action {
+  margin-top: 0.65rem;
+  padding: 0.5rem 0.75rem;
+  background: #eff6ff;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  color: #1e40af;
+  line-height: 1.5;
+}
+.rx-source {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border);
+}
+
 .econ-panel {
   margin-top: 0.85rem;
   background: linear-gradient(135deg, #f7f5f0 0%, #eef4f0 100%);
@@ -986,6 +1046,81 @@ function renderEconomicPanel(d) {
   `;
 }
 
+// ── PRESCRIBING INTELLIGENCE PANEL ───────────────────────────────────
+// Uses district-level EPD data from kent-fep-data.json
+// Practice-level ranking requires kent-practice-data.json (Phase 2)
+
+const RX_SIGNALS = [
+  { key: 'antidepressants',  label: 'Antidepressants',          england: 110.0, unit: '/1k' },
+  { key: 'hypnotics',        label: 'Hypnotics (sleep)',         england: 10.2,  unit: '/1k' },
+  { key: 'anxiolytics',      label: 'Anxiolytics (benzos)',      england: 8.5,   unit: '/1k' },
+  { key: 'bladder_antimusc', label: 'Bladder antimuscarinics',   england: 4.2,   unit: '/1k' },
+  { key: 'bisphosphonates',  label: 'Bisphosphonates',           england: 6.8,   unit: '/1k' },
+  { key: 'ons_nutrition',    label: 'Oral nutrition supplements', england: 3.8,   unit: '/1k' },
+  { key: 'ace_arb',          label: 'ACE/ARBs',                  england: 95.0,  unit: '/1k' },
+  { key: 'diuretics',        label: 'Diuretics',                 england: 2.5,   unit: '/1k' },
+];
+
+function rxBadge(ratio) {
+  if (ratio >= 1.5)  return { cls: 'rx-high', label: ratio.toFixed(2) + 'x ▲▲' };
+  if (ratio >= 1.15) return { cls: 'rx-mod',  label: ratio.toFixed(2) + 'x ▲' };
+  if (ratio >= 0.85) return { cls: 'rx-ok',   label: ratio.toFixed(2) + 'x' };
+  if (ratio > 0)     return { cls: 'rx-low',  label: ratio.toFixed(2) + 'x ▼' };
+  return { cls: 'rx-ok', label: 'n/a' };
+}
+
+function renderPrescribingIntelligence(d) {
+  const epd = d.epd_district || {};
+  if (Object.keys(epd).length === 0) return '';
+
+  // Sort signals by ratio descending — highest concern first
+  const sorted = RX_SIGNALS
+    .map(sig => {
+      const v = epd[sig.key] || {};
+      return { ...sig, rate: v.rate_per_1000 || 0, ratio: v.ratio || 0, items: v.items || 0 };
+    })
+    .filter(s => s.rate > 0)
+    .sort((a, b) => b.ratio - a.ratio);
+
+  if (sorted.length === 0) return '';
+
+  // Generate PCN action from top signals
+  const top = sorted.filter(s => s.ratio >= 1.15).slice(0, 3);
+  let action = '';
+  if (top.length > 0) {
+    const topNames = top.map(s => s.label.toLowerCase()).join(', ');
+    action = `<strong>PCN priority:</strong> ${d.name} prescribing is elevated on ${topNames}. ` +
+      `Target medication reviews at practices with highest prescribing volume — ` +
+      `anticholinergic burden and sleep medication are the strongest frailty signals. ` +
+      `Practice-level rankings available when kent-practice-data.json is deployed.`;
+  } else {
+    action = `${d.name} prescribing rates are broadly in line with England averages across monitored signals.`;
+  }
+
+  const rows = sorted.map(s => {
+    const badge = rxBadge(s.ratio);
+    return `<div class="rx-signal-row">
+      <span class="rx-sig-name">${s.label}</span>
+      <span class="rx-sig-rate">${s.rate.toFixed(1)}${s.unit}</span>
+      <span class="rx-sig-badge ${badge.cls}">${badge.label}</span>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="rx-panel">
+      <div class="rx-title">
+        <span>Rx</span> Prescribing Intelligence — ${d.name}
+      </div>
+      ${rows}
+      <div class="rx-action">${action}</div>
+      <div class="rx-source">
+        Rates per 1,000 registered patients · NHSBSA EPD practice-level Mar 2026 ·
+        Ratio vs England average · Sorted by concern level
+      </div>
+    </div>
+  `;
+}
+
 function renderDetailPanel(d) {
   const color = fepColor(d.fep);
   const maxSig = Math.max(...d.signals);
@@ -1035,6 +1170,8 @@ function renderDetailPanel(d) {
     </div>
 
     ${renderEconomicPanel(d)}
+
+    ${renderPrescribingIntelligence(d)}
 
     <div style="margin-top:1rem;padding:0.65rem;background:var(--surface2);border-radius:5px;border:1px solid var(--border)">
       <div class="legend-title" style="margin-bottom:0.4rem">Next Step</div>
