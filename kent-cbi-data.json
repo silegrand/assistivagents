@@ -1,0 +1,448 @@
+{
+  "meta": {
+    "generated": "2026-06-04T13:14:19.579261+00:00",
+    "description": "Kent & Medway Carer Burden Index \u2014 Assistiv Systems Layer 2 companion",
+    "version": "1.0",
+    "icb": "NHS Kent and Medway ICB (QKS)",
+    "icb_ons_code": "E54000032",
+    "signals": {
+      "census_20plus": {
+        "weight": 0.3,
+        "geography": "district",
+        "source": "ONS Census 2021 TS039"
+      },
+      "social_isolation": {
+        "weight": 0.25,
+        "geography": "county",
+        "source": "NHS Fingertips 90638"
+      },
+      "support_access": {
+        "weight": 0.15,
+        "geography": "county",
+        "source": "NHS Fingertips 90279"
+      },
+      "assessment_rate": {
+        "weight": 0.15,
+        "geography": "county",
+        "source": "NHS Fingertips 93014"
+      },
+      "wellbeing": {
+        "weight": 0.15,
+        "geography": "county",
+        "source": "NHS Fingertips 90283"
+      }
+    },
+    "methodology": "Signals normalised to 0-100 (50=England average, >50=higher burden). County-level Fingertips signals applied uniformly across all 13 districts. District variation driven by ONS Census 2021 20+ hr carer rate (30% weight). Antidepressant/anxiolytic prescribing excluded \u2014 already in FEP model. DWP Carer Allowance pending \u2014 add as Signal 6 when available.",
+    "limitations": "Fingertips carer indicators not available below county level for Kent. CBI is a population-level triage index, not an individual diagnostic tool. Census data from 2021 \u2014 carer burden has likely increased since then.",
+    "note_on_fep_cbi": "CBI is designed to be read alongside the FEP score, not instead of it. High FEP + High CBI = frailty risk AND carer system under strain simultaneously. Use the quadrant map for commissioning decisions."
+  },
+  "county_baseline": {
+    "social_isolation": {
+      "indicator_id": 90638,
+      "label": "Carer social isolation",
+      "kent_val": 17.56757,
+      "england_val": 45.85207,
+      "period": "2023/24",
+      "invert": true,
+      "source": "NHS Fingertips indicator 90638 \u2014 Kent County (E10000016)",
+      "geo_note": "County level \u2014 applied uniformly across all 13 districts"
+    },
+    "support_access": {
+      "indicator_id": 90279,
+      "label": "Carer support info access",
+      "kent_val": null,
+      "england_val": null,
+      "period": "'NoneType' object is not iterable",
+      "invert": true,
+      "source": "NHS Fingertips indicator 90279 \u2014 Kent County (E10000016)",
+      "geo_note": "County level \u2014 applied uniformly across all 13 districts"
+    },
+    "assessment_rate": {
+      "indicator_id": 93014,
+      "label": "Carer's Assessment rate",
+      "kent_val": 68.65901,
+      "england_val": 56.4353,
+      "period": "2024/25",
+      "invert": false,
+      "source": "NHS Fingertips indicator 93014 \u2014 Kent County (E10000016)",
+      "geo_note": "County level \u2014 applied uniformly across all 13 districts"
+    },
+    "wellbeing": {
+      "indicator_id": 90283,
+      "label": "Carer wellbeing score",
+      "kent_val": 72.0,
+      "england_val": 70.25031,
+      "period": "2022/23",
+      "invert": false,
+      "source": "NHS Fingertips indicator 90283 \u2014 Kent County (E10000016)",
+      "geo_note": "County level \u2014 applied uniformly across all 13 districts"
+    }
+  },
+  "england_census_avg_20plus_pct": 4.5187,
+  "districts": [
+    {
+      "name": "Thanet",
+      "lad_code": "E07000114",
+      "cbi": 64,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 66.2,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 5.9849,
+        "high_hrs_carers": 7975,
+        "hrs_50_plus": 5076,
+        "total_pop_5plus": 133253,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Folkestone & Hythe",
+      "lad_code": "E07000112",
+      "cbi": 63,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 61.7,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 5.5798,
+        "high_hrs_carers": 5839,
+        "hrs_50_plus": 3671,
+        "total_pop_5plus": 104645,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Dover",
+      "lad_code": "E07000108",
+      "cbi": 63,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 61.3,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 5.5427,
+        "high_hrs_carers": 6138,
+        "hrs_50_plus": 3794,
+        "total_pop_5plus": 110741,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Swale",
+      "lad_code": "E07000113",
+      "cbi": 63,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 61.0,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 5.5105,
+        "high_hrs_carers": 7868,
+        "hrs_50_plus": 4984,
+        "total_pop_5plus": 142781,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Gravesham",
+      "lad_code": "E07000109",
+      "cbi": 61,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 53.5,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.8306,
+        "high_hrs_carers": 4845,
+        "hrs_50_plus": 2969,
+        "total_pop_5plus": 100299,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Medway",
+      "lad_code": "E06000035",
+      "cbi": 60,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 51.9,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.6909,
+        "high_hrs_carers": 12312,
+        "hrs_50_plus": 7380,
+        "total_pop_5plus": 262465,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Ashford",
+      "lad_code": "E07000105",
+      "cbi": 60,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 50.4,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.555,
+        "high_hrs_carers": 5700,
+        "hrs_50_plus": 3501,
+        "total_pop_5plus": 125137,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Canterbury",
+      "lad_code": "E07000106",
+      "cbi": 59,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 48.8,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.4095,
+        "high_hrs_carers": 6641,
+        "hrs_50_plus": 4163,
+        "total_pop_5plus": 150606,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Dartford",
+      "lad_code": "E07000107",
+      "cbi": 58,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 44.9,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.0573,
+        "high_hrs_carers": 4401,
+        "hrs_50_plus": 2701,
+        "total_pop_5plus": 108471,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Maidstone",
+      "lad_code": "E07000110",
+      "cbi": 58,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 45.6,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.1187,
+        "high_hrs_carers": 6812,
+        "hrs_50_plus": 4245,
+        "total_pop_5plus": 165392,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Tonbridge & Malling",
+      "lad_code": "E07000115",
+      "cbi": 58,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 45.4,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.0997,
+        "high_hrs_carers": 5105,
+        "hrs_50_plus": 3158,
+        "total_pop_5plus": 124520,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Sevenoaks",
+      "lad_code": "E07000111",
+      "cbi": 57,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 43.2,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 3.9062,
+        "high_hrs_carers": 4445,
+        "hrs_50_plus": 2797,
+        "total_pop_5plus": 113792,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
+      "name": "Tunbridge Wells",
+      "lad_code": "E07000116",
+      "cbi": 56,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 37.1,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 60.8,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 3.3561,
+        "high_hrs_carers": 3663,
+        "hrs_50_plus": 2253,
+        "total_pop_5plus": 109144,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    }
+  ]
+}
