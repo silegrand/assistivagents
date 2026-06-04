@@ -1,0 +1,41 @@
+name: Daily FEP Refresh — Fingertips
+
+# Runs every day at 06:00 UTC
+# Fetches latest NHS Fingertips indicators and updates kent-fep-data.json
+# EPD prescribing data is NOT re-streamed daily (18M rows, monthly NHSBSA release)
+# EPD uses last committed values until manually triggered when new month published
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # 06:00 UTC daily
+  workflow_dispatch:       # also triggerable manually from Actions tab
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install fingertips_py requests pandas
+
+      - name: Run Fingertips refresh
+        env:
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+        run: python daily_refresh.py
+
+      - name: Commit updated JSON
+        run: |
+          git config user.name  "Assistiv FEP Bot"
+          git config user.email "bot@assistiv.health"
+          git add kent-fep-data.json history/
+          git diff --staged --quiet || git commit -m "Daily FEP refresh — $(date -u '+%Y-%m-%d')"
+          git push
