@@ -2047,9 +2047,8 @@ async function adaSendMessage(text) {
   adaAppendThinking();
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://assistiv-proxy.YOUR-SUBDOMAIN.workers.dev', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model:      ADA_MODEL,
         max_tokens: ADA_MAX_TOK,
