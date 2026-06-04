@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frailty & Carer Burden — Kent & Medway · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:    #0f2318;
+  --forest2:   #1a3a2a;
+  --sage:      #2d6b47;
+  --sage2:     #4a7c5f;
+  --sage3:     #7aab90;
+  --cream:     #f7f4ee;
+  --cream2:    #ede9e0;
+  --cream3:    #ddd8ce;
+  --ink:       #0f1a14;
+  --ink2:      #5a7260;
+  --ink3:      #9aaa9e;
+  --amber:     #c49020;
+  --amber2:    #f0c040;
+  --red:       #c04040;
+  --red2:      #ff7070;
+  --blue:      #3b7dd4;
+  --blue2:     #85b7eb;
+  --purple:    #7b5ea7;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'DM Sans', sans-serif;
+  --tr: 0.2s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--forest);color:var(--cream);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{background:var(--forest);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 1.5rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-mark{display:flex;align-items:flex-end;gap:3px;height:18px;}
+.logo-mark span{display:block;width:4px;border-radius:1px;}
+.logo-mark span:nth-child(1){height:8px;background:var(--forest2);}
+.logo-mark span:nth-child(2){height:13px;background:var(--sage);}
+.logo-mark span:nth-child(3){height:18px;background:var(--sage2);opacity:.75;}
+.logo-name{font-family:var(--sans);font-size:.85rem;font-weight:500;color:var(--cream);letter-spacing:-.02em;}
+.logo-sub{font-family:var(--mono);font-size:.44rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sage2);}
+.nav-back{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;transition:color var(--tr);}
+.nav-back:hover{color:var(--sage3);}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:2.5rem 1.5rem 1.5rem;max-width:1100px;margin:0 auto;}
+.ph-tag{font-family:var(--mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--sage3);margin-bottom:.6rem;display:flex;align-items:center;gap:.6rem;}
+.ph-tag::before{content:'';display:block;width:20px;height:1px;background:var(--sage3);}
+.ph-title{font-family:var(--serif);font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:700;letter-spacing:-.02em;line-height:1.2;margin-bottom:.6rem;}
+.ph-title em{font-style:italic;color:var(--sage3);}
+.ph-sub{font-size:.85rem;color:rgba(255,255,255,0.5);line-height:1.7;max-width:580px;}
+
+/* ── VIEW TOGGLE ── */
+.view-toggle{display:flex;gap:0;border:1px solid rgba(255,255,255,0.1);border-radius:5px;overflow:hidden;margin:1.5rem 0 0;}
+.vt-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.1rem;background:transparent;color:rgba(255,255,255,0.35);border:none;cursor:pointer;transition:background var(--tr),color var(--tr);border-right:1px solid rgba(255,255,255,0.08);}
+.vt-btn:last-child{border-right:none;}
+.vt-btn.active{background:rgba(122,171,144,0.15);color:var(--sage3);}
+.vt-btn:hover:not(.active){background:rgba(255,255,255,0.05);color:rgba(255,255,255,.6);}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:0 1.5rem 3rem;}
+
+/* ── QUADRANT VIEW ── */
+.quadrant-wrap{margin-top:1.5rem;}
+.quadrant-header{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;align-items:start;}
+.q-legend{display:flex;flex-direction:column;gap:.6rem;}
+.q-legend-item{display:flex;align-items:center;gap:.6rem;font-size:.78rem;color:rgba(255,255,255,.55);}
+.q-legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.q-desc{font-size:.8rem;color:rgba(255,255,255,.45);line-height:1.65;}
+
+.quadrant-grid{
+  display:grid;
+  grid-template-columns:24px 1fr 1fr;
+  grid-template-rows:1fr 1fr 24px;
+  gap:4px;
+  height:420px;
+}
+
+.q-axis-label{
+  font-family:var(--mono);
+  font-size:.52rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.q-axis-label.vertical{writing-mode:vertical-rl;transform:rotate(180deg);}
+.q-axis-label.horizontal{grid-column:2 / -1;}
+
+.quadrant{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:6px;
+  padding:.75rem;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.q-label{
+  font-family:var(--mono);
+  font-size:.5rem;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:.5rem;
+  opacity:.5;
+}
+
+.quadrant.q-critical{background:rgba(180,40,40,0.08);border-color:rgba(180,40,40,0.25);}
+.quadrant.q-critical .q-label{color:#ff7070;opacity:1;}
+.quadrant.q-monitor{background:rgba(196,144,32,0.06);border-color:rgba(196,144,32,0.2);}
+.quadrant.q-monitor .q-label{color:#f0c040;opacity:1;}
+.quadrant.q-carer{background:rgba(59,125,212,0.07);border-color:rgba(59,125,212,0.2);}
+.quadrant.q-carer .q-label{color:#85b7eb;opacity:1;}
+.quadrant.q-lower{background:rgba(45,107,71,0.06);border-color:rgba(45,107,71,0.18);}
+.quadrant.q-lower .q-label{color:var(--sage3);opacity:1;}
+
+.q-chips{display:flex;flex-direction:column;gap:5px;flex:1;}
+.q-chip{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.3rem .55rem;
+  border-radius:4px;
+  font-size:.72rem;
+  cursor:pointer;
+  transition:background var(--tr),transform var(--tr);
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.07);
+}
+.q-chip:hover{background:rgba(255,255,255,0.1);transform:translateX(2px);}
+.q-chip.selected{border-color:var(--sage3);background:rgba(122,171,144,0.12);}
+.q-chip-name{font-weight:500;color:rgba(255,255,255,.85);}
+.q-chip-scores{font-family:var(--mono);font-size:.6rem;color:rgba(255,255,255,.4);display:flex;gap:.4rem;}
+.q-chip-score{padding:.1rem .3rem;border-radius:2px;background:rgba(255,255,255,.06);}
+
+/* ── BAR VIEW ── */
+.bar-view{margin-top:1.5rem;display:none;}
+.bar-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;}
+.bar-toggle{display:flex;gap:0;border:1px solid rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.bt-btn{font-family:var(--mono);font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;padding:.35rem .75rem;background:transparent;color:rgba(255,255,255,.3);border:none;cursor:pointer;transition:all var(--tr);border-right:1px solid rgba(255,255,255,.08);}
+.bt-btn:last-child{border-right:none;}
+.bt-btn.active{background:rgba(255,255,255,.08);color:var(--cream);}
+.bar-rows{display:flex;flex-direction:column;gap:0;border:1px solid rgba(255,255,255,.08);border-radius:6px;overflow:hidden;}
+.bar-row{display:grid;grid-template-columns:150px 1fr 1fr 80px;gap:1rem;align-items:center;padding:.7rem 1rem;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;transition:background var(--tr);}
+.bar-row:last-child{border-bottom:none;}
+.bar-row:hover{background:rgba(255,255,255,.04);}
+.bar-row.selected{background:rgba(122,171,144,.08);}
+.bar-row.header{background:rgba(255,255,255,.03);cursor:default;}
+.bar-row.header:hover{background:rgba(255,255,255,.03);}
+.br-name{font-size:.82rem;font-weight:500;color:rgba(255,255,255,.85);}
+.br-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);}
+.bar-track{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;position:relative;}
+.bar-fill-fep,.bar-fill-cbi{height:100%;border-radius:3px;transition:width .6s ease;}
+.bar-fill-fep{background:var(--sage);}
+.bar-fill-cbi{background:var(--blue);}
+.br-scores{font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.45);text-align:right;}
+
+/* ── DETAIL PANEL ── */
+.detail-panel{
+  margin-top:1.5rem;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:6px;
+  overflow:hidden;
+  display:none;
+}
+.detail-panel.visible{display:block;}
+.detail-header{
+  padding:1rem 1.25rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.dh-name{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--cream);}
+.dh-scores{display:flex;gap:.6rem;}
+.dh-score{font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;padding:.3rem .7rem;border-radius:4px;}
+.dh-score.fep{background:rgba(45,107,71,.25);color:var(--sage3);border:1px solid rgba(45,107,71,.4);}
+.dh-score.cbi{background:rgba(59,125,212,.2);color:var(--blue2);border:1px solid rgba(59,125,212,.35);}
+.dh-score.tier{background:rgba(255,255,255,.07);color:rgba(255,255,255,.65);}
+.detail-body{padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.signal-group h4{font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.75rem;}
+.signal-rows{display:flex;flex-direction:column;gap:.5rem;}
+.signal-row{display:flex;align-items:center;gap:.75rem;}
+.signal-name{font-size:.78rem;color:rgba(255,255,255,.65);flex:1;line-height:1.3;}
+.signal-track{width:80px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;flex-shrink:0;}
+.signal-fill{height:100%;border-radius:2px;}
+.signal-val{font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,.55);min-width:28px;text-align:right;}
+.quadrant-tag{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .9rem;border-radius:4px;font-size:.8rem;font-family:var(--mono);letter-spacing:.04em;margin-top:.75rem;}
+.qt-critical{background:rgba(180,40,40,.15);color:#ff9090;border:1px solid rgba(180,40,40,.3);}
+.qt-monitor{background:rgba(196,144,32,.12);color:#f0c040;border:1px solid rgba(196,144,32,.3);}
+.qt-carer{background:rgba(59,125,212,.12);color:#85b7eb;border:1px solid rgba(59,125,212,.3);}
+.qt-lower{background:rgba(45,107,71,.12);color:var(--sage3);border:1px solid rgba(45,107,71,.3);}
+.detail-note{grid-column:1/-1;font-size:.75rem;color:rgba(255,255,255,.3);line-height:1.65;padding-top:.75rem;border-top:1px dashed rgba(255,255,255,.08);}
+
+/* ── CLOSE BTN ── */
+.close-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;color:rgba(255,255,255,.3);background:transparent;border:1px solid rgba(255,255,255,.12);padding:.3rem .7rem;border-radius:4px;cursor:pointer;transition:all var(--tr);}
+.close-btn:hover{color:var(--cream);border-color:rgba(255,255,255,.3);}
+
+/* ── DATA NOTE ── */
+.data-note{margin-top:1.5rem;padding:.75rem 1rem;border:1px solid rgba(255,255,255,.07);border-radius:5px;font-family:var(--mono);font-size:.58rem;letter-spacing:.04em;color:rgba(255,255,255,.3);line-height:1.65;}
+
+/* ── LOADING STATE ── */
+.loading{text-align:center;padding:3rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;color:rgba(255,255,255,.3);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  .quadrant-grid{height:auto;grid-template-columns:18px 1fr;grid-template-rows:auto auto auto 18px;}
+  .q-axis-label.horizontal{grid-column:2/-1;}
+  .detail-body{grid-template-columns:1fr;}
+  .bar-row{grid-template-columns:120px 1fr 1fr 60px;}
+  .quadrant-header{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="logo-mark"><span></span><span></span><span></span></div>
+    <div>
+      <div class="logo-name">Assistiv</div>
+      <div class="logo-sub">Systems · Health</div>
+    </div>
+  </a>
+  <a href="index.html" class="nav-back">← Back to site</a>
+</nav>
+
+<div class="page-header">
+  <div class="ph-tag">Layer 2 · Dual intelligence map</div>
+  <h1 class="ph-title">Where frailty and <em>carer burden</em><br>converge.</h1>
+  <p class="ph-sub">Each district scored independently on two axes — Frailty Emergence Probability and Carer Burden Index. The intersection reveals where the NHS system faces simultaneous pressure from both directions.</p>
+  <div class="view-toggle">
+    <button class="vt-btn active" onclick="setView('quadrant')">Quadrant map</button>
+    <button class="vt-btn" onclick="setView('bars')">District bars</button>
+  </div>
+</div>
+
+<div class="main">
+  <div id="loading" class="loading">Loading district data…</div>
+
+  <!-- QUADRANT VIEW -->
+  <div class="quadrant-wrap" id="quadrant-view" style="display:none;">
+    <div class="quadrant-header">
+      <div class="q-legend">
+        <div style="font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.5rem;">Quadrant key</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#c04040;"></div>High FEP + High CBI — simultaneous pressure · immediate priority</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#c49020;"></div>High FEP + Lower CBI — frailty risk but carers coping · monitor</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#3b7dd4;"></div>Lower FEP + High CBI — carer strain without high frailty · investigate</div>
+        <div class="q-legend-item"><div class="q-legend-dot" style="background:#2d6b47;"></div>Lower FEP + Lower CBI — lower priority across both dimensions</div>
+      </div>
+      <p class="q-desc">FEP score above 50 = higher frailty risk than England average. CBI score above 50 = higher carer burden than Kent county baseline. Click any district for detail.</p>
+    </div>
+
+    <div class="quadrant-grid">
+      <!-- vertical axis label -->
+      <div class="q-axis-label vertical" style="grid-row:1/3;grid-column:1;">CBI — Carer Burden →</div>
+
+      <!-- top-left: high FEP, high CBI = critical -->
+      <div class="quadrant q-critical" id="q-tl">
+        <div class="q-label">High FEP · High CBI</div>
+        <div class="q-chips" id="chips-tl"></div>
+      </div>
+
+      <!-- top-right: low FEP, high CBI = carer pressure -->
+      <div class="quadrant q-carer" id="q-tr">
+        <div class="q-label">Lower FEP · High CBI</div>
+        <div class="q-chips" id="chips-tr"></div>
+      </div>
+
+      <!-- bottom-left: high FEP, low CBI = frailty monitor -->
+      <div class="quadrant q-monitor" id="q-bl">
+        <div class="q-label">High FEP · Lower CBI</div>
+        <div class="q-chips" id="chips-bl"></div>
+      </div>
+
+      <!-- bottom-right: low FEP, low CBI = lower priority -->
+      <div class="quadrant q-lower" id="q-br">
+        <div class="q-label">Lower FEP · Lower CBI</div>
+        <div class="q-chips" id="chips-br"></div>
+      </div>
+
+      <!-- horizontal axis label -->
+      <div class="q-axis-label horizontal" style="grid-row:3;grid-column:2/-1;">← Lower FEP · FEP — Frailty Emergence Probability · Higher FEP →</div>
+    </div>
+  </div>
+
+  <!-- BAR VIEW -->
+  <div class="bar-view" id="bar-view">
+    <div class="bar-header">
+      <div class="bar-toggle">
+        <button class="bt-btn active" onclick="sortBars('fep')">Sort by FEP</button>
+        <button class="bt-btn" onclick="sortBars('cbi')">Sort by CBI</button>
+        <button class="bt-btn" onclick="sortBars('combined')">Sort by combined</button>
+      </div>
+    </div>
+    <div class="bar-rows" id="bar-rows">
+      <div class="bar-row header">
+        <div class="br-label">District</div>
+        <div class="br-label">FEP — Frailty</div>
+        <div class="br-label">CBI — Carer burden</div>
+        <div class="br-label">Scores</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-header">
+      <div>
+        <div class="dh-name" id="d-name">—</div>
+        <div class="dh-scores">
+          <span class="dh-score fep" id="d-fep">FEP —</span>
+          <span class="dh-score cbi" id="d-cbi">CBI —</span>
+          <span class="dh-score tier" id="d-tier">—</span>
+        </div>
+      </div>
+      <button class="close-btn" onclick="closeDetail()">Close ✕</button>
+    </div>
+    <div class="detail-body">
+      <div class="signal-group">
+        <h4>Frailty signals (FEP)</h4>
+        <div class="signal-rows" id="d-fep-signals"></div>
+      </div>
+      <div class="signal-group">
+        <h4>Carer burden signals (CBI)</h4>
+        <div class="signal-rows" id="d-cbi-signals"></div>
+        <div id="d-quadrant-tag" style="margin-top:.75rem;"></div>
+      </div>
+      <div class="detail-note" id="d-note"></div>
+    </div>
+  </div>
+
+  <div class="data-note" id="data-note" style="display:none;">
+    FEP source: NHSBSA EPD practice-level (Mar 2026) · NHS Fingertips / OHID PHOF · ONS Census 2021 · IMD 2019 ·
+    CBI source: ONS Census 2021 TS039 (district level) · NHS Fingertips 90638, 90279, 93014, 90283 (county level) ·
+    Scores: 50 = England average · &gt;50 = above average burden · England FEP avg: 50 · England CBI avg: 50
+  </div>
+</div>
+
+<script>
+const FEP_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+const CBI_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-cbi-data.json';
+
+// CBI fallback — embed the census-derived scores so the widget works before
+// the notebook has been run and the JSON committed to GitHub
+const CBI_FALLBACK = {
+  'Thanet':              {cbi:62, tier:'high',   pct_20plus:5.98, census_score:66.2},
+  'Folkestone & Hythe':  {cbi:59, tier:'high',   pct_20plus:5.58, census_score:61.8},
+  'Dover':               {cbi:59, tier:'high',   pct_20plus:5.54, census_score:61.3},
+  'Swale':               {cbi:58, tier:'high',   pct_20plus:5.51, census_score:61.0},
+  'Gravesham':           {cbi:53, tier:'moderate',pct_20plus:4.83, census_score:53.4},
+  'Medway':              {cbi:52, tier:'moderate',pct_20plus:4.69, census_score:51.9},
+  'Ashford':             {cbi:51, tier:'moderate',pct_20plus:4.55, census_score:50.4},
+  'Canterbury':          {cbi:50, tier:'moderate',pct_20plus:4.41, census_score:48.8},
+  'Maidstone':           {cbi:48, tier:'moderate',pct_20plus:4.12, census_score:45.6},
+  'Tonbridge & Malling': {cbi:47, tier:'moderate',pct_20plus:4.10, census_score:45.3},
+  'Dartford':            {cbi:46, tier:'moderate',pct_20plus:4.06, census_score:44.9},
+  'Sevenoaks':           {cbi:45, tier:'moderate',pct_20plus:3.91, census_score:43.2},
+  'Tunbridge Wells':     {cbi:40, tier:'low',    pct_20plus:3.36, census_score:37.2},
+};
+
+const CBI_SIGNALS = [
+  {key:'census_20plus',    label:'20+ hr carers (Census 2021)', geo:'District'},
+  {key:'social_isolation', label:'Carer social isolation',      geo:'County'},
+  {key:'support_access',   label:'Support info access',         geo:'County'},
+  {key:'assessment_rate',  label:"Carer's Assessment rate",     geo:'County'},
+  {key:'wellbeing',        label:'Carer wellbeing score',       geo:'County'},
+];
+
+const FEP_SIGNAL_NAMES = [
+  'Over-75s Living Alone','Falls Admissions 65+','Hip Fracture Rate 65+',
+  'Deprivation (IMD)','Winter Mortality Index','Care Home Gap',
+  'Loneliness Rate','Dementia Diagnosis Rate','Hip Fractures 80+',
+  'Social Isolation Rate','Hypnotics','Antidepressants','Bisphosphonates',
+  'Diuretics','ACE/ARB','Anxiolytics','Bladder Antimuscarinic',
+];
+
+let fepData = [], cbiData = [], merged = [], currentView = 'quadrant', sortKey = 'fep';
+let selectedDistrict = null;
+
+const QUAD_THRESHOLD_FEP = 50;
+const QUAD_THRESHOLD_CBI = 50;
+
+function quadrantOf(d) {
+  const hiF = d.fep > QUAD_THRESHOLD_FEP;
+  const hiC = d.cbi > QUAD_THRESHOLD_CBI;
+  if (hiF && hiC)  return 'tl'; // high both
+  if (!hiF && hiC) return 'tr'; // carer pressure
+  if (hiF && !hiC) return 'bl'; // frailty monitor
+  return 'br';                   // lower priority
+}
+
+function quadrantLabel(q) {
+  return {tl:'High FEP + High CBI',tr:'Lower FEP + High CBI',bl:'High FEP + Lower CBI',br:'Lower FEP + Lower CBI'}[q];
+}
+function quadrantClass(q) {
+  return {tl:'qt-critical',tr:'qt-carer',bl:'qt-monitor',br:'qt-lower'}[q];
+}
+
+async function loadData() {
+  try {
+    const [fepResp, cbiResp] = await Promise.all([
+      fetch(FEP_URL), fetch(CBI_URL).catch(() => null)
+    ]);
+    fepData = (await fepResp.json()).districts || [];
+
+    if (cbiResp && cbiResp.ok) {
+      cbiData = (await cbiResp.json()).districts || [];
+    }
+  } catch(e) {
+    console.warn('Data fetch error:', e);
+  }
+
+  // Merge FEP and CBI
+  merged = fepData.map(f => {
+    const cbiDistrict = cbiData.find(c => c.name === f.name);
+    const fallback    = CBI_FALLBACK[f.name] || {cbi:50,tier:'moderate'};
+    const cbi         = cbiDistrict ? cbiDistrict.cbi : fallback.cbi;
+    const cbiTier     = cbiDistrict ? cbiDistrict.tier : fallback.tier;
+    const cbiSignals  = cbiDistrict ? cbiDistrict.signal_scores : null;
+    const censusPct   = cbiDistrict ? cbiDistrict.census?.pct_20plus : (CBI_FALLBACK[f.name]?.pct_20plus || null);
+    return { ...f, cbi, cbiTier, cbiSignals, censusPct, quad: null };
+  });
+  merged.forEach(d => d.quad = quadrantOf(d));
+
+  render();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('data-note').style.display = 'block';
+}
+
+function render() {
+  if (currentView === 'quadrant') renderQuadrant();
+  else renderBars();
+}
+
+function renderQuadrant() {
+  document.getElementById('quadrant-view').style.display = 'block';
+  document.getElementById('bar-view').style.display = 'none';
+
+  ['tl','tr','bl','br'].forEach(q => {
+    const container = document.getElementById(`chips-${q}`);
+    container.innerHTML = '';
+    const districts = merged.filter(d => d.quad === q)
+      .sort((a,b) => (b.fep+b.cbi) - (a.fep+a.cbi));
+    districts.forEach(d => {
+      const chip = document.createElement('div');
+      chip.className = 'q-chip' + (selectedDistrict === d.name ? ' selected' : '');
+      chip.innerHTML = `
+        <span class="q-chip-name">${d.name}</span>
+        <span class="q-chip-scores">
+          <span class="q-chip-score">FEP ${d.fep}</span>
+          <span class="q-chip-score">CBI ${d.cbi}</span>
+        </span>`;
+      chip.onclick = () => selectDistrict(d.name);
+      container.appendChild(chip);
+    });
+  });
+}
+
+function renderBars() {
+  document.getElementById('quadrant-view').style.display = 'none';
+  document.getElementById('bar-view').style.display = 'block';
+
+  const sorted = [...merged].sort((a,b) => {
+    if (sortKey === 'fep') return b.fep - a.fep;
+    if (sortKey === 'cbi') return b.cbi - a.cbi;
+    return (b.fep + b.cbi) - (a.fep + a.cbi);
+  });
+
+  const container = document.getElementById('bar-rows');
+  // Remove non-header rows
+  while (container.children.length > 1) container.removeChild(container.lastChild);
+
+  const maxFEP = Math.max(...merged.map(d => d.fep));
+  const maxCBI = Math.max(...merged.map(d => d.cbi));
+
+  sorted.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'bar-row' + (selectedDistrict === d.name ? ' selected' : '');
+    row.innerHTML = `
+      <div class="br-name">${d.name}</div>
+      <div>
+        <div class="bar-track"><div class="bar-fill-fep" style="width:${(d.fep/maxFEP)*100}%"></div></div>
+      </div>
+      <div>
+        <div class="bar-track"><div class="bar-fill-cbi" style="width:${(d.cbi/maxCBI)*100}%"></div></div>
+      </div>
+      <div class="br-scores">${d.fep} / ${d.cbi}</div>`;
+    row.onclick = () => selectDistrict(d.name);
+    container.appendChild(row);
+  });
+}
+
+function selectDistrict(name) {
+  selectedDistrict = selectedDistrict === name ? null : name;
+  render();
+  if (!selectedDistrict) { closeDetail(); return; }
+
+  const d = merged.find(m => m.name === name);
+  if (!d) return;
+
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('visible');
+  document.getElementById('d-name').textContent = d.name;
+  document.getElementById('d-fep').textContent  = `FEP ${d.fep}`;
+  document.getElementById('d-cbi').textContent  = `CBI ${d.cbi}`;
+
+  const q = d.quad;
+  const qLabels = {tl:'Critical priority',tr:'Carer pressure',bl:'Frailty monitor',br:'Lower priority'};
+  document.getElementById('d-tier').textContent = qLabels[q] || d.tier;
+
+  // FEP signals (top 6 by weight/value)
+  const fepSigs = document.getElementById('d-fep-signals');
+  fepSigs.innerHTML = '';
+  const topSigs = (d.signals || []).slice(0,6);
+  topSigs.forEach((val, i) => {
+    const row = document.createElement('div');
+    row.className = 'signal-row';
+    const pct = Math.round(Math.min(100,val));
+    const col = val > 60 ? '#e07070' : val > 50 ? '#f0c040' : '#7aab90';
+    row.innerHTML = `
+      <div class="signal-name">${FEP_SIGNAL_NAMES[i] || `Signal ${i+1}`}</div>
+      <div class="signal-track"><div class="signal-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="signal-val">${Math.round(val)}</div>`;
+    fepSigs.appendChild(row);
+  });
+
+  // CBI signals
+  const cbiSigs = document.getElementById('d-cbi-signals');
+  cbiSigs.innerHTML = '';
+  CBI_SIGNALS.forEach(sig => {
+    const val = d.cbiSignals ? (d.cbiSignals[sig.key] || 50) : 50;
+    const pct = Math.round(Math.min(100, val));
+    const col = val > 60 ? '#85b7eb' : val > 50 ? '#f0c040' : '#7aab90';
+    const row = document.createElement('div');
+    row.className = 'signal-row';
+    row.innerHTML = `
+      <div class="signal-name">${sig.label}<span style="font-size:.62rem;color:rgba(255,255,255,.3);margin-left:.3rem;">(${sig.geo})</span></div>
+      <div class="signal-track"><div class="signal-fill" style="width:${pct}%;background:${col};"></div></div>
+      <div class="signal-val">${Math.round(val)}</div>`;
+    cbiSigs.appendChild(row);
+  });
+
+  // Quadrant tag
+  const qtag = document.getElementById('d-quadrant-tag');
+  const qDescriptions = {
+    tl: 'High frailty risk AND high carer burden. System under pressure from both directions simultaneously. Immediate commissioning priority.',
+    tr: 'Lower frailty risk but significant carer burden. Often younger disabled people or complex mental health situations — different intervention profile.',
+    bl: 'Elevated frailty risk but carers are relatively coping. Priority for RESILIENCE screening deployment. Monitor carer capacity quarterly.',
+    br: 'Below-average on both dimensions. Routine monitoring. Rescore quarterly.'
+  };
+  qtag.innerHTML = `<div class="quadrant-tag ${quadrantClass(q)}">${quadrantLabel(q)}</div>
+    <p style="font-size:.75rem;color:rgba(255,255,255,.4);line-height:1.6;margin-top:.5rem;">${qDescriptions[q]}</p>`;
+
+  // Census note
+  const noteEl = document.getElementById('d-note');
+  const censusTxt = d.censusPct
+    ? `Census 2021: ${d.censusPct.toFixed(2)}% of residents aged 5+ provide 20+ hours of unpaid care per week (England avg: 4.52%). `
+    : '';
+  noteEl.textContent = censusTxt +
+    'CBI county-level Fingertips signals (social isolation, support access, assessment rate, wellbeing) are applied uniformly across all 13 districts — district variation driven by Census carer hours data. DWP Carer\'s Allowance signal pending.';
+
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function closeDetail() {
+  selectedDistrict = null;
+  document.getElementById('detail-panel').classList.remove('visible');
+  render();
+}
+
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&v==='quadrant')||(i===1&&v==='bars')));
+  render();
+}
+
+function sortBars(key) {
+  sortKey = key;
+  document.querySelectorAll('.bt-btn').forEach((b,i) => b.classList.toggle('active', i===['fep','cbi','combined'].indexOf(key)));
+  renderBars();
+}
+
+loadData();
+</script>
+</body>
+</html>
