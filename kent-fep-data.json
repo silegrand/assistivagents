@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-03T20:53:07.225917+00:00",
+    "generated": "2026-06-04T09:10:05.167405+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "4.0 \u2014 weather-health alert integration",
     "icb": "NHS Kent and Medway ICB (QKS)",
@@ -90,7 +90,7 @@
     "alert_level": "green",
     "alert_type": "heat",
     "region": "South East England",
-    "fetched_at": "2026-06-03T20:49:41.090886+00:00",
+    "fetched_at": "2026-06-04T09:06:25.126583+00:00",
     "source": "UKHSA Weather-Health Alerting / Met Office",
     "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
     "med_risk_signals": [],
