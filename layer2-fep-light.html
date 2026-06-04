@@ -1635,3 +1635,448 @@ init();
 </script>
 </body>
 </html>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     ADA — Assistiv Data Assistant · ExplainerBot · v1.0
+     Floating chat widget for the FEP Scoring Engine.
+     Calls Anthropic Claude Sonnet via the artifact API proxy.
+     Context-injected: current district scores + active signals.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── ADA WIDGET ───────────────────────────────────────────────────── */
+#ada-fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 2000;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--sage-dim);
+  border: 2px solid var(--sage);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(15,35,24,0.35);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+  flex-direction: column;
+  gap: 2px;
+}
+#ada-fab:hover { transform: scale(1.06); box-shadow: 0 6px 28px rgba(15,35,24,0.45); background: var(--sage); }
+#ada-fab .fab-icon { font-size: 1.2rem; line-height: 1; }
+#ada-fab .fab-label {
+  font-family: var(--mono);
+  font-size: 0.38rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+}
+
+#ada-panel {
+  position: fixed;
+  bottom: 5rem;
+  right: 1.5rem;
+  z-index: 1999;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  max-height: 560px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 12px 48px rgba(15,35,24,0.2);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--sans);
+  animation: adaSlideIn 0.22s ease;
+}
+#ada-panel.open { display: flex; }
+
+@keyframes adaSlideIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ada-header {
+  background: var(--sage-dim);
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.ada-avatar {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+.ada-header-text { flex: 1; }
+.ada-name {
+  font-family: var(--serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.ada-role {
+  font-family: var(--mono);
+  font-size: 0.48rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.ada-close {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.2rem;
+  transition: color 0.15s;
+  line-height: 1;
+}
+.ada-close:hover { color: white; }
+
+.ada-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  scroll-behavior: smooth;
+}
+
+.ada-msg {
+  max-width: 88%;
+  line-height: 1.55;
+  font-size: 0.82rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  animation: adaMsgIn 0.18s ease;
+}
+@keyframes adaMsgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ada-msg.assistant {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+  align-self: flex-start;
+  border-bottom-left-radius: 2px;
+}
+.ada-msg.user {
+  background: var(--sage-dim);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 2px;
+}
+.ada-msg.thinking {
+  background: var(--surface2);
+  border: 1px solid var(--border-soft);
+  align-self: flex-start;
+  color: var(--text-muted);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ada-dots { display: flex; gap: 3px; }
+.ada-dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: adaDot 1.2s infinite;
+}
+.ada-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ada-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes adaDot { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+
+/* Quick-start prompts */
+.ada-starters {
+  padding: 0 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+.ada-starter {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  font-family: var(--sans);
+}
+.ada-starter:hover { background: var(--sage-pale); border-color: var(--sage); color: var(--sage); }
+
+.ada-input-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+#ada-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  resize: none;
+  min-height: 38px;
+  max-height: 100px;
+  transition: border-color 0.15s;
+}
+#ada-input:focus { border-color: var(--sage); }
+#ada-input::placeholder { color: var(--text-dim); }
+#ada-send {
+  background: var(--sage-dim);
+  border: none;
+  color: white;
+  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+#ada-send:hover { background: var(--sage); }
+#ada-send:disabled { opacity: 0.4; cursor: not-allowed; }
+</style>
+
+<!-- ADA FAB BUTTON -->
+<button id="ada-fab" onclick="adaToggle()" aria-label="Open Ada — data explainer">
+  <span class="fab-icon">✦</span>
+  <span class="fab-label">Ada</span>
+</button>
+
+<!-- ADA PANEL -->
+<div id="ada-panel" role="dialog" aria-label="Ada — Assistiv Data Assistant">
+  <div class="ada-header">
+    <div class="ada-avatar">✦</div>
+    <div class="ada-header-text">
+      <div class="ada-name">Ada</div>
+      <div class="ada-role">Assistiv Data Assistant · FEP Scoring Engine</div>
+    </div>
+    <button class="ada-close" onclick="adaToggle()" aria-label="Close Ada">✕</button>
+  </div>
+
+  <div class="ada-messages" id="ada-messages"></div>
+
+  <div class="ada-starters" id="ada-starters">
+    <button class="ada-starter" onclick="adaStarter(this)">What does the FEP score actually mean?</button>
+    <button class="ada-starter" onclick="adaStarter(this)">Why does Thanet score so much higher than Tunbridge Wells?</button>
+    <button class="ada-starter" onclick="adaStarter(this)">What should a commissioner do with this information?</button>
+    <button class="ada-starter" onclick="adaStarter(this)">Explain oral nutritional supplements as a frailty signal</button>
+  </div>
+
+  <div class="ada-input-row">
+    <textarea id="ada-input" placeholder="Ask Ada about the data…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adaSend();}"></textarea>
+    <button id="ada-send" onclick="adaSend()" aria-label="Send">↑</button>
+  </div>
+</div>
+
+<script>
+// ── ADA EXPLAINERBOT ──────────────────────────────────────────────────────────
+
+const ADA_MODEL   = 'claude-sonnet-4-20250514';
+const ADA_MAX_TOK = 600;
+
+let adaOpen     = false;
+let adaHistory  = [];
+let adaBusy     = false;
+let adaGreeted  = false;
+
+// ── Build context from the live scoring engine state ──────────────────────────
+function adaGetContext() {
+  // Pull current results from the page if available
+  const rows = document.querySelectorAll('.zone-row');
+  let districtSummary = '';
+  if (rows.length > 0) {
+    const top5 = [];
+    rows.forEach((row, i) => {
+      if (i >= 5) return;
+      const name  = row.querySelector('.zone-name')?.textContent?.trim() || '';
+      const score = row.querySelector('.zone-score')?.textContent?.trim() || '';
+      const risk  = row.querySelector('.risk-badge')?.textContent?.trim() || '';
+      if (name) top5.push(`${name}: FEP ${score} (${risk})`);
+    });
+    if (top5.length) districtSummary = `Current top districts by FEP score: ${top5.join(', ')}.`;
+  }
+
+  // Pull active weight values
+  const weightIds = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10',
+                     'w11','w12','w13','w14','w15','w16','w17','w18'];
+  const signalLabels = [
+    'Over-75s Living Alone (13%)','Falls Admissions 65+ (12%)','Hip Fracture Rate 65+ (9%)',
+    'Deprivation/IMD (8%)','Winter Mortality Index (8%)','Care Home Gap (7%)',
+    'Loneliness Rate (6%)','Dementia Diagnosis Rate (6%)','Hip Fractures 80+ (5%)',
+    'Social Isolation (5%)','Hypnotics (5%)','Antidepressants (5%)','Bisphosphonates (4%)',
+    'Diuretics (0%)','ACE/ARB (0%)','Anxiolytics (3%)','Bladder Antimuscarinics (1%)',
+    'Oral Nutritional Supplements (3%)'
+  ];
+  const activeWeights = weightIds.map((id, i) => {
+    const val = parseInt(document.getElementById(id)?.value || '0');
+    return val > 0 ? signalLabels[i] : null;
+  }).filter(Boolean);
+
+  return `You are Ada, the Assistiv Data Assistant — a warm, plain-English explainer embedded in the Assistiv Systems FEP Scoring Engine for NHS Kent and Medway.
+
+CONTEXT — what the user is looking at right now:
+This is a tool that scores 13 districts in Kent and Medway on their Frailty Emergence Probability (FEP) — a composite measure of how likely older adults in each area are to be at risk of frailty. Scores are on a 0–100 scale where 50 = England average. Higher scores mean higher risk.
+${districtSummary}
+Active signal weights: ${activeWeights.join(', ')}.
+
+ABOUT THE FEP MODEL:
+- 18 signals drawn from NHS Fingertips, NHSBSA prescribing data (EPD), ONS Census 2021, IMD deprivation index, and CQC care home register
+- All normalised to 0–100 (50 = England average), then weighted and combined
+- Signal 18 (Oral Nutritional Supplements, 3%) was added in v5 — it is a direct FRAIL Scale signal because NICE NG22 states that GPs prescribe these (Fortisip, Ensure, Fresubin) only when a patient has BMI below 18.5 or has lost more than 10% of their body weight — a confirmed clinical marker of the 'Loss of weight' component of the FRAIL Scale
+- Coastal east Kent (Thanet, Dover, Folkestone & Hythe) score highest because they combine coastal deprivation, older demographics, higher prescribing rates, and above-average winter mortality
+- Sevenoaks and Tunbridge Wells score lowest — more affluent, younger demographic profile, lower prescribing rates
+
+ABOUT THE WIDER SYSTEM:
+- Layer 2 (this tool) feeds into Layer 4: RESILIENCE community screening at resiliencetools.xyz
+- A companion Carer Burden Index (CBI) scores the same 13 districts on carer stress signals
+- The FEP × CBI quadrant map shows where frailty risk and carer burden converge simultaneously
+- Weather alerts from UKHSA/Met Office uplift scores for high-risk districts when heat or cold thresholds are breached
+
+YOUR BEHAVIOUR:
+- Always explain in plain English first. Never use jargon unless the user asks for technical detail
+- Be honest about what the data can and cannot tell us — it is a triage tool, not a diagnosis
+- Keep answers concise: 3–5 sentences for simple questions, up to 8 for complex ones
+- Never make clinical recommendations — signpost to clinicians and commissioners
+- If asked about a specific district, be specific using the data above
+- Be warm, direct, and confident — you are explaining a real system built on real NHS data
+- Do not mention that you are built on Claude or refer to Anthropic`;
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function adaToggle() {
+  adaOpen = !adaOpen;
+  const panel = document.getElementById('ada-panel');
+  panel.classList.toggle('open', adaOpen);
+  if (adaOpen && !adaGreeted) {
+    adaGreeted = true;
+    adaAppendMsg('assistant',
+      'Hello — I\'m Ada, the Assistiv data assistant. I can explain what the FEP scores mean, ' +
+      'why specific signals matter clinically, and what commissioners can do with this information. ' +
+      'What would you like to understand?'
+    );
+  }
+  if (adaOpen) setTimeout(() => document.getElementById('ada-input')?.focus(), 100);
+}
+
+function adaAppendMsg(role, text) {
+  const msgs  = document.getElementById('ada-messages');
+  const div   = document.createElement('div');
+  div.className = `ada-msg ${role}`;
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function adaAppendThinking() {
+  const msgs = document.getElementById('ada-messages');
+  const div  = document.createElement('div');
+  div.className = 'ada-msg thinking';
+  div.id = 'ada-thinking';
+  div.innerHTML = '<span>Ada is thinking</span><div class="ada-dots"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function adaRemoveThinking() {
+  document.getElementById('ada-thinking')?.remove();
+}
+
+function adaHideStarters() {
+  const s = document.getElementById('ada-starters');
+  if (s) s.style.display = 'none';
+}
+
+function adaStarter(btn) {
+  const text = btn.textContent;
+  adaHideStarters();
+  adaSendMessage(text);
+}
+
+// ── Send ──────────────────────────────────────────────────────────────────────
+async function adaSend() {
+  const input = document.getElementById('ada-input');
+  const text  = (input?.value || '').trim();
+  if (!text || adaBusy) return;
+  input.value = '';
+  adaHideStarters();
+  adaSendMessage(text);
+}
+
+async function adaSendMessage(text) {
+  if (adaBusy) return;
+  adaBusy = true;
+  document.getElementById('ada-send').disabled = true;
+
+  adaAppendMsg('user', text);
+  adaHistory.push({ role: 'user', content: text });
+  adaAppendThinking();
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model:      ADA_MODEL,
+        max_tokens: ADA_MAX_TOK,
+        system:     adaGetContext(),
+        messages:   adaHistory,
+      })
+    });
+
+    const data = await resp.json();
+    const reply = data?.content?.find(b => b.type === 'text')?.text
+      || 'I had trouble fetching a response — please try again.';
+
+    adaRemoveThinking();
+    adaAppendMsg('assistant', reply);
+    adaHistory.push({ role: 'assistant', content: reply });
+
+    // Cap history at 20 turns to manage context
+    if (adaHistory.length > 20) adaHistory = adaHistory.slice(-20);
+
+  } catch(e) {
+    adaRemoveThinking();
+    adaAppendMsg('assistant', 'Something went wrong connecting to the AI service. Please try again in a moment.');
+    console.error('Ada error:', e);
+  }
+
+  adaBusy = false;
+  document.getElementById('ada-send').disabled = false;
+  document.getElementById('ada-input')?.focus();
+}
+</script>
