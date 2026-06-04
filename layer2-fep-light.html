@@ -1082,6 +1082,26 @@ input[type=range]::-webkit-slider-thumb:hover {
         <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. EPD Mar 2026. Real.</div>
         <input type="range" id="w17" min="0" max="20" value="2" oninput="updateWeight('w17')">
       </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Oral Nutritional Supplements ✦</span><span class="weight-val" id="w18-val">5%</span></div>
+        <div class="weight-desc">Ensure/Fortisip/Nutriben — prescribed only when someone is genuinely failing to maintain weight. Highly specific frailty marker. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w18" min="0" max="20" value="5" oninput="updateWeight('w18')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Anti-Dementia Drug Rate ✦</span><span class="weight-val" id="w19-val">4%</span></div>
+        <div class="weight-desc">Donepezil/memantine/rivastigmine/galantamine — actual dementia treatment prevalence proxy. Complements Fingertips dementia diagnosis rate. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w19" min="0" max="20" value="4" oninput="updateWeight('w19')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Denosumab Prescribing ✦</span><span class="weight-val" id="w20-val">2%</span></div>
+        <div class="weight-desc">Injectable bone protection — severe osteoporosis or post-fracture. Higher frailty severity than oral bisphosphonates. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w20" min="0" max="20" value="2" oninput="updateWeight('w20')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Parkinson's Drug Rate ✦</span><span class="weight-val" id="w21-val">3%</span></div>
+        <div class="weight-desc">Levodopa/co-careldopa/ropinirole — Parkinson's disease prevalence. Directly accelerates physical frailty and falls risk. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w21" min="0" max="20" value="3" oninput="updateWeight('w21')">
+      </div>
 
       <div class="weight-total">
         <span class="weight-total-label">Total Weight</span>
@@ -1121,87 +1141,96 @@ input[type=range]::-webkit-slider-thumb:hover {
 
 const ZONES = [
   { name: "Margate Central", pcn: "Thanet North PCN", lsoa: "E01024439",
-    signals: [88, 82, 79, 91, 84, 88, 73, 87, 77, 83, 86, 84, 92, 85, 78, 80, 80], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [88, 82, 79, 91, 84, 88, 73, 87, 77, 83, 86, 84, 92, 85, 78, 80, 80, 83, 75, 86, 93], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Ramsgate West", pcn: "Thanet North PCN", lsoa: "E01024441",
-    signals: [81, 77, 71, 85, 78, 74, 66, 68, 74, 71, 69, 69, 72, 81, 80, 89, 87], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [81, 77, 71, 85, 78, 74, 66, 68, 74, 71, 69, 69, 72, 81, 80, 89, 87, 79, 83, 70, 82], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Folkestone Harbour", pcn: "Folkestone & Hythe PCN", lsoa: "E01024112",
-    signals: [79, 74, 68, 82, 71, 80, 72, 81, 86, 80, 83, 81, 73, 85, 71, 76, 80], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [79, 74, 68, 82, 71, 80, 72, 81, 86, 80, 83, 81, 73, 85, 71, 76, 80, 80, 76, 77, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Dover Town Centre", pcn: "Dover PCN", lsoa: "E01024089",
-    signals: [76, 71, 72, 79, 74, 65, 76, 69, 63, 60, 64, 60, 78, 68, 74, 80, 83], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [76, 71, 72, 79, 74, 65, 76, 69, 63, 60, 64, 60, 78, 68, 74, 80, 83, 70, 70, 79, 73], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Herne Bay West", pcn: "Canterbury & Coastal PCN", lsoa: "E01024021",
-    signals: [74, 68, 64, 55, 68, 72, 69, 57, 67, 62, 72, 66, 69, 64, 59, 63, 75], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [74, 68, 64, 55, 68, 72, 69, 57, 67, 62, 72, 66, 69, 64, 59, 63, 75, 57, 67, 72, 68], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Sheerness & Minster", pcn: "Swale PCN", lsoa: "E01024355",
-    signals: [72, 65, 61, 72, 63, 69, 70, 58, 77, 75, 68, 67, 64, 72, 69, 68, 73], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [72, 65, 61, 72, 63, 69, 70, 58, 77, 75, 68, 67, 64, 72, 69, 68, 73, 59, 63, 72, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Whitstable North", pcn: "Canterbury & Coastal PCN", lsoa: "E01024025",
-    signals: [70, 62, 58, 48, 61, 66, 69, 57, 70, 72, 52, 57, 67, 54, 64, 60, 66], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [70, 62, 58, 48, 61, 66, 69, 57, 70, 72, 52, 57, 67, 54, 64, 60, 66, 62, 62, 62, 71], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Sittingbourne Central", pcn: "Swale PCN", lsoa: "E01024360",
-    signals: [65, 61, 63, 65, 58, 58, 52, 69, 73, 58, 67, 65, 57, 70, 51, 58, 68], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [65, 61, 63, 65, 58, 58, 52, 69, 73, 58, 67, 65, 57, 70, 51, 58, 68, 61, 70, 56, 58], sources: [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Faversham & Ospringe", pcn: "Swale PCN", lsoa: "E01024368",
-    signals: [62, 55, 52, 38, 54, 61, 63, 65, 54, 45, 43, 48, 50, 51, 59, 45, 50], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [62, 55, 52, 38, 54, 61, 63, 65, 54, 45, 43, 48, 50, 51, 59, 45, 50, 62, 42, 55, 49], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Ashford South", pcn: "Ashford PCN", lsoa: "E01023901",
-    signals: [58, 52, 55, 58, 52, 55, 62, 45, 44, 55, 60, 43, 53, 62, 59, 53, 66], sources: [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [58, 52, 55, 58, 52, 55, 62, 45, 44, 55, 60, 43, 53, 62, 59, 53, 66, 60, 47, 60, 64], sources: [1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Deal & Walmer", pcn: "Dover PCN", lsoa: "E01024095",
-    signals: [67, 58, 60, 44, 65, 62, 67, 48, 62, 55, 60, 60, 66, 61, 63, 64, 60], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [67, 58, 60, 44, 65, 62, 67, 48, 62, 55, 60, 60, 66, 61, 63, 64, 60, 54, 63, 69, 61], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Broadstairs", pcn: "Thanet South PCN", lsoa: "E01024445",
-    signals: [71, 63, 66, 52, 69, 58, 51, 57, 68, 67, 75, 61, 72, 69, 61, 75, 65], sources: [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [71, 63, 66, 52, 69, 58, 51, 57, 68, 67, 75, 61, 72, 69, 61, 75, 65, 54, 61, 70, 58], sources: [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Hythe & Sandgate", pcn: "Folkestone & Hythe PCN", lsoa: "E01024118",
-    signals: [63, 54, 57, 40, 60, 55, 57, 51, 58, 52, 49, 54, 50, 48, 44, 57, 42], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [63, 54, 57, 40, 60, 55, 57, 51, 58, 52, 49, 54, 50, 48, 44, 57, 42, 62, 54, 50, 58], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Canterbury St. Dunstans", pcn: "Canterbury & Coastal PCN", lsoa: "E01024035",
-    signals: [48, 44, 45, 35, 46, 42, 37, 33, 44, 49, 49, 46, 37, 53, 32, 50, 55], sources: [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [48, 44, 45, 35, 46, 42, 37, 33, 44, 49, 49, 46, 37, 53, 32, 50, 55, 40, 50, 44, 38], sources: [1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Maidstone North", pcn: "Mid Kent PCN", lsoa: "E01024198",
-    signals: [44, 48, 50, 52, 42, 46, 56, 36, 56, 50, 57, 56, 47, 45, 39, 38, 36], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [44, 48, 50, 52, 42, 46, 56, 36, 56, 50, 57, 56, 47, 45, 39, 38, 36, 49, 44, 49, 37], sources: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Tonbridge Central", pcn: "Tonbridge & Malling PCN", lsoa: "E01024398",
-    signals: [38, 40, 43, 38, 39, 40, 38, 29, 40, 50, 47, 29, 29, 31, 32, 30, 44], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [38, 40, 43, 38, 39, 40, 38, 29, 40, 50, 47, 29, 29, 31, 32, 30, 44, 42, 33, 35, 31], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Sevenoaks Rural", pcn: "Sevenoaks PCN", lsoa: "E01024340",
-    signals: [34, 35, 36, 22, 33, 38, 22, 39, 43, 36, 24, 42, 44, 36, 35, 22, 37], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [34, 35, 36, 22, 33, 38, 22, 39, 43, 36, 24, 42, 44, 36, 35, 22, 37, 33, 29, 42, 36], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
   { name: "Tunbridge Wells West", pcn: "Tunbridge Wells PCN", lsoa: "E01024420",
-    signals: [30, 32, 34, 28, 30, 32, 29, 40, 32, 36, 43, 33, 22, 34, 40, 22, 20], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
+    signals: [30, 32, 34, 28, 30, 32, 29, 40, 32, 36, 43, 33, 22, 34, 40, 22, 20, 35, 28, 28, 22], sources: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] },
 ];
 
 const SIGNAL_NAMES = [
-  "Over-75s Living Alone",       // 1  synthetic
-  "Falls Admissions 65+",        // 2  Fingertips real
-  "Hip Fracture Rate 65+",       // 3  Fingertips real
-  "Deprivation (IMD)",           // 4  synthetic
-  "Winter Mortality Index",      // 5  Fingertips real
-  "Care Home Gap",               // 6  synthetic
-  "Loneliness Rate",             // 7  Fingertips real
-  "Dementia Diagnosis Rate",     // 8  Fingertips real
-  "Hip Fractures 80+",           // 9  Fingertips real
-  "Social Isolation Rate",       // 10 Fingertips real
-  "Hypnotics Prescribing",       // 11 EPD real
-  "Antidepressant Rate",         // 12 EPD real
-  "Bisphosphonate Rate",         // 13 EPD real
-  "Diuretics Rate",              // 14 EPD real
-  "ACE/ARB Prescribing",         // 15 EPD real
-  "Anxiolytics Prescribing",     // 16 EPD real
-  "Bladder Antimuscarinic Rate", // 17 EPD real
+  "Over-75s Living Alone",        // 1   synthetic
+  "Falls Admissions 65+",         // 2   Fingertips real
+  "Hip Fracture Rate 65+",        // 3   Fingertips real
+  "Deprivation (IMD)",            // 4   synthetic
+  "Winter Mortality Index",       // 5   Fingertips real
+  "Care Home Gap",                // 6   synthetic
+  "Loneliness Rate",              // 7   Fingertips real
+  "Dementia Diagnosis Rate",      // 8   Fingertips real
+  "Hip Fractures 80+",            // 9   Fingertips real
+  "Social Isolation Rate",        // 10  Fingertips real
+  "Hypnotics Prescribing",        // 11  EPD real
+  "Antidepressant Rate",          // 12  EPD real
+  "Bisphosphonate Rate",          // 13  EPD real
+  "Diuretics Rate",               // 14  EPD real
+  "ACE/ARB Prescribing",          // 15  EPD real
+  "Anxiolytics Prescribing",      // 16  EPD real
+  "Bladder Antimuscarinic Rate",  // 17  EPD real
+  "Oral Nutritional Supplements", // 18  EPD real [v4.0]
+  "Anti-Dementia Drug Rate",      // 19  EPD real [v4.0]
+  "Denosumab Prescribing",        // 20  EPD real [v4.0]
+  "Parkinson\'s Drug Rate",       // 21  EPD real [v4.0]
 ];
 
 const SIGNAL_COLORS = [
   "#3fb950","#58a6ff","#d29922","#f0883e","#bc8cff","#ff7b72",
   "#39d353","#79c0ff","#ffa657","#ff8080","#56d364","#4fc3f7",
-  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4"
+  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4",
+  "#a78bfa","#fb923c","#34d399","#f472b6"
 ];
 
 const SOURCE_DEFS = [
-  { name: "ONS Census 2021",                  tag: "Public · Synthetic",  id: "ons" },
-  { name: "NHS Fingertips — Falls",            tag: "Real · 2024/25",      id: "ft_falls" },
-  { name: "NHS Fingertips — Hip Fractures",    tag: "Real · 2024/25",      id: "ft_hip" },
-  { name: "IMD 2019 (MHCLG)",                 tag: "Public · Synthetic",  id: "imd" },
-  { name: "NHS Fingertips — Winter Mortality", tag: "Real · 2021/22",      id: "ft_winter" },
-  { name: "CQC Register",                     tag: "Public · Synthetic",  id: "cqc" },
-  { name: "NHS Fingertips — Loneliness",       tag: "Real · 2021/22",      id: "ft_lone" },
-  { name: "NHS Fingertips — Dementia",         tag: "Real · 2026",         id: "ft_dem" },
-  { name: "NHS Fingertips — Hip 80+",          tag: "Real · 2024/25",      id: "ft_hip80" },
-  { name: "NHS Fingertips — Social Isolation", tag: "Real · 2024/25",      id: "ft_isol" },
-  { name: "NHSBSA EPD — Hypnotics",            tag: "Real · Mar 2026",     id: "epd_hyp" },
-  { name: "NHSBSA EPD — Antidepressants",      tag: "Real · Mar 2026",     id: "epd_antidep" },
-  { name: "NHSBSA EPD — Bisphosphonates",      tag: "Real · Mar 2026",     id: "epd_bis" },
-  { name: "NHSBSA EPD — Diuretics",            tag: "Real · Mar 2026",     id: "epd_diu" },
-  { name: "NHSBSA EPD — ACE/ARBs",             tag: "Real · Mar 2026",     id: "epd_ace" },
-  { name: "NHSBSA EPD — Anxiolytics",          tag: "Real · Mar 2026",     id: "epd_anx" },
-  { name: "NHSBSA EPD — Bladder Antimusc.",    tag: "Real · Mar 2026",     id: "epd_blad" },
+  { name: "ONS Census 2021",                    tag: "Public · Synthetic",  id: "ons" },
+  { name: "NHS Fingertips — Falls",              tag: "Real · 2024/25",      id: "ft_falls" },
+  { name: "NHS Fingertips — Hip Fractures",      tag: "Real · 2024/25",      id: "ft_hip" },
+  { name: "IMD 2019 (MHCLG)",                   tag: "Public · Synthetic",  id: "imd" },
+  { name: "NHS Fingertips — Winter Mortality",   tag: "Real · 2021/22",      id: "ft_winter" },
+  { name: "CQC Register",                       tag: "Public · Synthetic",  id: "cqc" },
+  { name: "NHS Fingertips — Loneliness",         tag: "Real · 2021/22",      id: "ft_lone" },
+  { name: "NHS Fingertips — Dementia",           tag: "Real · 2026",         id: "ft_dem" },
+  { name: "NHS Fingertips — Hip 80+",            tag: "Real · 2024/25",      id: "ft_hip80" },
+  { name: "NHS Fingertips — Social Isolation",   tag: "Real · 2024/25",      id: "ft_isol" },
+  { name: "NHSBSA EPD — Hypnotics",              tag: "Real · Mar 2026",     id: "epd_hyp" },
+  { name: "NHSBSA EPD — Antidepressants",        tag: "Real · Mar 2026",     id: "epd_antidep" },
+  { name: "NHSBSA EPD — Bisphosphonates",        tag: "Real · Mar 2026",     id: "epd_bis" },
+  { name: "NHSBSA EPD — Diuretics",              tag: "Real · Mar 2026",     id: "epd_diu" },
+  { name: "NHSBSA EPD — ACE/ARBs",               tag: "Real · Mar 2026",     id: "epd_ace" },
+  { name: "NHSBSA EPD — Anxiolytics",            tag: "Real · Mar 2026",     id: "epd_anx" },
+  { name: "NHSBSA EPD — Bladder Antimusc.",      tag: "Real · Mar 2026",     id: "epd_blad" },
+  { name: "NHSBSA EPD — Oral Nutrition (ONS)",   tag: "Real · Mar 2026 ✦",   id: "epd_ons" },
+  { name: "NHSBSA EPD — Anti-Dementia Drugs",    tag: "Real · Mar 2026 ✦",   id: "epd_adm" },
+  { name: "NHSBSA EPD — Denosumab",              tag: "Real · Mar 2026 ✦",   id: "epd_den" },
+  { name: "NHSBSA EPD — Parkinson\'s Drugs",    tag: "Real · Mar 2026 ✦",   id: "epd_prk" },
 ];
 
 let enabledSources = new Set(SOURCE_DEFS.map(s => s.id));
@@ -1212,7 +1241,7 @@ let currentResults = [];
 
 function init() {
   renderSources();
-  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].forEach(id => {
+  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'].forEach(id => {
     const el = document.getElementById(id);
     if (el) updateWeight(id);
   });
@@ -1249,7 +1278,7 @@ function updateWeight(id) {
 }
 
 function updateTotal() {
-  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'];
+  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'];
   const total = ids.reduce((s,id) => {
     const el = document.getElementById(id);
     return s + (el ? parseInt(el.value) : 0);
@@ -1262,7 +1291,7 @@ function updateTotal() {
 // ── SCORING ENGINE ────────────────────────────────────────────────────
 
 function getWeights() {
-  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].map(id => {
+  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18','w19','w20','w21'].map(id => {
     const el = document.getElementById(id);
     return el ? parseInt(el.value) / 100 : 0.06;
   });
@@ -1296,7 +1325,7 @@ function scoreZone(zone, weights) {
   });
 
   const rawScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
-  const uncertain = availableSources < 8;
+  const uncertain = availableSources < 10;
 
   return {
     ...zone,
@@ -1465,7 +1494,7 @@ function showDetail(idx) {
 
   const uncBanner = r.uncertain ? `
     <div class="unc-banner">
-      ⚠ Low data confidence — only ${r.availableSources} of 17 signals available.
+      ⚠ Low data confidence — only ${r.availableSources} of 21 signals available.
     </div>` : '';
 
   document.getElementById('detail-placeholder').innerHTML = `
@@ -1473,7 +1502,7 @@ function showDetail(idx) {
       <div class="detail-header">
         <div>
           <div class="detail-zone-name">${r.name}</div>
-          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/17 signals active</div>
+          <div class="detail-zone-meta">${r.pcn} · LSOA ${r.lsoa} · ${r.availableSources}/21 signals active</div>
         </div>
         <div style="display:flex;align-items:center;gap:0.75rem">
           <div class="detail-fep-badge">
@@ -1525,7 +1554,7 @@ function getRecommendations(r) {
   if (high.some(c => c.name.includes('Deprivation'))) recs.push('High deprivation — consider facilitated rather than digital-first screening');
   if (high.some(c => c.name.includes('Care Home'))) recs.push('Significant care home capacity gap — flag to social care commissioning');
   if (r.uncertain) recs.push('Improve data coverage before commissioning report — contact NHS ICB for missing signals');
-  if (recs.length === 0) recs.push('Routine monitoring — data refreshes daily, check back regularly');
+  if (recs.length === 0) recs.push('Routine monitoring — rescore next quarter');
 
   return recs;
 }
@@ -1874,7 +1903,7 @@ WHAT YOU KNOW:
 - Denosumab is an injectable bone protection drug given for severe osteoporosis or after a fracture — it indicates higher frailty severity than oral bisphosphonates.
 - The weather banner (when active) flags temperature-medication interactions — older people on anticholinergics, diuretics, and antidepressants are at acute risk during heat and cold events.
 - Kent & Medway context: Thanet, Folkestone & Hythe, Dover, and Swale consistently score highest. Coastal east Kent has higher deprivation, older demographics, and above-average prescribing across almost all signals. Sevenoaks and Tunbridge Wells score lowest — affluent commuter belt.
-- Data refreshes regularly: Fingertips indicators are fetched fresh on every pipeline run, EPD prescribing data updates monthly when NHSBSA publish a new release. Current EPD data: Mar 2026. Fingertips: 2024/25-2026.
+- Data refreshes regularly: Fingertips indicators fetch the latest available on every pipeline run (daily via GitHub Actions). EPD prescribing data updates monthly when NHSBSA publish a new release. Current EPD: Mar 2026. Fingertips: 2024/25-2026.
 
 WHAT YOU SHOULD EXPLAIN CLEARLY:
 - What a specific FEP score means in human terms (not just numbers)
