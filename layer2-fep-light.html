@@ -1063,14 +1063,14 @@ input[type=range]::-webkit-slider-thumb:hover {
         <input type="range" id="w13" min="0" max="40" value="4" oninput="updateWeight('w13')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">1%</span></div>
-        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
-        <input type="range" id="w14" min="0" max="20" value="1" oninput="updateWeight('w14')">
+        <div class="weight-header"><span class="weight-label">Diuretics Rate</span><span class="weight-val" id="w14-val">0%</span></div>
+        <div class="weight-desc">Kent 2.9 vs England 2.5 /1k ▲. Weight zeroed in v5 — retained for reporting. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w14" min="0" max="20" value="0" oninput="updateWeight('w14')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">1%</span></div>
-        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. NHSBSA EPD Mar 2026. Real.</div>
-        <input type="range" id="w15" min="0" max="20" value="1" oninput="updateWeight('w15')">
+        <div class="weight-header"><span class="weight-label">ACE/ARB Prescribing</span><span class="weight-val" id="w15-val">0%</span></div>
+        <div class="weight-desc">Kent 118.6 vs England 95.0 /1k ▲. Weight zeroed in v5 — retained for reporting. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w15" min="0" max="20" value="0" oninput="updateWeight('w15')">
       </div>
       <div class="weight-row">
         <div class="weight-header"><span class="weight-label">Anxiolytics Prescribing</span><span class="weight-val" id="w16-val">3%</span></div>
@@ -1078,9 +1078,14 @@ input[type=range]::-webkit-slider-thumb:hover {
         <input type="range" id="w16" min="0" max="20" value="3" oninput="updateWeight('w16')">
       </div>
       <div class="weight-row">
-        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">2%</span></div>
-        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. EPD Mar 2026. Real.</div>
-        <input type="range" id="w17" min="0" max="20" value="2" oninput="updateWeight('w17')">
+        <div class="weight-header"><span class="weight-label">Bladder Antimuscarinic Rate</span><span class="weight-val" id="w17-val">1%</span></div>
+        <div class="weight-desc">Oxybutynin/solifenacin — anticholinergic burden, cognitive decline risk. Reduced 2%→1% in v5. EPD Mar 2026. Real.</div>
+        <input type="range" id="w17" min="0" max="20" value="1" oninput="updateWeight('w17')">
+      </div>
+      <div class="weight-row">
+        <div class="weight-header"><span class="weight-label">Oral Nutritional Supplements ↑ v5</span><span class="weight-val" id="w18-val">3%</span></div>
+        <div class="weight-desc">Fortisip, Ensure, Fresubin — BNF 090402. Direct FRAIL Scale signal (Loss of weight). NICE NG22: prescribed when BMI &lt;18.5 or &gt;10% unintentional weight loss. NHSBSA EPD Mar 2026. Real.</div>
+        <input type="range" id="w18" min="0" max="20" value="3" oninput="updateWeight('w18')">
       </div>
 
       <div class="weight-total">
@@ -1176,12 +1181,13 @@ const SIGNAL_NAMES = [
   "ACE/ARB Prescribing",         // 15 EPD real
   "Anxiolytics Prescribing",     // 16 EPD real
   "Bladder Antimuscarinic Rate", // 17 EPD real
+  "Oral Nutritional Supplements",// 18 EPD real ← NEW v5 (BNF 090402)
 ];
 
 const SIGNAL_COLORS = [
   "#3fb950","#58a6ff","#d29922","#f0883e","#bc8cff","#ff7b72",
   "#39d353","#79c0ff","#ffa657","#ff8080","#56d364","#4fc3f7",
-  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4"
+  "#ffd700","#ce93d8","#80cbc4","#f97316","#06b6d4","#a3e635"
 ];
 
 const SOURCE_DEFS = [
@@ -1202,6 +1208,7 @@ const SOURCE_DEFS = [
   { name: "NHSBSA EPD — ACE/ARBs",             tag: "Real · Mar 2026",     id: "epd_ace" },
   { name: "NHSBSA EPD — Anxiolytics",          tag: "Real · Mar 2026",     id: "epd_anx" },
   { name: "NHSBSA EPD — Bladder Antimusc.",    tag: "Real · Mar 2026",     id: "epd_blad" },
+  { name: "NHSBSA EPD — Oral Nutritional Supp.", tag: "Real · Mar 2026 · v5", id: "epd_ons" },
 ];
 
 let enabledSources = new Set(SOURCE_DEFS.map(s => s.id));
@@ -1212,7 +1219,7 @@ let currentResults = [];
 
 function init() {
   renderSources();
-  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].forEach(id => {
+  ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'].forEach(id => {
     const el = document.getElementById(id);
     if (el) updateWeight(id);
   });
@@ -1249,7 +1256,7 @@ function updateWeight(id) {
 }
 
 function updateTotal() {
-  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'];
+  const ids = ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'];
   const total = ids.reduce((s,id) => {
     const el = document.getElementById(id);
     return s + (el ? parseInt(el.value) : 0);
@@ -1262,7 +1269,7 @@ function updateTotal() {
 // ── SCORING ENGINE ────────────────────────────────────────────────────
 
 function getWeights() {
-  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17'].map(id => {
+  return ['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10','w11','w12','w13','w14','w15','w16','w17','w18'].map(id => {
     const el = document.getElementById(id);
     return el ? parseInt(el.value) / 100 : 0.06;
   });
