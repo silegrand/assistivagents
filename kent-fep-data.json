@@ -1,24 +1,17 @@
 {
   "meta": {
-    "generated": "2026-06-04T09:10:05.167405+00:00",
+    "generated": "2026-06-04T14:00:11.820458+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
-    "version": "4.0 \u2014 weather-health alert integration",
+    "version": "5.0 \u2014 oral nutritional supplements signal added",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "signals_real_count": 17,
+    "signals_real_count": 10,
     "signals_modelled_count": 3,
-    "data_quality": "17 real signals \u00b7 3 modelled (synthetic) of 17 total",
+    "data_quality": "10 real signals \u00b7 3 modelled (synthetic) of 18 total",
     "signals_real": [
       "falls_65",
       "falls_65_79",
       "falls_80",
-      "winter_mortality",
-      "loneliness",
-      "social_isolation",
-      "dementia_diagnosis",
-      "hip_fractures_65",
-      "hip_fractures_80",
-      "fuel_poverty",
       "hypnotics",
       "anxiolytics",
       "antidepressants",
@@ -49,7 +42,8 @@
       "Diuretics Rate",
       "ACE/ARB Prescribing",
       "Anxiolytics Prescribing",
-      "Bladder Antimuscarinic Rate"
+      "Bladder Antimuscarinic Rate",
+      "Oral Nutritional Supplements"
     ],
     "weights": [
       0.13,
@@ -65,10 +59,11 @@
       0.05,
       0.05,
       0.04,
-      0.01,
-      0.01,
+      0.0,
+      0.0,
       0.03,
-      0.02
+      0.01,
+      0.03
     ],
     "sources": {
       "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py",
@@ -81,8 +76,13 @@
       "UKHSA/Met Office Weather-Health Alert fetched at run time",
       "fep_weather field: weather-uplifted FEP for live map display",
       "weather_alert block added to JSON root for Layer 4 context injection",
-      "data_quality metadata corrected: 14 real, 3 modelled (was incorrectly '17 real')",
-      "Scratch cells (ambulance/emergency search) removed from production notebook"
+      "data_quality metadata corrected: 14 real, 3 modelled (was incorrectly '17 real')"
+    ],
+    "new_in_v5": [
+      "Signal 18: ons_nutrition \u2014 BNF 090402 oral nutritional supplements",
+      "Weight 3% \u2014 direct FRAIL Scale (Loss of weight) clinical signal",
+      "Funded by: bladder_antimusc 2%\u21921%, diuretics 1%\u21920% (retained for reporting)",
+      "England reference rate: 3.8 per 1,000 patients/month (OpenPrescribing 2024/25)"
     ],
     "note": "fep = base score (weather-independent, use for longitudinal comparison). fep_weather = live score including weather uplift (use for operational map display). EPD: district-level actual. Fingertips + modelled: ICB \u00d7 demographic profile. Phase 2: MSOA Fingertips linkage."
   },
@@ -90,7 +90,7 @@
     "alert_level": "green",
     "alert_type": "heat",
     "region": "South East England",
-    "fetched_at": "2026-06-04T09:06:25.126583+00:00",
+    "fetched_at": "2026-06-04T13:57:11.705354+00:00",
     "source": "UKHSA Weather-Health Alerting / Met Office",
     "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
     "med_risk_signals": [],
@@ -121,51 +121,51 @@
         "label": "Falls admissions 80+"
       },
       "winter_mortality": {
-        "value": 9.8,
-        "england": 8.7,
-        "period": "Aug 2021 - Jul 2022",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 90360",
         "label": "Winter mortality index"
       },
       "loneliness": {
-        "value": 6.16,
-        "england": 11.56,
-        "period": "2021/22 - 22/23",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 94175",
         "label": "Loneliness often/always"
       },
       "social_isolation": {
-        "value": 49.1,
-        "england": 46.87,
-        "period": "2024/25",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 90280",
         "label": "Social isolation - SC users"
       },
       "dementia_diagnosis": {
-        "value": 62.3,
-        "england": 66.3,
-        "period": "2026",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 92949",
         "label": "Dementia diagnosis rate 65+"
       },
       "hip_fractures_65": {
-        "value": 542.97,
-        "england": 491.15,
-        "period": "2024/25",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 41401",
         "label": "Hip fractures 65+"
       },
       "hip_fractures_80": {
-        "value": 1414.58,
-        "england": 1325.17,
-        "period": "2024/25",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 41403",
         "label": "Hip fractures 80+"
       },
       "fuel_poverty": {
-        "value": 10.97,
-        "england": 34.59,
-        "period": "2023",
+        "value": null,
+        "england": null,
+        "period": null,
         "source": "NHS Fingertips indicator 93759",
         "label": "Fuel poverty"
       }
@@ -247,6 +247,17 @@
         "period": "Mar 2026",
         "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
         "england_note": "literature estimate"
+      },
+      "ons_nutrition": {
+        "rate_per_1000": 0,
+        "england": 3.8,
+        "items": 0,
+        "qty": 0,
+        "substances": 0,
+        "ratio": 0,
+        "period": "Mar 2026",
+        "source": "NHSBSA EPD EPD_SNOMED_MAR2026",
+        "england_note": "OpenPrescribing 2024/25"
       }
     }
   },
@@ -254,28 +265,29 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "fep": 63,
-      "fep_weather": 63,
+      "fep": 62,
+      "fep_weather": 62,
       "risk": "high",
       "risk_weather": "high",
       "signals": [
         65.0,
         64.1,
-        66.4,
+        60.0,
         67.5,
-        72.1,
+        64.0,
         65.0,
-        33.2,
         62.5,
-        64.1,
-        63.9,
+        59.0,
+        60.0,
+        61.0,
         59.1,
         62.9,
         56.5,
         56.0,
         58.8,
         45.9,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -294,7 +306,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 18200,
       "list_size": 145000,
@@ -354,34 +367,43 @@
           "ratio": 3.466,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
-      "fep": 57,
-      "fep_weather": 57,
+      "fep": 56,
+      "fep_weather": 56,
       "risk": "high",
       "risk_weather": "high",
       "signals": [
         61.0,
         60.5,
-        63.6,
+        57.5,
         61.0,
-        67.6,
         60.0,
-        31.4,
-        59.4,
-        61.4,
-        60.3,
+        60.0,
+        59.0,
+        56.0,
+        57.5,
+        57.5,
         44.6,
         42.4,
         40.1,
         49.3,
         45.2,
         34.1,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -400,7 +422,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 14100,
       "list_size": 116000,
@@ -460,34 +483,43 @@
           "ratio": 2.728,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Dover",
       "lad_code": "E07000108",
-      "fep": 57,
-      "fep_weather": 57,
+      "fep": 56,
+      "fep_weather": 56,
       "risk": "high",
       "risk_weather": "high",
       "signals": [
         59.0,
         59.0,
-        61.9,
+        56.0,
         59.0,
-        64.7,
+        57.5,
         55.0,
-        30.3,
-        57.2,
-        58.7,
-        57.6,
+        57.0,
+        54.0,
+        55.0,
+        55.0,
         43.7,
         52.7,
         58.7,
         54.6,
         54.0,
         38.3,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -506,7 +538,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 13800,
       "list_size": 115000,
@@ -566,6 +599,14 @@
           "ratio": 3.495,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
@@ -579,21 +620,22 @@
       "signals": [
         56.0,
         56.4,
-        59.7,
+        54.0,
         56.0,
-        61.9,
-        56.0,
-        28.7,
-        55.7,
-        57.7,
         55.0,
+        56.0,
+        54.0,
+        52.5,
+        54.0,
+        52.5,
         46.9,
         57.0,
         44.2,
         46.7,
         54.2,
         28.3,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -612,7 +654,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 15200,
       "list_size": 153000,
@@ -672,34 +715,43 @@
           "ratio": 2.999,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Medway",
       "lad_code": "E06000035",
-      "fep": 54,
-      "fep_weather": 54,
+      "fep": 53,
+      "fep_weather": 53,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         53.0,
         53.9,
-        57.5,
+        52.0,
         54.0,
-        59.1,
+        52.5,
         54.0,
-        27.1,
-        54.1,
-        56.1,
-        53.4,
+        51.0,
+        51.0,
+        52.5,
+        51.0,
         53.8,
         64.3,
         56.6,
         53.4,
         64.5,
         28.8,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -718,7 +770,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 19400,
       "list_size": 295000,
@@ -778,34 +831,43 @@
           "ratio": 3.551,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "fep": 53,
-      "fep_weather": 53,
+      "fep": 51,
+      "fep_weather": 51,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         50.0,
         50.3,
-        56.4,
         51.0,
-        56.3,
+        51.0,
+        50.0,
         52.5,
-        26.1,
-        53.0,
-        54.5,
-        52.4,
+        49.0,
+        50.0,
+        51.0,
+        50.0,
         54.6,
         55.0,
         72.3,
         94.3,
         64.8,
         21.6,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -824,7 +886,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 11800,
       "list_size": 106000,
@@ -884,34 +947,43 @@
           "ratio": 3.34,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Ashford",
       "lad_code": "E07000105",
-      "fep": 50,
-      "fep_weather": 50,
+      "fep": 49,
+      "fep_weather": 49,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         48.0,
         48.7,
-        54.2,
         49.0,
-        54.0,
+        49.0,
+        48.0,
         50.0,
-        25.0,
-        50.9,
-        52.3,
-        49.8,
+        47.0,
+        48.0,
+        49.0,
+        47.5,
         40.1,
         61.8,
         60.7,
         65.2,
         71.3,
         37.5,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -930,7 +1002,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 13600,
       "list_size": 128000,
@@ -990,34 +1063,43 @@
           "ratio": 4.299,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
-      "fep": 50,
-      "fep_weather": 50,
+      "fep": 49,
+      "fep_weather": 49,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         45.0,
         46.2,
-        50.9,
-        42.5,
-        51.8,
         46.0,
-        24.5,
-        47.7,
-        48.1,
-        47.2,
+        42.5,
+        46.0,
+        46.0,
+        46.0,
+        45.0,
+        45.0,
+        45.0,
         78.6,
         61.8,
         61.6,
         61.7,
         62.2,
         54.9,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1036,7 +1118,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 16300,
       "list_size": 172000,
@@ -1096,34 +1179,43 @@
           "ratio": 3.862,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "fep": 48,
-      "fep_weather": 48,
+      "fep": 47,
+      "fep_weather": 47,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         42.5,
         43.6,
-        48.7,
+        44.0,
         47.5,
-        47.9,
+        42.5,
         46.0,
-        22.6,
-        45.0,
-        45.4,
-        44.5,
+        42.5,
+        42.5,
+        42.5,
+        42.5,
         70.4,
         62.1,
         63.2,
         44.7,
         67.4,
         24.7,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1142,7 +1234,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 16700,
       "list_size": 183000,
@@ -1202,34 +1295,43 @@
           "ratio": 4.343,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Dartford",
       "lad_code": "E07000107",
-      "fep": 46,
-      "fep_weather": 46,
+      "fep": 45,
+      "fep_weather": 45,
       "risk": "moderate",
       "risk_weather": "moderate",
       "signals": [
         44.0,
         45.1,
-        49.8,
-        47.5,
-        49.5,
         45.0,
-        23.4,
-        46.6,
-        47.0,
-        46.1,
+        47.5,
+        44.0,
+        45.0,
+        44.0,
+        44.0,
+        44.0,
+        44.0,
         53.7,
         44.6,
         43.7,
         57.8,
         50.7,
         24.2,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1248,7 +1350,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 10800,
       "list_size": 111000,
@@ -1308,6 +1411,14 @@
           "ratio": 2.664,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
@@ -1321,21 +1432,22 @@
       "signals": [
         39.0,
         40.0,
-        45.3,
+        41.0,
         39.0,
-        45.0,
+        40.0,
         42.5,
-        21.3,
-        42.4,
-        42.7,
-        41.9,
+        40.0,
+        40.0,
+        40.0,
+        40.0,
         41.1,
         38.4,
         47.8,
         35.6,
         44.3,
         26.5,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1354,7 +1466,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 13100,
       "list_size": 132000,
@@ -1414,34 +1527,43 @@
           "ratio": 2.61,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
-      "fep": 38,
-      "fep_weather": 38,
+      "fep": 37,
+      "fep_weather": 37,
       "risk": "low",
       "risk_weather": "low",
       "signals": [
         32.5,
         33.3,
-        37.6,
+        34.0,
         26.0,
-        36.6,
+        32.5,
         37.5,
-        17.3,
-        34.5,
-        34.7,
-        34.1,
+        32.5,
+        32.5,
+        32.5,
+        32.5,
         58.2,
         46.2,
         74.8,
         48.3,
         58.4,
         29.4,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1460,7 +1582,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 12100,
       "list_size": 118000,
@@ -1520,6 +1643,14 @@
           "ratio": 4.084,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       }
     },
@@ -1533,21 +1664,22 @@
       "signals": [
         29.0,
         29.8,
-        34.3,
+        31.0,
         29.0,
-        33.8,
+        30.0,
         32.5,
-        16.0,
-        31.8,
-        32.0,
-        31.4,
+        30.0,
+        30.0,
+        30.0,
+        30.0,
         58.2,
         40.8,
         44.8,
         37.1,
         38.7,
         40.3,
-        100
+        100,
+        50.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1566,7 +1698,8 @@
         "Diuretics Rate",
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
-        "Bladder Antimuscarinic Rate"
+        "Bladder Antimuscarinic Rate",
+        "Oral Nutritional Supplements"
       ],
       "pop75": 11200,
       "list_size": 119000,
@@ -1624,6 +1757,14 @@
           "england": 4.2,
           "items": 1195,
           "ratio": 2.391,
+          "period": "Mar 2026",
+          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
+        },
+        "ons_nutrition": {
+          "rate_per_1000": 0,
+          "england": 3.8,
+          "items": 0,
+          "ratio": 0,
           "period": "Mar 2026",
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
