@@ -1525,7 +1525,7 @@ function getRecommendations(r) {
   if (high.some(c => c.name.includes('Deprivation'))) recs.push('High deprivation — consider facilitated rather than digital-first screening');
   if (high.some(c => c.name.includes('Care Home'))) recs.push('Significant care home capacity gap — flag to social care commissioning');
   if (r.uncertain) recs.push('Improve data coverage before commissioning report — contact NHS ICB for missing signals');
-  if (recs.length === 0) recs.push('Routine monitoring — rescore next quarter');
+  if (recs.length === 0) recs.push('Routine monitoring — data refreshes daily, check back regularly');
 
   return recs;
 }
@@ -1874,7 +1874,7 @@ WHAT YOU KNOW:
 - Denosumab is an injectable bone protection drug given for severe osteoporosis or after a fracture — it indicates higher frailty severity than oral bisphosphonates.
 - The weather banner (when active) flags temperature-medication interactions — older people on anticholinergics, diuretics, and antidepressants are at acute risk during heat and cold events.
 - Kent & Medway context: Thanet, Folkestone & Hythe, Dover, and Swale consistently score highest. Coastal east Kent has higher deprivation, older demographics, and above-average prescribing across almost all signals. Sevenoaks and Tunbridge Wells score lowest — affluent commuter belt.
-- Data is refreshed quarterly. Current data is from NHSBSA Mar 2026 and NHS Fingertips 2024/25-2026.
+- Data refreshes regularly: Fingertips indicators are fetched fresh on every pipeline run, EPD prescribing data updates monthly when NHSBSA publish a new release. Current EPD data: Mar 2026. Fingertips: 2024/25-2026.
 
 WHAT YOU SHOULD EXPLAIN CLEARLY:
 - What a specific FEP score means in human terms (not just numbers)
