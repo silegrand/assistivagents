@@ -172,6 +172,50 @@ for name, profile in PROFILES.items():
 
 districts.sort(key=lambda x: x["fep"], reverse=True)
 
+# ── v5.1: FEP delta — rate of change vs previous commit ──────────────────────
+# Loads the last committed JSON and computes per-district FEP change.
+# fep_delta > 0 = rising risk, fep_delta < 0 = falling risk.
+# Used for predictive alerting: a zone with rising FEP + rising 111 demand
+# is a crisis precursor candidate even if absolute FEP score is not yet critical.
+print("\nComputing FEP deltas vs previous commit...")
+prev_scores = {}
+try:
+    prev_resp = requests.get(RAW_URL, timeout=10)
+    if prev_resp.status_code == 200:
+        prev_data = prev_resp.json()
+        prev_scores = {d["name"]: d["fep"] for d in prev_data.get("districts", [])}
+        print(f"  Previous commit loaded: {prev_data.get('meta',{}).get('generated','?')[:10]}")
+except Exception as e:
+    print(f"  Could not load previous commit: {e} — deltas will be null")
+
+for d in districts:
+    prev = prev_scores.get(d["name"])
+    d["fep_delta"]          = (d["fep"] - prev) if prev is not None else None
+    d["fep_delta_direction"] = ("rising" if d["fep_delta"] and d["fep_delta"] > 0
+                                 else "falling" if d["fep_delta"] and d["fep_delta"] < 0
+                                 else "stable" if d["fep_delta"] == 0 else "unknown")
+
+# ── v5.1: Crisis precursor flags ─────────────────────────────────────────────
+# A zone is flagged as a crisis precursor if BOTH:
+#   1. FEP score is rising (fep_delta > 0) AND fep_delta >= 2 points
+#   2. FEP risk tier is 'high' or 'critical'
+# This is a conservative threshold — designed to surface genuine acceleration
+# rather than noise from minor Fingertips indicator updates.
+# The 111 velocity component will be added once 111 data is non-zero.
+print("\nCrisis precursor assessment:")
+for d in districts:
+    delta = d.get("fep_delta") or 0
+    rising_significant = delta >= 2
+    high_risk = d["risk"] in ("high", "critical")
+    d["crisis_precursor"] = rising_significant and high_risk
+    if d["crisis_precursor"]:
+        print(f"  ⚠ CRISIS PRECURSOR: {d['name']} FEP {d['fep']} (Δ+{delta})")
+
+precursor_count = sum(1 for d in districts if d.get("crisis_precursor"))
+if precursor_count == 0:
+    print("  No crisis precursors flagged (all deltas < 2 points or risk < high)")
+
+
 # ── ASSEMBLE OUTPUT ───────────────────────────────────────────────────
 today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 real_signals = [k for k, v in fingertips_results.items() if v.get("value")]
@@ -190,6 +234,7 @@ output = {
         "signals_synthetic": ["alone_75", "deprivation_imd", "care_home_gap"],
         "signal_names":      SIGNAL_NAMES,
         "weights":           WEIGHTS,
+        "fep_delta_note": ("fep_delta = change vs previous daily commit. ""Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. ""Phase 2: add 111 call velocity to precursor logic."),
         "sources": {
             "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py — fetched today",
             "epd":        f"NHSBSA EPD — {last_meta.get('epd_period', 'last manual run')} (reused)",
@@ -218,6 +263,16 @@ def commit_file(content_dict, filepath, message):
         return True
     print(f"  ✗ {filepath}: {r.status_code} {r.json().get('message','')}")
     return False
+
+# ── Delta scorecard ──────────────────────────────────────────────────────────
+print(f"\n── FEP Delta Scorecard ({today}) ──")
+print(f"  {'District':<25} {'FEP':>5}  {'Prev':>5}  {'Δ':>5}  Direction     Precursor")
+print(f"  {'-'*70}")
+for d in districts:
+    prev_fep = prev_scores.get(d["name"], "?")
+    delta_str = f"+{d['fep_delta']}" if d.get('fep_delta') and d['fep_delta'] > 0 else str(d.get('fep_delta','?'))
+    precursor = "⚠ YES" if d.get("crisis_precursor") else ""
+    print(f"  {d['name']:<25} {d['fep']:>5}  {str(prev_fep):>5}  {delta_str:>5}  {d['fep_delta_direction']:<12}  {precursor}")
 
 msg = f"Daily FEP refresh — {today} — Fingertips updated"
 print(f"\nCommitting...")
