@@ -183,7 +183,7 @@ body {
 
 /* ── SIDE PANEL ── */
 .side-panel {
-  width: 400px;
+  width: 320px;
   background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex;
@@ -202,7 +202,7 @@ body {
   flex: 1;
   padding: 0.6rem 0.5rem;
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   text-align: center;
@@ -252,8 +252,8 @@ body {
   flex-shrink: 0;
 }
 
-.legend-text { font-size: 0.82rem; color: var(--text); }
-.legend-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); }
+.legend-text { font-size: 0.72rem; color: var(--text); }
+.legend-sub { font-family: var(--mono); font-size: 0.6rem; color: var(--text-muted); }
 
 /* ── DISTRICT DETAIL ── */
 .district-header {
@@ -342,7 +342,7 @@ body {
 
 .signal-item:last-child { border-bottom: none; }
 
-.signal-name { font-size: 0.82rem; color: var(--text); flex: 1; }
+.signal-name { font-size: 0.7rem; color: var(--text); flex: 1; }
 
 .signal-bar-wrap {
   width: 80px;
@@ -426,7 +426,7 @@ body {
   min-width: 16px;
 }
 
-.ranked-name { font-size: 0.85rem; font-weight: 500; flex: 1; color: var(--text); }
+.ranked-name { font-size: 0.75rem; font-weight: 500; flex: 1; color: var(--text); }
 
 .ranked-bar-wrap {
   width: 60px;
@@ -525,6 +525,37 @@ body {
   .icb-stats { gap: 0.75rem; }
 }
 
+/* ── DISCHARGE INTELLIGENCE PANEL ───────────────────────────────────── */
+.disch-panel {
+  margin-top: 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid #c04828;
+  border-radius: 0 8px 8px 0;
+  padding: 0.85rem 1rem;
+}
+.disch-title {
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: #c04828; margin-bottom: 0.65rem;
+}
+.disch-trust {
+  margin-bottom: 0.65rem;
+  background: #fff8f7; border: 1px solid #fde8e2;
+  border-radius: 7px; padding: 0.6rem 0.75rem;
+}
+.disch-trust-name { font-size: 0.72rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+.disch-stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.35rem; margin-bottom: 0.3rem; }
+.disch-stat { text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: 5px; padding: 0.35rem 0.3rem; }
+.disch-stat-val { font-family: var(--mono); font-size: 0.95rem; font-weight: 600; color: var(--text); display: block; }
+.disch-stat-val.warn { color: #c04828; }
+.disch-stat-val.ok   { color: #2d6b47; }
+.disch-stat-lbl { font-size: 0.6rem; color: var(--text-muted); line-height: 1.2; }
+.disch-efficiency { margin-top: 0.3rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.68rem; color: var(--text-muted); }
+.disch-eff-bar { flex: 1; background: #fde8e2; border-radius: 3px; height: 6px; overflow: hidden; }
+.disch-eff-fill { height: 6px; border-radius: 3px; background: #c04828; }
+.disch-source { font-size: 0.62rem; color: var(--text-muted); margin-top: 0.5rem; padding-top: 0.4rem; border-top: 1px solid var(--border); line-height: 1.5; }
+
 /* ── NHS 111 DEMAND PANEL ─────────────────────────────────────────────── */
 .iuc-panel {
   margin-top: 0.85rem;
@@ -564,7 +595,7 @@ body {
   color: #6d28d9;
 }
 .iuc-stat-label {
-  font-size: 0.72rem;
+  font-size: 0.62rem;
   color: var(--text-muted);
   line-height: 1.3;
   margin-top: 2px;
@@ -573,7 +604,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   margin-bottom: 0.3rem;
 }
@@ -596,60 +627,8 @@ body {
   position: relative;
   margin-top: -6px;
 }
-.iuc-cost {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px dashed #e9d5ff;
-}
-.iuc-cost-title {
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: #6d28d9;
-  margin-bottom: 0.5rem;
-}
-.iuc-cost-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.2rem 0.5rem;
-  font-size: 0.76rem;
-  padding: 0.2rem 0;
-  border-bottom: 1px dashed #f3e8ff;
-  color: var(--text-muted);
-}
-.iuc-cost-row:last-of-type { border-bottom: none; }
-.iuc-cost-row-val {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--text);
-  text-align: right;
-}
-.iuc-cost-total {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  margin-top: 0.4rem;
-  padding: 0.4rem 0.6rem;
-  background: #f5f3ff;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #5b21b6;
-}
-.iuc-prevent {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  margin-top: 0.35rem;
-  padding: 0.4rem 0.6rem;
-  background: #ecfdf5;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #065f46;
-  border-left: 3px solid #10b981;
-}
-
+.iuc-note {
+  font-size: 0.62rem;
   color: var(--text-muted);
   line-height: 1.5;
   margin-top: 0.5rem;
@@ -683,7 +662,7 @@ body {
   align-items: center;
   padding: 0.3rem 0;
   border-bottom: 1px dashed var(--border);
-  font-size: 0.76rem;
+  font-size: 0.68rem;
 }
 .rx-signal-row:last-of-type { border-bottom: none; }
 .rx-sig-name { color: var(--text); font-weight: 500; }
@@ -744,7 +723,7 @@ body {
   margin-bottom: 0.2rem;
 }
 .econ-label {
-  font-size: 0.78rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   margin-bottom: 0.65rem;
   line-height: 1.4;
@@ -759,7 +738,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.76rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
   padding: 0.2rem 0;
   border-bottom: 1px dashed var(--border);
@@ -772,7 +751,7 @@ body {
   font-weight: 500;
 }
 .econ-source {
-  font-size: 0.70rem;
+  font-size: 0.6rem;
   color: var(--text-muted);
   line-height: 1.5;
   padding-top: 0.5rem;
@@ -1275,16 +1254,6 @@ const IUC_DATA = {
 
   period: '2024/25',
   source: 'NHS England IUCADC — ICB-level statistics Apr 2024–Mar 2025',
-
-  // ── NHS REFERENCE COSTS 2023/24 — 111-originated demand ──────────
-  cost_per_call:    8.71,   // IUC telephony unit cost — NHS England published
-  cost_per_amb:   257.00,   // Category 2 ambulance response — Ambulance Cost Collection 2023/24
-  cost_per_ed:    212.00,   // Type 1 ED attendance — NHS Reference Costs 2023/24
-
-  // Preventability fractions for frail older cohort
-  // Source: BGS Fit for Frailty; NHSE Urgent Care evidence review
-  prev_amb: 0.28,           // 28% of amb dispatches potentially avoidable with early intervention
-  prev_ed:  0.30,           // 30% of ED referrals potentially avoidable
 };
 
 function renderIUCPanel(d) {
@@ -1364,35 +1333,109 @@ function renderIUCPanel(d) {
         Source: ${IUC_DATA.source}.<br>
         <em>Postcode-district breakdown pending FOI to SECAmb. District figures are proportional estimates.</em>
       </div>
+    </div>
+  `;
+}
 
-      <div class="iuc-cost">
-        <div class="iuc-cost-title">£ Annual 111-Originated Cost Estimate</div>
-        <div class="iuc-cost-row">
-          <span>111 call handling (${dist_calls.toLocaleString()} calls × £${IUC_DATA.cost_per_call})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call))}</span>
+// ── DISCHARGE INTELLIGENCE PANEL ─────────────────────────────────────
+// Source: NHS England Acute Daily Discharge Sitrep — April 2026
+// Published: 14 May 2026
+// Three Kent acute trusts — daily averages for April 2026
+
+const DISCHARGE_DATA = {
+  RVV: {
+    name:      'East Kent Hospitals University NHS FT',
+    hospitals: 'Queen Elizabeth Hospital Margate · William Harvey Hospital Ashford',
+    districts: ['Thanet','Folkestone & Hythe','Dover','Ashford','Canterbury'],
+    avg_no_criteria: 278,  // daily avg patients no longer meeting criteria to reside
+    avg_discharged:   93,  // daily avg actually discharged
+    avg_delayed:     185,  // daily avg remaining (delayed discharge)
+    efficiency:      33.5, // % discharged of those ready
+  },
+  RPA: {
+    name:      'Medway NHS Foundation Trust',
+    hospitals: 'Medway Maritime Hospital',
+    districts: ['Medway','Gravesham','Dartford','Swale'],
+    avg_no_criteria: 196,
+    avg_discharged:   51,
+    avg_delayed:     145,
+    efficiency:      26.0,
+  },
+  RWF: {
+    name:      'Maidstone and Tunbridge Wells NHS Trust',
+    hospitals: 'Maidstone Hospital · Tunbridge Wells Hospital',
+    districts: ['Maidstone','Tonbridge & Malling','Tunbridge Wells','Sevenoaks'],
+    avg_no_criteria: 111,
+    avg_discharged:   66,
+    avg_delayed:      46,
+    efficiency:      59.5,
+  },
+};
+
+// District → trust mapping
+const DISTRICT_TRUST = {
+  'Thanet':              'RVV',
+  'Folkestone & Hythe':  'RVV',
+  'Dover':               'RVV',
+  'Ashford':             'RVV',
+  'Canterbury':          'RVV',
+  'Medway':              'RPA',
+  'Gravesham':           'RPA',
+  'Dartford':            'RPA',
+  'Swale':               'RPA',
+  'Maidstone':           'RWF',
+  'Tonbridge & Malling': 'RWF',
+  'Tunbridge Wells':     'RWF',
+  'Sevenoaks':           'RWF',
+};
+
+function renderDischargePanel(d) {
+  const trustCode = DISTRICT_TRUST[d.name];
+  if (!trustCode) return '';
+  const t = DISCHARGE_DATA[trustCode];
+
+  const effColor = t.efficiency < 35 ? '#c04828' : t.efficiency < 55 ? '#b07010' : '#2d6b47';
+  const effClass = t.efficiency < 35 ? 'warn' : t.efficiency >= 55 ? 'ok' : '';
+
+  return `
+    <div class="disch-panel">
+      <div class="disch-title">🏥 Discharge Intelligence — ${d.name}</div>
+      <div class="disch-trust">
+        <div class="disch-trust-name">${t.name}</div>
+        <div style="font-size:0.62rem;color:var(--text-muted);margin-bottom:0.5rem">${t.hospitals}</div>
+        <div class="disch-stat-row">
+          <div class="disch-stat">
+            <span class="disch-stat-val">${t.avg_no_criteria}</span>
+            <div class="disch-stat-lbl">Ready for<br>discharge daily</div>
+          </div>
+          <div class="disch-stat">
+            <span class="disch-stat-val ok">${t.avg_discharged}</span>
+            <div class="disch-stat-lbl">Actually<br>discharged</div>
+          </div>
+          <div class="disch-stat">
+            <span class="disch-stat-val warn">${t.avg_delayed}</span>
+            <div class="disch-stat-lbl">Stuck in<br>hospital</div>
+          </div>
         </div>
-        <div class="iuc-cost-row">
-          <span>Ambulance dispatches (${dist_amb.toLocaleString()} × £${IUC_DATA.cost_per_amb.toLocaleString()})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb))}</span>
+        <div class="disch-efficiency">
+          <span>Discharge efficiency</span>
+          <div class="disch-eff-bar">
+            <div class="disch-eff-fill" style="width:${t.efficiency}%;background:${effColor}"></div>
+          </div>
+          <span style="font-family:var(--mono);font-weight:600;color:${effColor}">${t.efficiency}%</span>
         </div>
-        <div class="iuc-cost-row">
-          <span>ED referrals (${dist_ed.toLocaleString()} × £${IUC_DATA.cost_per_ed})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_ed * IUC_DATA.cost_per_ed))}</span>
-        </div>
-        <div class="iuc-cost-total">
-          <span>Total estimated 111-originated cost</span>
-          <span>${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call + dist_amb * IUC_DATA.cost_per_amb + dist_ed * IUC_DATA.cost_per_ed))}</span>
-        </div>
-        <div class="iuc-prevent">
-          <span>Potentially preventable (frail cohort, 28-30%)</span>
-          <span>${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb * IUC_DATA.prev_amb + dist_ed * IUC_DATA.cost_per_ed * IUC_DATA.prev_ed))}</span>
-        </div>
-        <div class="iuc-note" style="margin-top:0.5rem;border-top:none;padding-top:0">
-          Unit costs: 111 call £8.71 (NHSE IUC); ambulance £257 (Cost Collection 2023/24); ED £212 (NHS Ref Costs 2023/24).
-          Preventability: BGS Fit for Frailty &amp; NHSE Urgent Care evidence review.
-          FEP uplift (${(fepUplift * 100 - 100).toFixed(0)}%) not applied to cost — shown separately above.
-          Population-level estimate only.
-        </div>
+      </div>
+      <div style="font-size:0.72rem;color:var(--text-muted);line-height:1.6">
+        <strong style="color:var(--text)">The FEP connection:</strong>
+        The ${t.avg_delayed} patients stuck in hospital daily at ${t.name.split(' ').slice(0,2).join(' ')}
+        are disproportionately frail older adults from high-FEP districts.
+        ${d.name} (FEP ${d.fep}) feeds into this trust's delayed discharge pressure.
+        Early identification through the FEP model and proactive community intervention
+        reduces these admissions before they occur.
+      </div>
+      <div class="disch-source">
+        Source: NHS England Acute Daily Discharge Situation Report — April 2026 (published 14 May 2026) ·
+        Daily averages across 30 days · Provider-level data · Type 1 acute trusts only
       </div>
     </div>
   `;
@@ -1449,6 +1492,8 @@ function renderDetailPanel(d) {
     ${renderEconomicPanel(d)}
 
     ${renderPrescribingIntelligence(d)}
+
+    ${renderDischargePanel(d)}
 
     ${renderIUCPanel(d)}
 
@@ -2007,227 +2052,6 @@ async function fetchWeatherRisk() {
 // ── START ─────────────────────────────────────────────────────────────
 fetchWeatherRisk();
 loadBoundaries();
-</script>
-<!-- ═══════════════════════════════════════════════════════════════
-     ADA — Map Page ExplainerBot
-     Reads live district detail from the panel + kent-fep-data.json
-     ═══════════════════════════════════════════════════════════════ -->
-<style>
-#ada-btn {
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:9000;
-  width:52px;height:52px;border-radius:50%;
-  background:#fff;color:var(--forest);
-  border:1px solid var(--border);cursor:pointer;
-  box-shadow:0 4px 18px rgba(0,0,0,0.18);
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:2px;transition:transform .18s,box-shadow .18s;
-}
-#ada-btn:hover{transform:scale(1.07);box-shadow:0 6px 24px rgba(0,0,0,0.25);}
-#ada-btn .ada-icon{font-size:18px;line-height:1;color:var(--sage);}
-#ada-btn .ada-lbl{font-size:9px;letter-spacing:.1em;font-weight:700;color:var(--sage);}
-#ada-panel{
-  position:fixed;bottom:5rem;right:1.5rem;z-index:9000;
-  width:360px;max-width:calc(100vw - 2rem);
-  height:520px;max-height:calc(100vh - 7rem);
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.18);
-  display:none;flex-direction:column;overflow:hidden;font-family:var(--sans);
-}
-#ada-panel.open{display:flex;animation:adaIn .22s ease;}
-@keyframes adaIn{from{opacity:0;transform:translateY(12px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-.ada-hdr{background:var(--forest);padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
-.ada-av{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px;}
-.ada-hdr-name{font-size:13px;font-weight:600;color:#fff;}
-.ada-hdr-sub{font-size:10px;color:rgba(255,255,255,.6);}
-.ada-close{background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:18px;margin-left:auto;}
-.ada-msgs{flex:1;overflow-y:auto;padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem;}
-.ada-m{max-width:88%;padding:.55rem .8rem;border-radius:10px;font-size:12.5px;line-height:1.55;animation:mIn .18s ease;}
-@keyframes mIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
-.ada-m.ada{background:#eaf3ee;color:var(--text);align-self:flex-start;}
-.ada-m.ada strong{color:var(--forest);}
-.ada-m.usr{background:var(--forest);color:#fff;align-self:flex-end;}
-.ada-starts{padding:0 1rem .75rem;display:flex;flex-direction:column;gap:.4rem;flex-shrink:0;}
-.ada-start{background:none;border:1px solid var(--border);border-radius:8px;padding:.45rem .75rem;text-align:left;cursor:pointer;font-size:11.5px;color:var(--text-muted);transition:background .12s,border-color .12s;}
-.ada-start:hover{background:#eaf3ee;border-color:var(--sage);color:var(--text);}
-.ada-think{display:flex;gap:4px;padding:.55rem .8rem;background:#eaf3ee;border-radius:10px;align-self:flex-start;}
-.ada-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);animation:dot 1.2s infinite;}
-.ada-dot:nth-child(2){animation-delay:.2s;}.ada-dot:nth-child(3){animation-delay:.4s;}
-@keyframes dot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
-.ada-inp-row{display:flex;gap:.5rem;padding:.6rem 1rem;border-top:1px solid var(--border);flex-shrink:0;}
-#ada-inp{flex:1;border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;font-size:12.5px;font-family:var(--sans);background:var(--surface);color:var(--text);outline:none;resize:none;}
-#ada-inp:focus{border-color:var(--sage);}
-#ada-snd{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:.45rem .75rem;cursor:pointer;font-size:13px;}
-#ada-snd:hover{background:var(--sage);}
-#ada-snd:disabled{opacity:.4;cursor:default;}
-</style>
-
-<button id="ada-btn" onclick="adaToggle()" aria-label="Open Ada">
-  <span class="ada-icon">✦</span>
-  <span class="ada-lbl">ADA</span>
-</button>
-
-<div id="ada-panel" role="dialog">
-  <div class="ada-hdr">
-    <div class="ada-av">✦</div>
-    <div><div class="ada-hdr-name">Ada</div><div class="ada-hdr-sub">Assistiv Intelligence · map explainer</div></div>
-    <button class="ada-close" onclick="adaToggle()">×</button>
-  </div>
-  <div class="ada-msgs" id="ada-msgs"></div>
-  <div class="ada-starts" id="ada-starts"></div>
-  <div class="ada-inp-row">
-    <textarea id="ada-inp" rows="1" placeholder="Ask Ada about the map…"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adaSend();}"></textarea>
-    <button id="ada-snd" onclick="adaSend()">↑</button>
-  </div>
-</div>
-
-<script>
-const ADA_WORKER = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
-const ADA_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
-
-const ADA_STARTERS = [
-  'Why is Thanet the highest risk district?',
-  'What does the FEP score mean in plain English?',
-  'What should a commissioner do with this data?',
-  'Explain the cost of inaction for the highest scoring district',
-];
-
-const ADA_SYS = `You are Ada, an AI assistant built by Assistiv Systems. You help commissioners and clinical teams understand the Frailty Geography Intelligence map and what the data means for real people in Kent.
-
-TONE: Plain English first. Warm but precise. Never clinical jargon unless the person uses it.
-
-THE MAP: Shows FEP (Frailty Emergence Probability) scores for 13 Kent districts. Score 0-100, England average = 50. Higher = more frailty emergence risk. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+.
-
-21 SIGNALS: Falls admissions, hip fractures, winter mortality, dementia diagnosis (inverted), loneliness, social isolation, fuel poverty (Fingertips), plus prescribing signals — hypnotics, antidepressants, bisphosphonates, anxiolytics, bladder antimuscarinics, oral nutritional supplements, anti-dementia drugs, denosumab, Parkinson's drugs (NHSBSA EPD).
-
-ECONOMIC MODEL: Each district detail panel shows estimated annual NHS cost of 111-originated demand — call handling (£8.71/call), ambulance dispatch (£257), ED referral (£212). Potentially preventable fraction: ambulance 28%, ED 30% (BGS Fit for Frailty).
-
-KENT CONTEXT: Thanet, Folkestone & Hythe, Dover, Swale consistently highest risk — coastal east Kent, higher deprivation, older demographics. Sevenoaks and Tunbridge Wells lowest — affluent commuter belt.
-
-IMPORTANT: You have live data from the map injected below. Use it confidently. Never say you lack access to current scores.
-
-WHAT NOT TO DO: Never give individual clinical advice. Never overclaim model precision — it is a triage tool. Be honest about limitations.`;
-
-let adaOpen=false, adaHist=[], adaStartsOn=true, adaBusy=false, adaLive=null;
-
-async function adaFetchLive(){
-  try{
-    const r=await fetch(ADA_JSON);
-    adaLive=await r.json();
-  }catch(e){console.warn('Ada: JSON fetch failed',e);}
-}
-
-function adaCtx(){
-  const lines=[];
-  // Currently selected district from detail panel
-  const dname=document.querySelector('.district-name')?.textContent?.trim();
-  const dfep=document.querySelector('.fep-val')?.textContent?.trim();
-  if(dname) lines.push(`USER IS VIEWING: ${dname}${dfep?' (FEP '+dfep+')':''}`);
-
-  // Economic cost if visible
-  const econRange=document.querySelector('.econ-range')?.textContent?.trim();
-  if(econRange) lines.push(`Economic cost estimate shown: ${econRange}`);
-
-  // Live JSON district scores
-  if(adaLive&&adaLive.districts){
-    lines.push('\nLIVE DISTRICT SCORES:');
-    adaLive.districts.forEach(d=>lines.push(`  ${d.name}: FEP ${d.fep} (${d.risk})`));
-    const icb=adaLive.icb_baseline||{};
-    const ft=icb.fingertips||{};
-    if(ft.falls_65?.value) lines.push(`\nKent falls admissions 65+: ${ft.falls_65.value} vs England ${ft.falls_65.england}`);
-    if(ft.hip_fractures_65?.value) lines.push(`Kent hip fractures: ${ft.hip_fractures_65.value} vs England ${ft.hip_fractures_65.england}`);
-  }
-  return lines.join('\n')||'Map loaded — click a district to see details.';
-}
-
-function adaToggle(){
-  adaOpen=!adaOpen;
-  document.getElementById('ada-panel').classList.toggle('open',adaOpen);
-  if(adaOpen&&adaHist.length===0){
-    adaFetchLive().then(()=>adaGreet());
-  }
-}
-
-function adaGreet(){
-  adaAdd('ada',"Hi, I'm <strong>Ada</strong> — I can help you understand what this map is showing and what it means for communities in Kent. Click any district, then ask me about it.");
-  renderStarts();
-}
-
-function renderStarts(){
-  const el=document.getElementById('ada-starts');
-  if(!adaStartsOn){el.innerHTML='';return;}
-  el.innerHTML=ADA_STARTERS.map(s=>`<button class="ada-start" onclick="adaUseStart(this,'${s.replace(/'/g,"\\'")}')"> ${s}</button>`).join('');
-}
-
-function adaUseStart(btn,text){
-  adaStartsOn=false;
-  document.getElementById('ada-starts').innerHTML='';
-  adaSendText(text);
-}
-
-function adaSend(){
-  const inp=document.getElementById('ada-inp');
-  const t=inp.value.trim();
-  if(!t||adaBusy)return;
-  inp.value='';
-  adaStartsOn=false;
-  document.getElementById('ada-starts').innerHTML='';
-  adaSendText(t);
-}
-
-async function adaSendText(text){
-  if(adaBusy)return;
-  adaBusy=true;
-  adaAdd('usr',text);
-  adaHist.push({role:'user',content:text});
-
-  const th=document.createElement('div');
-  th.className='ada-think';th.id='ada-th';
-  th.innerHTML='<div class="ada-dot"></div><div class="ada-dot"></div><div class="ada-dot"></div>';
-  document.getElementById('ada-msgs').appendChild(th);
-  adaScroll();
-  document.getElementById('ada-snd').disabled=true;
-
-  const sys=ADA_SYS+'\n\n---\nLIVE MAP CONTEXT:\n'+adaCtx();
-
-  try{
-    const r=await fetch(ADA_WORKER,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:700,
-        system:sys,
-        messages:adaHist,
-      }),
-    });
-    const data=await r.json();
-    const reply=data?.content?.[0]?.text||'Sorry — could not get a response. Please try again.';
-    document.getElementById('ada-th')?.remove();
-    adaAdd('ada',reply);
-    adaHist.push({role:'assistant',content:reply});
-    if(adaHist.length>20)adaHist=adaHist.slice(-20);
-  }catch(e){
-    document.getElementById('ada-th')?.remove();
-    adaAdd('ada','Connection issue — check the Cloudflare Worker is deployed correctly.');
-    console.warn('Ada error:',e);
-  }
-  adaBusy=false;
-  document.getElementById('ada-snd').disabled=false;
-}
-
-function adaAdd(role,html){
-  const el=document.createElement('div');
-  el.className=`ada-m ${role}`;
-  el.innerHTML=html;
-  document.getElementById('ada-msgs').appendChild(el);
-  adaScroll();
-}
-
-function adaScroll(){
-  const m=document.getElementById('ada-msgs');
-  m.scrollTop=m.scrollHeight;
-}
 </script>
 </body>
 </html>
