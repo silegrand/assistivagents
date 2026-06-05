@@ -285,6 +285,13 @@ footer {
     </div>
     <button class="btn" id="compare-btn" onclick="runCompare()">Compare</button>
     <button class="btn btn-secondary" onclick="loadLatest()">Load Latest</button>
+    <div class="ctrl-group">
+      <span class="ctrl-label">Data view</span>
+      <select id="view-select" onchange="switchView(this.value)">
+        <option value="fep">FEP Scores</option>
+        <option value="111">NHS 111 Demand</option>
+      </select>
+    </div>
     <span class="snapshot-info" id="snapshot-info">Loading snapshots…</span>
   </div>
 
@@ -318,8 +325,19 @@ footer {
 
 </div>
 
+<!-- 111 DEMAND CARD -->
+<div class="compare-card" id="iuc-card" style="display:none">
+  <div class="compare-header" style="background:#6d28d9">
+    <span class="compare-header-title">NHS 111 Monthly Demand — Kent &amp; Medway ICB</span>
+    <span class="date-pill date-b" id="iuc-period-label">Loading...</span>
+  </div>
+  <div id="iuc-body">
+    <div class="state-msg"><div class="icon">📞</div>Loading 111 demand data...</div>
+  </div>
+</div>
+
 <footer>
-  Assistiv Systems · Kent &amp; Medway FEP Intelligence · Data: NHS Fingertips + NHSBSA EPD ·
+  Assistiv Systems · Kent &amp; Medway FEP Intelligence · Data: NHS Fingertips + NHSBSA EPD + IUCADC ·
   Historic snapshots stored in <a href="https://github.com/silegrand/assistivagents/tree/main/history" target="_blank">GitHub</a>
 </footer>
 
@@ -610,6 +628,122 @@ function drawTrend(latestData, dateLabel, filterDistrict) {
     const x = pad.left + (i / Math.max(dates.length-1,1)) * chartW;
     ctx.fillText(d.substring(5), x, H - 8);
   });
+}
+
+// ── NHS 111 DATA ─────────────────────────────────────────────────────
+const IUC_CURRENT_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-111-data.json';
+const IUC_HISTORY_API = 'https://api.github.com/repos/silegrand/assistivagents/contents/history';
+
+let iucData = null;
+let iucSnapshots = [];
+let iucCache = {};
+
+async function loadIUCData() {
+  try {
+    const r = await fetch(IUC_CURRENT_URL);
+    iucData = await r.json();
+    renderIUCCard(iucData);
+
+    // Load 111 history snapshots
+    const api = await fetch(IUC_HISTORY_API + '?per_page=100');
+    const files = await api.json();
+    iucSnapshots = files
+      .filter(f => f.name.match(/^kent-111-\d{4}-\d{2}\.json$/))
+      .sort((a,b) => b.name.localeCompare(a.name));
+
+    if (iucSnapshots.length > 1) {
+      renderIUCTrend();
+    }
+  } catch(e) {
+    document.getElementById('iuc-body').innerHTML =
+      '<div class="state-msg"><div class="icon">⚠</div>111 data not yet available — run the monthly fetch cell in Colab first.</div>';
+    console.warn('IUC data error:', e);
+  }
+}
+
+function renderIUCCard(d) {
+  if (!d || !d.kent_icb) return;
+  const k = d.kent_icb;
+  const e = d.england;
+  const r = d.ratios;
+  const meta = d.meta;
+
+  document.getElementById('iuc-period-label').textContent = meta.period_nice || meta.period;
+
+  const callFlag  = r.call_rate > 1.05 ? '▲ above England' : r.call_rate < 0.95 ? '▼ below England' : '≈ England average';
+  const ambFlag   = r.amb_rate  > 1.05 ? '▲ above England' : r.amb_rate  < 0.95 ? '▼ below England' : '≈ England average';
+  const edFlag    = r.ed_rate   > 1.05 ? '▲ above England' : r.ed_rate   < 0.95 ? '▼ below England' : '≈ England average';
+
+  document.getElementById('iuc-body').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Metric</th>
+        <th>Kent ICB total</th>
+        <th>Rate per 1,000</th>
+        <th>England rate</th>
+        <th>Ratio</th>
+        <th>Direction</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="font-weight:600">Calls received</td>
+          <td class="fep-val">${k.calls_received.toLocaleString()}</td>
+          <td class="fep-val">${k.call_rate_per_1000}</td>
+          <td class="fep-val">${e.call_rate_per_1000}</td>
+          <td><span class="delta ${r.call_rate > 1.05 ? 'delta-up' : 'delta-down'}">${r.call_rate}x</span></td>
+          <td style="font-size:0.8rem;color:var(--muted)">${callFlag}</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">Ambulance dispatched</td>
+          <td class="fep-val">${k.amb_dispatched.toLocaleString()}</td>
+          <td class="fep-val">${k.amb_rate_per_1000}</td>
+          <td class="fep-val">${e.amb_rate_per_1000}</td>
+          <td><span class="delta ${r.amb_rate > 1.05 ? 'delta-up' : 'delta-down'}">${r.amb_rate}x</span></td>
+          <td style="font-size:0.8rem;color:var(--muted)">${ambFlag}</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">ED referrals</td>
+          <td class="fep-val">${k.ed_referrals.toLocaleString()}</td>
+          <td class="fep-val">${k.ed_rate_per_1000}</td>
+          <td class="fep-val">${e.ed_rate_per_1000}</td>
+          <td><span class="delta ${r.ed_rate > 1.05 ? 'delta-up' : 'delta-down'}">${r.ed_rate}x</span></td>
+          <td style="font-size:0.8rem;color:var(--muted)">${edFlag}</td>
+        </tr>
+        <tr>
+          <td style="font-weight:600">GP / primary care referrals</td>
+          <td class="fep-val">${k.gp_referrals.toLocaleString()}</td>
+          <td colspan="4" style="color:var(--muted);font-size:0.8rem">England breakdown not published at ICB level</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding:0.75rem 1rem;font-size:0.72rem;color:var(--muted);border-top:1px solid var(--border)">
+      Source: ${meta.source} · ${meta.period_nice} ·
+      <a href="${meta.source_url}" target="_blank" style="color:var(--sage)">Raw data</a> ·
+      Monthly snapshots stored in <a href="https://github.com/silegrand/assistivagents/tree/main/history" target="_blank" style="color:var(--sage)">history/kent-111-*.json</a>
+    </div>
+  `;
+}
+
+function renderIUCTrend() {
+  // Could extend trend chart to show 111 call rate over time
+  // Currently shows FEP — switching view toggles between them
+}
+
+function switchView(view) {
+  const fepCard     = document.getElementById('compare-card');
+  const iucCard     = document.getElementById('iuc-card');
+  const chartCard   = document.querySelector('.chart-card');
+
+  if (view === '111') {
+    fepCard.style.display   = 'none';
+    iucCard.style.display   = 'block';
+    chartCard.style.display = 'none';
+    if (!iucData) loadIUCData();
+  } else {
+    fepCard.style.display   = 'block';
+    iucCard.style.display   = 'none';
+    chartCard.style.display = 'block';
+  }
 }
 
 // ── RUN ──────────────────────────────────────────────────────────────
