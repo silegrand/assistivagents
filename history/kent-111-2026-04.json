@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "generated": "2026-06-05T08:32:05.099039+00:00",
+    "description": "NHS 111 / IUC demand \u2014 Kent & Medway ICB QKS",
+    "period": "2026-04",
+    "period_nice": "April 2026",
+    "icb": "NHS Kent and Medway ICB (QKS)",
+    "icb_pop": 1900000,
+    "england_pop": 56490000,
+    "source": "NHS England IUCADC \u2014 Provisional Aggregated Raw Data CSV",
+    "source_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/05/Provisional-IUCADC-Raw-Apr26_NS46i.csv",
+    "note": "Monthly data. ICB-level totals only. District figures are population-weighted."
+  },
+  "kent_icb": {
+    "calls_received": 0,
+    "calls_answered": 0,
+    "amb_dispatched": 0,
+    "ed_referrals": 0,
+    "gp_referrals": 0,
+    "call_rate_per_1000": 0,
+    "amb_rate_per_1000": 0,
+    "ed_rate_per_1000": 0
+  },
+  "england": {
+    "calls_received": 0,
+    "amb_dispatched": 0,
+    "ed_referrals": 0,
+    "call_rate_per_1000": 0,
+    "amb_rate_per_1000": 0,
+    "ed_rate_per_1000": 0
+  },
+  "ratios": {
+    "call_rate": null,
+    "amb_rate": null,
+    "ed_rate": null
+  }
+}
