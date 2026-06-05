@@ -1,0 +1,45 @@
+name: Monthly NHS 111 Data Fetch
+
+# Runs on the 1st of every month at 07:00 UTC
+# NHSBSA publishes ~6 weeks after month end, so this collects
+# data that is approximately 6-8 weeks old.
+#
+# The script auto-discovers the latest published month —
+# no manual updates needed.
+#
+# Also triggerable manually from the Actions tab in GitHub.
+
+on:
+  schedule:
+    - cron: '0 7 1 * *'   # 07:00 UTC on the 1st of every month
+  workflow_dispatch:        # manual trigger from Actions tab
+
+jobs:
+  fetch-111-data:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run NHS 111 data fetcher
+        env:
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+        run: python fetch_111_data.py
+
+      - name: Commit updated files
+        run: |
+          git config user.name  "Assistiv Data Bot"
+          git config user.email "bot@assistiv.health"
+          git add kent-111-data.json history/
+          git diff --staged --quiet || git commit -m "NHS 111 monthly refresh — $(date -u '+%Y-%m-%d')"
+          git push
