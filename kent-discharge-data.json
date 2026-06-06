@@ -1,0 +1,107 @@
+{
+  "meta": {
+    "generated": "2026-06-06T10:20:23.447795+00:00",
+    "description": "NHS Acute Discharge SitRep \u2014 Kent & Medway ICB (QKS)",
+    "period": "2026-04",
+    "period_nice": "April 2026",
+    "icb_code": "QKS",
+    "icb_name": "NHS KENT AND MEDWAY INTEGRATED CARE BOARD",
+    "ekhuft_code": "RVV",
+    "unit_cost_bed_day": 562,
+    "source": "NHS England Acute Daily Discharge SitRep",
+    "note": "Table 2: daily CTR. Table 3: delayed bed days. Table 4: discharge destinations. Table 5: delay reasons (14+ LOS). Table 7: cost of delays at \u00a3562/bed day."
+  },
+  "table2_daily_discharge": {
+    "description": "Patients not discharged despite meeting criteria to reside \u2014 April 2026",
+    "days_in_period": 30,
+    "kent_icb": {
+      "avg_meeting_ctr_per_day": 650.6,
+      "avg_discharged_per_day": 232.2,
+      "avg_remaining_per_day": 418.4,
+      "discharge_rate_pct": 35.7,
+      "monthly_total_not_discharged": 12553
+    },
+    "ekhuft": {
+      "avg_remaining_per_day": 185.4,
+      "note": "East Kent Hospitals University NHS FT \u2014 subset of Kent ICB"
+    }
+  },
+  "table3_delayed_bed_days": {
+    "description": "Additional days patients remain in hospital after CTR decision",
+    "weeks_in_period": 4,
+    "kent_icb": {
+      "avg_7plus_days_per_week": 5268.0,
+      "avg_14plus_days_per_week": 4980.0,
+      "avg_21plus_days_per_week": 4518.0
+    }
+  },
+  "table4_discharge_destinations": {
+    "description": "Total discharges in April 2026 by pathway",
+    "kent_icb": {
+      "p0_home": 5508,
+      "p0_care_home_return": 126,
+      "p1_home_rehab": 710,
+      "p1_home_other": 12,
+      "p1_care_home_rehab": 0,
+      "p2_short_term_bed": 450,
+      "p3_care_home_new": 149,
+      "p3_care_home_eol": 10,
+      "total": 6965,
+      "p3_pct": 2.3
+    },
+    "ekhuft": {
+      "p0_home": 2238,
+      "p0_care_home_return": 9,
+      "p1_home_rehab": 253,
+      "p1_home_other": 2,
+      "p1_care_home_rehab": 0,
+      "p2_short_term_bed": 164,
+      "p3_care_home_new": 106,
+      "p3_care_home_eol": 4
+    }
+  },
+  "table5_delay_reasons": {
+    "description": "Avg patients/day 14+ day LOS delayed, by reason",
+    "kent_icb": {
+      "by_reason": {
+        "hospital_therapy_review": 16.4,
+        "hospital_medical_review": 2.2,
+        "hospital_care_transfer_hub": 7.2,
+        "hospital_patient_transport": 7.8,
+        "hospital_medicines_docs": 17.2,
+        "hospital_infection_control": 0.8,
+        "hospital_awaiting_decision": 0.6,
+        "wellbeing_patient_family": 5.8,
+        "care_transfer_hub_process": 3.0,
+        "interface_awaiting_assessment": 3.4,
+        "interface_awaiting_package": 6.0,
+        "capacity_nhs_bed": 18.8,
+        "capacity_social_care_bed": 16.6
+      },
+      "hospital_process_total": 52.2,
+      "social_care_system_total": 47.8,
+      "hospital_pct": 49.3,
+      "social_care_pct": 45.2
+    }
+  },
+  "table7_cost_of_delays": {
+    "description": "Estimated cost of delayed discharges \u2014 April 2026",
+    "unit_cost_per_bed_day": 562,
+    "kent_icb": {
+      "avg_remaining_per_day": 418.4,
+      "total_delayed_bed_days": 12553,
+      "total_cost_gbp": 7054786,
+      "total_cost_gbp_millions": 7.05
+    },
+    "ekhuft": {
+      "avg_remaining_per_day": 185.4,
+      "total_delayed_bed_days": 5562,
+      "total_cost_gbp": 3125844,
+      "total_cost_gbp_millions": 3.13
+    }
+  },
+  "south_east_context": {
+    "description": "South East region \u2014 for comparison",
+    "avg_remaining_per_day": null
+  }
+}
