@@ -539,6 +539,14 @@ body {
   text-transform: uppercase; letter-spacing: .07em;
   color: #c04828; margin-bottom: 0.65rem;
 }
+.disch-cost { margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed #fde8e2; }
+.disch-cost-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #c04828; margin-bottom: 0.45rem; }
+.disch-cost-row { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.5rem; font-size: 0.68rem; padding: 0.2rem 0; border-bottom: 1px dashed #fee2e2; color: var(--text-muted); }
+.disch-cost-row:last-of-type { border-bottom: none; }
+.disch-cost-val { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--text); text-align: right; }
+.disch-cost-total { display: grid; grid-template-columns: 1fr auto; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: #fff1f2; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #be123c; }
+.disch-cost-annual { display: grid; grid-template-columns: 1fr auto; margin-top: 0.35rem; padding: 0.4rem 0.6rem; background: #fef2f2; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #9f1239; border-left: 3px solid #c04828; }
+
 .disch-trust {
   margin-bottom: 0.65rem;
   background: #fff8f7; border: 1px solid #fde8e2;
@@ -1440,6 +1448,25 @@ function renderDischargePanel(d) {
   if (!trustCode) return '';
   const t = DISCHARGE_DATA[trustCode];
 
+  // ── Cost calculation ─────────────────────────────────────────────────
+  // Bed day cost: £562 (NHS England published on discharge sitrep page)
+  // Derived from £527 2023/24 cost uplifted 6.65% using NHS Cumulative Uplift Factor
+  // Source: https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays/acute-discharge-situation-report/
+  const BED_DAY_COST   = 562;
+  const dailyCost      = t.avg_delayed * BED_DAY_COST;
+  const annualCost     = dailyCost * 365;
+  const annualLow      = Math.round(annualCost * 0.85);  // -15% uncertainty
+  const annualHigh     = Math.round(annualCost * 1.15);  // +15% uncertainty
+
+  // District share — proportional to FEP-weighted population
+  const districtPop    = d.list_size || (d.pop75 * 4.5);
+  const trustTotalPop  = {
+    RVV: 876_000,   // East Kent: Thanet + F&H + Dover + Ashford + Canterbury
+    RPA: 665_000,   // Medway: Medway + Gravesham + Dartford + Swale
+    RWF: 502_000,   // MTW: Maidstone + T&M + TW + Sevenoaks
+  }[trustCode] || 700_000;
+  const districtShare  = Math.round(annualCost * (districtPop / trustTotalPop));
+
   const effColor = t.efficiency < 35 ? '#c04828' : t.efficiency < 55 ? '#b07010' : '#2d6b47';
   const effClass = t.efficiency < 35 ? 'warn' : t.efficiency >= 55 ? 'ok' : '';
 
@@ -1482,6 +1509,35 @@ function renderDischargePanel(d) {
       <div class="disch-source">
         Source: NHS England Acute Daily Discharge Situation Report — April 2026 (published 14 May 2026) ·
         Daily averages across 30 days · Provider-level data · Type 1 acute trusts only
+      </div>
+
+      <div class="disch-cost">
+        <div class="disch-cost-title">£ Cost of Delayed Discharge</div>
+        <div class="disch-cost-row">
+          <span>Daily delayed patients at ${t.name.split(' ').slice(0,2).join(' ')}</span>
+          <span class="disch-cost-val">${t.avg_delayed} patients</span>
+        </div>
+        <div class="disch-cost-row">
+          <span>NHS bed day cost (2025/26)</span>
+          <span class="disch-cost-val">£${BED_DAY_COST}/day</span>
+        </div>
+        <div class="disch-cost-row">
+          <span>Daily cost of delayed discharge</span>
+          <span class="disch-cost-val">${formatGBP(dailyCost)}</span>
+        </div>
+        <div class="disch-cost-total">
+          <span>Annual trust-wide delayed discharge cost</span>
+          <span>${formatGBP(annualLow)} – ${formatGBP(annualHigh)}</span>
+        </div>
+        <div class="disch-cost-annual">
+          <span>${d.name} estimated share</span>
+          <span>~${formatGBP(districtShare)}/yr</span>
+        </div>
+        <div style="font-size:0.62rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.5">
+          Bed day cost: £562 — NHS England published (£527 2023/24, uplifted 6.65% Cumulative Uplift Factor).
+          Source: NHS England Acute Discharge Sitrep page. Uncertainty range ±15%.
+          District share estimated by registered population. Does not include social care costs or opportunity cost of beds foregone.
+        </div>
       </div>
     </div>
   `;
