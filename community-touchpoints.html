@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Community Touchpoints · Assistiv Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --forest:      #1a3a2a;
+  --sage:        #2d6b47;
+  --sage-mid:    #4a7c5f;
+  --sage-pale:   #e8f2ec;
+  --amber:       #8a6200;
+  --amber-light: #b8860b;
+  --amber-pale:  #fdf3dc;
+  --red:         #b91c1c;
+  --red-pale:    #fef2f2;
+  --blue:        #1d4ed8;
+  --blue-pale:   #eff6ff;
+  --bg:          #f7f5f0;
+  --surface:     #ffffff;
+  --border:      #ddd8ce;
+  --text:        #1a2e1e;
+  --text-muted:  #5a7260;
+  --text-dim:    #9aaa9e;
+  --mono:   'DM Mono', monospace;
+  --serif:  'Cormorant Garamond', serif;
+  --sans:   'Nunito', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--forest);
+  padding: 0 1.5rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.nav-brand {
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-links {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  flex: 1;
+}
+.nav-links a {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  padding: 0 0.9rem;
+  transition: color 0.15s;
+}
+.nav-links a:hover, .nav-links a.active { color: #fff; }
+.nav-badge {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: .05em;
+  white-space: nowrap;
+}
+
+/* ── MAIN LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  grid-template-rows: 1fr;
+  flex: 1;
+  overflow: hidden;
+  height: calc(100vh - 52px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-head {
+  padding: 1.1rem 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.sidebar-title {
+  font-family: var(--serif);
+  font-size: 1.35rem;
+  color: var(--forest);
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+.sidebar-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* District selector */
+.district-select-wrap {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.district-select-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+  display: block;
+}
+.district-select {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.district-select:focus { border-color: var(--sage); }
+
+/* Category filters */
+.filters {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.filters-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.72rem;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+  color: var(--text-muted);
+}
+.chip.active { border-color: var(--sage); background: var(--sage-pale); color: var(--forest); font-weight: 600; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Search */
+.search-wrap {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.search-input {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.search-input:focus { border-color: var(--sage); }
+
+/* Results list */
+.results-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+.results-count {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  padding: 0.4rem 1.25rem 0.3rem;
+}
+.result-item {
+  padding: 0.65rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+.result-item:hover { background: var(--sage-pale); }
+.result-item.selected { background: var(--sage-pale); border-left: 3px solid var(--sage); }
+.result-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.result-body { flex: 1; min-width: 0; }
+.result-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.15rem;
+}
+.result-addr {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.15rem;
+}
+.result-type {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+/* Loading / empty */
+.state-msg {
+  padding: 2.5rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.state-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+.state-msg p { font-size: 0.78rem; color: var(--text-dim); margin-top: 0.35rem; }
+
+/* Spinner */
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--sage);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 2rem auto 0.75rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Sidebar footer */
+.sidebar-footer {
+  padding: 0.65rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+/* ── MAP ── */
+#map { width: 100%; height: 100%; z-index: 1; }
+
+/* ── DETAIL POPUP ── */
+.detail-popup {
+  position: absolute;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 900;
+  width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  display: none;
+  animation: popIn 0.2s ease;
+}
+.detail-popup.open { display: block; }
+@keyframes popIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.detail-popup-head {
+  padding: 0.85rem 1rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+}
+.detail-popup-icon {
+  width: 36px; height: 36px;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.detail-popup-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+}
+.detail-popup-type {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+.detail-popup-close {
+  margin-left: auto;
+  background: none; border: none;
+  font-size: 18px; color: var(--text-dim);
+  cursor: pointer; flex-shrink: 0;
+  padding: 0; line-height: 1;
+}
+.detail-popup-body { padding: 0.75rem 1rem; }
+.detail-row {
+  display: flex; gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  align-items: flex-start;
+}
+.detail-row-icon { flex-shrink: 0; width: 14px; text-align: center; opacity: 0.6; margin-top: 1px; }
+.detail-action {
+  display: block;
+  margin-top: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  background: var(--forest);
+  color: #fff;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.15s;
+}
+.detail-action:hover { background: var(--sage); }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  display: flex;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 0.35rem 0.85rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
+.stat-pill-dot { width: 7px; height: 7px; border-radius: 50%; }
+.stat-pill-n { font-weight: 600; color: var(--text); }
+.stat-sep { color: var(--border); }
+
+/* ── MAP CONTAINER ── */
+.map-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Custom Leaflet markers */
+.custom-marker {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  border: 2px solid rgba(255,255,255,0.9);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.custom-marker:hover { transform: scale(1.15); }
+
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .sidebar { max-height: 45vh; }
+  .stats-bar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-brand">Assistiv · Layer 2</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Overview</a></li>
+    <li><a href="layer2-map-pdf.html">Map</a></li>
+    <li><a href="layer2-fep-light.html">Scoring</a></li>
+    <li><a href="history.html">Trends</a></li>
+    <li><a href="community-touchpoints.html" class="active">Touchpoints</a></li>
+    <li><a href="https://www.resiliencetools.xyz" target="_blank">RESILIENCE ↗</a></li>
+  </ul>
+  <span class="nav-badge">Layer 2 · Kent &amp; Medway</span>
+</nav>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-head">
+      <div class="sidebar-title">Community Touchpoints</div>
+      <div class="sidebar-sub">
+        GP surgeries, pharmacies, libraries, faith communities and VCSE organisations
+        within priority zones — routes for outreach to the Missing Middle.
+      </div>
+    </div>
+
+    <div class="district-select-wrap">
+      <label class="district-select-label" for="district-sel">Priority district</label>
+      <select class="district-select" id="district-sel" onchange="onDistrictChange()">
+        <option value="">— Select a district —</option>
+        <option value="Thanet">Thanet (FEP 65 · Critical)</option>
+        <option value="Folkestone & Hythe">Folkestone &amp; Hythe (FEP 61 · High)</option>
+        <option value="Dover">Dover (FEP 59 · High)</option>
+        <option value="Swale">Swale (FEP 57 · High)</option>
+        <option value="Medway">Medway (FEP 55 · High)</option>
+        <option value="Gravesham">Gravesham (FEP 53 · Moderate)</option>
+        <option value="Ashford">Ashford (FEP 50 · Moderate)</option>
+        <option value="Canterbury">Canterbury (FEP 47 · Moderate)</option>
+        <option value="Dartford">Dartford (FEP 47 · Moderate)</option>
+        <option value="Maidstone">Maidstone (FEP 45 · Moderate)</option>
+        <option value="Tonbridge & Malling">Tonbridge &amp; Malling (FEP 42 · Moderate)</option>
+        <option value="Sevenoaks">Sevenoaks (FEP 34 · Low)</option>
+        <option value="Tunbridge Wells">Tunbridge Wells (FEP 31 · Low)</option>
+      </select>
+    </div>
+
+    <div class="filters">
+      <span class="filters-label">Touchpoint types</span>
+      <div class="filter-chips" id="filter-chips">
+        <div class="chip active" data-type="gp" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#2d6b47"></div> GP Surgeries
+        </div>
+        <div class="chip active" data-type="pharmacy" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#1d4ed8"></div> Pharmacies
+        </div>
+        <div class="chip active" data-type="library" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#b8860b"></div> Libraries
+        </div>
+        <div class="chip active" data-type="faith" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#7c3aed"></div> Faith
+        </div>
+        <div class="chip active" data-type="community" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#c04828"></div> Community
+        </div>
+        <div class="chip active" data-type="social_care" onclick="toggleChip(this)">
+          <div class="chip-dot" style="background:#0e7490"></div> Social Care
+        </div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input class="search-input" id="search-input" type="text"
+        placeholder="Search by name or address…"
+        oninput="filterResults()">
+    </div>
+
+    <div class="results-scroll" id="results-list">
+      <div class="state-msg">
+        <span class="state-icon">📍</span>
+        Select a district to load community touchpoints
+        <p>Data from NHS API + OpenStreetMap · No API key required</p>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      Data: NHS API (GP/pharmacy) · Overpass/OSM (other venues) · Free &amp; open · No API key
+    </div>
+  </aside>
+
+  <!-- MAP -->
+  <div class="map-wrap">
+    <div id="map"></div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar" id="stats-bar" style="display:none">
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#2d6b47"></div>
+        <span class="stat-pill-n" id="stat-gp">0</span> GPs
+      </div>
+      <div class="stat-sep">·</div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#1d4ed8"></div>
+        <span class="stat-pill-n" id="stat-ph">0</span> Pharmacies
+      </div>
+      <div class="stat-sep">·</div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#b8860b"></div>
+        <span class="stat-pill-n" id="stat-li">0</span> Libraries
+      </div>
+      <div class="stat-sep">·</div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#7c3aed"></div>
+        <span class="stat-pill-n" id="stat-fa">0</span> Faith
+      </div>
+      <div class="stat-sep">·</div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#c04828"></div>
+        <span class="stat-pill-n" id="stat-co">0</span> Community
+      </div>
+      <div class="stat-sep">·</div>
+      <div class="stat-pill">
+        <div class="stat-pill-dot" style="background:#0e7490"></div>
+        <span class="stat-pill-n" id="stat-sc">0</span> Social Care
+      </div>
+    </div>
+
+    <!-- Detail popup -->
+    <div class="detail-popup" id="detail-popup">
+      <div class="detail-popup-head">
+        <div class="detail-popup-icon" id="dp-icon"></div>
+        <div>
+          <div class="detail-popup-name" id="dp-name"></div>
+          <div class="detail-popup-type" id="dp-type"></div>
+        </div>
+        <button class="detail-popup-close" onclick="closeDetail()">×</button>
+      </div>
+      <div class="detail-popup-body" id="dp-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DISTRICT BOUNDING BOXES ───────────────────────────────────────────
+// [south, west, north, east] — WGS84
+const DISTRICT_BOUNDS = {
+  'Thanet':              [51.30, 1.25, 51.42, 1.48],
+  'Folkestone & Hythe':  [51.02, 0.87, 51.18, 1.22],
+  'Dover':               [51.08, 1.10, 51.28, 1.45],
+  'Swale':               [51.27, 0.60, 51.42, 0.98],
+  'Medway':              [51.32, 0.42, 51.50, 0.68],
+  'Gravesham':           [51.38, 0.28, 51.48, 0.47],
+  'Ashford':             [51.00, 0.75, 51.22, 0.98],
+  'Canterbury':          [51.18, 0.95, 51.38, 1.25],
+  'Dartford':            [51.40, 0.18, 51.50, 0.35],
+  'Maidstone':           [51.14, 0.42, 51.35, 0.68],
+  'Tonbridge & Malling': [51.16, 0.25, 51.35, 0.46],
+  'Sevenoaks':           [51.22, 0.08, 51.42, 0.30],
+  'Tunbridge Wells':     [51.04, 0.22, 51.22, 0.50],
+};
+
+// ── VENUE CONFIG ──────────────────────────────────────────────────────
+const VENUE_CONFIG = {
+  gp:          { label: 'GP Surgery',        emoji: '🏥', color: '#2d6b47', bg: '#e8f2ec' },
+  pharmacy:    { label: 'Pharmacy',           emoji: '💊', color: '#1d4ed8', bg: '#eff6ff' },
+  library:     { label: 'Library',            emoji: '📚', color: '#b8860b', bg: '#fdf3dc' },
+  faith:       { label: 'Faith Community',    emoji: '🕊', color: '#7c3aed', bg: '#f5f3ff' },
+  community:   { label: 'Community Centre',   emoji: '🤝', color: '#c04828', bg: '#fff1f2' },
+  social_care: { label: 'Social Care',        emoji: '🧡', color: '#0e7490', bg: '#ecfeff' },
+};
+
+// ── OVERPASS QUERY BUILDER ────────────────────────────────────────────
+function buildOverpassQuery(bounds) {
+  const [s, w, n, e] = bounds;
+  const bbox = `${s},${w},${n},${e}`;
+  return `
+    [out:json][timeout:30];
+    (
+      node["amenity"="library"](${bbox});
+      way["amenity"="library"](${bbox});
+      node["amenity"="place_of_worship"](${bbox});
+      way["amenity"="place_of_worship"](${bbox});
+      node["amenity"="community_centre"](${bbox});
+      way["amenity"="community_centre"](${bbox});
+      node["amenity"="social_facility"](${bbox});
+      way["amenity"="social_facility"](${bbox});
+      node["amenity"="doctors"](${bbox});
+      way["amenity"="doctors"](${bbox});
+      node["amenity"="pharmacy"](${bbox});
+      way["amenity"="pharmacy"](${bbox});
+    );
+    out center tags;
+  `.trim();
+}
+
+// ── NHS API QUERY — GP & PHARMACY ─────────────────────────────────────
+async function fetchNHSPlaces(districtName, bounds) {
+  const [s, w, n, e] = bounds;
+  const lat = (s + n) / 2;
+  const lon = (w + e) / 2;
+
+  // NHS Service Search API — free, no key
+  const url = `https://api.nhs.uk/service-search/search?api-version=2&$filter=OrganisationTypeID eq 'GPB' and ` +
+    `Latitude gt ${s} and Latitude lt ${n} and Longitude gt ${w} and Longitude lt ${e}&$top=100&$select=OrganisationName,Address1,Address2,City,Postcode,Latitude,Longitude,OrganisationTypeID`;
+
+  try {
+    const res = await fetch(url, { headers: { 'subscription-key': '' } });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.value || []).map(p => ({
+      id:      'nhs-' + (p.OrganisationID || Math.random()),
+      type:    'gp',
+      name:    p.OrganisationName || 'GP Surgery',
+      address: [p.Address1, p.City, p.Postcode].filter(Boolean).join(', '),
+      lat:     p.Latitude,
+      lon:     p.Longitude,
+      source:  'NHS API',
+    }));
+  } catch(e) {
+    return [];
+  }
+}
+
+// ── OVERPASS FETCH ────────────────────────────────────────────────────
+async function fetchOverpassPlaces(bounds) {
+  const query = buildOverpassQuery(bounds);
+  const url   = 'https://overpass-api.de/api/interpreter';
+
+  const res  = await fetch(url, {
+    method: 'POST',
+    body:   'data=' + encodeURIComponent(query),
+  });
+  if (!res.ok) throw new Error(`Overpass HTTP ${res.status}`);
+  const data = await res.json();
+
+  return (data.elements || []).map(el => {
+    const tags = el.tags || {};
+    const lat  = el.lat ?? el.center?.lat;
+    const lon  = el.lon ?? el.center?.lon;
+    if (!lat || !lon) return null;
+
+    // Map OSM amenity → our type
+    const amenity = tags.amenity || '';
+    let type = 'community';
+    if (amenity === 'library')           type = 'library';
+    else if (amenity === 'place_of_worship') type = 'faith';
+    else if (amenity === 'pharmacy')     type = 'pharmacy';
+    else if (amenity === 'doctors')      type = 'gp';
+    else if (amenity === 'social_facility') type = 'social_care';
+
+    const name = tags.name || tags['name:en'] || VENUE_CONFIG[type].label;
+    const road = tags['addr:street'] || '';
+    const city = tags['addr:city'] || tags['addr:town'] || '';
+    const post = tags['addr:postcode'] || '';
+    const address = [road, city, post].filter(Boolean).join(', ');
+
+    // Faith detail
+    const religion = tags.religion || '';
+    const denomination = tags.denomination || '';
+    const faithDetail = [religion, denomination].filter(Boolean)
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ');
+
+    return {
+      id:      'osm-' + el.id,
+      type,
+      name,
+      address: address || 'Address not recorded',
+      lat, lon,
+      phone:   tags.phone || tags['contact:phone'] || '',
+      website: tags.website || tags['contact:website'] || '',
+      opening: tags.opening_hours || '',
+      detail:  faithDetail || tags.social_facility || '',
+      source:  'OpenStreetMap',
+    };
+  }).filter(Boolean);
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let allPlaces    = [];
+let filtered     = [];
+let activeTypes  = new Set(['gp','pharmacy','library','faith','community','social_care']);
+let markers      = {};
+let selectedId   = null;
+let map, markerLayer;
+
+// ── MAP INIT ──────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', { zoomControl: true }).setView([51.27, 0.52], 10);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap · CartoDB',
+    maxZoom: 19,
+  }).addTo(map);
+  markerLayer = L.layerGroup().addTo(map);
+}
+
+// ── DISTRICT CHANGE ───────────────────────────────────────────────────
+async function onDistrictChange() {
+  const district = document.getElementById('district-sel').value;
+  if (!district) return;
+
+  const bounds = DISTRICT_BOUNDS[district];
+  if (!bounds) return;
+
+  showLoading();
+  allPlaces = [];
+  markers   = {};
+  markerLayer.clearLayers();
+  closeDetail();
+  document.getElementById('stats-bar').style.display = 'none';
+
+  try {
+    // Fetch in parallel — NHS API for GP/pharmacy, Overpass for everything else
+    const [nhsPlaces, osmPlaces] = await Promise.allSettled([
+      fetchNHSPlaces(district, bounds),
+      fetchOverpassPlaces(bounds),
+    ]);
+
+    const nhs = nhsPlaces.status === 'fulfilled' ? nhsPlaces.value : [];
+    const osm = osmPlaces.status === 'fulfilled'  ? osmPlaces.value  : [];
+
+    // Merge — NHS takes priority for GP/pharmacy, de-dupe by proximity
+    const osmFiltered = osm.filter(o => {
+      if (o.type !== 'gp' && o.type !== 'pharmacy') return true;
+      // If NHS has a nearby match, skip OSM version
+      return !nhs.some(n => n.type === o.type &&
+        Math.abs(n.lat - o.lat) < 0.001 &&
+        Math.abs(n.lon - o.lon) < 0.001);
+    });
+
+    allPlaces = [...nhs, ...osmFiltered];
+
+    if (allPlaces.length === 0) {
+      showEmpty(district);
+      return;
+    }
+
+    // Fit map to bounds
+    map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { padding: [30, 30] });
+
+    renderAll();
+    document.getElementById('stats-bar').style.display = 'flex';
+
+  } catch(e) {
+    console.error('Fetch error:', e);
+    showError(e.message);
+  }
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────────────
+function renderAll() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+
+  filtered = allPlaces.filter(p => {
+    if (!activeTypes.has(p.type)) return false;
+    if (search && !p.name.toLowerCase().includes(search) &&
+        !p.address.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  renderList();
+  renderMarkers();
+  updateStats();
+}
+
+function renderList() {
+  const list = document.getElementById('results-list');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="state-msg">
+      <span class="state-icon">🔍</span>
+      No touchpoints match your filters
+      <p>Try enabling more categories or clearing the search</p>
+    </div>`;
+    return;
+  }
+
+  const countEl = `<div class="results-count">${filtered.length} touchpoint${filtered.length !== 1 ? 's' : ''} in this view</div>`;
+  const items = filtered.map(p => {
+    const cfg = VENUE_CONFIG[p.type];
+    return `<div class="result-item${selectedId === p.id ? ' selected' : ''}"
+      onclick="selectPlace('${p.id}')" data-id="${p.id}">
+      <div class="result-icon" style="background:${cfg.bg}">
+        ${cfg.emoji}
+      </div>
+      <div class="result-body">
+        <div class="result-name">${escHtml(p.name)}</div>
+        <div class="result-addr">${escHtml(p.address || '—')}</div>
+        <div class="result-type">${cfg.label} · ${p.source}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  list.innerHTML = countEl + items;
+}
+
+function renderMarkers() {
+  markerLayer.clearLayers();
+  markers = {};
+
+  filtered.forEach(p => {
+    const cfg = VENUE_CONFIG[p.type];
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="custom-marker" style="background:${cfg.color};color:#fff">${cfg.emoji}</div>`,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+
+    const m = L.marker([p.lat, p.lon], { icon })
+      .addTo(markerLayer)
+      .on('click', () => selectPlace(p.id));
+
+    markers[p.id] = m;
+  });
+}
+
+function updateStats() {
+  const counts = { gp:0, pharmacy:0, library:0, faith:0, community:0, social_care:0 };
+  filtered.forEach(p => { if (counts[p.type] !== undefined) counts[p.type]++; });
+  document.getElementById('stat-gp').textContent = counts.gp;
+  document.getElementById('stat-ph').textContent = counts.pharmacy;
+  document.getElementById('stat-li').textContent = counts.library;
+  document.getElementById('stat-fa').textContent = counts.faith;
+  document.getElementById('stat-co').textContent = counts.community;
+  document.getElementById('stat-sc').textContent = counts.social_care;
+}
+
+// ── SELECT PLACE ──────────────────────────────────────────────────────
+function selectPlace(id) {
+  selectedId = id;
+  const p    = allPlaces.find(x => x.id === id);
+  if (!p) return;
+
+  // Update list highlight
+  document.querySelectorAll('.result-item').forEach(el => {
+    el.classList.toggle('selected', el.dataset.id === id);
+  });
+
+  // Scroll item into view
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+  // Pan map
+  if (markers[id]) {
+    map.panTo([p.lat, p.lon], { animate: true });
+  }
+
+  // Show detail popup
+  showDetail(p);
+}
+
+function showDetail(p) {
+  const cfg  = VENUE_CONFIG[p.type];
+  const popup = document.getElementById('detail-popup');
+
+  document.getElementById('dp-icon').style.background = cfg.bg;
+  document.getElementById('dp-icon').textContent       = cfg.emoji;
+  document.getElementById('dp-name').textContent       = p.name;
+  document.getElementById('dp-type').textContent       = cfg.label;
+
+  let body = '';
+  if (p.address && p.address !== 'Address not recorded') {
+    body += `<div class="detail-row">
+      <span class="detail-row-icon">📍</span>
+      <span>${escHtml(p.address)}</span>
+    </div>`;
+  }
+  if (p.opening) {
+    body += `<div class="detail-row">
+      <span class="detail-row-icon">🕐</span>
+      <span>${escHtml(p.opening)}</span>
+    </div>`;
+  }
+  if (p.phone) {
+    body += `<div class="detail-row">
+      <span class="detail-row-icon">📞</span>
+      <span>${escHtml(p.phone)}</span>
+    </div>`;
+  }
+  if (p.detail) {
+    body += `<div class="detail-row">
+      <span class="detail-row-icon">ℹ</span>
+      <span>${escHtml(p.detail)}</span>
+    </div>`;
+  }
+  if (p.source) {
+    body += `<div class="detail-row" style="margin-top:0.4rem">
+      <span class="detail-row-icon" style="opacity:0.4">◦</span>
+      <span style="font-size:0.68rem;color:var(--text-dim)">Source: ${escHtml(p.source)}</span>
+    </div>`;
+  }
+
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}`;
+  body += `<a class="detail-action" href="${mapsUrl}" target="_blank" rel="noopener">View on Google Maps ↗</a>`;
+
+  if (p.website) {
+    body += `<a class="detail-action" href="${p.website.startsWith('http') ? p.website : 'https://'+p.website}"
+      target="_blank" rel="noopener" style="margin-top:0.35rem;background:var(--sage)">Website ↗</a>`;
+  }
+
+  document.getElementById('dp-body').innerHTML = body;
+  popup.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detail-popup').classList.remove('open');
+  selectedId = null;
+  document.querySelectorAll('.result-item').forEach(el => el.classList.remove('selected'));
+}
+
+// ── FILTERS ───────────────────────────────────────────────────────────
+function toggleChip(el) {
+  const type = el.dataset.type;
+  if (activeTypes.has(type)) {
+    activeTypes.delete(type);
+    el.classList.remove('active');
+  } else {
+    activeTypes.add(type);
+    el.classList.add('active');
+  }
+  renderAll();
+}
+
+function filterResults() {
+  renderAll();
+}
+
+// ── LOADING / EMPTY / ERROR ───────────────────────────────────────────
+function showLoading() {
+  document.getElementById('results-list').innerHTML = `
+    <div class="state-msg">
+      <div class="spinner"></div>
+      Loading community touchpoints…
+      <p>Querying NHS API and OpenStreetMap · may take 5–10 seconds</p>
+    </div>`;
+}
+
+function showEmpty(district) {
+  document.getElementById('results-list').innerHTML = `
+    <div class="state-msg">
+      <span class="state-icon">🗺</span>
+      No results found for ${district}
+      <p>OSM coverage may be limited. Try a different district.</p>
+    </div>`;
+}
+
+function showError(msg) {
+  document.getElementById('results-list').innerHTML = `
+    <div class="state-msg">
+      <span class="state-icon">⚠</span>
+      Could not load data
+      <p>${escHtml(msg)}</p>
+      <p style="margin-top:0.5rem">Check your connection and try again. Overpass API may be under load.</p>
+    </div>`;
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+initMap();
+</script>
+</body>
+</html>
