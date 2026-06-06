@@ -840,6 +840,16 @@ body {
   letter-spacing: 0.04em;
   flex-shrink: 0;
 }
+
+/* ── IUC COST BREAKDOWN ──────────────────────────────────────────────── */
+.iuc-cost { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e9d5ff; }
+.iuc-cost-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #6d28d9; margin-bottom: 0.5rem; }
+.iuc-cost-row { display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 0.5rem; font-size: 0.68rem; padding: 0.2rem 0; border-bottom: 1px dashed #f3e8ff; color: var(--text-muted); }
+.iuc-cost-row:last-of-type { border-bottom: none; }
+.iuc-cost-row-val { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--text); text-align: right; }
+.iuc-cost-total { display: grid; grid-template-columns: 1fr auto; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: #f5f3ff; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #5b21b6; }
+.iuc-prevent { display: grid; grid-template-columns: 1fr auto; margin-top: 0.35rem; padding: 0.4rem 0.6rem; background: #ecfdf5; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #065f46; border-left: 3px solid #10b981; }
+
 </style>
 </head>
 <body>
@@ -1254,6 +1264,13 @@ const IUC_DATA = {
 
   period: '2024/25',
   source: 'NHS England IUCADC — ICB-level statistics Apr 2024–Mar 2025',
+
+  // ── NHS Reference Costs 2023/24 — 111-originated demand ──
+  cost_per_call:    8.71,   // IUC telephony unit cost — NHS England published
+  cost_per_amb:   257.00,   // Category 2 ambulance — Ambulance Cost Collection 2023/24
+  cost_per_ed:    212.00,   // Type 1 ED attendance — NHS Reference Costs 2023/24
+  prev_amb: 0.28,           // 28% of amb dispatches preventable — BGS Fit for Frailty
+  prev_ed:  0.30,           // 30% of ED referrals preventable — NHSE Urgent Care evidence
 };
 
 function renderIUCPanel(d) {
@@ -1332,6 +1349,35 @@ function renderIUCPanel(d) {
         Kent ICB 111 call rate: ${callRatio}× England · ambulance dispatch: ${ambRatio}× England · ED referrals: ${edRatio}× England.<br>
         Source: ${IUC_DATA.source}.<br>
         <em>Postcode-district breakdown pending FOI to SECAmb. District figures are proportional estimates.</em>
+      </div>
+
+      <div class="iuc-cost">
+        <div class="iuc-cost-title">£ Annual 111-Originated Cost Estimate</div>
+        <div class="iuc-cost-row">
+          <span>111 call handling (${dist_calls.toLocaleString()} calls × £${IUC_DATA.cost_per_call})</span>
+          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call))}</span>
+        </div>
+        <div class="iuc-cost-row">
+          <span>Ambulance dispatches (${dist_amb.toLocaleString()} × £${IUC_DATA.cost_per_amb.toLocaleString()})</span>
+          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb))}</span>
+        </div>
+        <div class="iuc-cost-row">
+          <span>ED referrals (${dist_ed.toLocaleString()} × £${IUC_DATA.cost_per_ed})</span>
+          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_ed * IUC_DATA.cost_per_ed))}</span>
+        </div>
+        <div class="iuc-cost-total">
+          <span>Total estimated 111-originated cost</span>
+          <span>${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call + dist_amb * IUC_DATA.cost_per_amb + dist_ed * IUC_DATA.cost_per_ed))}</span>
+        </div>
+        <div class="iuc-prevent">
+          <span>Potentially preventable (frail cohort, 28–30%)</span>
+          <span>${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb * IUC_DATA.prev_amb + dist_ed * IUC_DATA.cost_per_ed * IUC_DATA.prev_ed))}</span>
+        </div>
+        <div class="iuc-note" style="margin-top:0.5rem;border-top:none;padding-top:0">
+          Unit costs: 111 call £8.71 (NHSE IUC); ambulance £257 (Cost Collection 2023/24); ED £212 (NHS Ref Costs 2023/24).
+          Preventability: BGS Fit for Frailty &amp; NHSE Urgent Care evidence.
+          Population-level estimate only.
+        </div>
       </div>
     </div>
   `;
