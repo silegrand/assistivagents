@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-07T12:23:09.064298+00:00",
+    "generated": "2026-06-07T12:23:29.801146+00:00",
     "description": "Rural Access Vulnerability Index \u2014 Kent & Medway LSOAs",
     "version": "1.4",
     "lsoa_count": 1065,
@@ -17,9 +17,9 @@
       "pct_llti": 0.1
     },
     "census_source": "england_average_fallback",
-    "coord_method": "grid placeholder \u2014 run Cell 3",
+    "coord_method": "ONS population-weighted centroids \u2014 geometry extraction",
     "has_coordinates": true,
-    "has_place_names": false
+    "has_place_names": true
   },
   "district_summary": {
     "Ashford": {
@@ -9854,7 +9854,7 @@
       "district": "Dover",
       "lad_code": "E07000108",
       "lat": 51.22404,
-      "lon": 1.392,
+      "lon": 1.40151,
       "ravi": 31.0,
       "ravi_band": "low",
       "place_name": "Deal BUA",
@@ -9902,7 +9902,7 @@
       "district": "Dover",
       "lad_code": "E07000108",
       "lat": 51.22899,
-      "lon": 1.392,
+      "lon": 1.40145,
       "ravi": 29.4,
       "ravi_band": "low",
       "place_name": "Deal BUA",
@@ -9926,7 +9926,7 @@
       "district": "Dover",
       "lad_code": "E07000108",
       "lat": 51.21887,
-      "lon": 1.392,
+      "lon": 1.40073,
       "ravi": 33.4,
       "ravi_band": "low",
       "place_name": "Deal BUA",
