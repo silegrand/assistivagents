@@ -3,32 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frailty Geography Intelligence — Assistiv Systems</title>
-<meta name="description" content="A population-first frailty identification system for NHS commissioners. Composite scoring, geographic heat mapping, and precision screening deployment across Kent and Medway.">
+<title>Assistiv Systems · Frailty Intelligence for the NHS</title>
+<meta name="description" content="Assistiv Systems identifies older adults at risk before they reach crisis — using open NHS data, geographic intelligence, and community screening.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap');
-
 :root {
-  --forest:      #1a3a2a;
+  --forest:      #0f2318;
+  --forest-mid:  #1a3a2a;
   --sage:        #2d6b47;
   --sage-mid:    #4a7c5f;
-  --sage-pale:   #e8f2ec;
+  --sage-light:  #7aab90;
+  --sage-pale:   #d4e8db;
+  --sage-ghost:  rgba(45,107,71,0.07);
+  --cream:       #f7f4ee;
+  --cream-mid:   #ede9e0;
+  --cream-dark:  #ddd8ce;
   --amber:       #8a6200;
-  --amber-light: #b8860b;
   --amber-pale:  #fdf3dc;
-  --red:         #b91c1c;
-  --red-pale:    #fef2f2;
-  --blue:        #1d4ed8;
-  --blue-pale:   #eff6ff;
-  --bg:          #f7f5f0;
-  --surface:     #ffffff;
-  --border:      #ddd8ce;
-  --text:        #1a2e1e;
-  --text-muted:  #5a7260;
-  --text-dim:    #9aaa9e;
-  --mono:   'DM Mono', monospace;
-  --serif:  'Cormorant Garamond', serif;
-  --sans:   'Nunito', sans-serif;
+  --ink:         #1a2e1e;
+  --ink-mid:     #3d5245;
+  --ink-muted:   #6b7f71;
+  --ink-dim:     #9aaa9e;
+  --white:       #ffffff;
+  --serif:   'Cormorant Garamond', Georgia, serif;
+  --mono:    'DM Mono', monospace;
+  --sans:    'Nunito', system-ui, sans-serif;
+  --tr:      0.2s ease;
+  --radius:  8px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,703 +38,370 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--cream);
+  color: var(--ink);
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
 /* ── NAV ── */
 nav {
-  background: var(--forest);
-  padding: 0 2rem;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: rgba(247,244,238,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--cream-dark);
+  padding: 0 2rem; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
 }
-
 .nav-brand {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
+  display: flex; align-items: center; gap: 0.6rem;
   text-decoration: none;
 }
-
-.nav-brand-name {
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: white;
-  letter-spacing: 0.01em;
+.nav-logo {
+  display: flex; flex-direction: column; gap: 3px;
 }
-
-.nav-brand-sub {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.nav-logo span {
+  display: block; width: 20px; border-radius: 1px;
 }
-
+.nav-logo span:nth-child(1) { height: 8px; background: var(--forest-mid); }
+.nav-logo span:nth-child(2) { height: 5px; background: var(--sage); }
+.nav-logo span:nth-child(3) { height: 3px; background: var(--sage-light); }
+.nav-name {
+  font-family: var(--serif); font-size: 1.05rem; font-weight: 600;
+  color: var(--forest-mid); letter-spacing: -0.01em;
+}
 .nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  list-style: none;
+  display: flex; gap: 0; list-style: none;
 }
-
 .nav-links a {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
-  text-decoration: none;
-  transition: color 0.15s;
+  font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--ink-muted); text-decoration: none;
+  padding: 0 1rem; transition: color var(--tr);
 }
-
-.nav-links a:hover { color: white; }
-
-.nav-badge {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.7);
+.nav-links a:hover { color: var(--sage); }
+.nav-cta {
+  font-family: var(--sans); font-size: 0.82rem; font-weight: 600;
+  color: var(--white) !important; background: var(--sage);
+  padding: 0.45rem 1.2rem; border-radius: 4px;
+  transition: background var(--tr) !important;
 }
+.nav-cta:hover { background: var(--forest-mid) !important; }
 
 /* ── HERO ── */
 .hero {
-  background: var(--forest);
-  padding: 5rem 2rem 4rem;
-  position: relative;
-  overflow: hidden;
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 100px 2rem 4rem;
+  max-width: 1200px; margin: 0 auto;
 }
-
-.hero::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--sage-mid), var(--amber-light), var(--sage-mid));
-}
-
-.hero-inner {
-  max-width: 860px;
-  margin: 0 auto;
-}
-
 .hero-kicker {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--sage); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.hero-kicker::before {
+  content: ''; display: block; width: 24px; height: 1px; background: var(--sage);
+}
+.hero-headline {
+  font-family: var(--serif); font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em;
+  color: var(--forest-mid); max-width: 800px; margin-bottom: 1.5rem;
+}
+.hero-headline em { font-style: italic; color: var(--sage); }
+.hero-body {
+  font-size: 1.1rem; color: var(--ink-mid); max-width: 580px;
+  line-height: 1.7; margin-bottom: 3rem;
 }
 
-.kicker-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--sage-mid);
-  flex-shrink: 0;
+/* ── LIVE TICKER ── */
+.ticker {
+  display: inline-flex; align-items: center; gap: 1rem;
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 99px; padding: 0.5rem 1.2rem; margin-bottom: 3.5rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
 }
-
-.hero h1 {
-  font-family: var(--serif);
-  font-size: clamp(2.2rem, 5vw, 3.4rem);
-  font-weight: 700;
-  color: white;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  margin-bottom: 1rem;
+.ticker-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; animation: pulse 2s infinite;
 }
-
-.hero h1 em {
-  font-style: italic;
-  color: rgba(255,255,255,0.65);
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+.ticker-text {
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ink-muted);
 }
+.ticker-text strong { color: var(--ink); }
 
-.hero-lead {
-  font-size: 1.05rem;
-  color: rgba(255,255,255,0.7);
-  max-width: 620px;
-  line-height: 1.65;
-  margin-bottom: 2rem;
+/* ── AUDIENCE CARDS ── */
+.audience-section {
+  padding: 5rem 2rem;
+  max-width: 1200px; margin: 0 auto;
 }
-
-.hero-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: center;
+.section-label {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-dim); margin-bottom: 0.75rem;
 }
-
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: white;
-  color: var(--forest);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 600;
-  padding: 0.65rem 1.25rem;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: all 0.2s;
+.section-heading {
+  font-family: var(--serif); font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700; color: var(--forest-mid); line-height: 1.15;
+  letter-spacing: -0.02em; margin-bottom: 0.75rem;
 }
-
-.btn-primary:hover {
-  background: var(--sage-pale);
-  transform: translateY(-1px);
+.section-sub {
+  font-size: 0.95rem; color: var(--ink-muted); max-width: 520px;
+  margin-bottom: 3rem; line-height: 1.65;
 }
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: transparent;
-  color: rgba(255,255,255,0.8);
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.65rem 1.25rem;
-  border-radius: 5px;
-  border: 1px solid rgba(255,255,255,0.25);
-  text-decoration: none;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-  border-color: rgba(255,255,255,0.6);
-  color: white;
-}
-
-/* ── ICB STRIP ── */
-.icb-strip {
-  background: var(--sage);
-  padding: 0.85rem 2rem;
-}
-
-.icb-strip-inner {
-  max-width: 860px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.icb-stats {
-  display: flex;
-  gap: 2rem;
-  flex-wrap: wrap;
-}
-
-.icb-stat {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-}
-
-.icb-val {
-  font-family: var(--serif);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: white;
-}
-
-.icb-label {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
-}
-
-.icb-source {
-  font-family: var(--mono);
-  font-size: 0.55rem;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 0.04em;
-}
-
-/* ── SECTIONS ── */
-section {
-  padding: 4rem 2rem;
-}
-
-.section-inner {
-  max-width: 860px;
-  margin: 0 auto;
-}
-
-.section-kicker {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sage);
-  margin-bottom: 0.6rem;
-}
-
-.section-title {
-  font-family: var(--serif);
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-  margin-bottom: 1rem;
-}
-
-.section-title em {
-  font-style: italic;
-  color: var(--sage);
-}
-
-.section-lead {
-  font-size: 1rem;
-  color: var(--text-muted);
-  max-width: 600px;
-  line-height: 1.65;
-  margin-bottom: 2.5rem;
-}
-
-/* ── TOOL CARDS ── */
-.tool-cards {
+.audience-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
 }
-
-.tool-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+.aud-card {
+  background: var(--white);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 2rem 2rem 1.75rem;
   text-decoration: none;
-  display: block;
-  transition: all 0.2s;
-  position: relative;
+  color: var(--ink);
+  transition: border-color var(--tr), box-shadow var(--tr), transform var(--tr);
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
 }
-
-.tool-card:hover {
-  border-color: var(--sage-mid);
+.aud-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--sage);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform var(--tr);
+}
+.aud-card:hover {
+  border-color: var(--sage-pale);
+  box-shadow: 0 8px 32px rgba(45,107,71,0.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(26,58,42,0.1);
 }
-
-.tool-card-accent {
-  height: 4px;
-  background: var(--forest);
+.aud-card:hover::before { transform: scaleX(1); }
+.aud-icon {
+  font-size: 1.5rem; margin-bottom: 1rem;
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: var(--sage-ghost); border-radius: 10px;
 }
-
-.tool-card-accent.amber { background: linear-gradient(90deg, var(--forest), var(--amber-light)); }
-.tool-card-accent.sage  { background: linear-gradient(90deg, var(--forest), var(--sage-mid)); }
-
-.tool-card-body { padding: 1.5rem; }
-
-.tool-card-icon {
-  font-size: 1.4rem;
-  margin-bottom: 0.75rem;
-  display: block;
+.aud-role {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--sage); margin-bottom: 0.5rem;
 }
-
-.tool-card-label {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.4rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.aud-title {
+  font-family: var(--serif); font-size: 1.4rem; font-weight: 700;
+  color: var(--forest-mid); line-height: 1.2; margin-bottom: 0.75rem;
 }
-
-.status-pill {
-  font-family: var(--mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.1rem 0.4rem;
-  border-radius: 20px;
+.aud-desc {
+  font-size: 0.88rem; color: var(--ink-muted); line-height: 1.6;
+  flex: 1; margin-bottom: 1.25rem;
 }
-
-.status-live    { background: var(--sage-pale); color: var(--sage); border: 1px solid rgba(45,107,71,0.2); }
-.status-proto   { background: var(--amber-pale); color: var(--amber); border: 1px solid rgba(138,98,0,0.2); }
-
-.tool-card-title {
-  font-family: var(--serif);
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
+.aud-action {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+  color: var(--sage); display: flex; align-items: center; gap: 0.35rem;
+  transition: gap var(--tr);
 }
+.aud-card:hover .aud-action { gap: 0.6rem; }
 
-.tool-card-desc {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.55;
-  margin-bottom: 1rem;
+/* ── TOOLS SECTION ── */
+.tools-section {
+  background: var(--forest-mid);
+  padding: 5rem 2rem;
 }
+.tools-inner { max-width: 1200px; margin: 0 auto; }
+.tools-header { margin-bottom: 3rem; }
+.tools-header .section-heading { color: var(--white); }
+.tools-header .section-label { color: rgba(255,255,255,0.35); }
+.tools-header .section-sub { color: rgba(255,255,255,0.55); }
 
-.tool-card-features {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  margin-bottom: 1.25rem;
-}
-
-.tool-feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.4rem;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.tool-feature::before {
-  content: '→';
-  color: var(--sage);
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  flex-shrink: 0;
-  margin-top: 0.1rem;
-}
-
-.tool-card-cta {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--forest);
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-weight: 600;
-  transition: gap 0.15s;
-}
-
-.tool-card:hover .tool-card-cta { gap: 0.6rem; }
-
-/* ── ARCHITECTURE SECTION ── */
-.arch-strip {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 2rem;
-}
-
-.arch-layers {
-  display: flex;
-  gap: 0;
-  position: relative;
-}
-
-.arch-layers::before {
-  content: '';
-  position: absolute;
-  left: 20px;
-  top: 24px;
-  bottom: 24px;
-  width: 2px;
-  background: var(--border);
-}
-
-.arch-layer {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  flex: 1;
-}
-
-.arch-layer-num {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.arch-layer-num.l1 { background: var(--sage-pale); color: var(--sage); border: 2px solid var(--sage-mid); }
-.arch-layer-num.l2 { background: var(--amber-pale); color: var(--amber); border: 2px solid var(--amber-light); }
-.arch-layer-num.l3 { background: var(--blue-pale, #eff6ff); color: var(--blue); border: 2px solid var(--blue); }
-.arch-layer-num.l4 { background: var(--red-pale); color: var(--red); border: 2px solid var(--red); }
-
-.arch-layer-info { padding-top: 0.25rem; }
-
-.arch-layer-title {
-  font-family: var(--serif);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.2rem;
-}
-
-.arch-layer-desc {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
-
-.arch-layer-badge {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.12rem 0.4rem;
-  border-radius: 3px;
-  margin-top: 0.3rem;
-}
-
-.badge-active   { background: var(--sage-pale); color: var(--sage); }
-.badge-planned  { background: var(--amber-pale); color: var(--amber); }
-
-/* ── DATA SECTION ── */
-.data-grid {
+.tools-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+.tools-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.tool-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  text-decoration: none;
+  color: var(--white);
+  transition: background var(--tr), border-color var(--tr), transform var(--tr);
+  display: flex; flex-direction: column;
+}
+.tool-card:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+.tool-tag {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--sage-light); margin-bottom: 0.5rem;
+}
+.tool-title {
+  font-family: var(--serif); font-size: 1.2rem; font-weight: 600;
+  color: var(--white); margin-bottom: 0.5rem; line-height: 1.25;
+}
+.tool-desc {
+  font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.55; flex: 1;
+}
+.tool-link {
+  margin-top: 1rem; font-family: var(--mono); font-size: 0.65rem;
+  color: var(--sage-light); letter-spacing: 0.06em;
 }
 
-.data-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  padding: 1.2rem;
+/* ── HOW IT WORKS ── */
+.how-section {
+  padding: 6rem 2rem;
+  max-width: 1200px; margin: 0 auto;
 }
-
-.data-card-source {
-  font-family: var(--mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
+.layers {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 3rem;
 }
-
-.data-card-name {
-  font-family: var(--serif);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 0.3rem;
+.layer {
+  display: grid; grid-template-columns: 72px 1fr;
+  gap: 0 2rem; padding: 2rem 0;
+  border-top: 1px solid var(--cream-dark);
+  align-items: start;
 }
-
-.data-card-desc {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  line-height: 1.45;
+.layer:last-child { border-bottom: 1px solid var(--cream-dark); }
+.layer-num {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-dim);
+  padding-top: 4px;
 }
-
-.data-card-tag {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 0.52rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.12rem 0.4rem;
-  border-radius: 3px;
-  margin-top: 0.5rem;
-  background: var(--sage-pale);
-  color: var(--sage);
+.layer-num strong {
+  display: block; font-family: var(--serif); font-size: 1.8rem;
+  font-weight: 700; color: var(--sage); letter-spacing: -0.02em;
+  line-height: 1; margin-bottom: 0.2rem;
 }
+.layer-content {}
+.layer-title {
+  font-family: var(--serif); font-size: 1.25rem; font-weight: 700;
+  color: var(--forest-mid); margin-bottom: 0.35rem;
+}
+.layer-desc { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.6; }
+.layer-badge {
+  display: inline-block; margin-top: 0.6rem;
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+}
+.badge-live { background: var(--sage-ghost); color: var(--sage); }
+.badge-live::before { content: '● '; }
+.badge-phase2 { background: var(--amber-pale); color: var(--amber); }
 
-/* ── COMMISSIONER SECTION ── */
-.commissioner-section {
-  background: var(--forest);
+/* ── DATA SNAPSHOT ── */
+.data-section {
+  background: var(--sage-ghost);
+  border-top: 1px solid var(--sage-pale);
+  border-bottom: 1px solid var(--sage-pale);
   padding: 4rem 2rem;
 }
-
-.commissioner-inner {
-  max-width: 860px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3rem;
-  align-items: center;
+.data-inner { max-width: 1200px; margin: 0 auto; }
+.data-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;
+  margin-top: 2.5rem;
+}
+.data-stat {}
+.data-val {
+  font-family: var(--serif); font-size: 2.5rem; font-weight: 700;
+  color: var(--forest-mid); line-height: 1; margin-bottom: 0.35rem;
+}
+.data-label { font-size: 0.82rem; color: var(--ink-muted); line-height: 1.4; }
+.data-source {
+  font-family: var(--mono); font-size: 0.62rem; color: var(--ink-dim);
+  margin-top: 0.25rem;
 }
 
-.comm-title {
-  font-family: var(--serif);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
-  color: white;
-  line-height: 1.15;
-  margin-bottom: 1rem;
+/* ── CONTACT ── */
+.contact-section {
+  padding: 6rem 2rem;
+  max-width: 1200px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
 }
-
-.comm-title em { font-style: italic; color: rgba(255,255,255,0.55); }
-
-.comm-body {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.65;
-  margin-bottom: 1.5rem;
+.contact-form {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: var(--radius); padding: 2.5rem;
 }
-
-.comm-points {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.contact-form h3 {
+  font-family: var(--serif); font-size: 1.5rem; font-weight: 700;
+  color: var(--forest-mid); margin-bottom: 1.5rem;
 }
-
-.comm-point {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.45;
+.form-group { margin-bottom: 1.25rem; }
+.form-group label {
+  display: block; font-family: var(--mono); font-size: 0.65rem;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted);
+  margin-bottom: 0.4rem;
 }
-
-.comm-point-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--sage-mid);
-  flex-shrink: 0;
-  margin-top: 0.45rem;
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; padding: 0.6rem 0.9rem;
+  border: 1px solid var(--cream-dark); border-radius: 5px;
+  background: var(--cream); font-family: var(--sans); font-size: 0.88rem;
+  color: var(--ink); outline: none; transition: border-color var(--tr);
 }
-
-.kent-data-panel {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 8px;
-  padding: 1.25rem;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--sage); }
+.form-group textarea { min-height: 100px; resize: vertical; }
+.form-submit {
+  width: 100%; padding: 0.75rem;
+  background: var(--sage); color: var(--white);
+  border: none; border-radius: 5px; font-family: var(--sans);
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+  transition: background var(--tr);
 }
-
-.kdp-title {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 1rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.kdp-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-
-.kdp-row:last-child { border-bottom: none; }
-
-.kdp-label {
-  font-size: 0.72rem;
-  color: rgba(255,255,255,0.55);
-}
-
-.kdp-val {
-  font-family: var(--serif);
-  font-size: 1rem;
-  font-weight: 700;
-  color: white;
-}
-
-.kdp-comp {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-}
-
-.kdp-better { color: #86efac; }
-.kdp-worse  { color: #fca5a5; }
+.form-submit:hover { background: var(--forest-mid); }
 
 /* ── FOOTER ── */
 footer {
   background: var(--forest);
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 2rem;
+  padding: 3rem 2rem;
+  color: rgba(255,255,255,0.4);
 }
-
 .footer-inner {
-  max-width: 860px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  max-width: 1200px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
 }
-
 .footer-brand {
-  font-family: var(--serif);
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.6);
+  font-family: var(--serif); font-size: 1rem; color: rgba(255,255,255,0.7);
 }
-
 .footer-links {
-  display: flex;
-  gap: 1.25rem;
-  list-style: none;
+  display: flex; gap: 1.5rem; list-style: none;
 }
-
 .footer-links a {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-  text-decoration: none;
-  transition: color 0.15s;
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.35); text-decoration: none;
+  transition: color var(--tr);
 }
-
 .footer-links a:hover { color: rgba(255,255,255,0.7); }
-
-.footer-note {
-  font-family: var(--mono);
-  font-size: 0.56rem;
-  color: rgba(255,255,255,0.25);
-  letter-spacing: 0.04em;
-  width: 100%;
-  margin-top: 0.5rem;
+.footer-copy {
+  font-family: var(--mono); font-size: 0.62rem; width: 100%;
+  border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 640px) {
-  .tool-cards { grid-template-columns: 1fr; }
-  .data-grid  { grid-template-columns: 1fr 1fr; }
-  .commissioner-inner { grid-template-columns: 1fr; gap: 2rem; }
-  .arch-layers { flex-direction: column; }
-  nav .nav-links { display: none; }
+@media (max-width: 900px) {
+  .audience-grid { grid-template-columns: 1fr; }
+  .tools-grid { grid-template-columns: 1fr 1fr; }
+  .tools-grid-2 { grid-template-columns: 1fr; }
+  .data-grid { grid-template-columns: 1fr 1fr; }
+  .contact-section { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+}
+@media (max-width: 600px) {
+  .tools-grid { grid-template-columns: 1fr; }
+  .data-grid { grid-template-columns: 1fr 1fr; }
+  .hero-headline { font-size: 2.4rem; }
 }
 </style>
 </head>
@@ -740,528 +409,310 @@ footer {
 
 <!-- NAV -->
 <nav>
-  <a class="nav-brand" href="#">
-    <span class="nav-brand-name">Assistiv Systems</span>
-    <span class="nav-brand-sub">Frailty Geography Intelligence</span>
+  <a href="/" class="nav-brand">
+    <div class="nav-logo">
+      <span></span><span></span><span></span>
+    </div>
+    <span class="nav-name">Assistiv Systems</span>
   </a>
   <ul class="nav-links">
-    <li><a href="#how-it-works">How it works</a></li>
     <li><a href="#tools">Tools</a></li>
-    <li><a href="history.html">Trend History</a></li>
-    <li><a href="#architecture">Architecture</a></li>
-    <li><a href="#data">Data</a></li>
-    <li><a href="#commissioner">For Commissioners</a></li>
-    <li><a href="community-touchpoints.html">Touchpoints</a></li>
-    <li><a href="https://www.resiliencetools.xyz" target="_blank">resiliencetools.xyz ↗</a></li>
+    <li><a href="#how-it-works">How it works</a></li>
+    <li><a href="#evidence">Evidence</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="https://www.resiliencetools.xyz" target="_blank">RESILIENCE ↗</a></li>
+    <li><a href="#contact" class="nav-cta">Get in touch</a></li>
   </ul>
-  <span class="nav-badge">Layer 2 · Prototype</span>
 </nav>
 
 <!-- HERO -->
-<div class="hero" id="hero">
-  <div class="hero-inner">
-    <div class="hero-kicker">
-      <span class="kicker-dot"></span>
-      Population-First Frailty Identification · Kent &amp; Medway ICB
+<div class="hero">
+  <div class="hero-kicker">Kent &amp; Medway · Population Frailty Intelligence</div>
+  <h1 class="hero-headline">
+    Finding older adults at risk<br><em>before the system has to respond</em>
+  </h1>
+  <p class="hero-body">
+    Assistiv Systems builds intelligence tools for the NHS — identifying the Missing Middle: people with emerging frailty who are invisible to existing care pathways, living at home, not yet in crisis, but heading there.
+  </p>
+
+  <!-- Live data ticker -->
+  <div class="ticker" id="live-ticker">
+    <div class="ticker-dot"></div>
+    <div class="ticker-text">
+      <strong id="ticker-content">Loading live data…</strong>
     </div>
-    <h1>Finding frailty <em>before</em><br>the system has to respond.</h1>
-    <p class="hero-lead">
-      A geographic intelligence layer for NHS commissioners. Identifies where concentrations
-      of emerging frailty are most likely to be, then routes precision screening to those
-      communities — before crisis, not after.
-    </p>
-    <div class="hero-actions">
-      <a href="layer2-map-pdf.html" class="btn-primary">→ Open Map View</a>
-      <a href="layer2-fep-light.html" class="btn-secondary">↗ Scoring Engine</a>
-      <a href="https://www.resiliencetools.xyz" target="_blank" class="btn-secondary">resiliencetools.xyz ↗</a>
-    </div>
+  </div>
+
+  <!-- Audience paths -->
+  <div class="audience-grid">
+
+    <a href="#commissioner" class="aud-card">
+      <div class="aud-icon">📊</div>
+      <div class="aud-role">For commissioners</div>
+      <div class="aud-title">I need to understand risk in my patch right now</div>
+      <p class="aud-desc">Open the live Frailty Heat Map, download a PDF commissioner briefing, and see the economic cost of inaction — district by district, updated daily.</p>
+      <div class="aud-action">Open the intelligence tools →</div>
+    </a>
+
+    <a href="#clinician" class="aud-card">
+      <div class="aud-icon">🏥</div>
+      <div class="aud-role">For clinicians &amp; PCN leads</div>
+      <div class="aud-title">I want to identify frail patients before crisis</div>
+      <p class="aud-desc">RESILIENCE is a voice-first community frailty screen — 12 conversational questions, real-time PRISMA-7 scoring, structured GP referral. Deployable in any community setting.</p>
+      <div class="aud-action">Explore the screening pathway →</div>
+    </a>
+
+    <a href="#academic" class="aud-card">
+      <div class="aud-icon">🔬</div>
+      <div class="aud-role">For academics &amp; researchers</div>
+      <div class="aud-title">I want to understand the methodology</div>
+      <p class="aud-desc">21-signal composite scoring, LSOA-level Rural Access Vulnerability Index, Carer Burden Index — all built on open NHS data with full signal weights, sources, and uncertainty bounds documented.</p>
+      <div class="aud-action">Explore the methodology →</div>
+    </a>
+
+    <a href="#contact" class="aud-card">
+      <div class="aud-icon">🤝</div>
+      <div class="aud-role">For investors &amp; partners</div>
+      <div class="aud-title">I want to understand the opportunity</div>
+      <p class="aud-desc">3.5 million people in the Missing Middle nationally. Three granted patents. Working tools on live NHS data. A validated pathway from geographic intelligence to clinical screening in one system.</p>
+      <div class="aud-action">Request a briefing →</div>
+    </a>
+
   </div>
 </div>
 
-<!-- ICB STRIP -->
-<div class="icb-strip">
-  <div class="icb-strip-inner">
-    <div class="icb-stats">
-      <div class="icb-stat">
-        <span class="icb-val">1,917</span>
-        <span class="icb-label">Falls admissions 65+ / 100k ▲ England</span>
+<!-- LIVE DATA SNAPSHOT -->
+<div class="data-section">
+  <div class="data-inner">
+    <div class="section-label">Live from kent-fep-data.json · Updated daily</div>
+    <div class="section-heading" style="font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--forest-mid);letter-spacing:-0.02em;">
+      Real NHS data. Real Kent districts. Right now.
+    </div>
+    <div class="data-grid" id="data-grid">
+      <div class="data-stat">
+        <div class="data-val" id="stat-top-district">—</div>
+        <div class="data-label">Highest FEP district in Kent</div>
+        <div class="data-source">Frailty Emergence Probability · 21 signals</div>
       </div>
-      <div class="icb-stat">
-        <span class="icb-val">543</span>
-        <span class="icb-label">Hip fractures 65+ / 100k ▲ England</span>
+      <div class="data-stat">
+        <div class="data-val" id="stat-high-count">—</div>
+        <div class="data-label">Districts at high or critical FEP risk</div>
+        <div class="data-source">Of 13 Kent &amp; Medway districts</div>
       </div>
-      <div class="icb-stat">
-        <span class="icb-val">129.4</span>
-        <span class="icb-label">Antidepressants / 1,000 pts ▲ England</span>
+      <div class="data-stat">
+        <div class="data-val" id="stat-ravi-count">—</div>
+        <div class="data-label">Rural LSOAs with critical isolation risk</div>
+        <div class="data-source">Rural Access Vulnerability Index · 1,065 LSOAs</div>
       </div>
-      <div class="icb-stat">
-        <span class="icb-val">62.3%</span>
-        <span class="icb-label">Dementia diagnosis rate ▼ England avg</span>
+      <div class="data-stat">
+        <div class="data-val">185</div>
+        <div class="data-label">Patients delayed daily at East Kent Hospitals</div>
+        <div class="data-source">NHS England Discharge Sitrep · Apr 2026</div>
       </div>
     </div>
-    <span class="icb-source">NHS Kent &amp; Medway ICB QKS · NHS Fingertips + NHSBSA EPD · Mar–Jun 2026 · 14 real signals</span>
   </div>
 </div>
-
-<!-- EXPLAINER -->
-<section id="how-it-works" style="background:var(--bg);border-top:1px solid var(--border)">
-  <div class="section-inner">
-    <div class="section-kicker">How it works</div>
-    <h2 class="section-title">What is a FEP score?</h2>
-    <p class="section-lead">
-      You don't need to be a data scientist to use these tools. Here's what's happening under the hood — in plain English.
-    </p>
-
-    <!-- Analogy card -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--sage);border-radius:8px;padding:1.25rem 1.5rem;margin-bottom:2rem;max-width:640px">
-      <p style="margin:0;color:var(--text);line-height:1.75;font-size:0.975rem">
-        Think of it like a credit score — but for <strong>frailty risk in a community</strong>. We look at 17 different things about an area. Each one gets a number between 0 and 100, where <strong>50 means exactly average for England</strong>. Higher than 50 means that area has more risk than England average. We then blend all 17 together — some counted more heavily than others — to get one final score.
-      </p>
-    </div>
-
-    <!-- Steps -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:2.5rem">
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--sage-pale);color:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">1</div>
-        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We measure 17 things</h3>
-        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Falls, hip fractures, winter deaths, loneliness, dementia diagnosis rate, antidepressant prescribing and more — all from real NHS sources.</p>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">2</div>
-        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We put them on one scale</h3>
-        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Each signal is converted to a 0–100 number. 50 = England average. 60 = 20% worse than England. This lets us compare falls rates and prescribing side by side.</p>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--sage-pale);color:var(--sage);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">3</div>
-        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">We weight by importance</h3>
-        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">Living alone at 75+ carries 13% of the final score — the strongest single predictor. Diuretic prescribing carries 1%. All 17 weights add up to exactly 100%.</p>
-      </div>
-
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
-        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-pale);color:var(--amber);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:0.9rem;margin-bottom:0.75rem">4</div>
-        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.4rem;color:var(--text)">One score per district</h3>
-        <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin:0">The weighted average of all 17 signals becomes the FEP score. A score of 65 means that district is substantially more at-risk than England across multiple measures simultaneously.</p>
-      </div>
-
-    </div>
-
-    <!-- Risk bands -->
-    <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:1rem">What each risk level means</h3>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;margin-bottom:2.5rem">
-      <div style="border-left:4px solid #c04828;background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
-        <div style="font-size:1.1rem;font-weight:700;color:#c04828">70+</div>
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Critical</div>
-        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Multiple acute signals. Immediate priority for outreach and screening.</div>
-      </div>
-      <div style="border-left:4px solid var(--amber);background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
-        <div style="font-size:1.1rem;font-weight:700;color:var(--amber)">55–69</div>
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">High</div>
-        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Consistently above England average. Priority zone for commissioner action.</div>
-      </div>
-      <div style="border-left:4px solid #1d6fb8;background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
-        <div style="font-size:1.1rem;font-weight:700;color:#1d6fb8">40–54</div>
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Moderate</div>
-        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Mixed signals. Monitor and plan proactive outreach for next 12 months.</div>
-      </div>
-      <div style="border-left:4px solid var(--sage);background:var(--surface);border-radius:0 8px 8px 0;padding:0.85rem 1rem">
-        <div style="font-size:1.1rem;font-weight:700;color:var(--sage)">0–39</div>
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin:2px 0">Low</div>
-        <div style="font-size:0.8rem;color:var(--muted);line-height:1.5">Below England average. Not zero risk — lower relative priority.</div>
-      </div>
-    </div>
-
-    <!-- District hotspot table -->
-    <h3 style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:0.75rem">Current Kent &amp; Medway district scores</h3>
-    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem">Ranked highest to lowest. Scores are grounded against 18 real NHS signals — Fingertips data refreshes daily, EPD monthly.</p>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem">
-      <table style="width:100%;border-collapse:collapse;font-size:0.875rem">
-        <thead>
-          <tr style="border-bottom:1px solid var(--border)">
-            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">District</th>
-            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Score</th>
-            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em">Risk</th>
-            <th style="padding:0.65rem 1rem;text-align:left;font-weight:600;color:var(--muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;width:40%">Relative to England</th>
-          </tr>
-        </thead>
-        <tbody id="district-table-body"></tbody>
-      </table>
-    </div>
-    <p style="font-size:0.8rem;color:var(--muted)">→ <a href="layer2-map-pdf.html" style="color:var(--sage)">Open the map</a> to see these scores visualised on the district boundaries and export a commissioner briefing PDF.</p>
-  </div>
-</section>
-
-<script>
-(function(){
-  var districts=[
-    {name:'Thanet',fep:65,risk:'high'},
-    {name:'Folkestone & Hythe',fep:61,risk:'high'},
-    {name:'Dover',fep:59,risk:'high'},
-    {name:'Swale',fep:57,risk:'high'},
-    {name:'Medway',fep:55,risk:'high'},
-    {name:'Gravesham',fep:53,risk:'moderate'},
-    {name:'Ashford',fep:50,risk:'moderate'},
-    {name:'Canterbury',fep:47,risk:'moderate'},
-    {name:'Dartford',fep:47,risk:'moderate'},
-    {name:'Maidstone',fep:45,risk:'moderate'},
-    {name:'Tonbridge & Malling',fep:42,risk:'moderate'},
-    {name:'Sevenoaks',fep:34,risk:'low'},
-    {name:'Tunbridge Wells',fep:31,risk:'low'},
-  ];
-  var riskColor={high:'#ba7517',moderate:'#1d6fb8',low:'#2d6b47',critical:'#c04828'};
-  var riskLabel={high:'High',moderate:'Moderate',low:'Low',critical:'Critical'};
-  var tbody=document.getElementById('district-table-body');
-  if(!tbody)return;
-  districts.forEach(function(d,i){
-    var barW=Math.round((d.fep/100)*100);
-    var barColor=d.fep>=70?'#c04828':d.fep>=55?'#ba7517':d.fep>=40?'#1d6fb8':'#2d6b47';
-    var bg=i%2===0?'':'background:rgba(0,0,0,0.02)';
-    tbody.innerHTML+=`<tr style="border-bottom:1px solid var(--border);${bg}">
-      <td style="padding:0.6rem 1rem;font-weight:500;color:var(--text)">${d.name}</td>
-      <td style="padding:0.6rem 1rem;font-weight:700;color:${barColor}">${d.fep}</td>
-      <td style="padding:0.6rem 1rem"><span style="font-size:0.75rem;padding:2px 8px;border-radius:99px;background:${barColor}18;color:${barColor};font-weight:600">${riskLabel[d.risk]}</span></td>
-      <td style="padding:0.6rem 1rem">
-        <div style="background:var(--border);border-radius:4px;height:6px;overflow:hidden">
-          <div style="width:${barW}%;height:6px;background:${barColor};border-radius:4px"></div>
-        </div>
-      </td>
-    </tr>`;
-  });
-})();
-</script>
 
 <!-- TOOLS -->
-<section id="tools">
-  <div class="section-inner">
-    <div class="section-kicker">Layer 2 Tool Suite</div>
-    <h2 class="section-title">Four tools. <em>One intelligence layer.</em></h2>
-    <p class="section-lead">
-      The scoring engine builds the geographic risk picture. The map turns it into
-      something a commissioner can act on immediately — and export as a briefing document
-      for a PCN meeting.
-    </p>
+<div class="tools-section" id="tools">
+  <div class="tools-inner">
+    <div class="tools-header">
+      <div class="section-label" style="color:rgba(255,255,255,0.35)">Intelligence tools · Live on NHS open data</div>
+      <div class="section-heading" style="color:var(--white)">Six tools. One intelligence layer.</div>
+      <div class="section-sub" style="color:rgba(255,255,255,0.55)">All built on open NHS data. No login. No procurement. Open in a browser now.</div>
+    </div>
 
-    <div class="tool-cards">
-
-      <!-- MAP TOOL -->
+    <div class="tools-grid">
       <a href="layer2-map-pdf.html" class="tool-card">
-        <div class="tool-card-accent sage"></div>
-        <div class="tool-card-body">
-          <span class="tool-card-icon">🗺</span>
-          <div class="tool-card-label">
-            Primary Tool
-            <span class="status-pill status-proto">Prototype</span>
-          </div>
-          <div class="tool-card-title">Frailty Heat Map</div>
-          <p class="tool-card-desc">
-            Live ONS district boundaries for Kent and Medway, colour-coded by
-            Frailty Emergence Probability score. Click any district for signal
-            breakdown and recommendations. Download a commissioner briefing PDF
-            in one click.
-          </p>
-          <div class="tool-card-features">
-            <span class="tool-feature">Real ONS LAD 2023 boundaries via live API</span>
-            <span class="tool-feature">FEP heat map — red / amber / blue / green tiers</span>
-            <span class="tool-feature">Signal breakdown for each of 14 districts</span>
-            <span class="tool-feature">One-click PDF commissioner briefing export</span>
-            <span class="tool-feature">ICB real data banner — OHID PHOF May 2026</span>
-          </div>
-          <span class="tool-card-cta">Open Map → </span>
-        </div>
+        <div class="tool-tag">Primary tool · Layer 2</div>
+        <div class="tool-title">Frailty Heat Map</div>
+        <div class="tool-desc">Live ONS district boundaries, FEP colour tiers, economic cost of inaction, discharge intelligence, 111 demand, prescribing signals. One-click PDF commissioner briefing.</div>
+        <div class="tool-link">Open map →</div>
       </a>
-
-      <!-- SCORING ENGINE -->
       <a href="layer2-fep-light.html" class="tool-card">
-        <div class="tool-card-accent amber"></div>
-        <div class="tool-card-body">
-          <span class="tool-card-icon">⚙</span>
-          <div class="tool-card-label">
-            Scoring Engine
-            <span class="status-pill status-proto">Prototype</span>
-          </div>
-          <div class="tool-card-title">FEP Scoring Engine</div>
-          <p class="tool-card-desc">
-            Configure signal weights across 17 public data domains, run the
-            composite scoring model, and explore ranked zone results. Supports
-            commissioner-configurable weighting — adjust to prioritise deprivation,
-            polypharmacy, or isolation as the dominant signal.
-          </p>
-          <div class="tool-card-features">
-            <span class="tool-feature">17 adjustable signal weight sliders</span>
-            <span class="tool-feature">Ranked FEP table across 18 Kent zones</span>
-            <span class="tool-feature">Signal contribution breakdown per zone</span>
-            <span class="tool-feature">Uncertainty flagging — fewer than 8 signals</span>
-            <span class="tool-feature">Automated recommended actions per zone</span>
-          </div>
-          <span class="tool-card-cta">Open Scoring Engine → </span>
-        </div>
+        <div class="tool-tag">Scoring engine · Layer 2</div>
+        <div class="tool-title">FEP Configurator</div>
+        <div class="tool-desc">21 adjustable signal weights. Commissioner-configurable scoring. Ranked zone results with uncertainty flags. Ada AI explainer built in.</div>
+        <div class="tool-link">Open scoring engine →</div>
       </a>
-
-      <!-- HISTORY VIEWER -->
-      <a href="history.html" class="tool-card">
-        <div class="tool-card-accent" style="background: linear-gradient(90deg, var(--forest), #1a5a7a)"></div>
-        <div class="tool-card-body">
-          <span class="tool-card-icon">📈</span>
-          <div class="tool-card-label">
-            Trend Intelligence
-            <span class="status-pill status-proto">Daily Refresh</span>
-          </div>
-          <div class="tool-card-title">FEP Trend History</div>
-          <p class="tool-card-desc">
-            Compare FEP scores across any two dates to identify districts
-            where frailty risk is rising or falling. Daily snapshots stored
-            automatically — building a longitudinal picture that no other
-            NHS tool provides.
-          </p>
-          <div class="tool-card-features">
-            <span class="tool-feature">Daily automated snapshots via GitHub Actions</span>
-            <span class="tool-feature">Compare any two dates side by side</span>
-            <span class="tool-feature">Rising / falling / stable indicators per district</span>
-            <span class="tool-feature">Trend chart across all 13 districts</span>
-            <span class="tool-feature">Mini sparklines for at-a-glance trajectory</span>
-          </div>
-          <span class="tool-card-cta">View Trend History → </span>
-        </div>
+      <a href="rural-access-vulnerability.html" class="tool-card">
+        <div class="tool-tag">LSOA hotspot map · Layer 2</div>
+        <div class="tool-title">Rural Access Vulnerability</div>
+        <div class="tool-desc">1,065 LSOA-level hotspots revealing hidden frailty in Challock, Hever, Appledore and 53 unnamed rural settlements — invisible to district-level FEP scores.</div>
+        <div class="tool-link">Open RAVI map →</div>
       </a>
-
-
-      <!-- COMMUNITY TOUCHPOINTS -->
+    </div>
+    <div class="tools-grid-2" style="margin-top:1rem">
+      <a href="cbi-fep-map.html" class="tool-card">
+        <div class="tool-tag">Dual intelligence · Layer 2</div>
+        <div class="tool-title">FEP × Carer Burden Quadrant</div>
+        <div class="tool-desc">Frailty risk and carer burden overlaid. Identifies districts where both patient and carer systems face simultaneous pressure — the most urgent intervention targets.</div>
+        <div class="tool-link">Open CBI map →</div>
+      </a>
       <a href="community-touchpoints.html" class="tool-card">
-        <div class="tool-card-accent" style="background: linear-gradient(90deg, #2d6b47, #1d4ed8)"></div>
-        <div class="tool-card-body">
-          <span class="tool-card-icon">📍</span>
-          <div class="tool-card-label">
-            Outreach Planning
-            <span class="status-pill status-proto">Free · No API Key</span>
-          </div>
-          <div class="tool-card-title">Community Touchpoints</div>
-          <p class="tool-card-desc">
-            Routes outreach to GP surgeries, pharmacies, libraries, faith
-            communities and VCSE organisations within priority zones.
-            Select any Kent district to map every community asset available
-            to reach the Missing Middle on the ground.
-          </p>
-          <div class="tool-card-features">
-            <span class="tool-feature">GP surgeries and pharmacies from NHS API</span>
-            <span class="tool-feature">Libraries, faith and community centres from OpenStreetMap</span>
-            <span class="tool-feature">Filter by touchpoint type · search by name</span>
-            <span class="tool-feature">Opening hours, contact details where available</span>
-            <span class="tool-feature">Districts ordered by FEP score — highest risk first</span>
-          </div>
-          <span class="tool-card-cta">Open Touchpoints → </span>
-        </div>
+        <div class="tool-tag">Outreach planning · Layer 3</div>
+        <div class="tool-title">Community Touchpoints</div>
+        <div class="tool-desc">GP surgeries, pharmacies, libraries, faith communities and VCSE organisations within priority zones — mapped by district for outreach planning. NHS API and OpenStreetMap.</div>
+        <div class="tool-link">Open touchpoints →</div>
       </a>
-
+    </div>
+    <div style="margin-top:1rem">
+      <a href="https://www.resiliencetools.xyz" target="_blank" rel="noopener" class="tool-card" style="display:block">
+        <div class="tool-tag">Community screening · Layer 4</div>
+        <div class="tool-title">RESILIENCE — Voice-First Frailty Screen</div>
+        <div class="tool-desc">12 conversational questions across six clinical domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
+        <div class="tool-link">Open resiliencetools.xyz ↗</div>
+      </a>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ARCHITECTURE -->
-<section id="architecture" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
-  <div class="section-inner">
-    <div class="section-kicker">System Architecture</div>
-    <h2 class="section-title">Five layers. <em>One proactive pathway.</em></h2>
-    <p class="section-lead">
-      This tool suite is Layer 2 of a five-layer population frailty intelligence system.
-      Each layer feeds the next — from public data ingestion through to clinical triage
-      and feedback.
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how-it-works">
+  <div class="section-label">The pathway</div>
+  <div class="section-heading">Five layers. One proactive system.</div>
+  <div class="section-sub">Each layer feeds the next — from public data through geographic mapping, community identification, precision screening, and clinical triage.</div>
+
+  <div class="layers">
+    <div class="layer">
+      <div class="layer-num"><strong>L1</strong>Data</div>
+      <div class="layer-content">
+        <div class="layer-title">Population Data Ingestion</div>
+        <div class="layer-desc">NHS Fingertips outcomes indicators, NHSBSA prescribing exhaust (18 million rows monthly), ONS Census, IMD 2019, Rural Urban Classification. 21 signals normalised against England averages and updated daily via GitHub Actions.</div>
+        <span class="layer-badge badge-live">Live · Daily refresh</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num"><strong>L2</strong>Map</div>
+      <div class="layer-content">
+        <div class="layer-title">Geographic Frailty Intelligence</div>
+        <div class="layer-desc">FEP composite score for 13 Kent districts. Rural Access Vulnerability Index for 1,065 LSOAs. Carer Burden Index. Discharge delay intelligence. NHS 111 demand. Economic cost of inaction. All in one commissioner-facing map.</div>
+        <span class="layer-badge badge-live">Live · Six tools deployed</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num"><strong>L3</strong>Reach</div>
+      <div class="layer-content">
+        <div class="layer-title">Community Touchpoint Identification</div>
+        <div class="layer-desc">GP surgeries, pharmacies, libraries, faith communities, and VCSE organisations mapped within priority zones using NHS API and OpenStreetMap. Routes outreach to where the Missing Middle already is.</div>
+        <span class="layer-badge badge-live">Live · NHS API + OpenStreetMap</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num"><strong>L4</strong>Screen</div>
+      <div class="layer-content">
+        <div class="layer-title">Precision Community Screening — RESILIENCE</div>
+        <div class="layer-desc">Voice-first frailty assessment. 12 conversational questions. PRISMA-7 and FRAIL Scale scored in real time. Structured clinical referral output. District FEP score injected as context — higher-risk zones trigger lower referral thresholds.</div>
+        <span class="layer-badge badge-live">Live · resiliencetools.xyz</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num"><strong>L5</strong>Close</div>
+      <div class="layer-content">
+        <div class="layer-title">Clinical Triage &amp; Feedback Loop</div>
+        <div class="layer-desc">Structured referral to GP, community matron, or social prescriber. Screening outcomes fed back into the geographic model — districts where more frailty is found recalibrate the FEP scoring. The dataset becomes the competitive advantage.</div>
+        <span class="layer-badge badge-phase2">Phase 2 · In development</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE -->
+<div class="data-section" id="evidence" style="background:var(--cream-mid);border-color:var(--cream-dark)">
+  <div class="data-inner">
+    <div class="section-label">Methodology &amp; data provenance</div>
+    <div class="section-heading" style="font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;color:var(--forest-mid);letter-spacing:-0.02em;margin-bottom:2rem">
+      Open data. Defensible methodology. Transparent signals.
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem" class="evidence-grid">
+      <div>
+        <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest-mid);margin-bottom:0.5rem">FEP — 21 signals</div>
+        <div style="font-size:0.82rem;color:var(--ink-muted);line-height:1.65">10 NHS Fingertips outcomes indicators · 11 NHSBSA EPD prescribing signals · 3 ONS synthetic signals. Weights documented and adjustable. England averages as comparators. Uncertainty bounds at ±30%. Source: MHCLG IMD 2019, OHID PHOF, NHSBSA Mar 2026.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest-mid);margin-bottom:0.5rem">RAVI — 5 signals</div>
+        <div style="font-size:0.82rem;color:var(--ink-muted);line-height:1.65">IMD 2019 Geographic Barriers sub-domain (road distance to GP, pharmacy, food store) · ONS 2021 Rural Urban Classification · Population 65+ · Car access · Limiting long-term illness. All at LSOA level. Source: MHCLG, ONS, Census 2021 via Nomis.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest-mid);margin-bottom:0.5rem">Economic model</div>
+        <div style="font-size:0.82rem;color:var(--ink-muted);line-height:1.65">Falls cost: NHS Improvement £2,600 CPI-uplifted. Hip fracture cost: £14,642 (Lancet Healthy Longevity 2023, n=178,757). Preventability: BGS Fit for Frailty &amp; NICE QS86. Bed day cost: £562 NHS England 2025/26. All sources cited in-tool.</div>
+      </div>
+    </div>
+    <div style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--cream-dark);display:flex;gap:1.5rem;flex-wrap:wrap">
+      <a href="frailty-agent-architecture.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View system architecture →</a>
+      <a href="history.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View trend history →</a>
+      <a href="https://github.com/silegrand/assistivagents" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View source on GitHub ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section" id="contact">
+  <div>
+    <div class="section-label">Get in touch</div>
+    <div class="section-heading">Work with us</div>
+    <p style="font-size:0.95rem;color:var(--ink-muted);line-height:1.7;margin-top:0.75rem;margin-bottom:2rem">
+      Whether you're a commissioner looking for a briefing, a clinician interested in deploying RESILIENCE, an academic exploring collaboration, or an investor evaluating the opportunity — we want to hear from you.
     </p>
-
-    <div class="arch-strip">
-      <div style="display:flex;flex-direction:column;gap:0.25rem">
-
-        <div class="arch-layer">
-          <div class="arch-layer-num l1">L1</div>
-          <div class="arch-layer-info">
-            <div class="arch-layer-title">Population Signal Ingestion</div>
-            <div class="arch-layer-desc">ONS Census 2021, NHS Fingertips (10 indicators confirmed), IMD 2019, CQC register, NHSBSA English Prescribing Dataset (7 signal groups confirmed — including anticholinergic burden). 17 signals total — 14 real, 3 synthetic.</div>
-            <span class="arch-layer-badge badge-active">Active — 14 real signals confirmed</span>
-            <span class="arch-layer-badge badge-active">Active — data confirmed</span>
-          </div>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div style="display:flex;align-items:flex-start;gap:1rem">
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">📋</div>
+        <div>
+          <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Commissioner briefing</div>
+          <div style="font-size:0.82rem;color:var(--ink-muted)">A 30-minute live demonstration of the FEP intelligence layer for your patch.</div>
         </div>
-
-        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
-
-        <div class="arch-layer">
-          <div class="arch-layer-num l2">L2</div>
-          <div class="arch-layer-info">
-            <div class="arch-layer-title">Composite FEP Scoring — <em>this tool</em></div>
-            <div class="arch-layer-desc">Weighted composite index (17 signals, 14 real) generating a Frailty Emergence Probability score per district. Geographic heat map. Commissioner briefing export. ICB baseline grounding via NHS Fingertips + NHSBSA EPD.</div>
-            <span class="arch-layer-badge badge-active">Active — prototype deployed</span>
-            <span class="arch-layer-badge badge-active">Active — prototype deployed</span>
-          </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:1rem">
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔬</div>
+        <div>
+          <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Academic collaboration</div>
+          <div style="font-size:0.82rem;color:var(--ink-muted)">Methodology review, co-authorship, or validation study design.</div>
         </div>
-
-        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
-
-        <div class="arch-layer">
-          <div class="arch-layer-num l3">L3</div>
-          <div class="arch-layer-info">
-            <div class="arch-layer-title">Community Touchpoint Identification</div>
-            <div class="arch-layer-desc">Routes outreach to GP surgeries, pharmacies, libraries, faith communities, and VCSE organisations within priority zones. Google Places API integration.</div>
-            <span class="arch-layer-badge badge-planned">Planned — Phase 2</span>
-          </div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:1rem">
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">💼</div>
+        <div>
+          <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Investment &amp; partnership</div>
+          <div style="font-size:0.82rem;color:var(--ink-muted)">Pre-seed conversation, strategic partnership, or clinical trial funding.</div>
         </div>
-
-        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
-
-        <div class="arch-layer">
-          <div class="arch-layer-num l4">L4</div>
-          <div class="arch-layer-info">
-            <div class="arch-layer-title">Precision Screening — resiliencetools.xyz</div>
-            <div class="arch-layer-desc">Voice-first PRISMA-7 screening, carer observational report, Triple Tap Intelligence synthesis, Frailty Profile Radar. Context-injected with zone FEP score to calibrate sensitivity thresholds.</div>
-            <span class="arch-layer-badge badge-active">Active — live at resiliencetools.xyz</span>
-          </div>
-        </div>
-
-        <div style="width:2px;height:16px;background:var(--border);margin-left:19px"></div>
-
-        <div class="arch-layer">
-          <div class="arch-layer-num l1" style="background:#f0ede6;color:#5a7260;border-color:#ddd8ce">L5</div>
-          <div class="arch-layer-info">
-            <div class="arch-layer-title">Triage, Referral &amp; Feedback Loop</div>
-            <div class="arch-layer-desc">Clinical referral, population dashboard, Assistiv onboarding pathway, safety escalation. Anonymised screening outcomes recalibrate the FEP model — the dataset becomes the competitive advantage.</div>
-            <span class="arch-layer-badge badge-planned">Planned — Phase 3</span>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
-</section>
 
-<!-- DATA SOURCES -->
-<section id="data">
-  <div class="section-inner">
-    <div class="section-kicker">Data Sources</div>
-    <h2 class="section-title">Public data. <em>Defensible intelligence.</em></h2>
-    <p class="section-lead">
-      Every signal in the FEP model uses publicly available data — free to access,
-      citable in a commissioner briefing, and updatable without licensing costs.
-      The value is in the composite, not the inputs.
-    </p>
-
-    <div class="data-grid">
-      <div class="data-card">
-        <div class="data-card-source">ONS · Free</div>
-        <div class="data-card-name">Census 2021</div>
-        <div class="data-card-desc">Over-75s living alone at LSOA level. Strongest single demographic frailty proxy. ~1,500 households per zone.</div>
-        <span class="data-card-tag">Live — confirmed</span>
+  <div class="contact-form">
+    <h3>Send a message</h3>
+    <form onsubmit="handleForm(event)">
+      <div class="form-group">
+        <label>Your name</label>
+        <input type="text" name="name" placeholder="Dr Jane Smith" required>
       </div>
-      <div class="data-card">
-        <div class="data-card-source">OHID · Free API</div>
-        <div class="data-card-name">NHS Fingertips</div>
-        <div class="data-card-desc">Falls admissions, unplanned hospitalisations, healthy life expectancy. ICB-level data confirmed. Sub-ICB linkage in Phase 2.</div>
-        <span class="data-card-tag">ICB level — confirmed</span>
+      <div class="form-group">
+        <label>Organisation</label>
+        <input type="text" name="org" placeholder="NHS Kent &amp; Medway ICB" required>
       </div>
-      <div class="data-card">
-        <div class="data-card-source">MHCLG · Free</div>
-        <div class="data-card-name">IMD 2019</div>
-        <div class="data-card-desc">Index of Multiple Deprivation. Access and vulnerability amplifier. Available at ward and LSOA level across all Kent districts.</div>
-        <span class="data-card-tag">Live — confirmed</span>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="j.smith@nhs.net" required>
       </div>
-      <div class="data-card">
-        <div class="data-card-source">DWP · Free</div>
-        <div class="data-card-name">Attendance Allowance</div>
-        <div class="data-card-desc">DWP benefit claims by postcode district. Functional limitation indicator. Published monthly, geographic granularity confirmed.</div>
-        <span class="data-card-tag">Live — confirmed</span>
+      <div class="form-group">
+        <label>I am a…</label>
+        <select name="role">
+          <option value="">Select your role</option>
+          <option>NHS Commissioner</option>
+          <option>Clinician / PCN Lead</option>
+          <option>Academic / Researcher</option>
+          <option>Investor / Strategic Partner</option>
+          <option>Other</option>
+        </select>
       </div>
-      <div class="data-card">
-        <div class="data-card-source">CQC · Free API</div>
-        <div class="data-card-name">Care Home Register</div>
-        <div class="data-card-desc">Care home locations, capacity, and CQC ratings. Service gap indicator — high FEP plus low care provision identifies priority zones.</div>
-        <span class="data-card-tag">Live — confirmed</span>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" placeholder="I'd like to discuss…"></textarea>
       </div>
-      <div class="data-card">
-        <div class="data-card-source">NHSBSA · Free</div>
-        <div class="data-card-name">English Prescribing Dataset</div>
-        <div class="data-card-desc">18M rows/month. 7 signal groups including hypnotics, antidepressants, bisphosphonates, anxiolytics, and bladder antimuscarinics. Kent 57,660 rows confirmed Mar 2026.</div>
-        <span class="data-card-tag">Practice level — confirmed ✓</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- COMMISSIONER SECTION -->
-<div class="commissioner-section" id="commissioner">
-  <div class="commissioner-inner">
-    <div>
-      <h2 class="comm-title">Built for PCN leads<br>and <em>ICB commissioners.</em></h2>
-      <p class="comm-body">
-        PCNs have a statutory duty to proactively identify and support their over-75
-        population. This tool gives them the geographic intelligence layer they currently
-        lack — and the screening pathway to act on it.
-      </p>
-      <div class="comm-points">
-        <div class="comm-point">
-          <span class="comm-point-dot"></span>
-          <span>Shows <em>where</em> emerging frailty is concentrated, before people present to services</span>
-        </div>
-        <div class="comm-point">
-          <span class="comm-point-dot"></span>
-          <span>Exportable PDF briefing — ready for a PCN meeting or ICB commissioning conversation</span>
-        </div>
-        <div class="comm-point">
-          <span class="comm-point-dot"></span>
-          <span>Commissioner-configurable weights — adjust the model to reflect local priorities</span>
-        </div>
-        <div class="comm-point">
-          <span class="comm-point-dot"></span>
-          <span>Grounded in real OHID data — citable, dated, and transparently sourced</span>
-        </div>
-        <div class="comm-point">
-          <span class="comm-point-dot"></span>
-          <span>Routes directly into resiliencetools.xyz community screening pathway</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="kent-data-panel">
-      <div class="kdp-title">NHS Kent &amp; Medway ICB · QKS · Real Data · NHS Fingertips + NHSBSA EPD 2026</div>
-      <div class="kdp-row">
-        <span class="kdp-label">Falls Admissions 65+</span>
-        <div style="text-align:right">
-          <div class="kdp-val">1,917 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
-          <div class="kdp-comp kdp-worse">▲ vs England 1,870</div>
-        </div>
-      </div>
-      <div class="kdp-row">
-        <span class="kdp-label">Hip Fractures 65+</span>
-        <div style="text-align:right">
-          <div class="kdp-val">543 <span style="font-size:0.7rem;color:rgba(255,255,255,0.4)">/ 100k</span></div>
-          <div class="kdp-comp kdp-worse">▲ vs England 491</div>
-        </div>
-      </div>
-      <div class="kdp-row">
-        <span class="kdp-label">Antidepressants / 1,000 pts</span>
-        <div style="text-align:right">
-          <div class="kdp-val">129.4</div>
-          <div class="kdp-comp kdp-worse">▲ vs England 110.0</div>
-        </div>
-      </div>
-      <div class="kdp-row">
-        <span class="kdp-label">Dementia Diagnosis Rate</span>
-        <div style="text-align:right">
-          <div class="kdp-val">62.3%</div>
-          <div class="kdp-comp kdp-worse">▼ vs England 66.3%</div>
-        </div>
-      </div>
-      <div class="kdp-row">
-        <span class="kdp-label">Winter Mortality Index</span>
-        <div style="text-align:right">
-          <div class="kdp-val">9.8</div>
-          <div class="kdp-comp kdp-worse">▲ vs England 8.7</div>
-        </div>
-      </div>
-      <div class="kdp-row">
-        <span class="kdp-label">Hypnotics / 1,000 pts</span>
-        <div style="text-align:right">
-          <div class="kdp-val">12.2</div>
-          <div class="kdp-comp kdp-worse">▲ vs England 10.2</div>
-        </div>
-      </div>
+      <button type="submit" class="form-submit">Send message →</button>
+    </form>
+    <div id="form-success" style="display:none;margin-top:1rem;padding:0.75rem;background:var(--sage-ghost);border-radius:5px;font-size:0.85rem;color:var(--sage)">
+      Thank you — we'll be in touch within 48 hours.
     </div>
   </div>
 </div>
@@ -1269,20 +720,100 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <span class="footer-brand">Assistiv Systems Limited · Faversham, Kent</span>
+    <div class="footer-brand">Assistiv Systems Limited · Faversham, Kent</div>
     <ul class="footer-links">
-      <li><a href="layer2-map-pdf.html">Map View</a></li>
-      <li><a href="layer2-fep-light.html">Scoring Engine</a></li>
-      <li><a href="https://www.resiliencetools.xyz" target="_blank">resiliencetools.xyz</a></li>
+      <li><a href="layer2-map-pdf.html">Map</a></li>
+      <li><a href="layer2-fep-light.html">Scoring</a></li>
+      <li><a href="rural-access-vulnerability.html">RAVI</a></li>
+      <li><a href="history.html">Trends</a></li>
+      <li><a href="https://www.resiliencetools.xyz" target="_blank">RESILIENCE ↗</a></li>
+      <li><a href="https://github.com/silegrand/assistivagents" target="_blank">GitHub ↗</a></li>
     </ul>
-    <div class="footer-note">
-      Frailty Geography Intelligence · Layer 2 Prototype · June 2026 ·
-      FEP scores grounded against 14 real signals (NHS Fingertips + NHSBSA EPD) ·
-      Sub-ICB live data linkage: Phase 2 ·
-      Assistiv Systems Limited is registered in England and Wales
+    <div class="footer-copy">
+      © 2026 Assistiv Systems Limited. Three granted patents. Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2019. 
+      For research and commissioning intelligence purposes only — not a clinical diagnostic tool.
     </div>
   </div>
 </footer>
 
+<script>
+// ── LIVE DATA FROM JSON ───────────────────────────────────────────────
+const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+const RAVI_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-ravi-data.json';
+
+async function loadLiveData() {
+  try {
+    const [fepRes, raviRes] = await Promise.allSettled([
+      fetch(FEP_URL), fetch(RAVI_URL)
+    ]);
+
+    // FEP data
+    if (fepRes.status === 'fulfilled' && fepRes.value.ok) {
+      const fep = await fepRes.value.json();
+      const districts = fep.districts || [];
+
+      // Top district
+      const top = districts[0];
+      if (top) {
+        document.getElementById('stat-top-district').textContent =
+          `${top.name} ${top.fep}`;
+      }
+
+      // High/critical count
+      const highCount = districts.filter(d =>
+        d.risk === 'high' || d.risk === 'critical'
+      ).length;
+      document.getElementById('stat-high-count').textContent = highCount;
+
+      // Ticker
+      const ticker = districts.slice(0,3).map(d =>
+        `${d.name} ${d.fep}`
+      ).join(' · ');
+      document.getElementById('ticker-content').textContent =
+        `Live: ${ticker} · Data refreshed daily`;
+    }
+
+    // RAVI data
+    if (raviRes.status === 'fulfilled' && raviRes.value.ok) {
+      const ravi = await raviRes.value.json();
+      const lsoas = ravi.lsoas || [];
+      const critCount = lsoas.filter(l =>
+        l.ravi_band === 'critical'
+      ).length;
+      document.getElementById('stat-ravi-count').textContent = critCount;
+    }
+
+  } catch(e) {
+    document.getElementById('ticker-content').textContent =
+      'Frailty intelligence · Kent & Medway ICB · Updated daily';
+    console.warn('Live data:', e);
+  }
+}
+
+// ── SMOOTH ANCHOR SCROLL ──────────────────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// ── FORM ──────────────────────────────────────────────────────────────
+function handleForm(e) {
+  e.preventDefault();
+  // Simple mailto fallback — replace with Formspree or similar
+  const data = new FormData(e.target);
+  const subject = `Assistiv Systems enquiry — ${data.get('role') || 'General'}`;
+  const body = `Name: ${data.get('name')}\nOrg: ${data.get('org')}\nEmail: ${data.get('email')}\n\n${data.get('message')}`;
+  window.location.href = `mailto:simon@assistiv.co?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  document.getElementById('form-success').style.display = 'block';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+loadLiveData();
+</script>
 </body>
 </html>
