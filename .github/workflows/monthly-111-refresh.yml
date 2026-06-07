@@ -1,18 +1,19 @@
 name: Monthly NHS 111 Data Fetch
 
 # Runs on the 1st of every month at 07:00 UTC
-# NHSBSA publishes ~6 weeks after month end, so this collects
-# data that is approximately 6-8 weeks old.
-#
-# The script auto-discovers the latest published month —
-# no manual updates needed.
-#
-# Also triggerable manually from the Actions tab in GitHub.
+# Scrapes NHS England IUCADC page to find latest CSV (randomised URLs)
+# Data published ~6 weeks after month end — fully automated, no manual updates
 
 on:
   schedule:
     - cron: '0 7 1 * *'   # 07:00 UTC on the 1st of every month
   workflow_dispatch:        # manual trigger from Actions tab
+
+permissions:
+  contents: write           # required to push commits back to the repo
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   fetch-111-data:
@@ -22,6 +23,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -29,7 +32,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests pandas
+        run: pip install requests pandas beautifulsoup4
 
       - name: Run NHS 111 data fetcher
         env:
