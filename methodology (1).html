@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Methodology · Assistiv Systems</title>
+<meta name="description" content="A plain-language account of how Assistiv Systems identifies frailty risk in the population — signals, scoring, limitations, and evidence base.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:     #0f2318;
+  --forest-mid: #1a3a2a;
+  --sage:       #2d6b47;
+  --sage-mid:   #4a7c5f;
+  --sage-light: #7aab90;
+  --sage-pale:  #d4e8db;
+  --sage-ghost: rgba(45,107,71,0.07);
+  --cream:      #f7f4ee;
+  --cream-mid:  #ede9e0;
+  --cream-dark: #ddd8ce;
+  --amber:      #7a5500;
+  --amber-pale: #fdf3dc;
+  --ink:        #1a2e1e;
+  --ink-mid:    #3d5245;
+  --ink-muted:  #6b7f71;
+  --ink-dim:    #9aaa9e;
+  --white:      #ffffff;
+  --mono:   'DM Mono', monospace;
+  --serif:  'Source Serif 4', Georgia, serif;
+  --display:'Cormorant Garamond', Georgia, serif;
+  --tr: 0.18s ease;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(247,244,238,0.96); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--cream-dark);
+  padding: 0 2rem; height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-home {
+  font-family: var(--display); font-size: 1rem; font-weight: 600;
+  color: var(--forest-mid); text-decoration: none; letter-spacing: -0.01em;
+}
+.nav-right { display: flex; gap: 1.5rem; align-items: center; }
+.nav-right a {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-muted); text-decoration: none;
+  transition: color var(--tr);
+}
+.nav-right a:hover { color: var(--sage); }
+
+/* ── LAYOUT ── */
+.page {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 100px 2rem 6rem;
+}
+
+/* ── HEADER ── */
+.page-header { margin-bottom: 4rem; }
+.page-kicker {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--sage); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.65rem;
+}
+.page-kicker::before {
+  content: ''; width: 20px; height: 1px; background: var(--sage);
+}
+.page-title {
+  font-family: var(--display); font-size: clamp(2.4rem, 5vw, 3.8rem);
+  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em;
+  color: var(--forest-mid); margin-bottom: 1.25rem;
+}
+.page-title em { font-style: italic; color: var(--sage); }
+.page-lead {
+  font-size: 1.1rem; color: var(--ink-mid); line-height: 1.7;
+  max-width: 640px;
+}
+.page-meta {
+  margin-top: 1.5rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--cream-dark);
+  display: flex; gap: 2rem; flex-wrap: wrap;
+}
+.meta-item { font-family: var(--mono); font-size: 0.65rem; color: var(--ink-dim); }
+.meta-item strong { color: var(--ink-muted); display: block; margin-bottom: 0.2rem; }
+
+/* ── TOC ── */
+.toc {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-left: 3px solid var(--sage);
+  border-radius: 0 6px 6px 0; padding: 1.5rem 1.75rem;
+  margin: 3rem 0;
+}
+.toc-title {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-dim); margin-bottom: 0.85rem;
+}
+.toc ol {
+  padding-left: 1.5rem;
+  margin: 0;
+  list-style: decimal;
+}
+.toc li {
+  margin-bottom: 0.3rem;
+  font-family: var(--serif);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--ink-muted);
+}
+.toc a {
+  font-family: var(--serif); font-size: 0.88rem; color: var(--ink-muted);
+  text-decoration: none; transition: color var(--tr);
+}
+.toc a:hover { color: var(--sage); }
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 4rem; scroll-margin-top: 70px; }
+.section-num {
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--sage); margin-bottom: 0.5rem;
+}
+.section h2 {
+  font-family: var(--display); font-size: 1.9rem; font-weight: 700;
+  line-height: 1.15; letter-spacing: -0.02em; color: var(--forest-mid);
+  margin-bottom: 1.25rem;
+}
+.section h3 {
+  font-family: var(--display); font-size: 1.3rem; font-weight: 600;
+  color: var(--forest-mid); margin: 2rem 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+.section p { margin-bottom: 1.25rem; color: var(--ink-mid); font-size: 1rem; }
+.section p:last-child { margin-bottom: 0; }
+
+/* ── CALLOUT BOXES ── */
+.callout {
+  border-left: 3px solid var(--sage); background: var(--sage-ghost);
+  padding: 1rem 1.25rem; margin: 1.75rem 0; border-radius: 0 5px 5px 0;
+  font-size: 0.92rem; color: var(--ink-mid); line-height: 1.65;
+}
+.callout strong { color: var(--sage); }
+.callout-amber {
+  border-left-color: var(--amber); background: var(--amber-pale);
+}
+.callout-amber strong { color: var(--amber); }
+
+/* ── SIGNAL TABLE ── */
+.signal-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.88rem; }
+.signal-table th {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-dim);
+  padding: 0.5rem 0.75rem; text-align: left;
+  border-bottom: 2px solid var(--cream-dark);
+  background: var(--cream-mid);
+}
+.signal-table td {
+  padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--cream-dark);
+  color: var(--ink-mid); vertical-align: top;
+}
+.signal-table tr:last-child td { border-bottom: none; }
+.signal-table tr:hover td { background: var(--sage-ghost); }
+.sig-name { font-family: var(--serif); font-weight: 400; color: var(--ink); }
+.sig-w {
+  font-family: var(--mono); font-size: 0.8rem;
+  color: var(--sage); font-weight: 500; white-space: nowrap;
+}
+.sig-type {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em;
+  padding: 1px 6px; border-radius: 3px;
+}
+.type-real { background: var(--sage-pale); color: var(--sage); }
+.type-model { background: var(--amber-pale); color: var(--amber); }
+
+/* ── WEIGHT BAR ── */
+.weight-bar-wrap {
+  background: var(--cream-dark); border-radius: 2px; height: 5px;
+  width: 80px; display: inline-block; vertical-align: middle;
+}
+.weight-bar { height: 5px; border-radius: 2px; background: var(--sage); }
+
+/* ── FORMULA BOX ── */
+.formula {
+  background: var(--forest-mid); color: rgba(255,255,255,0.9);
+  border-radius: 6px; padding: 1.25rem 1.5rem; margin: 1.5rem 0;
+  font-family: var(--mono); font-size: 0.82rem; line-height: 1.8;
+  overflow-x: auto;
+}
+.formula .comment { color: var(--sage-light); }
+
+/* ── COMPARISON TABLE ── */
+.compare-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.88rem; }
+.compare-table th {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-dim);
+  padding: 0.5rem 0.75rem; text-align: left;
+  border-bottom: 2px solid var(--cream-dark); background: var(--cream-mid);
+}
+.compare-table td {
+  padding: 0.65rem 0.75rem; border-bottom: 1px solid var(--cream-dark);
+  color: var(--ink-mid); vertical-align: top; font-size: 0.88rem;
+}
+.compare-table tr:last-child td { border-bottom: none; }
+.check { color: var(--sage); font-weight: 600; }
+.cross { color: #b91c1c; }
+
+/* ── FOOTNOTE ── */
+.footnotes {
+  margin-top: 4rem; padding-top: 2rem;
+  border-top: 1px solid var(--cream-dark);
+  font-size: 0.82rem; color: var(--ink-dim);
+}
+.footnotes h3 {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-dim); margin-bottom: 1rem;
+}
+.footnotes ol { padding-left: 1.25rem; }
+.footnotes li { margin-bottom: 0.4rem; line-height: 1.55; }
+.footnotes a { color: var(--sage); }
+
+/* ── DISTRICT RESULT ── */
+.district-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+.district-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.45rem 0.75rem;
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 5px; font-size: 0.85rem;
+}
+.district-name { color: var(--ink-mid); }
+.district-score {
+  font-family: var(--mono); font-size: 0.88rem;
+  font-weight: 500;
+}
+.score-critical { color: #9f1239; }
+.score-high { color: #c2410c; }
+.score-moderate { color: #b45309; }
+.score-low { color: var(--sage); }
+
+/* ── BACK TO TOP ── */
+.back-top {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: var(--forest-mid); color: rgba(255,255,255,0.8);
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; text-decoration: none; transition: all var(--tr);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 50;
+}
+.back-top:hover { background: var(--sage); color: #fff; }
+
+@media (max-width: 640px) {
+  .page { padding: 80px 1.25rem 4rem; }
+  .district-grid { grid-template-columns: 1fr; }
+  .signal-table { font-size: 0.8rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-home">← Assistiv Systems</a>
+  <div class="nav-right">
+    <a href="layer2-map-pdf.html">Map tool</a>
+    <a href="rural-access-vulnerability.html">RAVI</a>
+    <a href="https://github.com/silegrand/assistivagents" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="page-kicker">Methodology &amp; Evidence</div>
+    <h1 class="page-title">How we find people<br><em>before the system does</em></h1>
+    <p class="page-lead">
+      A plain-language account of the Assistiv intelligence framework — what data we use, how we combine it, what our scores mean, and where we are honest about their limitations.
+    </p>
+    <div class="page-meta">
+      <div class="meta-item"><strong>Current version</strong>FEP v5.0 · RAVI v1.4 · CBI v1.0</div>
+      <div class="meta-item"><strong>Data period</strong>NHS Fingertips 2024/25 · EPD Mar 2026</div>
+      <div class="meta-item"><strong>Geography</strong>Kent &amp; Medway ICB (QKS)</div>
+      <div class="meta-item"><strong>Coverage</strong>13 districts · 1,065 LSOAs</div>
+    </div>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#problem">1. The problem we are solving</a></li>
+      <li><a href="#fep">2. The Frailty Emergence Probability (FEP) score</a></li>
+      <li><a href="#signals">3. Signal selection and weighting</a></li>
+      <li><a href="#scoring">4. How scores are calculated</a></li>
+      <li><a href="#ravi">5. The Rural Access Vulnerability Index (RAVI)</a></li>
+      <li><a href="#cbi">6. The Carer Burden Index (CBI)</a></li>
+      <li><a href="#economic">7. Economic modelling</a></li>
+      <li><a href="#limitations">8. Limitations and honest caveats</a></li>
+      <li><a href="#validation">9. Validation and next steps</a></li>
+      <li><a href="#references">10. References and data sources</a></li>
+    </ol>
+  </div>
+
+
+  <!-- 1. PROBLEM -->
+  <div class="section" id="problem">
+    <div class="section-num">Section 1</div>
+    <h2>The problem we are solving</h2>
+
+    <p>The NHS identifies frailty predominantly when people arrive at hospital. By that point, frailty has typically been developing for months or years — invisible to the health system, visible only to the person themselves and perhaps to family carers who may not know what they are seeing.</p>
+
+    <p>Systematic proactive identification of frailty in the community exists in policy — the NHS Long Term Plan, the Core20PLUS5 programme, the PCN Network Contract — but rarely in practice at scale. The challenge is not clinical knowledge of what frailty looks like. The challenge is geographic and demographic: <em>where are the people who are frail but not yet presenting?</em></p>
+
+    <p>We call this population the <strong>Missing Middle</strong>: older adults who are beyond full independence but do not yet qualify for formal care. UK estimates suggest approximately 3.5 million people nationally sit in this space.<sup>1</sup> In Kent and Medway, using our modelling, we estimate this at around 180,000 people.</p>
+
+    <div class="callout">
+      <strong>Key insight:</strong> Frailty is not randomly distributed. It concentrates in places with specific demographic, socioeconomic, and geographic characteristics — and those characteristics are measurable using existing open NHS and ONS data. The question is not whether we can find these signals. It is whether we can combine them meaningfully enough to direct attention before crisis.
+    </div>
+
+    <p>The Assistiv framework is an attempt to answer that question using three complementary intelligence layers: the FEP score (district-level frailty risk), the RAVI (LSOA-level rural isolation), and the CBI (carer burden by district). Each layer illuminates a different aspect of the same underlying problem.</p>
+  </div>
+
+
+  <!-- 2. FEP -->
+  <div class="section" id="fep">
+    <div class="section-num">Section 2</div>
+    <h2>The Frailty Emergence Probability (FEP) score</h2>
+
+    <p>The FEP score is a composite index ranging from 0 to 100, calculated for each of the 13 Local Authority Districts in Kent and Medway. It is designed to estimate the <em>relative concentration of frailty risk factors</em> within a district's older adult population — not to provide an individual-level clinical assessment.</p>
+
+    <p>A score of 50 represents the England average. Districts above 50 have a higher concentration of risk factors than the national baseline; districts below 50 have a lower concentration. The index is relative, not absolute: a score of 65 means "substantially more risk factors than the national average", not "65% of older adults are frail."</p>
+
+    <h3>Risk bands</h3>
+    <p>For communication purposes, FEP scores are assigned to four bands:</p>
+
+    <div class="district-grid">
+      <div class="district-row" style="border-left:3px solid #9f1239">
+        <span class="district-name">Critical</span>
+        <span class="district-score score-critical">≥ 70</span>
+      </div>
+      <div class="district-row" style="border-left:3px solid #c2410c">
+        <span class="district-name">High</span>
+        <span class="district-score score-high">55 – 69</span>
+      </div>
+      <div class="district-row" style="border-left:3px solid #b45309">
+        <span class="district-name">Moderate</span>
+        <span class="district-score score-moderate">40 – 54</span>
+      </div>
+      <div class="district-row" style="border-left:3px solid #2d6b47">
+        <span class="district-name">Low</span>
+        <span class="district-score score-low">&lt; 40</span>
+      </div>
+    </div>
+
+    <h3>Current Kent &amp; Medway scores — live data</h3>
+    <div class="district-grid" id="district-scores">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="callout callout-amber">
+      <strong>Important:</strong> These are district-level aggregate scores. A low-scoring district still contains individuals at high frailty risk. A high-scoring district contains many individuals who are not frail. The FEP score directs <em>population-level resource allocation</em> — not individual care decisions.
+    </div>
+  </div>
+
+
+  <!-- 3. SIGNALS -->
+  <div class="section" id="signals">
+    <div class="section-num">Section 3</div>
+    <h2>Signal selection and weighting</h2>
+
+    <p>The FEP score is calculated from 18 signals drawn from three data categories. Signal selection was guided by three criteria: clinical face validity (does this signal have a plausible causal relationship with frailty?), data quality and currency (is this from a reliable, regularly updated source?), and geographic availability (can we obtain this at district level for Kent?).</p>
+
+    <h3>Signal categories</h3>
+
+    <p><strong>Demographic and socioeconomic signals (3 signals, 28% combined weight)</strong> — proxy measures where direct frailty data is unavailable at district level. Older adults living alone, deprivation index, and care home provision gaps. These are flagged as modelled estimates, not direct measurements.</p>
+
+    <p><strong>NHS Fingertips outcomes indicators (10 signals, 47% combined weight)</strong> — published OHID data on falls admissions, hip fractures, winter mortality, dementia diagnosis rate, loneliness, and social isolation. All real data; all benchmarked against England averages with published confidence intervals.</p>
+
+    <p><strong>NHSBSA prescribing signals (5 signals, 25% combined weight)</strong> — practice-level dispensing data from the NHS Business Services Authority, aggregated to district. Prescribing patterns are among the most sensitive indicators of frailty burden available in routine NHS data: hypnotics, anxiolytics, bisphosphonates, oral nutritional supplements, and anticholinergic medications all proxy specific clinical domains.</p>
+
+    <h3>Complete signal list with weights</h3>
+
+    <table class="signal-table">
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>Weight</th>
+          <th style="min-width:60px"></th>
+          <th>Source</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="sig-name">Over-75s living alone</td><td class="sig-w">13%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:100%"></div></div></td><td>ONS Census 2021</td><td><span class="sig-type type-model">Modelled</span></td></tr>
+        <tr><td class="sig-name">Falls admissions 65+</td><td class="sig-w">12%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:92%"></div></div></td><td>NHS Fingertips 22401</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Hip fracture rate 65+</td><td class="sig-w">9%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:69%"></div></div></td><td>NHS Fingertips 41401</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Deprivation (IMD 2019)</td><td class="sig-w">8%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:62%"></div></div></td><td>MHCLG IMD 2019</td><td><span class="sig-type type-model">Modelled</span></td></tr>
+        <tr><td class="sig-name">Winter mortality index</td><td class="sig-w">8%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:62%"></div></div></td><td>NHS Fingertips 90360</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Care home gap</td><td class="sig-w">7%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:54%"></div></div></td><td>CQC register</td><td><span class="sig-type type-model">Modelled</span></td></tr>
+        <tr><td class="sig-name">Loneliness rate</td><td class="sig-w">6%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:46%"></div></div></td><td>NHS Fingertips 94175</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Dementia diagnosis rate †</td><td class="sig-w">6%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:46%"></div></div></td><td>NHS Fingertips 92949</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Hip fractures 80+</td><td class="sig-w">5%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:38%"></div></div></td><td>NHS Fingertips 41403</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Social isolation rate</td><td class="sig-w">5%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:38%"></div></div></td><td>NHS Fingertips 90280</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Hypnotics prescribing</td><td class="sig-w">5%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:38%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Antidepressant rate</td><td class="sig-w">5%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:38%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Bisphosphonate rate</td><td class="sig-w">4%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:31%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Anxiolytics prescribing</td><td class="sig-w">3%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:23%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Oral nutritional supplements</td><td class="sig-w">3%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:23%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Bladder antimuscarinics</td><td class="sig-w">2%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:15%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">ACE/ARB prescribing</td><td class="sig-w">1%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:8%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr><td class="sig-name">Diuretics rate</td><td class="sig-w">1%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:8%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.82rem;color:var(--ink-dim)">† Dementia diagnosis rate is <em>inverted</em> — a lower diagnosis rate than the England average indicates probable under-diagnosis, not better performance. Kent (62.3%) scores below the England average (66.3%), increasing the district's risk score for this signal.</p>
+
+    <h3>Why these weights?</h3>
+    <p>Weights reflect a combination of clinical evidence strength and signal specificity. Falls admissions (12%) and hip fracture rate (9%) carry high weight because they are direct, high-consequence outcomes of frailty with strong published epidemiology. Dementia diagnosis (6%) is weighted less not because dementia matters less, but because the diagnosis rate is an imperfect proxy — it measures healthcare access and diagnostic practice as much as underlying prevalence.</p>
+
+    <p>Prescribing signals collectively carry 25% of the total weight. Individually they are modest proxies; together, a district that scores above England average on hypnotics, anxiolytics, bisphosphonates, and oral nutritional supplements simultaneously is displaying a coherent pattern of polypharmacy and frailty-associated clinical need. Oral nutritional supplements (BNF code 090402) were added in v5.0 because they are prescribed only when a patient is genuinely failing to maintain bodyweight — one of the five FRAIL Scale criteria.<sup>2</sup></p>
+
+    <div class="callout">
+      <strong>Transparency:</strong> All weights are adjustable in the FEP Configurator tool. Commissioners and clinicians can reconfigure the scoring to reflect local priorities — for example, upweighting prescribing signals if the interest is in medication review programmes, or upweighting rural signals for a rural-facing PCN.
+    </div>
+  </div>
+
+
+  <!-- 4. SCORING -->
+  <div class="section" id="scoring">
+    <div class="section-num">Section 4</div>
+    <h2>How scores are calculated</h2>
+
+    <p>Each signal is normalised against the England average for that indicator, producing a score from 0 to 100. A score of 50 means the district is exactly at the England average for that signal. Higher scores indicate greater deviation above the England average — more risk.</p>
+
+    <div class="formula">
+<span class="comment"># Normalisation for each signal</span>
+signal_score = (district_value / england_value) × 50
+
+<span class="comment"># Example: falls admissions</span>
+<span class="comment"># Kent 1,917 per 100,000 vs England 1,870 per 100,000</span>
+signal_score = (1917 / 1870) × 50 = 51.3
+
+<span class="comment"># Composite FEP score</span>
+FEP = Σ (signal_score × weight) for all 18 signals
+
+<span class="comment"># Example district (simplified)</span>
+FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
+    </div>
+
+    <p>Inverted signals (where a lower value means higher risk) are handled by subtracting from 100 before weighting. Scores are capped at 100 to prevent extreme outliers from distorting the index.</p>
+
+    <h3>District multipliers</h3>
+    <p>Because NHS Fingertips data is published at ICB or county level rather than district level for most indicators, we apply district-level multipliers derived from the relative demographic and prescribing profiles of each district. These multipliers are calculated from the NHSBSA EPD practice-level data, which <em>is</em> available at district level — practices are assigned to districts by postcode. The Fingertips signals at ICB level are then scaled by these multipliers.</p>
+
+    <p>This is the primary methodological limitation of the current model. The district-level FEP scores are not independently derived from district-level Fingertips data for all signals — they are scaled estimates. We are transparent about this in the tool interface.</p>
+
+    <h3>Weather uplift</h3>
+    <p>When the UKHSA/Met Office issues a Heat-Health or Cold-Health Alert for South East England, FEP scores are uplifted for high-risk districts and specific prescribing signals (anticholinergics, diuretics, hypnotics) are flagged for elevated clinical sensitivity. This uplift is fetched at runtime and applied as a multiplicative factor, not permanently incorporated into the base score.</p>
+  </div>
+
+
+  <!-- 5. RAVI -->
+  <div class="section" id="ravi">
+    <div class="section-num">Section 5</div>
+    <h2>The Rural Access Vulnerability Index (RAVI)</h2>
+
+    <p>The FEP score operates at district level — 13 areas averaging 150,000 people each. This resolution is useful for commissioning decisions but hides profound within-district variation. Sevenoaks scores FEP 37 (Low), but contains 21 LSOAs at high or critical rural access vulnerability. The people in those LSOAs are not represented in the district average.</p>
+
+    <p>The RAVI addresses this by scoring all 1,065 Lower Super Output Areas (LSOAs) in Kent and Medway on five signals of geographic and social isolation. Each LSOA contains approximately 1,500 people.</p>
+
+    <h3>RAVI signals and weights</h3>
+    <table class="signal-table">
+      <thead>
+        <tr><th>Signal</th><th>Weight</th><th style="min-width:60px"></th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sig-name">Geographic Barriers to Services</td><td class="sig-w">30%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:100%"></div></div></td><td>IMD 2019 File 7 — road distance to GP, pharmacy, food store, post office</td></tr>
+        <tr><td class="sig-name">Rural Urban Classification</td><td class="sig-w">25%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:83%"></div></div></td><td>ONS/mySociety RUC 2021 — Urban, Rural town/village, Hamlet/Isolated</td></tr>
+        <tr><td class="sig-name">Population aged 65+</td><td class="sig-w">20%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:67%"></div></div></td><td>Census 2021 via Nomis TS008</td></tr>
+        <tr><td class="sig-name">No car or van in household</td><td class="sig-w">15%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:50%"></div></div></td><td>Census 2021 via Nomis TS045</td></tr>
+        <tr><td class="sig-name">Day-to-day activities limited a lot</td><td class="sig-w">10%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:33%"></div></div></td><td>Census 2021 via Nomis TS046</td></tr>
+      </tbody>
+    </table>
+
+    <p>Geographic Barriers carries the highest weight (30%) because it directly measures the structural problem: road distance to services. In a rural area, having no car (15%) combined with a GP surgery 8 miles away (geographic barriers score) produces a qualitatively different kind of vulnerability than urban poverty. The RAVI is designed to capture this interaction.</p>
+
+    <h3>Key finding</h3>
+    <p>The RAVI reveals a pattern that the FEP model obscures: the districts with the <em>lowest</em> FEP scores contain some of the most isolated LSOAs in Kent.</p>
+
+    <div class="district-grid">
+      <div class="district-row"><span class="district-name">Ashford 002C — Challock</span><span class="district-score score-critical">77.5 critical</span></div>
+      <div class="district-row"><span class="district-name">Sevenoaks 015A — Hever</span><span class="district-score score-critical">74.2 critical</span></div>
+      <div class="district-row"><span class="district-name">Canterbury 017C — no settlement</span><span class="district-score score-critical">74.9 critical</span></div>
+      <div class="district-row"><span class="district-name">Ashford 014A — Appledore</span><span class="district-score score-critical">73.7 critical</span></div>
+    </div>
+
+    <p>Sevenoaks has FEP 37 — the second lowest district score in Kent. Yet Sevenoaks 015A (Hever) scores RAVI 74.2 — critical. These are different populations requiring different interventions: Thanet's risk is driven by deprivation and prescribing burden; Hever's risk is driven by physical isolation from services.</p>
+
+    <p>53 of the 1,065 Kent LSOAs have <em>no named settlement</em> — they are open countryside with isolated dwellings. These are flagged as "Rural (no settlement)" in the tool. Canterbury 017C, the second highest-scoring LSOA in Kent, falls into this category.</p>
+
+    <div class="callout callout-amber">
+      <strong>Current limitation:</strong> Census 2021 signals (age, car access, disability) are currently using England national averages as fallback values because the Nomis API returns zero-byte responses for some LSOA-level queries. This means all LSOAs currently receive identical values for these three signals — reducing RAVI discrimination to the geographic barriers and rural classification signals only. When Census LSOA data becomes reliably accessible, these signals will materially sharpen the index.
+    </div>
+  </div>
+
+
+  <!-- 6. CBI -->
+  <div class="section" id="cbi">
+    <div class="section-num">Section 6</div>
+    <h2>The Carer Burden Index (CBI)</h2>
+
+    <p>Frailty does not occur in social isolation. Approximately 6.5 million people in England provide unpaid care, and the evidence consistently shows that carer exhaustion is both a consequence of frailty in the person cared for and an independent risk factor for crisis admissions — when carers reach breaking point, the person they support often presents at A&amp;E within days.<sup>3</sup></p>
+
+    <p>The CBI scores each district on five signals of carer strain, producing a score from 0 to 100 benchmarked against England averages. When plotted against the FEP score, districts fall into four quadrants. The most urgent quadrant — high FEP, high CBI — identifies places where frailty emergence and carer exhaustion are simultaneously elevated. Thanet and Folkestone &amp; Hythe consistently occupy this quadrant.</p>
+
+    <h3>CBI signals</h3>
+    <table class="signal-table">
+      <thead>
+        <tr><th>Signal</th><th>Weight</th><th>Geography</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sig-name">20+ hour/week unpaid carers</td><td class="sig-w">30%</td><td>District</td><td>ONS Census 2021 TS039</td></tr>
+        <tr><td class="sig-name">Carer social isolation</td><td class="sig-w">25%</td><td>County</td><td>NHS Fingertips 90638</td></tr>
+        <tr><td class="sig-name">Access to information and support</td><td class="sig-w">15%</td><td>County</td><td>NHS Fingertips 90279</td></tr>
+        <tr><td class="sig-name">Carer's assessment rate</td><td class="sig-w">15%</td><td>County</td><td>NHS Fingertips 93014</td></tr>
+        <tr><td class="sig-name">Carer wellbeing score</td><td class="sig-w">15%</td><td>County</td><td>NHS Fingertips 90283</td></tr>
+      </tbody>
+    </table>
+
+    <p>A geographic limitation applies: four of the five CBI signals are available only at county level (Kent as a whole) via NHS Fingertips, not at district level. These county-level values are applied uniformly across all 13 districts, with only the Census 2021 carer rate providing district-level discrimination. This is a known constraint of NHS administrative data. The CBI scores should therefore be read as an indicator of <em>relative district concentration of intensive carers</em> combined with a county-wide measure of carer system strain.</p>
+  </div>
+
+
+  <!-- 7. ECONOMIC -->
+  <div class="section" id="economic">
+    <div class="section-num">Section 7</div>
+    <h2>Economic modelling</h2>
+
+    <p>The map tool includes a cost-of-inaction estimate for each district — the estimated annual NHS expenditure attributable to preventable frailty-related falls admissions and hip fractures. This is not a financial model. It is a population-level triage estimate designed to contextualise the clinical risk in economic terms for commissioner conversations.</p>
+
+    <h3>Unit costs (fully cited)</h3>
+    <table class="signal-table">
+      <thead>
+        <tr><th>Cost item</th><th>Figure</th><th>Source</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="sig-name">Falls emergency admission</td><td class="sig-w">£3,068</td><td>NHS Improvement (£2,600 CPI-uplifted to 2024/25)</td></tr>
+        <tr><td class="sig-name">Hip fracture — 12-month NHS cost</td><td class="sig-w">£14,642</td><td>Lancet Healthy Longevity, July 2023 (n=178,757 patients)</td></tr>
+        <tr><td class="sig-name">Delayed discharge — bed day cost</td><td class="sig-w">£562</td><td>NHS England 2025/26 (£527 × 6.65% uplift)</td></tr>
+        <tr><td class="sig-name">111 call handling</td><td class="sig-w">£8.71</td><td>NHSE IUC telephony published unit cost</td></tr>
+        <tr><td class="sig-name">Ambulance dispatch from 111</td><td class="sig-w">£257</td><td>NHSE Ambulance Cost Collection 2023/24 (Cat 2)</td></tr>
+        <tr><td class="sig-name">ED attendance from 111 referral</td><td class="sig-w">£212</td><td>NHS Reference Costs 2023/24 — Type 1 ED</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Preventability fractions</h3>
+    <p>The model applies preventability fractions from published clinical evidence: 30% of falls-related emergency admissions and 28% of hip fractures are considered preventable with proactive early intervention.<sup>4,5</sup> These fractions are applied to the district's estimated population-level incidence, derived from Kent ICB Fingertips rates scaled by district FEP score and population of over-75s.</p>
+
+    <p>A ±30% uncertainty range is displayed on all estimates, reflecting the limitations of district-level population modelling. The figures are best interpreted as order-of-magnitude estimates — the kind that open a commissioning conversation rather than close one.</p>
+  </div>
+
+
+  <!-- 8. LIMITATIONS -->
+  <div class="section" id="limitations">
+    <div class="section-num">Section 8</div>
+    <h2>Limitations and honest caveats</h2>
+
+    <p>We believe transparency about limitations is not a weakness — it is the condition of being trusted. The following are the substantive limitations of the current model.</p>
+
+    <h3>1. District-level scaling from ICB baseline</h3>
+    <p>The majority of NHS Fingertips data is published at ICB level (Kent and Medway as a whole), not at Local Authority District level. District FEP scores are derived by applying district-level multipliers to the ICB baseline. These multipliers come from NHSBSA EPD data, which is genuinely available at practice level. The result is a defensible estimate, not a directly observed district measure.</p>
+
+    <h3>2. RAVI Census signals are currently national averages</h3>
+    <p>Three of the five RAVI signals (age, car access, limiting long-term illness) are using England national averages as fallback values because LSOA-level Census 2021 data is not reliably returning from the Nomis API at query time. This reduces the discriminatory power of the RAVI — current scores are driven primarily by geographic barriers and rural classification. This will be corrected as Census data access stabilises.</p>
+
+    <h3>3. This is a triage tool, not a clinical diagnostic</h3>
+    <p>No FEP score, RAVI score, or CBI score should be used to make decisions about individual patients. These are population-level instruments designed to direct resource allocation and outreach priorities. Individual frailty assessment requires clinical evaluation using validated instruments such as the Clinical Frailty Scale or the PRISMA-7.</p>
+
+    <h3>4. No outcome validation yet</h3>
+    <p>The FEP model has not yet been validated against actual frailty prevalence data or clinical outcomes in Kent. We have clinical face validity — the signals make theoretical sense — but we do not yet have empirical evidence that higher FEP scores predict higher actual frailty rates, ED admissions, or care home placements. Outcome validation is the priority next step and is the subject of active stakeholder engagement with NHS Kent and Medway ICB.</p>
+
+    <h3>5. Open data timeliness</h3>
+    <p>NHS Fingertips indicators update on varying schedules — some annually, some quarterly. IMD data dates from 2019. The NHSBSA EPD data is the most current, at practice-dispensing month level (currently Mar 2026). Fingertips indicators are re-fetched daily via GitHub Actions. Any interpretation of the scores should account for the publication lag of the underlying data.</p>
+
+    <div class="callout callout-amber">
+      <strong>What this tool cannot do:</strong> It cannot identify specific individuals at risk. It cannot replace clinical assessment. It cannot account for sudden changes in district demographics (e.g. a major care home opening or closing). It is a population-level intelligence tool — its job is to point the clinical system in the right direction, not to make clinical decisions.
+    </div>
+  </div>
+
+
+  <!-- 9. VALIDATION -->
+  <div class="section" id="validation">
+    <div class="section-num">Section 9</div>
+    <h2>Validation and next steps</h2>
+
+    <p>The current model represents a prototype — a working demonstration that the signals are accessible, that the pipeline is technically reliable, and that the outputs are plausible and clinically interpretable. It is not a validated predictive tool.</p>
+
+    <p>The pathway to validation has three stages:</p>
+
+    <h3>Stage 1 — Outcome linkage (immediate priority)</h3>
+    <p>Linking district-level FEP scores historically against actual NHS outcomes — falls-related A&amp;E attendances, hip fracture admissions, emergency bed days attributed to frailty codes — using data sharing agreements with NHS Kent and Medway ICB. If FEP scores from six months ago predict subsequent admissions, that is the validation evidence. If they do not, the signal weights need revision.</p>
+
+    <h3>Stage 2 — RESILIENCE screening feedback</h3>
+    <p>The RESILIENCE community screening tool (Layer 4) is deployed in community settings. As screening outcomes are recorded, the distribution of Clinical Frailty Scale scores by district can be compared against FEP predictions. A district scoring FEP 65 should, if the model is working, yield a higher proportion of positive screens than a district scoring FEP 35.</p>
+
+    <h3>Stage 3 — External academic review</h3>
+    <p>The methodology has been reviewed informally by academic colleagues in health economics and geriatric medicine. Formal peer-reviewed publication of the composite index methodology is in preparation. Interested academics are invited to contact the team for collaborative engagement on the validation programme.</p>
+
+    <div class="callout">
+      <strong>Our commitment:</strong> All signal weights, data sources, processing code, and output JSON are publicly available at <a href="https://github.com/silegrand/assistivagents" style="color:var(--sage)">github.com/silegrand/assistivagents</a>. The pipeline notebooks are runnable in Google Colab with no additional infrastructure. This is deliberate — reproducibility is not optional in population health research.
+    </div>
+  </div>
+
+
+  <!-- 10. REFERENCES -->
+  <div class="section" id="references">
+    <div class="section-num">Section 10</div>
+    <h2>References and data sources</h2>
+  </div>
+
+  <div class="footnotes">
+    <h3>References</h3>
+    <ol>
+      <li>NHS England (2019). <em>The NHS Long Term Plan.</em> Estimate of 3.5 million people with unmet frailty need in England.</li>
+      <li>Fried LP et al. (2001). Frailty in older adults: evidence for a phenotype. <em>Journal of Gerontology</em>, 56(3), M146–M156. FRAIL Scale: Fatigue, Resistance, Ambulation, Illnesses, Loss of weight.</li>
+      <li>Carers UK (2022). <em>State of Caring 2022.</em> Relationship between carer exhaustion and emergency admissions.</li>
+      <li>NHS England / NICE (2017). <em>Falls in older people: assessing risk and prevention (CG161).</em> Preventability fractions for falls admissions.</li>
+      <li>British Geriatrics Society (2022). <em>Fit for Frailty: consensus best practice guidance for the care of older people living with frailty.</em></li>
+    </ol>
+
+    <h3 style="margin-top:1.5rem">Data sources</h3>
+    <ol>
+      <li><a href="https://fingertips.phe.org.uk" target="_blank">NHS Fingertips / OHID Public Health Profiles</a> — via fingertips_py Python library</li>
+      <li><a href="https://www.nhsbsa.nhs.uk/prescription-data/prescribing-data/english-prescribing-data-epd" target="_blank">NHSBSA English Prescribing Data (EPD)</a> — practice-level, monthly</li>
+      <li><a href="https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019" target="_blank">MHCLG Indices of Multiple Deprivation 2019</a> — File 7, all LSOA scores</li>
+      <li><a href="https://geoportal.statistics.gov.uk/" target="_blank">ONS Open Geography Portal</a> — Rural Urban Classification 2021, LSOA centroids</li>
+      <li><a href="https://www.nomisweb.co.uk/" target="_blank">Nomis / ONS Census 2021</a> — TS008 age, TS039 carers, TS045 car access, TS046 disability</li>
+      <li><a href="https://www.england.nhs.uk/statistics/statistical-work-areas/iucadc-new-from-april-2021/" target="_blank">NHS England IUCADC</a> — 111 call volumes, monthly Provisional Raw Data</li>
+      <li><a href="https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays/" target="_blank">NHS England Acute Discharge Sitrep</a> — daily delayed discharge data</li>
+      <li><a href="https://mysociety.github.io/uk_ruc/" target="_blank">mySociety UK Rural Urban Classification</a> — composite RUC for England LSOAs</li>
+    </ol>
+  </div>
+
+
+  <!-- FOOTER LINKS -->
+  <div style="margin-top:4rem;padding-top:2rem;border-top:1px solid var(--cream-dark);display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+    <div style="font-family:var(--mono);font-size:0.65rem;color:var(--ink-dim)">
+      Assistiv Systems Limited · Faversham, Kent · © 2026
+    </div>
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+      <a href="layer2-map-pdf.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none">Open the map tool →</a>
+      <a href="rural-access-vulnerability.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none">Open RAVI →</a>
+      <a href="index.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none">← Home</a>
+    </div>
+  </div>
+
+</div>
+
+<a href="#" class="back-top" title="Back to top">↑</a>
+
+<script>
+// Load live FEP scores into district table
+const BAND_COLOURS = {critical:'#9f1239', high:'#c2410c', moderate:'#b45309', low:'#2d6b47'};
+
+fetch('https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json')
+  .then(r => r.json())
+  .then(data => {
+    const grid = document.getElementById('district-scores');
+    if (!grid || !data.districts) return;
+    grid.innerHTML = data.districts.map(d => `
+      <div class="district-row" style="border-left:3px solid ${BAND_COLOURS[d.risk] || '#2d6b47'}">
+        <span class="district-name">${d.name}</span>
+        <span class="district-score" style="color:${BAND_COLOURS[d.risk] || '#2d6b47'}">
+          ${d.fep} <span style="font-size:0.7rem;font-weight:400">${d.risk}</span>
+        </span>
+      </div>`).join('');
+  })
+  .catch(() => {
+    const grid = document.getElementById('district-scores');
+    if (grid) grid.innerHTML = '<div style="font-size:0.85rem;color:var(--ink-dim);padding:0.5rem">Live scores unavailable — check the map tool.</div>';
+  });
+</script>
+</body>
+</html>
