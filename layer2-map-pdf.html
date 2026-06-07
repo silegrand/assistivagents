@@ -539,14 +539,6 @@ body {
   text-transform: uppercase; letter-spacing: .07em;
   color: #c04828; margin-bottom: 0.65rem;
 }
-.disch-cost { margin-top: 0.65rem; padding-top: 0.65rem; border-top: 1px dashed #fde8e2; }
-.disch-cost-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #c04828; margin-bottom: 0.45rem; }
-.disch-cost-row { display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 0.5rem; font-size: 0.68rem; padding: 0.2rem 0; border-bottom: 1px dashed #fee2e2; color: var(--text-muted); }
-.disch-cost-row:last-of-type { border-bottom: none; }
-.disch-cost-val { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--text); text-align: right; }
-.disch-cost-total { display: grid; grid-template-columns: 1fr auto; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: #fff1f2; border-radius: 6px; font-size: 0.78rem; font-weight: 600; color: #be123c; }
-.disch-cost-annual { display: grid; grid-template-columns: 1fr auto; margin-top: 0.35rem; padding: 0.4rem 0.6rem; background: #fef2f2; border-radius: 6px; font-size: 0.82rem; font-weight: 700; color: #9f1239; border-left: 3px solid #c04828; }
-
 .disch-trust {
   margin-bottom: 0.65rem;
   background: #fff8f7; border: 1px solid #fde8e2;
@@ -848,16 +840,6 @@ body {
   letter-spacing: 0.04em;
   flex-shrink: 0;
 }
-
-/* ── IUC COST BREAKDOWN ──────────────────────────────────────────────── */
-.iuc-cost { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed #e9d5ff; }
-.iuc-cost-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #6d28d9; margin-bottom: 0.5rem; }
-.iuc-cost-row { display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 0.5rem; font-size: 0.68rem; padding: 0.2rem 0; border-bottom: 1px dashed #f3e8ff; color: var(--text-muted); }
-.iuc-cost-row:last-of-type { border-bottom: none; }
-.iuc-cost-row-val { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--text); text-align: right; }
-.iuc-cost-total { display: grid; grid-template-columns: 1fr auto; margin-top: 0.4rem; padding: 0.4rem 0.6rem; background: #f5f3ff; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #5b21b6; }
-.iuc-prevent { display: grid; grid-template-columns: 1fr auto; margin-top: 0.35rem; padding: 0.4rem 0.6rem; background: #ecfdf5; border-radius: 6px; font-size: 0.75rem; font-weight: 600; color: #065f46; border-left: 3px solid #10b981; }
-
 </style>
 </head>
 <body>
@@ -1272,13 +1254,6 @@ const IUC_DATA = {
 
   period: '2024/25',
   source: 'NHS England IUCADC — ICB-level statistics Apr 2024–Mar 2025',
-
-  // ── NHS Reference Costs 2023/24 — 111-originated demand ──
-  cost_per_call:    8.71,   // IUC telephony unit cost — NHS England published
-  cost_per_amb:   257.00,   // Category 2 ambulance — Ambulance Cost Collection 2023/24
-  cost_per_ed:    212.00,   // Type 1 ED attendance — NHS Reference Costs 2023/24
-  prev_amb: 0.28,           // 28% of amb dispatches preventable — BGS Fit for Frailty
-  prev_ed:  0.30,           // 30% of ED referrals preventable — NHSE Urgent Care evidence
 };
 
 function renderIUCPanel(d) {
@@ -1358,35 +1333,6 @@ function renderIUCPanel(d) {
         Source: ${IUC_DATA.source}.<br>
         <em>Postcode-district breakdown pending FOI to SECAmb. District figures are proportional estimates.</em>
       </div>
-
-      <div class="iuc-cost">
-        <div class="iuc-cost-title">£ Annual 111-Originated Cost Estimate</div>
-        <div class="iuc-cost-row">
-          <span>111 call handling (${dist_calls.toLocaleString()} calls × £${IUC_DATA.cost_per_call})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call))}</span>
-        </div>
-        <div class="iuc-cost-row">
-          <span>Ambulance dispatches (${dist_amb.toLocaleString()} × £${IUC_DATA.cost_per_amb.toLocaleString()})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb))}</span>
-        </div>
-        <div class="iuc-cost-row">
-          <span>ED referrals (${dist_ed.toLocaleString()} × £${IUC_DATA.cost_per_ed})</span>
-          <span class="iuc-cost-row-val">${formatGBP(Math.round(dist_ed * IUC_DATA.cost_per_ed))}</span>
-        </div>
-        <div class="iuc-cost-total">
-          <span>Total estimated 111-originated cost</span>
-          <span>${formatGBP(Math.round(dist_calls * IUC_DATA.cost_per_call + dist_amb * IUC_DATA.cost_per_amb + dist_ed * IUC_DATA.cost_per_ed))}</span>
-        </div>
-        <div class="iuc-prevent">
-          <span>Potentially preventable (frail cohort, 28–30%)</span>
-          <span>${formatGBP(Math.round(dist_amb * IUC_DATA.cost_per_amb * IUC_DATA.prev_amb + dist_ed * IUC_DATA.cost_per_ed * IUC_DATA.prev_ed))}</span>
-        </div>
-        <div class="iuc-note" style="margin-top:0.5rem;border-top:none;padding-top:0">
-          Unit costs: 111 call £8.71 (NHSE IUC); ambulance £257 (Cost Collection 2023/24); ED £212 (NHS Ref Costs 2023/24).
-          Preventability: BGS Fit for Frailty &amp; NHSE Urgent Care evidence.
-          Population-level estimate only.
-        </div>
-      </div>
     </div>
   `;
 }
@@ -1448,25 +1394,6 @@ function renderDischargePanel(d) {
   if (!trustCode) return '';
   const t = DISCHARGE_DATA[trustCode];
 
-  // ── Cost calculation ─────────────────────────────────────────────────
-  // Bed day cost: £562 (NHS England published on discharge sitrep page)
-  // Derived from £527 2023/24 cost uplifted 6.65% using NHS Cumulative Uplift Factor
-  // Source: https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays/acute-discharge-situation-report/
-  const BED_DAY_COST   = 562;
-  const dailyCost      = t.avg_delayed * BED_DAY_COST;
-  const annualCost     = dailyCost * 365;
-  const annualLow      = Math.round(annualCost * 0.85);  // -15% uncertainty
-  const annualHigh     = Math.round(annualCost * 1.15);  // +15% uncertainty
-
-  // District share — proportional to FEP-weighted population
-  const districtPop    = d.list_size || (d.pop75 * 4.5);
-  const trustTotalPop  = {
-    RVV: 876_000,   // East Kent: Thanet + F&H + Dover + Ashford + Canterbury
-    RPA: 665_000,   // Medway: Medway + Gravesham + Dartford + Swale
-    RWF: 502_000,   // MTW: Maidstone + T&M + TW + Sevenoaks
-  }[trustCode] || 700_000;
-  const districtShare  = Math.round(annualCost * (districtPop / trustTotalPop));
-
   const effColor = t.efficiency < 35 ? '#c04828' : t.efficiency < 55 ? '#b07010' : '#2d6b47';
   const effClass = t.efficiency < 35 ? 'warn' : t.efficiency >= 55 ? 'ok' : '';
 
@@ -1509,35 +1436,6 @@ function renderDischargePanel(d) {
       <div class="disch-source">
         Source: NHS England Acute Daily Discharge Situation Report — April 2026 (published 14 May 2026) ·
         Daily averages across 30 days · Provider-level data · Type 1 acute trusts only
-      </div>
-
-      <div class="disch-cost">
-        <div class="disch-cost-title">£ Cost of Delayed Discharge</div>
-        <div class="disch-cost-row">
-          <span>Daily delayed patients at ${t.name.split(' ').slice(0,2).join(' ')}</span>
-          <span class="disch-cost-val">${t.avg_delayed} patients</span>
-        </div>
-        <div class="disch-cost-row">
-          <span>NHS bed day cost (2025/26)</span>
-          <span class="disch-cost-val">£${BED_DAY_COST}/day</span>
-        </div>
-        <div class="disch-cost-row">
-          <span>Daily cost of delayed discharge</span>
-          <span class="disch-cost-val">${formatGBP(dailyCost)}</span>
-        </div>
-        <div class="disch-cost-total">
-          <span>Annual trust-wide delayed discharge cost</span>
-          <span>${formatGBP(annualLow)} – ${formatGBP(annualHigh)}</span>
-        </div>
-        <div class="disch-cost-annual">
-          <span>${d.name} estimated share</span>
-          <span>~${formatGBP(districtShare)}/yr</span>
-        </div>
-        <div style="font-size:0.62rem;color:var(--text-muted);margin-top:0.5rem;line-height:1.5">
-          Bed day cost: £562 — NHS England published (£527 2023/24, uplifted 6.65% Cumulative Uplift Factor).
-          Source: NHS England Acute Discharge Sitrep page. Uncertainty range ±15%.
-          District share estimated by registered population. Does not include social care costs or opportunity cost of beds foregone.
-        </div>
       </div>
     </div>
   `;
@@ -2154,6 +2052,384 @@ async function fetchWeatherRisk() {
 // ── START ─────────────────────────────────────────────────────────────
 fetchWeatherRisk();
 loadBoundaries();
+</script>
+<!-- ═══════════════════════════════════════════════════════
+     ADA — Intelligence Explainer · VERA — Red Team Challenger
+     Both linked to Assistiv Cloudflare Worker proxy
+     ═══════════════════════════════════════════════════════ -->
+<style>
+/* ── SHARED AGENT STYLES ── */
+.agent-btn {
+  position:fixed;bottom:1.5rem;z-index:9000;
+  width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--border);cursor:pointer;
+  box-shadow:0 4px 18px rgba(0,0,0,0.18);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:2px;
+  transition:transform .18s,box-shadow .18s;
+}
+.agent-btn:hover{transform:scale(1.07);box-shadow:0 6px 24px rgba(0,0,0,0.25);}
+.agent-icon{font-size:16px;line-height:1;}
+.agent-lbl{font-size:9px;letter-spacing:.1em;font-weight:700;}
+
+#ada-btn  { right:1.5rem; background:#fff; color:var(--forest); }
+#vera-btn { right:5rem;   background:#fff; color:#7c3aed; }
+#ada-btn  .agent-lbl { color:var(--sage); }
+#vera-btn .agent-lbl { color:#7c3aed; }
+
+.agent-panel {
+  position:fixed;bottom:5rem;z-index:9000;
+  width:360px;max-width:calc(100vw - 2rem);
+  height:520px;max-height:calc(100vh - 7rem);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.18);
+  display:none;flex-direction:column;overflow:hidden;
+  font-family:var(--sans);
+}
+.agent-panel.open{display:flex;animation:agentIn .22s ease;}
+@keyframes agentIn{from{opacity:0;transform:translateY(12px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+#ada-panel  { right:1.5rem; }
+#vera-panel { right:1.5rem; }
+
+/* Headers */
+.agent-hdr { padding:.75rem 1rem; display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
+#ada-panel  .agent-hdr { background:var(--forest); }
+#vera-panel .agent-hdr { background:#4c1d95; }
+
+.agent-av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px; }
+#ada-panel  .agent-av { background:rgba(255,255,255,.18); }
+#vera-panel .agent-av { background:rgba(255,255,255,.18); }
+
+.agent-hdr-name { font-size:13px;font-weight:600;color:#fff; }
+.agent-hdr-sub  { font-size:10px;color:rgba(255,255,255,.6); }
+.agent-close    { background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:18px;margin-left:auto; }
+
+/* Messages */
+.agent-msgs { flex:1;overflow-y:auto;padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem; }
+.agent-m { max-width:88%;padding:.55rem .8rem;border-radius:10px;font-size:12.5px;line-height:1.55;animation:mIn .18s ease; }
+@keyframes mIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.agent-m.usr { background:var(--forest);color:#fff;align-self:flex-end; }
+.agent-m.ada { background:#eaf3ee;color:var(--text);align-self:flex-start; }
+.agent-m.ada strong { color:var(--forest); }
+.agent-m.vera { background:#f5f3ff;color:#3b0764;align-self:flex-start;border-left:2px solid #7c3aed; }
+.agent-m.vera strong { color:#6d28d9; }
+
+/* Starters */
+.agent-starts { padding:0 1rem .75rem;display:flex;flex-direction:column;gap:.4rem;flex-shrink:0; }
+.agent-start  { background:none;border:1px solid var(--border);border-radius:8px;padding:.45rem .75rem;text-align:left;cursor:pointer;font-size:11.5px;color:var(--text-muted);transition:all .12s; }
+#ada-panel  .agent-start:hover { background:#eaf3ee;border-color:var(--sage); }
+#vera-panel .agent-start:hover { background:#f5f3ff;border-color:#7c3aed;color:#3b0764; }
+
+/* Thinking */
+.agent-think { display:flex;gap:4px;padding:.55rem .8rem;border-radius:10px;align-self:flex-start; }
+#ada-panel  .agent-think { background:#eaf3ee; }
+#vera-panel .agent-think { background:#f5f3ff; }
+.agent-dot { width:6px;height:6px;border-radius:50%;animation:dot 1.2s infinite; }
+#ada-panel  .agent-dot { background:var(--sage); }
+#vera-panel .agent-dot { background:#7c3aed; }
+.agent-dot:nth-child(2){animation-delay:.2s;}.agent-dot:nth-child(3){animation-delay:.4s;}
+@keyframes dot{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1);}}
+
+/* Input */
+.agent-inp-row { display:flex;gap:.5rem;padding:.6rem 1rem;border-top:1px solid var(--border);flex-shrink:0; }
+.agent-inp { flex:1;border:1px solid var(--border);border-radius:8px;padding:.45rem .7rem;font-size:12.5px;font-family:var(--sans);background:var(--surface);color:var(--text);outline:none; }
+#ada-inp:focus  { border-color:var(--sage); }
+#vera-inp:focus { border-color:#7c3aed; }
+.agent-snd { color:#fff;border:none;border-radius:8px;padding:.45rem .75rem;cursor:pointer;font-size:13px; }
+#ada-snd  { background:var(--forest); }
+#ada-snd:hover  { background:var(--sage); }
+#vera-snd { background:#6d28d9; }
+#vera-snd:hover { background:#4c1d95; }
+.agent-snd:disabled { opacity:.4;cursor:default; }
+</style>
+
+<!-- ADA BUTTON -->
+<button id="ada-btn" class="agent-btn" onclick="adaToggle()" title="Ask Ada">
+  <span class="agent-icon" style="color:var(--sage)">✦</span>
+  <span class="agent-lbl">ADA</span>
+</button>
+
+<!-- VERA BUTTON -->
+<button id="vera-btn" class="agent-btn" onclick="veraToggle()" title="Challenge with VERA">
+  <span class="agent-icon">⚖</span>
+  <span class="agent-lbl">VERA</span>
+</button>
+
+<!-- ADA PANEL -->
+<div id="ada-panel" class="agent-panel" role="dialog" aria-label="Ada intelligence assistant">
+  <div class="agent-hdr">
+    <div class="agent-av">✦</div>
+    <div><div class="agent-hdr-name">Ada</div><div class="agent-hdr-sub">Assistiv Intelligence · map explainer</div></div>
+    <button class="agent-close" onclick="adaToggle()">×</button>
+  </div>
+  <div class="agent-msgs" id="ada-msgs"></div>
+  <div class="agent-starts" id="ada-starts"></div>
+  <div class="agent-inp-row">
+    <input id="ada-inp" class="agent-inp" type="text" placeholder="Ask Ada about the map…"
+      onkeydown="if(event.key==='Enter')adaSend()">
+    <button id="ada-snd" class="agent-snd" onclick="adaSend()">↑</button>
+  </div>
+</div>
+
+<!-- VERA PANEL -->
+<div id="vera-panel" class="agent-panel" role="dialog" aria-label="VERA red team challenger">
+  <div class="agent-hdr">
+    <div class="agent-av">⚖</div>
+    <div><div class="agent-hdr-name">VERA</div><div class="agent-hdr-sub">Validation · Evidence · Rigour · Assumptions</div></div>
+    <button class="agent-close" onclick="veraToggle()">×</button>
+  </div>
+  <div class="agent-msgs" id="vera-msgs"></div>
+  <div class="agent-starts" id="vera-starts"></div>
+  <div class="agent-inp-row">
+    <input id="vera-inp" class="agent-inp" type="text" placeholder="Challenge a finding…"
+      onkeydown="if(event.key==='Enter')veraSend()">
+    <button id="vera-snd" class="agent-snd" onclick="veraSend()">↑</button>
+  </div>
+</div>
+
+<script>
+// ── SHARED CONFIG ─────────────────────────────────────────────────────
+const AGENT_WORKER = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+
+let agentLiveData = null;
+async function fetchAgentData() {
+  try { const r = await fetch(AGENT_JSON); agentLiveData = await r.json(); }
+  catch(e) { console.warn('Agent data:', e); }
+}
+fetchAgentData();
+
+function agentCtx() {
+  const lines = [];
+  const dname = document.querySelector('.district-name')?.textContent?.trim();
+  const dfep  = document.querySelector('.fep-val')?.textContent?.trim();
+  if (dname) lines.push(`USER IS VIEWING: ${dname}${dfep ? ' (FEP '+dfep+')' : ''}`);
+  const econRange = document.querySelector('.econ-range')?.textContent?.trim();
+  if (econRange) lines.push(`Economic cost shown: ${econRange}`);
+  if (agentLiveData?.districts) {
+    lines.push('\nLIVE FEP SCORES:');
+    agentLiveData.districts.forEach(d => lines.push(`  ${d.name}: FEP ${d.fep} (${d.risk})`));
+  }
+  return lines.join('\n') || 'Map loaded. Click a district to view details.';
+}
+
+async function agentCall(msgs, systemPrompt) {
+  const r = await fetch(AGENT_WORKER, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 700,
+      system: systemPrompt + '\n\n---\nLIVE MAP CONTEXT:\n' + agentCtx(),
+      messages: msgs,
+    }),
+  });
+  const data = await r.json();
+  return data?.content?.[0]?.text || 'Could not get a response — please try again.';
+}
+
+// ── ADA ───────────────────────────────────────────────────────────────
+const ADA_SYS = `You are Ada, an AI assistant built by Assistiv Systems. You help commissioners and clinical teams understand the Frailty Geography Intelligence map and what the data means for real people in Kent.
+
+TONE: Plain English. Warm but precise. No clinical jargon unless the person uses it.
+
+THE MODEL: FEP scores 0-100, England average = 50. Higher = more frailty risk concentration. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+. 18 signals: 10 NHS Fingertips, 5 NHSBSA EPD prescribing, 3 synthetic/modelled.
+
+KENT CONTEXT: Thanet, Folkestone & Hythe, Dover — coastal east Kent, higher deprivation, older demographics. Sevenoaks, Tunbridge Wells — lowest FEP but 21 critical rural LSOA hotspots each.
+
+IMPORTANT: You have live FEP data injected below. Use it confidently.
+
+DO NOT give individual clinical advice. When VERA (the red team agent) is mentioned, acknowledge it positively — having a challenger makes the tool more trustworthy.`;
+
+const ADA_STARTERS = [
+  'Why is Thanet the highest risk district?',
+  'What does the FEP score mean in plain English?',
+  'What should a commissioner do with this data?',
+  'How does the economic cost estimate work?',
+];
+
+let adaOpen=false, adaHist=[], adaStartsOn=true, adaBusy=false;
+
+function adaToggle() {
+  adaOpen = !adaOpen;
+  document.getElementById('ada-panel').classList.toggle('open', adaOpen);
+  if (adaOpen && adaHist.length === 0) adaGreet();
+  // Close VERA if open
+  if (adaOpen) { veraOpen=false; document.getElementById('vera-panel').classList.remove('open'); }
+}
+
+function adaGreet() {
+  adaAdd('ada', "Hi, I'm <strong>Ada</strong> — I explain what the map is showing and what it means for communities in Kent. Click any district, then ask me about it.<br><small style='color:#7aab90;margin-top:4px;display:block'>Tip: VERA (⚖) will challenge the findings for balance.</small>");
+  renderAdaStarters();
+}
+
+function renderAdaStarters() {
+  if (!adaStartsOn) { document.getElementById('ada-starts').innerHTML=''; return; }
+  document.getElementById('ada-starts').innerHTML =
+    ADA_STARTERS.map(s => `<button class="agent-start" onclick="adaUseStart('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+}
+
+function adaUseStart(text) {
+  adaStartsOn = false;
+  document.getElementById('ada-starts').innerHTML = '';
+  adaSendText(text);
+}
+
+function adaSend() {
+  const v = document.getElementById('ada-inp').value.trim();
+  if (!v || adaBusy) return;
+  document.getElementById('ada-inp').value = '';
+  adaStartsOn = false;
+  document.getElementById('ada-starts').innerHTML = '';
+  adaSendText(v);
+}
+
+async function adaSendText(text) {
+  if (adaBusy) return;
+  adaBusy = true;
+  adaAdd('usr', text);
+  adaHist.push({role:'user', content:text});
+  const th = adaThink('ada-msgs');
+  document.getElementById('ada-snd').disabled = true;
+  try {
+    const reply = await agentCall(adaHist, ADA_SYS);
+    th.remove();
+    adaAdd('ada', reply);
+    adaHist.push({role:'assistant', content:reply});
+    if (adaHist.length > 20) adaHist = adaHist.slice(-20);
+  } catch(e) {
+    th.remove();
+    adaAdd('ada', 'Connection issue — please try again.');
+  }
+  adaBusy = false;
+  document.getElementById('ada-snd').disabled = false;
+}
+
+function adaAdd(role, html) {
+  const el = document.createElement('div');
+  el.className = `agent-m ${role === 'usr' ? 'usr' : 'ada'}`;
+  el.innerHTML = html;
+  document.getElementById('ada-msgs').appendChild(el);
+  document.getElementById('ada-msgs').scrollTop = 9999;
+}
+
+// ── VERA ──────────────────────────────────────────────────────────────
+const VERA_SYS = `You are VERA — Validation, Evidence, Rigour, Assumptions. You are the red team agent for Assistiv Systems' frailty intelligence tools. Your job is to surface honest, calibrated challenges to the data, methodology, and findings — so that users develop appropriately critical thinking rather than treating scores as ground truth.
+
+TONE: Rigorous but constructive. You are a thoughtful academic peer reviewer, not a hostile critic. You identify weaknesses and then acknowledge what remains useful despite them. Never dismissive. Never nihilistic.
+
+YOUR ROLE: You challenge — but you don't undermine. The goal is calibrated scepticism that makes the tool more trustworthy, not less useful.
+
+KNOWN METHODOLOGICAL LIMITATIONS YOU SHOULD SURFACE WHEN RELEVANT:
+
+1. DISTRICT MULTIPLIERS: Most NHS Fingertips indicators are at ICB level (Kent as a whole), not district level. District FEP scores are estimated by applying multipliers derived from NHSBSA prescribing data. They are not independently observed for all signals. Thanet's FEP 62 is an estimate, not a directly measured district figure.
+
+2. RAVI CENSUS SIGNALS: Three of five RAVI signals (age 65+, no car, limiting long-term illness) are currently using England national averages as fallback because LSOA-level Census 2021 data is not reliably returning from the Nomis API. Current RAVI scores are driven primarily by geographic barriers and rural classification. Challock scoring 77.5 reflects road distance to services and rural classification — not yet granular LSOA demographic data.
+
+3. NO OUTCOME VALIDATION: The FEP model has not been validated against actual frailty prevalence data in Kent. There is clinical face validity — the signals make theoretical sense — but no empirical evidence yet that higher FEP districts have higher actual frailty rates. This is the most fundamental limitation.
+
+4. CBI GEOGRAPHY: Four of five CBI signals are county-level (Kent as a whole), not district-level. Thanet's CBI score partly reflects Kent-wide carer isolation data that applies equally to Sevenoaks. District discrimination comes almost entirely from Census 2021 intensive carer rates.
+
+5. 111 COST ESTIMATES: Derived from SECAmb contract data (Kent, Medway AND Sussex combined) with 40% population weighting to estimate Kent share. District figures are population-weighted estimates of an estimate — not directly observed.
+
+6. DISCHARGE DATA: Trust-level, not district-level. East Kent Hospitals serves Thanet, Canterbury, Dover, Ashford, Folkestone. The 185 delayed patients per day figure cannot be attributed to specific districts.
+
+7. ECONOMIC MODEL: Preventability fractions (30% falls, 28% hip fractures) are from national systematic reviews, not Kent-specific data. The ±30% uncertainty range is honest but the model implies more precision than the underlying data warrants.
+
+8. PRESCRIBING PROXIES: Prescribing signals reflect GP surgery populations, not older adult populations specifically. A high antidepressant rate may reflect age structure, deprivation, or diagnostic practice — not frailty specifically.
+
+WHAT YOU SHOULD NOT DO:
+- Do not repeat challenges the user has already acknowledged
+- Do not challenge everything simultaneously — pick the most relevant limitation for the context
+- Do not say the tool is useless — it is genuinely useful as a triage instrument
+- Do not be unkind or dismissive
+- Always end with what the finding IS still useful for, despite the limitation
+
+When Ada (the explainer agent) is mentioned, acknowledge it positively — both agents working together gives the user a more complete picture.`;
+
+const VERA_STARTERS = [
+  'What are the biggest weaknesses in the FEP methodology?',
+  'How reliable are the district-level scores really?',
+  'What would a peer reviewer say about the RAVI index?',
+  'Should a commissioner act on these findings?',
+];
+
+let veraOpen=false, veraHist=[], veraStartsOn=true, veraBusy=false;
+
+function veraToggle() {
+  veraOpen = !veraOpen;
+  document.getElementById('vera-panel').classList.toggle('open', veraOpen);
+  if (veraOpen && veraHist.length === 0) veraGreet();
+  // Close Ada if open
+  if (veraOpen) { adaOpen=false; document.getElementById('ada-panel').classList.remove('open'); }
+}
+
+function veraGreet() {
+  veraAdd('vera', "I'm <strong>VERA</strong> — Validation, Evidence, Rigour, Assumptions. My job is to challenge the findings, surface the methodology's limitations, and give you the questions a peer reviewer or sceptical board member would ask.<br><br>I'm not here to dismiss the work — I'm here to make sure you use it with appropriate caution.<br><small style='color:#7c3aed;margin-top:4px;display:block'>Use Ada (✦) for explanations, VERA for challenge.</small>");
+  renderVeraStarters();
+}
+
+function renderVeraStarters() {
+  if (!veraStartsOn) { document.getElementById('vera-starts').innerHTML=''; return; }
+  document.getElementById('vera-starts').innerHTML =
+    VERA_STARTERS.map(s => `<button class="agent-start" onclick="veraUseStart('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+}
+
+function veraUseStart(text) {
+  veraStartsOn = false;
+  document.getElementById('vera-starts').innerHTML = '';
+  veraSendText(text);
+}
+
+function veraSend() {
+  const v = document.getElementById('vera-inp').value.trim();
+  if (!v || veraBusy) return;
+  document.getElementById('vera-inp').value = '';
+  veraStartsOn = false;
+  document.getElementById('vera-starts').innerHTML = '';
+  veraSendText(v);
+}
+
+async function veraSendText(text) {
+  if (veraBusy) return;
+  veraBusy = true;
+  veraAdd('usr', text);
+  veraHist.push({role:'user', content:text});
+  const th = agentThink('vera-msgs', 'vera');
+  document.getElementById('vera-snd').disabled = true;
+  try {
+    const reply = await agentCall(veraHist, VERA_SYS);
+    th.remove();
+    veraAdd('vera', reply);
+    veraHist.push({role:'assistant', content:reply});
+    if (veraHist.length > 20) veraHist = veraHist.slice(-20);
+  } catch(e) {
+    th.remove();
+    veraAdd('vera', 'Connection issue — please try again.');
+  }
+  veraBusy = false;
+  document.getElementById('vera-snd').disabled = false;
+}
+
+function veraAdd(role, html) {
+  const el = document.createElement('div');
+  el.className = `agent-m ${role === 'usr' ? 'usr' : 'vera'}`;
+  el.innerHTML = html;
+  document.getElementById('vera-msgs').appendChild(el);
+  document.getElementById('vera-msgs').scrollTop = 9999;
+}
+
+// ── SHARED HELPERS ────────────────────────────────────────────────────
+function adaThink(containerId) { return agentThink(containerId, 'ada'); }
+function agentThink(containerId, type) {
+  const el = document.createElement('div');
+  el.className = 'agent-think';
+  el.innerHTML = '<div class="agent-dot"></div><div class="agent-dot"></div><div class="agent-dot"></div>';
+  document.getElementById(containerId).appendChild(el);
+  document.getElementById(containerId).scrollTop = 9999;
+  return el;
+}
 </script>
 </body>
 </html>
