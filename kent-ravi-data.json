@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-07T11:59:51.609261+00:00",
+    "generated": "2026-06-07T12:00:02.556250+00:00",
     "description": "Rural Access Vulnerability Index \u2014 Kent & Medway LSOAs",
     "version": "1.4",
     "lsoa_count": 1065,
@@ -17,7 +17,7 @@
       "pct_llti": 0.1
     },
     "census_source": "england_average_fallback",
-    "coord_method": "grid placeholder \u2014 run Cell 3",
+    "coord_method": "ONS population-weighted centroids \u2014 geometry extraction",
     "has_coordinates": true,
     "has_place_names": false
   },
