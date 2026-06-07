@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Assistiv Works — Population Frailty Intelligence Pathway</title>
+<meta name="description" content="An animated guide to the Assistiv Systems five-layer pathway — from NHS data signals to geographic intelligence, community screening, and clinical feedback.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --forest:     #0f2318;
+  --forest-mid: #1a3a2a;
+  --sage:       #2d6b47;
+  --sage-mid:   #4a7c5f;
+  --sage-light: #7aab90;
+  --sage-pale:  #d4e8db;
+  --cream:      #f7f4ee;
+  --cream-dark: #ddd8ce;
+  --ink:        #0f1a14;
+  --ink-muted:  #5a7260;
+  --ink-dim:    #9aaa9e;
+  --amber:      #c49020;
+  --blue:       #3b7dd4;
+  --red:        #c04040;
+  --purple:     #7b5ea7;
+  --white:      #ffffff;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'DM Sans', sans-serif;
+  --tr: 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--forest);
+  color: var(--white);
+  font-family: var(--sans);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── NAV ── */
+nav {
+  background: var(--forest);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 2rem;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo-mark { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
+.logo-mark span { display: block; width: 5px; border-radius: 1.5px; }
+.logo-mark span:nth-child(1) { height: 9px;  background: var(--forest-mid); }
+.logo-mark span:nth-child(2) { height: 14px; background: var(--sage); }
+.logo-mark span:nth-child(3) { height: 20px; background: var(--sage-mid); opacity: .75; }
+.logo-text { display: flex; flex-direction: column; line-height: 1; gap: 1px; }
+.logo-name { font-family: var(--sans); font-size: .9rem; font-weight: 500; letter-spacing: -.02em; color: var(--white); }
+.logo-sub  { font-family: var(--mono); font-size: .48rem; letter-spacing: .22em; text-transform: uppercase; color: var(--sage-mid); }
+
+.nav-back {
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+.nav-back:hover { color: var(--sage-light); }
+
+/* ── HEADER ── */
+.page-header {
+  padding: 3rem 2rem 0;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+}
+.page-tag {
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--sage-light);
+  margin-bottom: .75rem;
+  display: block;
+}
+.page-header h1 {
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+  color: var(--white);
+  margin-bottom: 1rem;
+}
+.page-header h1 em { font-style: italic; color: var(--sage-light); }
+.page-header p {
+  font-size: .95rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* ── ANIMATION CONTAINER ── */
+.anim-wrap {
+  max-width: 900px;
+  margin: 2.5rem auto 0;
+  width: 100%;
+  padding: 0 1.5rem;
+  flex: 1;
+}
+
+/* Stage nav pills */
+.stage-nav {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+.snav {
+  flex: 1;
+  padding: .6rem .5rem;
+  font-family: var(--mono);
+  font-size: .52rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  cursor: pointer;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transition: background var(--tr), color var(--tr);
+  line-height: 1.4;
+  background: rgba(255,255,255,0.02);
+}
+.snav:last-child { border-right: none; }
+.snav.active { background: rgba(122,171,144,0.15); color: var(--sage-light); }
+.snav:hover:not(.active) { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); }
+
+/* Canvas stage */
+.stage-area {
+  position: relative;
+  height: 380px;
+  border-left: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  background: var(--forest-mid);
+}
+canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
+
+/* Stage info */
+.stage-info {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+}
+.stage-text {}
+.stage-label {
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--sage-light);
+  margin-bottom: .3rem;
+}
+.stage-title {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: .35rem;
+  line-height: 1.3;
+}
+.stage-body {
+  font-size: .82rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.65;
+  max-width: 560px;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+}
+.btn-ctrl {
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  padding: .5rem .9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--tr);
+  white-space: nowrap;
+}
+.btn-ctrl:hover { border-color: var(--sage-light); color: var(--sage-light); }
+.btn-ctrl.primary { background: var(--sage); border-color: var(--sage); color: var(--white); }
+.btn-ctrl.primary:hover { background: var(--sage-mid); }
+
+.progress-dots { display: flex; gap: 5px; }
+.pdot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: background var(--tr), transform var(--tr);
+}
+.pdot.active { background: var(--sage-light); transform: scale(1.3); }
+
+/* ── BELOW FOLD ── */
+.below {
+  max-width: 900px;
+  margin: 3rem auto 4rem;
+  padding: 0 1.5rem;
+  width: 100%;
+}
+
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 2rem;
+}
+
+.sig-tile {
+  background: var(--forest-mid);
+  padding: 1.25rem 1.25rem;
+}
+.sig-num {
+  font-family: var(--mono);
+  font-size: .56rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: .5rem;
+}
+.sig-name {
+  font-family: var(--sans);
+  font-size: .88rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: .3rem;
+}
+.sig-desc {
+  font-size: .76rem;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
+}
+.sig-tile .bar {
+  height: 2px;
+  background: var(--sage);
+  border-radius: 1px;
+  margin-top: .75rem;
+}
+
+.section-label {
+  font-family: var(--mono);
+  font-size: .6rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--sage-light);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: var(--mono);
+  font-size: .62rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  margin-top: 2.5rem;
+  transition: color var(--tr);
+}
+.back-link:hover { color: var(--sage-light); }
+
+/* Footer */
+footer {
+  background: var(--forest);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 1.5rem 2rem;
+  font-family: var(--mono);
+  font-size: .58rem;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,0.2);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+footer a { color: rgba(255,255,255,0.25); text-decoration: none; }
+footer a:hover { color: rgba(255,255,255,0.5); }
+
+/* Responsive */
+@media (max-width: 680px) {
+  .stage-info { grid-template-columns: 1fr; }
+  .controls { flex-wrap: wrap; }
+  .snav { font-size: .46rem; padding: .5rem .3rem; }
+  .signal-grid { grid-template-columns: 1fr 1fr; }
+  .stage-area { height: 300px; }
+}
+@media (max-width: 420px) {
+  .signal-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo" aria-label="Assistiv Systems home">
+    <div class="logo-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="logo-text">
+      <span class="logo-name">Assistiv</span>
+      <span class="logo-sub">Systems · Health</span>
+    </div>
+  </a>
+  <a href="index.html" class="nav-back">← Back to site</a>
+</nav>
+
+<div class="page-header">
+  <span class="page-tag">How it works</span>
+  <h1>From data exhaust<br>to <em>finding frailty</em> before crisis.</h1>
+  <p>An animated guide to the Assistiv five-layer pathway — how raw NHS data becomes geographic intelligence, precision screening, and a learning feedback loop.</p>
+</div>
+
+<div class="anim-wrap">
+
+  <div class="stage-nav" role="tablist" aria-label="Pathway stages">
+    <div class="snav active" role="tab" aria-selected="true"  data-s="0">Data<br>signals</div>
+    <div class="snav"        role="tab" aria-selected="false" data-s="1">Convergence<br>&amp; scoring</div>
+    <div class="snav"        role="tab" aria-selected="false" data-s="2">Geographic<br>priority</div>
+    <div class="snav"        role="tab" aria-selected="false" data-s="3">Community<br>screening</div>
+    <div class="snav"        role="tab" aria-selected="false" data-s="4">Feedback<br>loop</div>
+  </div>
+
+  <div class="stage-area">
+    <canvas id="anim" aria-hidden="true"></canvas>
+  </div>
+
+  <div class="stage-info">
+    <div class="stage-text">
+      <div class="stage-label" id="slabel">Stage 1 of 5</div>
+      <div class="stage-title" id="stitle">Data exhaust from the NHS</div>
+      <div class="stage-body"  id="sbody">Millions of data points exist across the NHS and public sector — prescribing records, falls rates, deprivation indices, census data. Individually they are noise. Together they are a signal.</div>
+    </div>
+    <div class="controls">
+      <button class="btn-ctrl" id="btnPlay" aria-label="Pause animation">Pause</button>
+      <button class="btn-ctrl primary" id="btnNext" aria-label="Next stage">Next →</button>
+      <div class="progress-dots" role="presentation">
+        <div class="pdot active" data-d="0"></div>
+        <div class="pdot" data-d="1"></div>
+        <div class="pdot" data-d="2"></div>
+        <div class="pdot" data-d="3"></div>
+        <div class="pdot" data-d="4"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="below">
+
+  <div class="section-label">The 17 signals — what goes into the FEP score</div>
+
+  <div class="signal-grid">
+    <div class="sig-tile"><div class="sig-num">01 · 13% weight</div><div class="sig-name">Over-75s living alone</div><div class="sig-desc">ONS Census 2021. The single strongest demographic frailty proxy.</div><div class="bar" style="width:100%"></div></div>
+    <div class="sig-tile"><div class="sig-num">02 · 12% weight</div><div class="sig-name">Falls admissions 65+</div><div class="sig-desc">NHS Fingertips. Kent &amp; Medway: 1,917 per 100k — above England average.</div><div class="bar" style="width:92%"></div></div>
+    <div class="sig-tile"><div class="sig-num">03 · 9% weight</div><div class="sig-name">Hip fracture rate 65+</div><div class="sig-desc">NHS Fingertips. 543 per 100k vs England 491. Significant adverse variance.</div><div class="bar" style="width:69%"></div></div>
+    <div class="sig-tile"><div class="sig-num">04 · 8% weight</div><div class="sig-name">Deprivation (IMD 2019)</div><div class="sig-desc">MHCLG. Strong frailty amplifier. Ward and LSOA level available.</div><div class="bar" style="width:61%"></div></div>
+    <div class="sig-tile"><div class="sig-num">05 · 8% weight</div><div class="sig-name">Winter mortality index</div><div class="sig-desc">NHS Fingertips. 9.8 vs England 8.7. Fuel poverty and isolation proxy.</div><div class="bar" style="width:61%"></div></div>
+    <div class="sig-tile"><div class="sig-num">06 · 7% weight</div><div class="sig-name">Care home gap</div><div class="sig-desc">CQC register. High FEP + low care provision = priority outreach zones.</div><div class="bar" style="width:54%"></div></div>
+    <div class="sig-tile"><div class="sig-num">07 · 6% weight</div><div class="sig-name">Loneliness rate</div><div class="sig-desc">NHS Fingertips PHOF. Social isolation is a compounding frailty risk factor.</div><div class="bar" style="width:46%"></div></div>
+    <div class="sig-tile"><div class="sig-num">08 · 6% weight</div><div class="sig-name">Dementia diagnosis rate</div><div class="sig-desc">Kent &amp; Medway 62.3% vs England 66.3%. Lower = unmet diagnostic need.</div><div class="bar" style="width:46%"></div></div>
+    <div class="sig-tile"><div class="sig-num">09–17 · remaining</div><div class="sig-name">Prescribing signals ×7</div><div class="sig-desc">NHSBSA EPD at practice level: hypnotics, antidepressants, bisphosphonates, anxiolytics, diuretics, ACE/ARB, bladder antimuscarinics.</div><div class="bar" style="width:38%"></div></div>
+  </div>
+
+  <a href="index.html" class="back-link">← Back to assistiv.health</a>
+
+</div>
+
+<footer>
+  <span>© 2026 Assistiv Systems Limited · Faversham, Kent · Registered in England and Wales</span>
+  <span><a href="index.html">assistiv.health</a> · <a href="https://www.resiliencetools.xyz" target="_blank" rel="noopener">resiliencetools.xyz ↗</a></span>
+</footer>
+
+<script>
+const STAGES = [
+  {
+    label: 'Stage 1 of 5 — Layer 1',
+    title: 'Data exhaust from the NHS',
+    body:  'Millions of data points exist across the NHS and public sector — prescribing records, falls rates, deprivation indices, census data. Individually they are noise. Together they are a signal.'
+  },
+  {
+    label: 'Stage 2 of 5 — Layer 2',
+    title: 'Convergence into a composite FEP score',
+    body:  'Seventeen signals are normalised to a common scale and weighted by clinical importance. Living alone at 75+ carries the most weight. Every signal converges into a single Frailty Emergence Probability score per district.'
+  },
+  {
+    label: 'Stage 3 of 5 — Layer 2',
+    title: 'Geographic intelligence — where is the risk?',
+    body:  'Each district receives a score from 0 to 100. Thanet scores 63, Folkestone and Dover 57 — substantially above the England average of 50. The map tells commissioners exactly where preventive outreach should go first.'
+  },
+  {
+    label: 'Stage 4 of 5 — Layer 4',
+    title: 'Community screening at scale',
+    body:  'RESILIENCE deploys voice-first screening in high-risk zones. The person speaks freely. Their carer reports independently. A clinical team adds their assessment. Three perspectives on one person — the Triple Tap.'
+  },
+  {
+    label: 'Stage 5 of 5 — Layer 5',
+    title: 'The feedback loop — the data becomes the moat',
+    body:  'Every anonymised screening outcome flows back into the FEP model. The scoring gets sharper. The system identifies frailty earlier. Assistiv\'s intelligence improves with every deployment — the dataset is the competitive advantage.'
+  }
+];
+
+const canvas = document.getElementById('anim');
+const ctx    = canvas.getContext('2d');
+let W, H, raf, running = true, stage = 0, t = 0;
+let particles = [], nodes = [], avatars = [];
+let autoTimer = null;
+
+/* roundRect polyfill for Safari <15.4 and older browsers */
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    r = Math.min(r, w/2, h/2);
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+    this.closePath();
+  };
+}
+
+function resize() {
+  const r = canvas.parentElement.getBoundingClientRect();
+  const newW = Math.floor(r.width)  || 800;
+  const newH = Math.floor(r.height) || 380;
+  if (newW === W && newH === H) return;
+  W = canvas.width  = newW;
+  H = canvas.height = newH;
+  initStage(stage);
+}
+
+function easeInOut(x) { return x < .5 ? 2*x*x : -1+(4-2*x)*x; }
+
+/* ── colours ── */
+const C = {
+  sage:   '#7aab90',
+  amber:  '#c49020',
+  blue:   '#85b7eb',
+  rose:   '#e07070',
+  purple: '#9b9eff',
+  white:  'rgba(255,255,255,0.85)',
+  dim:    'rgba(255,255,255,0.18)'
+};
+const SIG_COLS = [C.sage,C.amber,C.blue,C.rose,C.purple,C.sage,C.amber,C.blue,C.rose];
+const SIG_LABELS = ['Falls 65+','Prescribing','Deprivation','Alone 75+','Hip fractures','Winter deaths','Loneliness','Dementia Dx','CQC'];
+
+/* ── stage 0: floating pills ── */
+function makeParticle() {
+  const i = Math.floor(Math.random() * SIG_LABELS.length);
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    vx: (Math.random() - .5) * .45,
+    vy: (Math.random() - .5) * .45,
+    label: SIG_LABELS[i],
+    col: SIG_COLS[i],
+    r: 30 + Math.random() * 12,
+    alpha: .35 + Math.random() * .45,
+    phase: Math.random() * Math.PI * 2
+  };
+}
+
+/* ── stage 1: converging nodes ── */
+function makeNode(i, total) {
+  const a = (i / total) * Math.PI * 2 - Math.PI / 2;
+  const dist = 145 + Math.random() * 25;
+  return {
+    x: W / 2 + Math.cos(a) * dist,
+    y: H / 2 + Math.sin(a) * dist,
+    tx: W / 2,
+    ty: H / 2,
+    label: SIG_LABELS[i % SIG_LABELS.length],
+    col: SIG_COLS[i % SIG_COLS.length],
+    progress: 0,
+    speed: .0035 + Math.random() * .0025
+  };
+}
+
+/* ── stage 2: districts ── */
+const DISTRICTS = [
+  {n:'Thanet',s:63,r:'high'},
+  {n:'Folkestone',s:57,r:'high'},
+  {n:'Dover',s:57,r:'high'},
+  {n:'Swale',s:54,r:'moderate'},
+  {n:'Medway',s:54,r:'moderate'},
+  {n:'Gravesham',s:53,r:'moderate'},
+  {n:'Canterbury',s:50,r:'moderate'},
+  {n:'Maidstone',s:48,r:'moderate'},
+  {n:'Sevenoaks',s:38,r:'low'},
+  {n:'Tunbridge Wells',s:34,r:'low'},
+];
+function rCol(r) { return r==='high'?'#d05050':r==='moderate'?C.blue:'#3a8a50'; }
+function rAlpha(r) { return r==='high'?.9:r==='moderate'?.7:.55; }
+
+/* ── stage 3: avatars ── */
+function makeAvatar(i, total) {
+  const cols = Math.min(5, total);
+  const rows = Math.ceil(total / cols);
+  const c = i % cols, row = Math.floor(i / cols);
+  const gW = Math.min(W * .78, 440);
+  const gH = Math.min(H * .58, 220);
+  const x0 = (W - gW) / 2, y0 = 50;
+  return {
+    x: x0 + (cols > 1 ? (c / (cols - 1)) * gW : gW / 2),
+    y: y0 + (rows > 1 ? (row / (rows - 1)) * gH : gH / 2),
+    state: 0,
+    timer: i * 14 + Math.random() * 18,
+    ring: 0,
+    done: false
+  };
+}
+
+/* ── stage 4: loop nodes ── */
+const LOOP_LABELS = ['Data\nsignals','FEP\nscoring','Priority\nmap','Screening','Referral\n& feedback'];
+const LOOP_COLS   = [C.blue, C.amber, C.sage, C.rose, C.purple];
+
+function makeLoopNode(i, total) {
+  const a = (i / total) * Math.PI * 2 - Math.PI / 2;
+  const r = Math.min(W, H) * .32;
+  return { x: W/2 + Math.cos(a)*r, y: H/2 + Math.sin(a)*r, a, label: LOOP_LABELS[i], col: LOOP_COLS[i] };
+}
+
+function initStage(s) {
+  t = 0;
+  particles = []; nodes = []; avatars = [];
+  if (s === 0) { for (let i = 0; i < 16; i++) particles.push(makeParticle()); }
+  else if (s === 1) { for (let i = 0; i < 9; i++) nodes.push(makeNode(i, 9)); }
+  else if (s === 3) { for (let i = 0; i < 15; i++) avatars.push(makeAvatar(i, 15)); }
+  else if (s === 4) { for (let i = 0; i < 5; i++) nodes.push(makeLoopNode(i, 5)); }
+}
+
+/* ── draw ── */
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+  if      (stage === 0) drawS0();
+  else if (stage === 1) drawS1();
+  else if (stage === 2) drawS2();
+  else if (stage === 3) drawS3();
+  else if (stage === 4) drawS4();
+  t++;
+  if (running) raf = requestAnimationFrame(draw);
+}
+
+/* Stage 0 — floating pills */
+function drawS0() {
+  ctx.save();
+  ctx.font = '500 10px DM Mono, monospace';
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < -70) p.x = W + 70;
+    if (p.x > W+70) p.x = -70;
+    if (p.y < -40) p.y = H + 40;
+    if (p.y > H+40) p.y = -40;
+    p.phase += .022;
+    const a = p.alpha * (.8 + .2 * Math.sin(p.phase));
+
+    /* connector lines */
+    for (const q of particles) {
+      const dx = p.x-q.x, dy = p.y-q.y, d = Math.sqrt(dx*dx+dy*dy);
+      if (d < 110 && d > 1) {
+        ctx.globalAlpha = (.1 - .0009*d) * a;
+        ctx.strokeStyle = p.col;
+        ctx.lineWidth = .5;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+      }
+    }
+
+    ctx.globalAlpha = a;
+    ctx.strokeStyle = p.col;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = p.col + '16';
+    ctx.beginPath();
+    ctx.roundRect(p.x - p.r, p.y - 13, p.r * 2, 26, 5);
+    ctx.fill(); ctx.stroke();
+    ctx.fillStyle = p.col;
+    ctx.textAlign = 'center';
+    ctx.fillText(p.label, p.x, p.y + 4);
+  }
+  ctx.restore();
+}
+
+/* Stage 1 — convergence */
+function drawS1() {
+  const cx = W / 2, cy = H / 2;
+  ctx.save();
+
+  /* pulsing rings */
+  const pulse = .5 + .5 * Math.sin(t * .04);
+  for (const r of [36, 62, 90]) {
+    ctx.globalAlpha = .06 + .03 * pulse;
+    ctx.strokeStyle = C.sage;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx, cy, r + pulse * 6, 0, Math.PI*2); ctx.stroke();
+  }
+
+  /* centre FEP badge */
+  ctx.globalAlpha = .75 + .2 * pulse;
+  ctx.fillStyle = C.sage + '30';
+  ctx.strokeStyle = C.sage;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx, cy, 34, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = C.sage;
+  ctx.font = '500 12px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('FEP', cx, cy - 5);
+  ctx.font = '400 9px DM Mono, monospace';
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fillText('score', cx, cy + 9);
+
+  /* nodes moving inward */
+  for (const n of nodes) {
+    n.progress = Math.min(1, n.progress + n.speed);
+    const px = n.x + (n.tx - n.x) * easeInOut(n.progress);
+    const py = n.y + (n.ty - n.y) * easeInOut(n.progress);
+    const fade = Math.max(0, 1 - n.progress * 1.25 + .25);
+
+    /* trail */
+    ctx.globalAlpha = .12 + .25 * n.progress;
+    ctx.strokeStyle = n.col;
+    ctx.lineWidth = .8;
+    ctx.setLineDash([3, 5]);
+    ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(cx, cy); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* pill */
+    if (fade > .02) {
+      ctx.globalAlpha = fade;
+      ctx.strokeStyle = n.col; ctx.lineWidth = 1;
+      ctx.fillStyle = n.col + '1a';
+      ctx.beginPath(); ctx.roundRect(px - 30, py - 12, 60, 24, 5); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = n.col;
+      ctx.font = '500 10px DM Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(n.label, px, py + 4);
+    }
+  }
+  ctx.restore();
+}
+
+/* Stage 2 — districts */
+function drawS2() {
+  const cols = 5;
+  const gW = Math.min(W - 48, 580);
+  const gH = Math.min(H - 90, 240);
+  const cw = gW / cols;
+  const ch = gH / 2;
+  const x0 = (W - gW) / 2;
+  const y0 = 32;
+
+  ctx.save();
+  DISTRICTS.forEach((d, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const cx = x0 + col * cw + cw / 2;
+    const cy = y0 + row * ch + ch / 2;
+    const w = cw - 10, h = ch - 10;
+    const rc = rCol(d.r);
+
+    const delay = i * 7;
+    const prog = Math.min(1, Math.max(0, (t - delay) / 35));
+    if (prog <= 0) return;
+
+    const pulse = d.r === 'high' ? .5 + .5 * Math.sin(t * .05 + i) : 1;
+
+    ctx.globalAlpha = rAlpha(d.r) * prog * pulse;
+    ctx.fillStyle = rc + '22';
+    ctx.strokeStyle = rc;
+    ctx.lineWidth = d.r === 'high' ? 1.5 : 1;
+    ctx.beginPath(); ctx.roundRect(cx - w/2, cy - h/2, w, h, 5); ctx.fill(); ctx.stroke();
+
+    ctx.globalAlpha = prog;
+    ctx.fillStyle = rc;
+    ctx.font = '500 9.5px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.n, cx, cy - 9);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.font = '500 18px DM Sans, sans-serif';
+    ctx.fillText(d.s, cx, cy + 7);
+
+    ctx.fillStyle = rc;
+    ctx.font = '400 8px DM Mono, monospace';
+    ctx.fillText(d.r.toUpperCase(), cx, cy + 22);
+  });
+
+  /* legend */
+  const lY = H - 38;
+  for (const [r, l, ox] of [['high','High risk',-160],['moderate','Moderate',0],['low','Low risk',160]]) {
+    const lX = W/2 + ox;
+    ctx.globalAlpha = .75;
+    ctx.fillStyle = rCol(r);
+    ctx.beginPath(); ctx.arc(lX - 26, lY, 4, 0, Math.PI*2); ctx.fill();
+    ctx.font = '400 10px DM Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(l, lX - 18, lY + 4);
+  }
+  ctx.restore();
+}
+
+/* Stage 3 — screening */
+function drawS3() {
+  const STATE_COLS = ['rgba(255,255,255,0.22)', C.sage, C.amber, C.blue, C.white];
+  const STATE_LABELS = ['', 'Self', 'Carer', 'CGA', '✓'];
+
+  ctx.save();
+  for (const av of avatars) {
+    if (!av.done) {
+      av.timer--;
+      if (av.timer <= 0) {
+        av.state = Math.min(av.state + 1, 4);
+        av.timer = 28 + Math.random() * 35;
+        av.ring = 0;
+        if (av.state === 4) av.done = true;
+      }
+    }
+    if (av.ring < 1) av.ring = Math.min(1, av.ring + .045);
+
+    const col = STATE_COLS[av.state];
+    const R = 15;
+
+    /* pulse ring */
+    if (av.state > 0 && av.state < 4) {
+      ctx.globalAlpha = .25 * av.ring;
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(av.x, av.y, R + 9, 0, Math.PI*2); ctx.stroke();
+    }
+
+    /* circle fill */
+    ctx.globalAlpha = av.state === 0 ? .3 : .82;
+    ctx.fillStyle = col + '35';
+    ctx.strokeStyle = col;
+    ctx.lineWidth = av.done ? 2 : 1;
+    ctx.beginPath(); ctx.arc(av.x, av.y, R, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+    /* person icon */
+    ctx.fillStyle = col;
+    ctx.globalAlpha = av.state === 0 ? .35 : .85;
+    ctx.beginPath(); ctx.arc(av.x, av.y - 4, 4, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(av.x, av.y + 10, 7, Math.PI, Math.PI*2); ctx.fill();
+
+    /* label */
+    if (STATE_LABELS[av.state]) {
+      ctx.globalAlpha = .9;
+      ctx.fillStyle = col;
+      ctx.font = '500 8px DM Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(STATE_LABELS[av.state], av.x, av.y + 30);
+    }
+  }
+
+  /* legend */
+  const ly = H - 52;
+  const steps = [['Self-report', C.sage], ['+ Carer input', C.amber], ['+ Clinical CGA', C.blue]];
+  steps.forEach(([l, c], i) => {
+    ctx.globalAlpha = .8;
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(20, ly + i*20, 4, 0, Math.PI*2); ctx.fill();
+    ctx.font = '400 10px DM Mono, monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(l, 30, ly + i*20 + 4);
+  });
+  ctx.restore();
+}
+
+/* Stage 4 — feedback loop */
+function drawS4() {
+  if (!nodes.length) return;
+  const cx = W/2, cy = H/2;
+  const N = nodes.length;
+  const loopFrac = ((t * .007) % 1);
+
+  ctx.save();
+
+  /* arcs */
+  for (let i = 0; i < N; i++) {
+    const a = nodes[i], b = nodes[(i+1) % N];
+    ctx.strokeStyle = a.col;
+    ctx.lineWidth = .8;
+    ctx.globalAlpha = .15;
+    ctx.setLineDash([4, 5]);
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    /* animated particle on segment */
+    const segFrac = (loopFrac * N - i + N * 10) % N;
+    if (segFrac < 1) {
+      const f = segFrac % 1;
+      const px = a.x + (b.x - a.x) * f;
+      const py = a.y + (b.y - a.y) * f;
+      ctx.globalAlpha = .9 * (1 - Math.abs(f - .5) * 1.5);
+      ctx.fillStyle = a.col;
+      ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  /* nodes */
+  for (const nd of nodes) {
+    const pulse = .5 + .5 * Math.sin(t * .04 + nd.a);
+    ctx.globalAlpha = .65 + .3 * pulse;
+    ctx.strokeStyle = nd.col;
+    ctx.lineWidth = 1;
+    ctx.fillStyle = nd.col + '28';
+    ctx.beginPath(); ctx.arc(nd.x, nd.y, 28, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = nd.col;
+    ctx.font = '500 9px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    const lines = nd.label.split('\n');
+    const offsetY = lines.length > 1 ? -5 : 3;
+    lines.forEach((ln, li) => ctx.fillText(ln, nd.x, nd.y + offsetY + li * 13));
+  }
+
+  /* centre */
+  const cp = .5 + .5 * Math.sin(t * .03);
+  ctx.globalAlpha = .35 + .2 * cp;
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.beginPath(); ctx.arc(cx, cy, 20, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = .7 + .25 * cp;
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = '500 9px DM Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('learns', cx, cy - 3);
+  ctx.fillText('& grows', cx, cy + 10);
+
+  /* caption */
+  ctx.globalAlpha = .4;
+  ctx.fillStyle = C.sage;
+  ctx.font = '400 11px DM Sans, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Every outcome recalibrates the FEP model', cx, H - 18);
+
+  ctx.restore();
+}
+
+/* ── stage switching ── */
+function setStage(s) {
+  stage = s;
+  document.querySelectorAll('.snav').forEach((el, i) => {
+    el.classList.toggle('active', i === s);
+    el.setAttribute('aria-selected', i === s);
+  });
+  document.querySelectorAll('.pdot').forEach((el, i) => el.classList.toggle('active', i === s));
+  document.getElementById('slabel').textContent = STAGES[s].label;
+  document.getElementById('stitle').textContent = STAGES[s].title;
+  document.getElementById('sbody').textContent  = STAGES[s].body;
+  initStage(s);
+  if (!running) { running = true; raf = requestAnimationFrame(draw); }
+  resetAutoAdvance();
+}
+
+function resetAutoAdvance() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => { if (running) setStage((stage + 1) % 5); }, 9500);
+}
+
+document.querySelectorAll('.snav').forEach(el => el.addEventListener('click', () => setStage(+el.dataset.s)));
+document.querySelectorAll('.pdot').forEach(el => el.addEventListener('click', () => setStage(+el.dataset.d)));
+
+document.getElementById('btnNext').addEventListener('click', () => setStage((stage + 1) % 5));
+
+document.getElementById('btnPlay').addEventListener('click', function() {
+  running = !running;
+  this.textContent = running ? 'Pause' : 'Play';
+  if (running) { raf = requestAnimationFrame(draw); resetAutoAdvance(); }
+  else { cancelAnimationFrame(raf); clearInterval(autoTimer); }
+});
+
+window.addEventListener('resize', () => { cancelAnimationFrame(raf); resize(); if (running) raf = requestAnimationFrame(draw); });
+
+/* Defer first resize to after first paint so getBoundingClientRect returns real dimensions */
+requestAnimationFrame(() => {
+  resize();
+  draw();
+  resetAutoAdvance();
+});
+</script>
+</body>
+</html>
