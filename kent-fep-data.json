@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-06-08T08:48:16.158347+00:00",
+    "generated": "2026-06-08T11:06:35.105709+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.0 \u2014 oral nutritional supplements signal added",
+    "refresh_type": "daily \u2014 Fingertips only (EPD reused from last manual run)",
+    "epd_period": "",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "signals_real_count": 17,
-    "signals_modelled_count": 3,
-    "data_quality": "17 real signals \u00b7 3 modelled (synthetic) of 18 total",
+    "data_quality": "real \u2014 10 Fingertips signals + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -18,16 +18,9 @@
       "dementia_diagnosis",
       "hip_fractures_65",
       "hip_fractures_80",
-      "fuel_poverty",
-      "hypnotics",
-      "anxiolytics",
-      "antidepressants",
-      "bisphosphonates",
-      "diuretics",
-      "ace_arb",
-      "bladder_antimusc"
+      "fuel_poverty"
     ],
-    "signals_modelled": [
+    "signals_synthetic": [
       "alone_75",
       "deprivation_imd",
       "care_home_gap"
@@ -50,59 +43,39 @@
       "ACE/ARB Prescribing",
       "Anxiolytics Prescribing",
       "Bladder Antimuscarinic Rate",
-      "Oral Nutritional Supplements"
+      "Oral Nutritional Supplements",
+      "Anti-Dementia Drug Rate",
+      "Denosumab Prescribing",
+      "Parkinson's Drug Rate"
     ],
     "weights": [
-      0.13,
-      0.12,
-      0.09,
-      0.08,
+      0.11,
+      0.11,
       0.08,
       0.07,
+      0.07,
       0.06,
-      0.06,
-      0.05,
-      0.05,
       0.05,
       0.05,
       0.04,
-      0.0,
-      0.0,
+      0.04,
+      0.04,
+      0.04,
       0.03,
       0.01,
+      0.01,
+      0.03,
+      0.02,
+      0.05,
+      0.04,
+      0.02,
       0.03
     ],
+    "fep_delta_note": "fep_delta = change vs previous daily commit. Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. Phase 2: add 111 call velocity to precursor logic.",
     "sources": {
-      "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py",
-      "epd": "NHSBSA EPD practice-level \u2014 Mar 2026",
-      "epd_method": "Practice POSTCODE (col 13) \u2192 district via POSTCODE_TO_DISTRICT",
-      "demographic": "ONS Census 2021 \u00b7 IMD 2019 \u00b7 CQC register",
-      "weather": "UKHSA Weather-Health Alerting / Met Office"
-    },
-    "new_in_v4": [
-      "UKHSA/Met Office Weather-Health Alert fetched at run time",
-      "fep_weather field: weather-uplifted FEP for live map display",
-      "weather_alert block added to JSON root for Layer 4 context injection",
-      "data_quality metadata corrected: 14 real, 3 modelled (was incorrectly '17 real')"
-    ],
-    "new_in_v5": [
-      "Signal 18: ons_nutrition \u2014 BNF 090402 oral nutritional supplements",
-      "Weight 3% \u2014 direct FRAIL Scale (Loss of weight) clinical signal",
-      "Funded by: bladder_antimusc 2%\u21921%, diuretics 1%\u21920% (retained for reporting)",
-      "England reference rate: 3.8 per 1,000 patients/month (OpenPrescribing 2024/25)"
-    ],
-    "note": "fep = base score (weather-independent, use for longitudinal comparison). fep_weather = live score including weather uplift (use for operational map display). EPD: district-level actual. Fingertips + modelled: ICB \u00d7 demographic profile. Phase 2: MSOA Fingertips linkage."
-  },
-  "weather_alert": {
-    "alert_level": "green",
-    "alert_type": "heat",
-    "region": "South East England",
-    "fetched_at": "2026-06-08T08:44:46.416743+00:00",
-    "source": "UKHSA Weather-Health Alerting / Met Office",
-    "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
-    "med_risk_signals": [],
-    "fep_uplift": 0,
-    "layer4_context": ""
+      "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py \u2014 fetched today",
+      "epd": "NHSBSA EPD \u2014 last manual run (reused)"
+    }
   },
   "icb_baseline": {
     "fingertips": {
@@ -146,7 +119,7 @@
         "england": 46.87,
         "period": "2024/25",
         "source": "NHS Fingertips indicator 90280",
-        "label": "Social isolation - SC users"
+        "label": "Social isolation SC users"
       },
       "dementia_diagnosis": {
         "value": 62.3,
@@ -171,7 +144,7 @@
       },
       "fuel_poverty": {
         "value": 10.97,
-        "england": 34.59,
+        "england": 13.71,
         "period": "2023",
         "source": "NHS Fingertips indicator 93759",
         "label": "Fuel poverty"
@@ -272,10 +245,8 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "fep": 62,
-      "fep_weather": 62,
+      "fep": 61,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         65.0,
         64.1,
@@ -294,6 +265,9 @@
         58.8,
         45.9,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -314,84 +288,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 18200,
-      "list_size": 145000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 12.062,
-          "england": 10.2,
-          "items": 1749,
-          "ratio": 1.183,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 7.8,
-          "england": 8.5,
-          "items": 1131,
-          "ratio": 0.918,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 138.483,
-          "england": 110.0,
-          "items": 20080,
-          "ratio": 1.259,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 7.683,
-          "england": 6.8,
-          "items": 1114,
-          "ratio": 1.13,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.8,
-          "england": 2.5,
-          "items": 406,
-          "ratio": 1.12,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 111.8,
-          "england": 95.0,
-          "items": 16211,
-          "ratio": 1.177,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 14.559,
-          "england": 4.2,
-          "items": 2111,
-          "ratio": 3.466,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false
     },
     {
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
       "fep": 56,
-      "fep_weather": 56,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         61.0,
         60.5,
@@ -410,6 +321,9 @@
         45.2,
         34.1,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -430,84 +344,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 14100,
-      "list_size": 116000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 9.103,
-          "england": 10.2,
-          "items": 1056,
-          "ratio": 0.892,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 5.793,
-          "england": 8.5,
-          "items": 672,
-          "ratio": 0.682,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 93.345,
-          "england": 110.0,
-          "items": 10828,
-          "ratio": 0.849,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 5.448,
-          "england": 6.8,
-          "items": 632,
-          "ratio": 0.801,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.466,
-          "england": 2.5,
-          "items": 286,
-          "ratio": 0.986,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 85.888,
-          "england": 95.0,
-          "items": 9963,
-          "ratio": 0.904,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 11.457,
-          "england": 4.2,
-          "items": 1329,
-          "ratio": 2.728,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Dover",
       "lad_code": "E07000108",
       "fep": 56,
-      "fep_weather": 56,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         59.0,
         59.0,
@@ -526,6 +377,9 @@
         54.0,
         38.3,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -546,84 +400,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 13800,
-      "list_size": 115000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 8.922,
-          "england": 10.2,
-          "items": 1026,
-          "ratio": 0.875,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 6.504,
-          "england": 8.5,
-          "items": 748,
-          "ratio": 0.765,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 115.991,
-          "england": 110.0,
-          "items": 13339,
-          "ratio": 1.054,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 7.983,
-          "england": 6.8,
-          "items": 918,
-          "ratio": 1.174,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.73,
-          "england": 2.5,
-          "items": 314,
-          "ratio": 1.092,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 102.687,
-          "england": 95.0,
-          "items": 11809,
-          "ratio": 1.081,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 14.678,
-          "england": 4.2,
-          "items": 1688,
-          "ratio": 3.495,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Swale",
       "lad_code": "E07000113",
       "fep": 54,
-      "fep_weather": 54,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         56.0,
         56.4,
@@ -642,6 +433,9 @@
         54.2,
         28.3,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -662,84 +456,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 15200,
-      "list_size": 153000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 9.562,
-          "england": 10.2,
-          "items": 1463,
-          "ratio": 0.937,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 4.81,
-          "england": 8.5,
-          "items": 736,
-          "ratio": 0.566,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 125.392,
-          "england": 110.0,
-          "items": 19185,
-          "ratio": 1.14,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 6.013,
-          "england": 6.8,
-          "items": 920,
-          "ratio": 0.884,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.333,
-          "england": 2.5,
-          "items": 357,
-          "ratio": 0.933,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 102.967,
-          "england": 95.0,
-          "items": 15754,
-          "ratio": 1.084,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 12.595,
-          "england": 4.2,
-          "items": 1927,
-          "ratio": 2.999,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Medway",
       "lad_code": "E06000035",
       "fep": 53,
-      "fep_weather": 53,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         53.0,
         53.9,
@@ -758,6 +489,9 @@
         64.5,
         28.8,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -778,84 +512,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 19400,
-      "list_size": 295000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 10.98,
-          "england": 10.2,
-          "items": 3239,
-          "ratio": 1.076,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 4.902,
-          "england": 8.5,
-          "items": 1446,
-          "ratio": 0.577,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 141.414,
-          "england": 110.0,
-          "items": 41717,
-          "ratio": 1.286,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 7.692,
-          "england": 6.8,
-          "items": 2269,
-          "ratio": 1.131,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.671,
-          "england": 2.5,
-          "items": 788,
-          "ratio": 1.068,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 122.563,
-          "england": 95.0,
-          "items": 36156,
-          "ratio": 1.29,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 14.915,
-          "england": 4.2,
-          "items": 4400,
-          "ratio": 3.551,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "fep": 51,
-      "fep_weather": 51,
+      "fep": 52,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         50.0,
         50.3,
@@ -874,6 +545,9 @@
         64.8,
         21.6,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -894,84 +568,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 11800,
-      "list_size": 106000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 11.142,
-          "england": 10.2,
-          "items": 1181,
-          "ratio": 1.092,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 3.67,
-          "england": 8.5,
-          "items": 389,
-          "ratio": 0.432,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 121.085,
-          "england": 110.0,
-          "items": 12835,
-          "ratio": 1.101,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 9.83,
-          "england": 6.8,
-          "items": 1042,
-          "ratio": 1.446,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 4.717,
-          "england": 2.5,
-          "items": 500,
-          "ratio": 1.887,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 123.104,
-          "england": 95.0,
-          "items": 13049,
-          "ratio": 1.296,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 14.028,
-          "england": 4.2,
-          "items": 1487,
-          "ratio": 3.34,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Ashford",
       "lad_code": "E07000105",
       "fep": 50,
-      "fep_weather": 50,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         48.0,
         48.7,
@@ -990,6 +601,9 @@
         71.3,
         37.5,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1010,84 +624,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 13600,
-      "list_size": 128000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 8.172,
-          "england": 10.2,
-          "items": 1046,
-          "ratio": 0.801,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 6.375,
-          "england": 8.5,
-          "items": 816,
-          "ratio": 0.75,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 135.922,
-          "england": 110.0,
-          "items": 17398,
-          "ratio": 1.236,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 8.25,
-          "england": 6.8,
-          "items": 1056,
-          "ratio": 1.213,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 3.258,
-          "england": 2.5,
-          "items": 417,
-          "ratio": 1.303,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 135.484,
-          "england": 95.0,
-          "items": 17342,
-          "ratio": 1.426,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 18.055,
-          "england": 4.2,
-          "items": 2311,
-          "ratio": 4.299,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
-      "fep": 49,
-      "fep_weather": 49,
+      "fep": 50,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         45.0,
         46.2,
@@ -1106,6 +657,9 @@
         62.2,
         54.9,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1126,84 +680,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 16300,
-      "list_size": 172000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 16.041,
-          "england": 10.2,
-          "items": 2759,
-          "ratio": 1.573,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 9.337,
-          "england": 8.5,
-          "items": 1606,
-          "ratio": 1.098,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 136.07,
-          "england": 110.0,
-          "items": 23404,
-          "ratio": 1.237,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 8.384,
-          "england": 6.8,
-          "items": 1442,
-          "ratio": 1.233,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 3.087,
-          "england": 2.5,
-          "items": 531,
-          "ratio": 1.235,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 118.233,
-          "england": 95.0,
-          "items": 20336,
-          "ratio": 1.245,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 16.221,
-          "england": 4.2,
-          "items": 2790,
-          "ratio": 3.862,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "fep": 47,
-      "fep_weather": 47,
+      "fep": 48,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         42.5,
         43.6,
@@ -1222,6 +713,9 @@
         67.4,
         24.7,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1242,84 +736,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 16700,
-      "list_size": 183000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 14.366,
-          "england": 10.2,
-          "items": 2629,
-          "ratio": 1.408,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 4.191,
-          "england": 8.5,
-          "items": 767,
-          "ratio": 0.493,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 136.585,
-          "england": 110.0,
-          "items": 24995,
-          "ratio": 1.242,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 8.59,
-          "england": 6.8,
-          "items": 1572,
-          "ratio": 1.263,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.235,
-          "england": 2.5,
-          "items": 409,
-          "ratio": 0.894,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 128.142,
-          "england": 95.0,
-          "items": 23450,
-          "ratio": 1.349,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 18.24,
-          "england": 4.2,
-          "items": 3338,
-          "ratio": 4.343,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Dartford",
       "lad_code": "E07000107",
-      "fep": 45,
-      "fep_weather": 45,
+      "fep": 47,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         44.0,
         45.1,
@@ -1338,6 +769,9 @@
         50.7,
         24.2,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1358,84 +792,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 10800,
-      "list_size": 111000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 10.946,
-          "england": 10.2,
-          "items": 1215,
-          "ratio": 1.073,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 4.108,
-          "england": 8.5,
-          "items": 456,
-          "ratio": 0.483,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 98.036,
-          "england": 110.0,
-          "items": 10882,
-          "ratio": 0.891,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 5.937,
-          "england": 6.8,
-          "items": 659,
-          "ratio": 0.873,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.892,
-          "england": 2.5,
-          "items": 321,
-          "ratio": 1.157,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 96.423,
-          "england": 95.0,
-          "items": 10703,
-          "ratio": 1.015,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 11.189,
-          "england": 4.2,
-          "items": 1242,
-          "ratio": 2.664,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
-      "fep": 41,
-      "fep_weather": 41,
+      "fep": 43,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         39.0,
         40.0,
@@ -1454,6 +825,9 @@
         44.3,
         26.5,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1474,84 +848,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 13100,
-      "list_size": 132000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 8.394,
-          "england": 10.2,
-          "items": 1108,
-          "ratio": 0.823,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 4.5,
-          "england": 8.5,
-          "items": 594,
-          "ratio": 0.529,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 84.402,
-          "england": 110.0,
-          "items": 11141,
-          "ratio": 0.767,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 6.5,
-          "england": 6.8,
-          "items": 858,
-          "ratio": 0.956,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 1.78,
-          "england": 2.5,
-          "items": 235,
-          "ratio": 0.712,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 84.242,
-          "england": 95.0,
-          "items": 11120,
-          "ratio": 0.887,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 10.962,
-          "england": 4.2,
-          "items": 1447,
-          "ratio": 2.61,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
-      "fep": 37,
-      "fep_weather": 37,
-      "risk": "low",
-      "risk_weather": "low",
+      "fep": 40,
+      "risk": "moderate",
       "signals": [
         32.5,
         33.3,
@@ -1570,6 +881,9 @@
         58.4,
         29.4,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1590,84 +904,21 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 12100,
-      "list_size": 118000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 11.881,
-          "england": 10.2,
-          "items": 1402,
-          "ratio": 1.165,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 5.0,
-          "england": 8.5,
-          "items": 590,
-          "ratio": 0.588,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 101.686,
-          "england": 110.0,
-          "items": 11999,
-          "ratio": 0.924,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 10.169,
-          "england": 6.8,
-          "items": 1200,
-          "ratio": 1.495,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 2.415,
-          "england": 2.5,
-          "items": 285,
-          "ratio": 0.966,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 110.949,
-          "england": 95.0,
-          "items": 13092,
-          "ratio": 1.168,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 17.153,
-          "england": 4.2,
-          "items": 2024,
-          "ratio": 4.084,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 3,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     },
     {
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
-      "fep": 34,
-      "fep_weather": 34,
+      "fep": 37,
       "risk": "low",
-      "risk_weather": "low",
       "signals": [
         29.0,
         29.8,
@@ -1686,6 +937,9 @@
         38.7,
         40.3,
         100,
+        50.0,
+        50.0,
+        50.0,
         50.0
       ],
       "signal_names": [
@@ -1706,76 +960,15 @@
         "ACE/ARB Prescribing",
         "Anxiolytics Prescribing",
         "Bladder Antimuscarinic Rate",
-        "Oral Nutritional Supplements"
+        "Oral Nutritional Supplements",
+        "Anti-Dementia Drug Rate",
+        "Denosumab Prescribing",
+        "Parkinson's Drug Rate"
       ],
       "pop75": 11200,
-      "list_size": 119000,
-      "epd_district": {
-        "hypnotics": {
-          "rate_per_1000": 11.866,
-          "england": 10.2,
-          "items": 1412,
-          "ratio": 1.163,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "anxiolytics": {
-          "rate_per_1000": 6.857,
-          "england": 8.5,
-          "items": 816,
-          "ratio": 0.807,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "antidepressants": {
-          "rate_per_1000": 89.866,
-          "england": 110.0,
-          "items": 10694,
-          "ratio": 0.817,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bisphosphonates": {
-          "rate_per_1000": 6.092,
-          "england": 6.8,
-          "items": 725,
-          "ratio": 0.896,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "diuretics": {
-          "rate_per_1000": 1.857,
-          "england": 2.5,
-          "items": 221,
-          "ratio": 0.743,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ace_arb": {
-          "rate_per_1000": 73.546,
-          "england": 95.0,
-          "items": 8752,
-          "ratio": 0.774,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "bladder_antimusc": {
-          "rate_per_1000": 10.042,
-          "england": 4.2,
-          "items": 1195,
-          "ratio": 2.391,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        },
-        "ons_nutrition": {
-          "rate_per_1000": 0,
-          "england": 3.8,
-          "items": 0,
-          "ratio": 0,
-          "period": "Mar 2026",
-          "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
-        }
-      }
+      "fep_delta": 3,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false
     }
   ]
 }
