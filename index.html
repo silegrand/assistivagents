@@ -97,8 +97,22 @@ nav {
 .hero {
   min-height: 100vh;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 100px 2rem 4rem;
+  padding: 100px 2rem 3rem;
   max-width: 1200px; margin: 0 auto;
+}
+/* Two-column hero split */
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 3.5rem;
+}
+.hero-text {
+  display: flex; flex-direction: column;
+}
+.hero-anim-col {
+  display: flex; align-items: center; justify-content: center;
 }
 .hero-kicker {
   font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
@@ -109,14 +123,14 @@ nav {
   content: ''; display: block; width: 24px; height: 1px; background: var(--sage);
 }
 .hero-headline {
-  font-family: var(--serif); font-size: clamp(2.8rem, 6vw, 5rem);
-  font-weight: 700; line-height: 1.08; letter-spacing: -0.02em;
-  color: var(--forest-mid); max-width: 800px; margin-bottom: 1.5rem;
+  font-family: var(--serif); font-size: clamp(2rem, 3.8vw, 3.6rem);
+  font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--forest-mid); margin-bottom: 1.2rem;
 }
 .hero-headline em { font-style: italic; color: var(--sage); }
 .hero-body {
-  font-size: 1.1rem; color: var(--ink-mid); max-width: 580px;
-  line-height: 1.7; margin-bottom: 3rem;
+  font-size: 0.97rem; color: var(--ink-mid);
+  line-height: 1.7; margin-bottom: 1.8rem;
 }
 
 /* ── LIVE TICKER ── */
@@ -405,7 +419,7 @@ footer {
 @media (max-width: 600px) {
   .tools-grid { grid-template-columns: 1fr; }
   .data-grid { grid-template-columns: 1fr 1fr; }
-  .hero-headline { font-size: 2.4rem; }
+  /* hero-headline responsive handled in hero-split breakpoint */
 }
 
 /* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
@@ -438,13 +452,12 @@ footer {
 <style>
 /* ── MINI PATHWAY ANIMATION ─────────────────────────────────────── */
 .mini-anim-wrap {
-  margin: 2rem auto 2.5rem;
-  max-width: 720px;
+  width: 100%;
   background: #fff;
   border: 1px solid var(--sage-pale);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(15,35,24,0.07);
+  box-shadow: 0 4px 24px rgba(15,35,24,0.1);
 }
 .mini-anim-label {
   font-family: var(--mono);
@@ -457,7 +470,7 @@ footer {
 #mini-anim {
   display: block;
   width: 100%;
-  height: 200px;
+  height: 260px;
 }
 .mini-anim-footer {
   display: flex;
@@ -490,8 +503,17 @@ footer {
   white-space: nowrap;
 }
 .mini-anim-link:hover { text-decoration: underline; }
+@media (max-width: 860px) {
+  .hero-split {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .hero-anim-col { order: -1; } /* animation above text on mobile */
+  #mini-anim { height: 180px; }
+}
 @media (max-width: 600px) {
   #mini-anim { height: 160px; }
+  .hero-headline { font-size: clamp(1.8rem, 7vw, 2.8rem); }
 }
 </style>
 </head>
@@ -522,38 +544,47 @@ footer {
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-kicker">Kent &amp; Medway · Population Frailty Intelligence</div>
-  <h1 class="hero-headline">
-    Finding older adults at risk<br><em>before the system has to respond</em>
-  </h1>
-  <p class="hero-body">
-    Assistiv Systems builds intelligence tools for the NHS — identifying the Missing Middle: people with emerging frailty who are invisible to existing care pathways, living at home, not yet in crisis, but heading there.
-  </p>
+  <!-- Two-column: text left, animation right -->
+  <div class="hero-split">
 
-  <!-- Live data ticker -->
-  <div class="ticker" id="live-ticker">
-    <div class="ticker-dot"></div>
-    <div class="ticker-text">
-      <strong id="ticker-content">Loading live data…</strong>
-    </div>
-  </div>
-
-  <!-- MINI PATHWAY ANIMATION -->
-  <div class="mini-anim-wrap" id="mini-anim-wrap">
-    <div class="mini-anim-label">How Assistiv works — from NHS data to clinical action</div>
-    <canvas id="mini-anim" aria-hidden="true"></canvas>
-    <div class="mini-anim-footer">
-      <span class="mini-stage-label" id="mini-slabel">Data signals</span>
-      <div class="mini-dots" id="mini-dots">
-        <span class="mdot active" data-s="0"></span>
-        <span class="mdot" data-s="1"></span>
-        <span class="mdot" data-s="2"></span>
-        <span class="mdot" data-s="3"></span>
-        <span class="mdot" data-s="4"></span>
+    <!-- LEFT: text content -->
+    <div class="hero-text">
+      <div class="hero-kicker">Kent &amp; Medway · Population Frailty Intelligence</div>
+      <h1 class="hero-headline">
+        Finding older adults at risk<br><em>before the system has to respond</em>
+      </h1>
+      <p class="hero-body">
+        Assistiv Systems builds intelligence tools for the NHS — identifying the Missing Middle: people with emerging frailty who are invisible to existing care pathways, living at home, not yet in crisis, but heading there.
+      </p>
+      <!-- Live data ticker -->
+      <div class="ticker" id="live-ticker">
+        <div class="ticker-dot"></div>
+        <div class="ticker-text">
+          <strong id="ticker-content">Loading live data…</strong>
+        </div>
       </div>
-      <a href="pathway-animation.html" class="mini-anim-link">See full walkthrough →</a>
     </div>
-  </div>
+
+    <!-- RIGHT: mini animation -->
+    <div class="hero-anim-col">
+      <div class="mini-anim-wrap" id="mini-anim-wrap">
+        <div class="mini-anim-label">How Assistiv works — data to clinical action</div>
+        <canvas id="mini-anim" aria-hidden="true"></canvas>
+        <div class="mini-anim-footer">
+          <span class="mini-stage-label" id="mini-slabel">Data signals</span>
+          <div class="mini-dots" id="mini-dots">
+            <span class="mdot active" data-s="0"></span>
+            <span class="mdot" data-s="1"></span>
+            <span class="mdot" data-s="2"></span>
+            <span class="mdot" data-s="3"></span>
+            <span class="mdot" data-s="4"></span>
+          </div>
+          <a href="pathway-animation.html" class="mini-anim-link">Full walkthrough →</a>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /hero-split -->
 
   <!-- Audience paths -->
   <div class="audience-grid">
