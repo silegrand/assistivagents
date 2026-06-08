@@ -205,14 +205,14 @@ nav {
 
 /* ── TOOLS SECTION ── */
 .tools-section {
-  background: var(--forest-mid);
+  background: #243d2e;
   padding: 5rem 2rem;
 }
 .tools-inner { max-width: 1200px; margin: 0 auto; }
 .tools-header { margin-bottom: 3rem; }
 .tools-header .section-heading { color: var(--white); }
-.tools-header .section-label { color: rgba(255,255,255,0.35); }
-.tools-header .section-sub { color: rgba(255,255,255,0.55); }
+.tools-header .section-label { color: rgba(255,255,255,0.55); }
+.tools-header .section-sub { color: rgba(255,255,255,0.72); }
 
 .tools-grid {
   display: grid;
@@ -226,8 +226,8 @@ nav {
   gap: 1rem;
 }
 .tool-card {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.16);
   border-radius: var(--radius);
   padding: 1.5rem;
   text-decoration: none;
@@ -249,7 +249,7 @@ nav {
   color: var(--white); margin-bottom: 0.5rem; line-height: 1.25;
 }
 .tool-desc {
-  font-size: 0.8rem; color: rgba(255,255,255,0.5); line-height: 1.55; flex: 1;
+  font-size: 0.8rem; color: rgba(255,255,255,0.72); line-height: 1.55; flex: 1;
 }
 .tool-link {
   margin-top: 1rem; font-family: var(--mono); font-size: 0.65rem;
@@ -478,7 +478,7 @@ footer {
   <!-- Audience paths -->
   <div class="audience-grid">
 
-    <a href="#commissioner" class="aud-card">
+    <a href="#tools" class="aud-card">
       <div class="aud-icon">📊</div>
       <div class="aud-role">For commissioners</div>
       <div class="aud-title">I need to understand risk in my patch right now</div>
@@ -486,7 +486,7 @@ footer {
       <div class="aud-action">Open the intelligence tools →</div>
     </a>
 
-    <a href="#clinician" class="aud-card">
+    <a href="https://www.resiliencetools.xyz" target="_blank" rel="noopener" class="aud-card">
       <div class="aud-icon">🏥</div>
       <div class="aud-role">For clinicians &amp; PCN leads</div>
       <div class="aud-title">I want to identify frail patients before crisis</div>
@@ -617,7 +617,7 @@ footer {
     <div class="layer">
       <div class="layer-num"><strong>L2</strong>Map</div>
       <div class="layer-content">
-        <div class="layer-title">Geographic Frailty Intelligence</div>
+        <a href="layer2-map-pdf.html" class="layer-title" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(45,107,71,0.4);padding-bottom:1px;transition:border-color .15s" onmouseover="this.style.borderColor='#2d6b47'" onmouseout="this.style.borderColor='rgba(45,107,71,0.4)'">Geographic Frailty Intelligence ↗</a>
         <div class="layer-desc">FEP composite score for 13 Kent districts. Rural Access Vulnerability Index for 1,065 LSOAs. Carer Burden Index. Discharge delay intelligence. NHS 111 demand. Economic cost of inaction. All in one commissioner-facing map.</div>
         <span class="layer-badge badge-live">Live · Six tools deployed</span>
       </div>
@@ -625,7 +625,7 @@ footer {
     <div class="layer">
       <div class="layer-num"><strong>L3</strong>Reach</div>
       <div class="layer-content">
-        <div class="layer-title">Community Touchpoint Identification</div>
+        <a href="community-touchpoints.html" class="layer-title" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(45,107,71,0.4);padding-bottom:1px;transition:border-color .15s" onmouseover="this.style.borderColor='#2d6b47'" onmouseout="this.style.borderColor='rgba(45,107,71,0.4)'">Community Touchpoint Identification ↗</a>
         <div class="layer-desc">GP surgeries, pharmacies, libraries, faith communities, and VCSE organisations mapped within priority zones using NHS API and OpenStreetMap. Routes outreach to where the Missing Middle already is.</div>
         <span class="layer-badge badge-live">Live · NHS API + OpenStreetMap</span>
       </div>
@@ -633,7 +633,7 @@ footer {
     <div class="layer">
       <div class="layer-num"><strong>L4</strong>Screen</div>
       <div class="layer-content">
-        <div class="layer-title">Precision Community Screening — RESILIENCE</div>
+        <a href="https://www.resiliencetools.xyz" target="_blank" rel="noopener" class="layer-title" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(45,107,71,0.4);padding-bottom:1px;transition:border-color .15s" onmouseover="this.style.borderColor='#2d6b47'" onmouseout="this.style.borderColor='rgba(45,107,71,0.4)'">Precision Community Screening — RESILIENCE ↗</a>
         <div class="layer-desc">Voice-first frailty assessment. 12 conversational questions. PRISMA-7 and FRAIL Scale scored in real time. Structured clinical referral output. District FEP score injected as context — higher-risk zones trigger lower referral thresholds.</div>
         <span class="layer-badge badge-live">Live · resiliencetools.xyz</span>
       </div>
