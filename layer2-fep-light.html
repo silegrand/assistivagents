@@ -905,8 +905,17 @@ input[type=range]::-webkit-slider-thumb:hover {
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-brand">
-    <div class="brand-mark">AS</div>
+  <a href="index.html" style="display:flex;align-items:center;gap:.6rem;text-decoration:none">
+      <div class="nav-logo-mark">
+        <div class="nav-logo-dot nav-logo-core"></div>
+        <div class="nav-logo-dot nav-logo-r1"></div>
+        <div class="nav-logo-dot nav-logo-r2"></div>
+      </div>
+      <div class="nav-wordmark">
+        <span class="nav-wordmark-name" style="color:#fff">Assistiv</span>
+        <span class="nav-wordmark-sub" style="color:rgba(255,255,255,.42)">Systems</span>
+      </div>
+    </a>
     <div>
       <a href="index.html" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.75rem;margin-bottom:0.2rem;transition:color 0.15s" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">&#8592; Back to overview</a>
       <div class="brand-name">Assistiv Systems</div>
@@ -1792,6 +1801,32 @@ init();
 }
 #ada-send:hover { background: var(--sage); }
 #ada-send:disabled { opacity: .4; cursor: default; }
+
+/* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
+.nav-logo-mark {
+  position: relative; width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo-dot { border-radius: 50%; position: absolute; }
+.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
+.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
+.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
+.nav-logo-r1.dk { border-color: #2d6b47; }
+.nav-logo-r2.dk { border-color: #2d6b47; }
+.nav-logo-core.dk { background: #2d6b47; }
+.nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
+.nav-wordmark-name {
+  font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+}
+.nav-wordmark-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.5rem; letter-spacing: 0.18em;
+  text-transform: uppercase; line-height: 1;
+}
+
 </style>
 
 <!-- Ada toggle button -->
