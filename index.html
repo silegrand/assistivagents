@@ -434,6 +434,66 @@ footer {
 }
 
 </style>
+
+<style>
+/* ── MINI PATHWAY ANIMATION ─────────────────────────────────────── */
+.mini-anim-wrap {
+  margin: 2rem auto 2.5rem;
+  max-width: 720px;
+  background: #fff;
+  border: 1px solid var(--sage-pale);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(15,35,24,0.07);
+}
+.mini-anim-label {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding: 0.65rem 1.2rem 0;
+}
+#mini-anim {
+  display: block;
+  width: 100%;
+  height: 200px;
+}
+.mini-anim-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1.2rem 0.65rem;
+  border-top: 1px solid var(--sage-pale);
+}
+.mini-stage-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--sage);
+  flex: 1;
+  font-weight: 500;
+}
+.mini-dots { display: flex; gap: 5px; }
+.mdot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--sage-pale);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mdot.active { background: var(--sage); }
+.mini-anim-link {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  color: var(--sage);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.mini-anim-link:hover { text-decoration: underline; }
+@media (max-width: 600px) {
+  #mini-anim { height: 160px; }
+}
+</style>
 </head>
 <body>
 
@@ -475,6 +535,23 @@ footer {
     <div class="ticker-dot"></div>
     <div class="ticker-text">
       <strong id="ticker-content">Loading live data…</strong>
+    </div>
+  </div>
+
+  <!-- MINI PATHWAY ANIMATION -->
+  <div class="mini-anim-wrap" id="mini-anim-wrap">
+    <div class="mini-anim-label">How Assistiv works — from NHS data to clinical action</div>
+    <canvas id="mini-anim" aria-hidden="true"></canvas>
+    <div class="mini-anim-footer">
+      <span class="mini-stage-label" id="mini-slabel">Data signals</span>
+      <div class="mini-dots" id="mini-dots">
+        <span class="mdot active" data-s="0"></span>
+        <span class="mdot" data-s="1"></span>
+        <span class="mdot" data-s="2"></span>
+        <span class="mdot" data-s="3"></span>
+        <span class="mdot" data-s="4"></span>
+      </div>
+      <a href="pathway-animation.html" class="mini-anim-link">See full walkthrough →</a>
     </div>
   </div>
 
@@ -1271,6 +1348,294 @@ function agentThink(containerId, type) {
   document.getElementById(containerId).scrollTop = 9999;
   return el;
 }
+</script>
+
+<script>
+/* ── MINI PATHWAY ANIMATION ─────────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('mini-anim');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0, stage = 0, raf, autoTimer;
+
+  const STAGE_LABELS = ['Data signals','FEP scoring','Geographic priority','Community screening','Feedback loop'];
+
+  const C = {
+    sage:   '#2d6b47', sageL: '#7aab90', sagePale: '#d4e8db',
+    amber:  '#b07d2a', blue:  '#2a5880', rose:   '#8a3a4a',
+    purple: '#5a3a7a', forest:'#0f2318', ink:    '#1a2e1e'
+  };
+  const SIG_COLS   = [C.sage, C.amber, C.blue, C.rose, C.purple, C.sage, C.amber, C.blue, C.rose];
+  const SIG_LABELS = ['Falls 65+','Prescribing','Deprivation','Alone 75+','Hip fractures','Winter deaths','Loneliness','Dementia Dx','CQC'];
+
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x,y,w,h,r){
+      this.beginPath();
+      this.moveTo(x+r,y); this.lineTo(x+w-r,y); this.arcTo(x+w,y,x+w,y+r,r);
+      this.lineTo(x+w,y+h-r); this.arcTo(x+w,y+h,x+w-r,y+h,r);
+      this.lineTo(x+r,y+h); this.arcTo(x,y+h,x,y+h-r,r);
+      this.lineTo(x,y+r); this.arcTo(x,y,x+r,y,r);
+      this.closePath();
+    };
+  }
+
+  function resize() {
+    const r = canvas.parentElement.getBoundingClientRect();
+    W = canvas.width  = Math.floor(r.width) || 720;
+    H = canvas.height = canvas.offsetHeight  || 200;
+  }
+
+  function easeInOut(x){ return x<.5?2*x*x:-1+(4-2*x)*x; }
+
+  /* ── particles (stage 0) ── */
+  let particles = [];
+  function makeParticle() {
+    const i = Math.floor(Math.random()*SIG_LABELS.length);
+    const r = 22 + SIG_LABELS[i].length * 3.2;
+    return { x: Math.random()*W, y: Math.random()*H,
+             vx:(Math.random()-.5)*.45, vy:(Math.random()-.5)*.35,
+             col: SIG_COLS[i], label: SIG_LABELS[i], r, phase: Math.random()*6,
+             alpha: .45+Math.random()*.4 };
+  }
+
+  /* ── nodes (stage 1 & 4) ── */
+  let nodes = [];
+  function makeNode(i, total) {
+    const a = (i/total)*Math.PI*2 - Math.PI/2;
+    const dist = Math.min(W,H)*0.33;
+    return { x: W/2 + Math.cos(a)*dist, y: H/2 + Math.sin(a)*dist,
+             tx: W/2, ty: H/2, col: SIG_COLS[i], label: SIG_LABELS[i],
+             progress: 0, speed: .007+Math.random()*.004 };
+  }
+  function makeLoopNode(i, total) {
+    const a = (i/total)*Math.PI*2 - Math.PI/2;
+    const r = Math.min(W,H)*.3;
+    const LOOP_LABELS = ['Data\nsignals','FEP\nscoring','Priority\nmap','Screening','Referral\n& feedback'];
+    const LOOP_COLS   = [C.blue, C.amber, C.sage, C.rose, C.purple];
+    return { x: W/2+Math.cos(a)*r, y: H/2+Math.sin(a)*r,
+             col: LOOP_COLS[i], label: LOOP_LABELS[i], a };
+  }
+
+  /* ── districts (stage 2) ── */
+  const DISTRICTS = [
+    {n:'Thanet',s:82,r:'high'},{n:'Folkestone',s:76,r:'high'},
+    {n:'Dover',s:73,r:'high'},{n:'Swale',s:68,r:'high'},
+    {n:'Medway',s:65,r:'high'},{n:'Gravesham',s:62,r:'high'},
+    {n:'Ashford',s:57,r:'moderate'},{n:'Canterbury',s:48,r:'moderate'},
+    {n:'Maidstone',s:46,r:'moderate'},{n:'Dartford',s:54,r:'moderate'},
+  ];
+  function rCol(r){return r==='high'?'#d05050':r==='moderate'?C.blue:'#3a8a50';}
+
+  /* ── avatars (stage 3) ── */
+  let avatars = [];
+  function makeAvatar(i, total) {
+    const cols = Math.min(6, total);
+    const rows = Math.ceil(total/cols);
+    const gW = Math.min(W*.8, 380), gH = Math.min(H*.6, 160);
+    const c = i%cols, row = Math.floor(i/cols);
+    const x0 = (W-gW)/2, y0 = 30;
+    return { x: x0+c*(gW/cols)+gW/cols/2, y: y0+row*(gH/rows)+gH/rows/2,
+             state:0, timer:20+Math.random()*40, ring:0, done:false };
+  }
+
+  function initStage(s) {
+    particles=[]; nodes=[]; avatars=[]; t=0;
+    if (s===0) { for(let i=0;i<12;i++) particles.push(makeParticle()); }
+    else if (s===1) { for(let i=0;i<9;i++) nodes.push(makeNode(i,9)); }
+    else if (s===3) { for(let i=0;i<12;i++) avatars.push(makeAvatar(i,12)); }
+    else if (s===4) { for(let i=0;i<5;i++) nodes.push(makeLoopNode(i,5)); }
+    // update label
+    document.getElementById('mini-slabel').textContent = STAGE_LABELS[s];
+    document.querySelectorAll('.mdot').forEach((d,i)=>d.classList.toggle('active',i===s));
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+    if      (stage===0) drawS0();
+    else if (stage===1) drawS1();
+    else if (stage===2) drawS2();
+    else if (stage===3) drawS3();
+    else if (stage===4) drawS4();
+    t++;
+    raf = requestAnimationFrame(draw);
+  }
+
+  function drawS0() {
+    ctx.save();
+    ctx.font='500 9px DM Mono,monospace';
+    for (const p of particles) {
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<-70)p.x=W+70; if(p.x>W+70)p.x=-70;
+      if(p.y<-40)p.y=H+40; if(p.y>H+40)p.y=-40;
+      p.phase+=.022;
+      const a = p.alpha*(.8+.2*Math.sin(p.phase));
+      for (const q of particles) {
+        const dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<90&&d>1){
+          ctx.globalAlpha=(.16-.0009*d)*a;
+          ctx.strokeStyle=p.col; ctx.lineWidth=.5;
+          ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+        }
+      }
+      ctx.globalAlpha=a;
+      ctx.strokeStyle=p.col; ctx.lineWidth=1;
+      ctx.fillStyle=p.col+'22';
+      ctx.beginPath();ctx.roundRect(p.x-p.r,p.y-10,p.r*2,20,4);ctx.fill();ctx.stroke();
+      ctx.fillStyle=p.col; ctx.textAlign='center';
+      ctx.fillText(p.label,p.x,p.y+3);
+    }
+    ctx.restore();
+  }
+
+  function drawS1() {
+    const cx=W/2,cy=H/2;
+    ctx.save();
+    const pulse=.5+.5*Math.sin(t*.04);
+    for (const r of [28,48,70]) {
+      ctx.globalAlpha=.1+.05*pulse;
+      ctx.strokeStyle=C.sage; ctx.lineWidth=1;
+      ctx.beginPath();ctx.arc(cx,cy,r+pulse*4,0,Math.PI*2);ctx.stroke();
+    }
+    ctx.globalAlpha=.7+.2*pulse;
+    ctx.fillStyle=C.sage+'25'; ctx.strokeStyle=C.sage; ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cx,cy,26,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle=C.sage; ctx.font='500 10px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('FEP',cx,cy-3);
+    ctx.font='400 8px DM Mono,monospace'; ctx.fillStyle='rgba(15,35,24,0.75)';
+    ctx.fillText('score',cx,cy+9);
+    for (const n of nodes) {
+      n.progress=Math.min(1,n.progress+n.speed);
+      const px=n.x+(n.tx-n.x)*easeInOut(n.progress);
+      const py=n.y+(n.ty-n.y)*easeInOut(n.progress);
+      const fade=Math.max(0,1-n.progress*1.25+.25);
+      ctx.globalAlpha=.1+.25*n.progress;
+      ctx.strokeStyle=n.col; ctx.lineWidth=.7;
+      ctx.setLineDash([3,5]);
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(cx,cy);ctx.stroke();
+      ctx.setLineDash([]);
+      if(fade>.02){
+        ctx.globalAlpha=fade;
+        ctx.strokeStyle=n.col; ctx.lineWidth=1;
+        ctx.fillStyle=n.col+'28';
+        ctx.beginPath();ctx.roundRect(px-24,py-10,48,20,4);ctx.fill();ctx.stroke();
+        ctx.fillStyle=n.col; ctx.font='500 8px DM Mono,monospace'; ctx.textAlign='center';
+        ctx.fillText(n.label,px,py+3);
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawS2() {
+    const cols=5, gW=Math.min(W-32,520), gH=Math.min(H-50,170);
+    const cw=gW/cols, ch=gH/2, x0=(W-gW)/2, y0=18;
+    ctx.save();
+    DISTRICTS.forEach((d,i)=>{
+      const col=i%cols, row=Math.floor(i/cols);
+      const cx=x0+col*cw+cw/2, cy=y0+row*ch+ch/2;
+      const w=cw-8, h=ch-8, rc=rCol(d.r);
+      const delay=i*5, prog=Math.min(1,Math.max(0,(t-delay)/28));
+      if(prog<=0) return;
+      const pulse=d.r==='high'?.5+.5*Math.sin(t*.05+i):1;
+      ctx.globalAlpha=(d.r==='high'?.85:.65)*prog*pulse;
+      ctx.fillStyle=rc+'22'; ctx.strokeStyle=rc;
+      ctx.lineWidth=d.r==='high'?1.5:1;
+      ctx.beginPath();ctx.roundRect(cx-w/2,cy-h/2,w,h,4);ctx.fill();ctx.stroke();
+      ctx.globalAlpha=prog;
+      ctx.fillStyle=rc; ctx.font='500 8px DM Mono,monospace'; ctx.textAlign='center';
+      ctx.fillText(d.n,cx,cy-6);
+      ctx.fillStyle='rgba(15,35,24,0.9)'; ctx.font='500 14px DM Sans,sans-serif';
+      ctx.fillText(d.s,cx,cy+6);
+      ctx.fillStyle=rc; ctx.font='400 7px DM Mono,monospace';
+      ctx.fillText(d.r.toUpperCase(),cx,cy+18);
+    });
+    ctx.restore();
+  }
+
+  function drawS3() {
+    const STATE_COLS=['rgba(200,200,200,0.3)',C.sage,C.amber,C.blue,'#22aa55'];
+    ctx.save();
+    for (const av of avatars) {
+      if(!av.done){
+        av.timer--;
+        if(av.timer<=0){
+          av.state=Math.min(av.state+1,4); av.timer=22+Math.random()*28; av.ring=0;
+          if(av.state===4) av.done=true;
+        }
+      }
+      if(av.ring<1) av.ring=Math.min(1,av.ring+.05);
+      const col=STATE_COLS[av.state], R=12;
+      if(av.state>0&&av.state<4){
+        ctx.globalAlpha=.2*av.ring; ctx.strokeStyle=col; ctx.lineWidth=1;
+        ctx.beginPath();ctx.arc(av.x,av.y,R+7,0,Math.PI*2);ctx.stroke();
+      }
+      ctx.globalAlpha=av.state===0?.3:.82;
+      ctx.fillStyle=col+'35'; ctx.strokeStyle=col; ctx.lineWidth=av.done?2:1;
+      ctx.beginPath();ctx.arc(av.x,av.y,R,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle=col; ctx.globalAlpha=av.state===0?.3:.82;
+      ctx.beginPath();ctx.arc(av.x,av.y-3,3,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.arc(av.x,av.y+7,5,Math.PI,Math.PI*2);ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawS4() {
+    if(!nodes.length) return;
+    const cx=W/2,cy=H/2,N=nodes.length;
+    const loopFrac=((t*.007)%1);
+    ctx.save();
+    for(let i=0;i<N;i++){
+      const a=nodes[i],b=nodes[(i+1)%N];
+      ctx.strokeStyle=a.col; ctx.lineWidth=.8; ctx.globalAlpha=.15;
+      ctx.setLineDash([4,5]);
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      ctx.setLineDash([]);
+      const segFrac=(loopFrac*N-i+N*10)%N;
+      if(segFrac<1){
+        const f=segFrac%1;
+        ctx.globalAlpha=.9*(1-Math.abs(f-.5)*1.5);
+        ctx.fillStyle=a.col;
+        ctx.beginPath();ctx.arc(a.x+(b.x-a.x)*f,a.y+(b.y-a.y)*f,3.5,0,Math.PI*2);ctx.fill();
+      }
+    }
+    for(const nd of nodes){
+      const pulse=.5+.5*Math.sin(t*.04+nd.a);
+      ctx.globalAlpha=.6+.3*pulse;
+      ctx.strokeStyle=nd.col; ctx.lineWidth=1; ctx.fillStyle=nd.col+'28';
+      ctx.beginPath();ctx.arc(nd.x,nd.y,22,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle=nd.col; ctx.font='500 8px DM Mono,monospace'; ctx.textAlign='center';
+      const lines=nd.label.split('\n'), oy=lines.length>1?-4:3;
+      lines.forEach((ln,li)=>ctx.fillText(ln,nd.x,nd.y+oy+li*11));
+    }
+    const cp=.5+.5*Math.sin(t*.03);
+    ctx.globalAlpha=.3+.2*cp; ctx.fillStyle='rgba(255,255,255,0.2)';
+    ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=.6+.2*cp; ctx.fillStyle='rgba(15,35,24,0.7)';
+    ctx.font='500 8px DM Mono,monospace'; ctx.textAlign='center';
+    ctx.fillText('learns',cx,cy-2); ctx.fillText('& grows',cx,cy+9);
+    ctx.restore();
+  }
+
+  function setStage(s) {
+    stage = s;
+    initStage(s);
+    clearInterval(autoTimer);
+    autoTimer = setInterval(()=>{ stage=(stage+1)%5; initStage(stage); }, 8000);
+  }
+
+  document.querySelectorAll('.mdot').forEach(d=>
+    d.addEventListener('click',()=>{ setStage(+d.dataset.s); })
+  );
+
+  window.addEventListener('resize',()=>{ cancelAnimationFrame(raf); resize(); raf=requestAnimationFrame(draw); });
+
+  requestAnimationFrame(()=>{
+    resize();
+    initStage(0);
+    raf = requestAnimationFrame(draw);
+    autoTimer = setInterval(()=>{ stage=(stage+1)%5; initStage(stage); }, 8000);
+  });
+})();
 </script>
 </body>
 </html>
