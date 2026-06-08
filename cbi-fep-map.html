@@ -259,19 +259,23 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="nav-logo" style="display:flex;align-items:center;gap:.6rem;text-decoration:none">
+<nav style="background:#1a3a2a;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+  <div style="display:flex;align-items:center;gap:0.85rem">
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <a href="index.html" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0" title="Assistiv Systems">
       <div class="nav-logo-mark">
         <div class="nav-logo-dot nav-logo-core"></div>
         <div class="nav-logo-dot nav-logo-r1"></div>
         <div class="nav-logo-dot nav-logo-r2"></div>
       </div>
-      <div class="nav-wordmark">
-        <span class="nav-wordmark-name" style="color:#fff">Assistiv</span>
-        <span class="nav-wordmark-sub" style="color:rgba(255,255,255,.42)">Systems</span>
-      </div>
     </a>
-  <a href="index.html" class="nav-back">← Back to site</a>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:0.88rem;font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1">FEP × Carer Burden</span>
+      <span style="font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);line-height:1">Layer 2 · Quadrant Intelligence</span>
+    </div>
+  </div>
 </nav>
 
 <div class="page-header">
