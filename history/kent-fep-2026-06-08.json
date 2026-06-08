@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-08T08:29:27.530665+00:00",
+    "generated": "2026-06-08T08:48:16.158347+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.0 \u2014 oral nutritional supplements signal added",
     "icb": "NHS Kent and Medway ICB (QKS)",
@@ -97,7 +97,7 @@
     "alert_level": "green",
     "alert_type": "heat",
     "region": "South East England",
-    "fetched_at": "2026-06-08T08:26:46.381075+00:00",
+    "fetched_at": "2026-06-08T08:44:46.416743+00:00",
     "source": "UKHSA Weather-Health Alerting / Met Office",
     "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
     "med_risk_signals": [],
