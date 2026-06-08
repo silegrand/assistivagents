@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-07T21:01:45.005488+00:00",
+    "generated": "2026-06-08T08:32:37.014742+00:00",
     "description": "Kent & Medway Carer Burden Index \u2014 Assistiv Systems Layer 2 companion",
     "version": "1.0",
     "icb": "NHS Kent and Medway ICB (QKS)",
@@ -61,7 +61,7 @@
       "indicator_id": 93014,
       "label": "Carer's Assessment rate",
       "kent_val": 68.65901,
-      "england_val": 56.4353,
+      "england_val": null,
       "period": "2024/25",
       "invert": false,
       "source": "NHS Fingertips indicator 93014 \u2014 Kent County (E10000016)",
@@ -83,13 +83,13 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "cbi": 64,
+      "cbi": 63,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 66.2,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -111,13 +111,13 @@
     {
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
-      "cbi": 63,
+      "cbi": 61,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 61.7,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -139,13 +139,13 @@
     {
       "name": "Dover",
       "lad_code": "E07000108",
-      "cbi": 63,
+      "cbi": 61,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 61.3,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -167,13 +167,13 @@
     {
       "name": "Swale",
       "lad_code": "E07000113",
-      "cbi": 63,
+      "cbi": 61,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 61.0,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -195,13 +195,13 @@
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
-      "cbi": 61,
+      "cbi": 59,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 53.5,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -223,13 +223,13 @@
     {
       "name": "Medway",
       "lad_code": "E06000035",
-      "cbi": 60,
+      "cbi": 58,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 51.9,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -251,13 +251,13 @@
     {
       "name": "Ashford",
       "lad_code": "E07000105",
-      "cbi": 60,
+      "cbi": 58,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 50.4,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -279,13 +279,13 @@
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
-      "cbi": 59,
+      "cbi": 58,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 48.8,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -305,43 +305,15 @@
       }
     },
     {
-      "name": "Dartford",
-      "lad_code": "E07000107",
-      "cbi": 58,
-      "tier": "high",
-      "signal_scores": {
-        "census_20plus": 44.9,
-        "social_isolation": 80.8,
-        "support_access": 50.0,
-        "assessment_rate": 60.8,
-        "wellbeing": 51.2
-      },
-      "signal_weights": {
-        "census_20plus": 0.3,
-        "social_isolation": 0.25,
-        "support_access": 0.15,
-        "assessment_rate": 0.15,
-        "wellbeing": 0.15
-      },
-      "census": {
-        "pct_20plus": 4.0573,
-        "high_hrs_carers": 4401,
-        "hrs_50_plus": 2701,
-        "total_pop_5plus": 108471,
-        "england_avg_pct": 4.5187,
-        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
-      }
-    },
-    {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "cbi": 58,
+      "cbi": 57,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 45.6,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -361,15 +333,43 @@
       }
     },
     {
+      "name": "Dartford",
+      "lad_code": "E07000107",
+      "cbi": 56,
+      "tier": "high",
+      "signal_scores": {
+        "census_20plus": 44.9,
+        "social_isolation": 80.8,
+        "support_access": 50.0,
+        "assessment_rate": 50.0,
+        "wellbeing": 51.2
+      },
+      "signal_weights": {
+        "census_20plus": 0.3,
+        "social_isolation": 0.25,
+        "support_access": 0.15,
+        "assessment_rate": 0.15,
+        "wellbeing": 0.15
+      },
+      "census": {
+        "pct_20plus": 4.0573,
+        "high_hrs_carers": 4401,
+        "hrs_50_plus": 2701,
+        "total_pop_5plus": 108471,
+        "england_avg_pct": 4.5187,
+        "source": "ONS Census 2021 TS039 \u2014 LTLA level"
+      }
+    },
+    {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
-      "cbi": 58,
+      "cbi": 56,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 45.4,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -391,13 +391,13 @@
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
-      "cbi": 57,
+      "cbi": 56,
       "tier": "high",
       "signal_scores": {
         "census_20plus": 43.2,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
@@ -419,13 +419,13 @@
     {
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
-      "cbi": 56,
-      "tier": "high",
+      "cbi": 54,
+      "tier": "moderate",
       "signal_scores": {
         "census_20plus": 37.1,
         "social_isolation": 80.8,
         "support_access": 50.0,
-        "assessment_rate": 60.8,
+        "assessment_rate": 50.0,
         "wellbeing": 51.2
       },
       "signal_weights": {
