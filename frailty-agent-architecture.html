@@ -12,11 +12,11 @@
 
   :root {
     --ink: #0f1a14;
-    --paper: #f4f1eb;
-    --sage: #2d5a3d;
-    --sage-mid: #4a7c5f;
-    --sage-light: #8ab89a;
-    --sage-pale: #d4e8db;
+    --paper: #eef2fb;
+    --sage: #365EBF;
+    --sage-mid: #2a4d9e;
+    #7a9ee0;
+    --sage-pale: #eef2fb;
     --amber: #b87333;
     --amber-light: #e8c49a;
     --amber-pale: #f5ead8;
@@ -30,7 +30,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--paper);
+    background: #eef2fb;
     color: var(--ink);
     font-family: var(--sans);
     min-height: 100vh;
@@ -44,7 +44,7 @@
 
   /* HEADER */
   .header {
-    border-bottom: 2px solid var(--ink);
+    border-bottom: 2px solid #365EBF;
     padding-bottom: 1.2rem;
     margin-bottom: 2.4rem;
     display: flex;
@@ -65,7 +65,7 @@
   .header-left p {
     font-family: var(--mono);
     font-size: 0.68rem;
-    color: var(--sage-mid);
+    color: #365EBF;
     margin-top: 0.3rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -138,7 +138,7 @@
     border-radius: 0 6px 6px 0;
   }
 
-  .layer-inner.l1 { border-color: var(--sage); background: #f0f7f2; }
+  .layer-inner.l1 { border-color: #365EBF; background: #f0f7f2; }
   .layer-inner.l2 { border-color: var(--amber); background: var(--amber-pale); }
   .layer-inner.l3 { border-color: #5b6fa8; background: #f0f2fa; }
   .layer-inner.l4 { border-color: var(--signal); background: var(--signal-pale); }
@@ -191,7 +191,7 @@
     margin-top: 0.3rem;
   }
 
-  .tag-public { background: var(--sage-pale); color: var(--sage); }
+  .tag-public { background: #eef2fb; color: #365EBF; }
   .tag-api { background: #e8eaf6; color: #3949ab; }
   .tag-partner { background: var(--amber-pale); color: var(--amber); }
   .tag-proprietary { background: #fce4ec; color: #c2185b; }
@@ -229,7 +229,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #888;
-    background: var(--paper);
+    background: #eef2fb;
     padding: 0.15rem 0.5rem;
     border: 1px solid #ccc;
     border-radius: 20px;
@@ -257,7 +257,7 @@
     font-size: 0.65rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--sage-light);
+    color: #2a4d9e;
     margin-bottom: 0.8rem;
   }
 
@@ -268,14 +268,14 @@
   }
 
   .agent-step {
-    border-left: 2px solid var(--sage-mid);
+    border-left: 2px solid #365EBF;
     padding-left: 0.7rem;
   }
 
   .step-num {
     font-family: var(--mono);
     font-size: 0.55rem;
-    color: var(--sage-light);
+    color: #2a4d9e;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -329,7 +329,7 @@
 
   /* STRATEGIC INSIGHT BOX */
   .insight-box {
-    border: 2px solid var(--sage);
+    border: 2px solid #365EBF;
     background: white;
     border-radius: 6px;
     padding: 1.2rem 1.4rem;
@@ -340,7 +340,7 @@
     font-family: var(--serif);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--sage);
+    color: #365EBF;
     margin-bottom: 0.8rem;
     display: flex;
     align-items: center;
@@ -364,7 +364,7 @@
     line-height: 1.5;
     color: #444;
     padding: 0.6rem;
-    background: var(--sage-pale);
+    background: #eef2fb;
     border-radius: 4px;
   }
 
@@ -374,7 +374,7 @@
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--sage);
+    color: #365EBF;
     margin-bottom: 0.25rem;
   }
 
@@ -414,9 +414,9 @@
 .nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
 .nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
 .nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
-.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
-.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
-.nav-logo-core.dk { background: #1a3a2a; }
+.nav-logo-r1.dk { border-color: #1e3a7a; opacity: .5; }
+.nav-logo-r2.dk { border-color: #1e3a7a; opacity: .22; }
+.nav-logo-core.dk { background: #365EBF; }
 .nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
 .nav-wordmark-name {
   font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
@@ -440,16 +440,22 @@
       <h1>Frailty Geography Intelligence<br>Agent Architecture</h1>
       <p>Assistiv Systems · Population-First Screening Model · V1.0</p>
     </div>
-    <div class="header-right">
-      resiliencetools.xyz<br>
-      assistivsystems.com<br>
-      June 2026
+    <div class="header-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <div style="position:relative;width:24px;height:24px;flex-shrink:0;">
+          <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:#365EBF;z-index:2;"></div>
+          <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:14px;height:14px;border:1.5px solid #365EBF;opacity:0.5;"></div>
+          <div style="border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:22px;height:22px;border:1.5px solid #365EBF;opacity:0.22;"></div>
+        </div>
+        <span style="font-family:'Nunito',sans-serif;font-size:0.85rem;font-weight:700;color:#1e3a7a;">Assistiv Cloud</span>
+      </div>
+      <span style="font-size:0.75rem;color:#6b7f71;">June 2026</span>
     </div>
   </div>
 
   <!-- LEGEND -->
   <div class="legend">
-    <div class="legend-item"><div class="dot" style="background:#4a7c5f"></div> Layer 1 — Data Ingestion</div>
+    <div class="legend-item"><div class="dot" style="background:#365EBF"></div> Layer 1 — Data Ingestion</div>
     <div class="legend-item"><div class="dot" style="background:#b87333"></div> Layer 2 — Intelligence Synthesis</div>
     <div class="legend-item"><div class="dot" style="background:#5b6fa8"></div> Layer 3 — Outreach Targeting</div>
     <div class="legend-item"><div class="dot" style="background:#c0392b"></div> Layer 4 — Precision Screening</div>
@@ -708,8 +714,7 @@
 
   <!-- FOOTER -->
   <div class="footer">
-    <div class="footer-brand">Assistiv Systems Limited · Faversham, Kent</div>
-    <div class="footer-version">Architecture V1.0 · June 2026 · Confidential</div>
+    <div class="footer-brand">Assistiv Cloud · Frailty Geography Intelligence</div>
   </div>
 
 </div>
@@ -769,7 +774,7 @@
 .agent-msgs { flex:1;overflow-y:auto;padding:.75rem 1rem;display:flex;flex-direction:column;gap:.6rem; }
 .agent-m { max-width:88%;padding:.55rem .8rem;border-radius:10px;font-size:12.5px;line-height:1.55;animation:mIn .18s ease; }
 @keyframes mIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
-.agent-m.usr { background:#1a3a2a;color:#ffffff;align-self:flex-end;border-radius:10px 10px 2px 10px; }
+.agent-m.usr { background:#365EBF;color:#ffffff;align-self:flex-end;border-radius:10px 10px 2px 10px; }
 .agent-m.ada { background:#eaf3ee;color:var(--text);align-self:flex-start; }
 .agent-m.ada strong { color:var(--forest); }
 .agent-m.vera { background:#f5f3ff;color:#3b0764;align-self:flex-start;border-left:2px solid #7c3aed; }
@@ -813,9 +818,9 @@
 .nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
 .nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
 .nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
-.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
-.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
-.nav-logo-core.dk { background: #1a3a2a; }
+.nav-logo-r1.dk { border-color: #1e3a7a; opacity: .5; }
+.nav-logo-r2.dk { border-color: #1e3a7a; opacity: .22; }
+.nav-logo-core.dk { background: #365EBF; }
 .nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
 .nav-wordmark-name {
   font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
