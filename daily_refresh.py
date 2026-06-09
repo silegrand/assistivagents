@@ -34,6 +34,9 @@ last_epd_d = {d["name"]: d.get("epd_district", {}) for d in last.get("districts"
 print(f"  Last version: {last_meta.get('version','?')} | EPD period: {last_meta.get('epd_period','?')}")
 
 # ── FINGERTIPS FETCH ──────────────────────────────────────────────────
+# Each indicator is fetched at ICB/county level (for the England-benchmarked
+# ICB baseline) AND at district (LAD) level where published. District values
+# replace the former hand-assigned PROFILES multipliers with real measured data.
 FINGERTIPS_INDICATORS = {
     "falls_65":           (22401, "Falls admissions 65+",        KENT_ICB_ONS),
     "falls_65_79":        (22402, "Falls admissions 65-79",      KENT_ICB_ONS),
@@ -47,13 +50,28 @@ FINGERTIPS_INDICATORS = {
     "fuel_poverty":       (93759, "Fuel poverty",                KENT_ICB_ONS),
 }
 
-fingertips_results = {}
-print("\nFetching NHS Fingertips indicators...")
+# LAD codes for all 13 Kent & Medway districts — used to extract district-level
+# rows from the same Fingertips response.
+LAD_CODES = {
+    "Thanet":"E07000114","Folkestone & Hythe":"E07000112","Dover":"E07000108",
+    "Swale":"E07000113","Medway":"E06000035","Gravesham":"E07000109",
+    "Ashford":"E07000105","Canterbury":"E07000106","Dartford":"E07000107",
+    "Maidstone":"E07000110","Tonbridge & Malling":"E07000115",
+    "Sevenoaks":"E07000111","Tunbridge Wells":"E07000116",
+}
+LAD_TO_NAME = {v: k for k, v in LAD_CODES.items()}
+
+fingertips_results = {}          # ICB/county-level baseline (England-benchmarked)
+fingertips_district = defaultdict(dict)   # {district_name: {signal_key: value}}
+fingertips_resolution = {}       # {signal_key: "district" | "icb_fallback"}
+
+print("\nFetching NHS Fingertips indicators (ICB + LAD level)...")
 for key, (ind_id, label, area_code) in FINGERTIPS_INDICATORS.items():
     try:
         data = ftp.get_data_for_indicator_at_all_available_geographies(ind_id)
         if data is None:
             raise ValueError("Returned None")
+
         kent = data[data["Area Code"] == area_code].sort_values("Time period")
         eng  = data[data["Area Code"] == ENGLAND].sort_values("Time period")
         if len(kent) == 0:
@@ -67,10 +85,38 @@ for key, (ind_id, label, area_code) in FINGERTIPS_INDICATORS.items():
         }
         direction = "▲" if eng_val and kent_val > eng_val else "▼"
         print(f"  ✓ {label:<35} {kent_val:>8} vs {str(eng_val):>8} {direction} [{period}]")
+
+        # ── Extract district (LAD) level values from the same response ──
+        latest_period = period
+        district_hits = 0
+        for lad_code in LAD_CODES.values():
+            rows = data[(data["Area Code"] == lad_code)].sort_values("Time period")
+            if len(rows) == 0:
+                continue
+            # Prefer the same period as the ICB latest; else take that LAD's latest
+            same_period = rows[rows["Time period"].astype(str) == latest_period]
+            chosen = same_period if len(same_period) else rows.tail(1)
+            try:
+                val = round(float(chosen.tail(1)["Value"].values[0]), 2)
+            except (ValueError, TypeError):
+                continue
+            if val is None or (isinstance(val, float) and val != val):  # NaN guard
+                continue
+            fingertips_district[LAD_TO_NAME[lad_code]][key] = val
+            district_hits += 1
+
+        if district_hits >= len(LAD_CODES) - 2:   # allow up to 2 missing
+            fingertips_resolution[key] = "district"
+            print(f"      → district-level: {district_hits}/{len(LAD_CODES)} LADs resolved")
+        else:
+            fingertips_resolution[key] = "icb_fallback"
+            print(f"      → ICB fallback ({district_hits}/{len(LAD_CODES)} LADs only)")
+
     except Exception as e:
         print(f"  ✗ {label}: {e}")
         fingertips_results[key] = {"value": None, "england": None, "period": None,
                                     "source": f"NHS Fingertips {ind_id}", "label": label}
+        fingertips_resolution[key] = "unavailable"
 
 # ── SIGNAL DEFINITIONS ────────────────────────────────────────────────
 SIGNAL_NAMES = [
@@ -116,36 +162,59 @@ def epd_norm(district, signal_key):
     d_data = last_epd_d.get(district, {}).get(signal_key, {})
     return norm(d_data.get("rate_per_1000"), ENGLAND_PRESCRIBING_RATES.get(signal_key))
 
+# Map FEP signal index → Fingertips key (+ invert flag) for the 7 outcome
+# signals that come from Fingertips. Indices 0,3,5 are synthetic; 10-20 are EPD.
+FT_SIGNAL_MAP = {
+    1: ("falls_65",           False),
+    2: ("hip_fractures_65",   False),
+    4: ("winter_mortality",   False),
+    6: ("loneliness",         False),
+    7: ("dementia_diagnosis", True),
+    8: ("hip_fractures_80",   False),
+    9: ("social_isolation",   False),
+}
+
+def ft_district_norm(district, signal_key, invert=False):
+    """Normalise a district's real LAD-level Fingertips value against England.
+    Falls back to the ICB-level normalised value if the district value is missing."""
+    eng = fingertips_results.get(signal_key, {}).get("england")
+    dval = fingertips_district.get(district, {}).get(signal_key)
+    if dval is not None and eng:
+        return norm(dval, eng, invert)
+    # Fallback: ICB-level normalised value (same for all districts)
+    return ft(signal_key, invert)
+
 ICB_BASE = [
     50.0, ft("falls_65"), ft("hip_fractures_65"), 50.0, ft("winter_mortality"), 50.0,
     ft("loneliness"), ft("dementia_diagnosis", invert=True), ft("hip_fractures_80"),
     ft("social_isolation"), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
+]  # retained for reference / ICB-level diagnostics; district scoring uses real LAD data
 
-# ── DISTRICT PROFILES ─────────────────────────────────────────────────
-PROFILES = {
-    "Thanet":              [1.30,1.25,1.20,1.35,1.28,1.30,1.25,1.18,1.20,1.22, 1,1,1,1,1,1,1,1,1,1,1],
-    "Folkestone & Hythe":  [1.22,1.18,1.15,1.22,1.20,1.20,1.18,1.12,1.15,1.15, 1,1,1,1,1,1,1,1,1,1,1],
-    "Dover":               [1.18,1.15,1.12,1.18,1.15,1.10,1.14,1.08,1.10,1.10, 1,1,1,1,1,1,1,1,1,1,1],
-    "Swale":               [1.12,1.10,1.08,1.12,1.10,1.12,1.08,1.05,1.08,1.05, 1,1,1,1,1,1,1,1,1,1,1],
-    "Medway":              [1.06,1.05,1.04,1.08,1.05,1.08,1.02,1.02,1.05,1.02, 1,1,1,1,1,1,1,1,1,1,1],
-    "Gravesham":           [1.00,0.98,1.02,1.02,1.00,1.05,0.98,1.00,1.02,1.00, 1,1,1,1,1,1,1,1,1,1,1],
-    "Ashford":             [0.96,0.95,0.98,0.98,0.96,1.00,0.94,0.96,0.98,0.95, 1,1,1,1,1,1,1,1,1,1,1],
-    "Canterbury":          [0.90,0.90,0.92,0.85,0.92,0.92,0.92,0.90,0.90,0.90, 1,1,1,1,1,1,1,1,1,1,1],
-    "Dartford":            [0.88,0.88,0.90,0.95,0.88,0.90,0.88,0.88,0.88,0.88, 1,1,1,1,1,1,1,1,1,1,1],
-    "Maidstone":           [0.85,0.85,0.88,0.95,0.85,0.92,0.85,0.85,0.85,0.85, 1,1,1,1,1,1,1,1,1,1,1],
-    "Tonbridge & Malling": [0.78,0.78,0.82,0.78,0.80,0.85,0.80,0.80,0.80,0.80, 1,1,1,1,1,1,1,1,1,1,1],
-    "Sevenoaks":           [0.65,0.65,0.68,0.52,0.65,0.75,0.65,0.65,0.65,0.65, 1,1,1,1,1,1,1,1,1,1,1],
-    "Tunbridge Wells":     [0.58,0.58,0.62,0.58,0.60,0.65,0.60,0.60,0.60,0.60, 1,1,1,1,1,1,1,1,1,1,1],
+# ── SYNTHETIC SIGNAL DISTRICT PROFILES ───────────────────────────────
+# The 7 Fingertips outcome signals now use REAL district-level data (see
+# FT_SIGNAL_MAP + ft_district_norm). Only the 3 synthetic signals that have
+# no district-level Fingertips source retain modelled district differentiation:
+#   idx 0 — Over-75s Living Alone   (Census 2021 TS011 — to be wired to real data)
+#   idx 3 — Deprivation (IMD)       (IMD 2025 LAD-level — to be wired to real data)
+#   idx 5 — Care Home Gap           (modelled — no open district source)
+# These multipliers scale a 50.0 neutral base and are explicitly flagged as
+# 'modelled' in the output. They are the next candidates for real-data upgrade.
+SYNTH_PROFILES = {
+    "Thanet":              {0: 1.30, 3: 1.35, 5: 1.30},
+    "Folkestone & Hythe":  {0: 1.22, 3: 1.22, 5: 1.20},
+    "Dover":               {0: 1.18, 3: 1.18, 5: 1.10},
+    "Swale":               {0: 1.12, 3: 1.12, 5: 1.12},
+    "Medway":              {0: 1.06, 3: 1.08, 5: 1.08},
+    "Gravesham":           {0: 1.00, 3: 1.02, 5: 1.05},
+    "Ashford":             {0: 0.96, 3: 0.98, 5: 1.00},
+    "Canterbury":          {0: 0.90, 3: 0.85, 5: 0.92},
+    "Dartford":            {0: 0.88, 3: 0.95, 5: 0.90},
+    "Maidstone":           {0: 0.85, 3: 0.95, 5: 0.92},
+    "Tonbridge & Malling": {0: 0.78, 3: 0.78, 5: 0.85},
+    "Sevenoaks":           {0: 0.65, 3: 0.52, 5: 0.75},
+    "Tunbridge Wells":     {0: 0.58, 3: 0.58, 5: 0.65},
 }
-
-LAD_CODES = {
-    "Thanet":"E07000114","Folkestone & Hythe":"E07000112","Dover":"E07000108",
-    "Swale":"E07000113","Medway":"E06000035","Gravesham":"E07000109",
-    "Ashford":"E07000105","Canterbury":"E07000106","Dartford":"E07000107",
-    "Maidstone":"E07000110","Tonbridge & Malling":"E07000115",
-    "Sevenoaks":"E07000111","Tunbridge Wells":"E07000116",
-}
+SYNTH_INDICES = [0, 3, 5]   # Over-75s living alone, IMD deprivation, care home gap
 
 POP75 = {
     "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
@@ -155,20 +224,43 @@ POP75 = {
 }
 
 # ── BUILD DISTRICT SCORES ─────────────────────────────────────────────
-print("\nBuilding district FEP scores...")
+# Signal construction per district:
+#   • Fingertips outcome signals (idx 1,2,4,6,7,8,9) → REAL LAD-level data,
+#     normalised vs England, with ICB fallback if a district is unpublished.
+#   • Synthetic signals (idx 0,3,5) → 50.0 neutral base × modelled multiplier.
+#   • EPD prescribing signals (idx 10-20) → reused from last manual NHSBSA run.
+print("\nBuilding district FEP scores (real LAD-level Fingertips)...")
 districts = []
-for name, profile in PROFILES.items():
-    signals = [round(min(100, max(0, ICB_BASE[i] * profile[i])), 1) for i in range(21)]
+for name in LAD_CODES:
+    synth = SYNTH_PROFILES[name]
+    signals = [0.0] * 21
+
+    # Synthetic signals — neutral 50 base scaled by modelled district multiplier
+    for i in SYNTH_INDICES:
+        signals[i] = round(min(100, max(0, 50.0 * synth.get(i, 1.0))), 1)
+
+    # Fingertips outcome signals — real district data with ICB fallback
+    for i, (ft_key, invert) in FT_SIGNAL_MAP.items():
+        signals[i] = ft_district_norm(name, ft_key, invert)
+
+    # EPD prescribing signals — reused district-level prescribing
     for idx, epd_key in zip(EPD_SIGNAL_INDICES, EPD_SIGNAL_KEYS_ORDERED):
         signals[idx] = epd_norm(name, epd_key)
+
     fep  = round(min(100, max(0, sum(s * w for s, w in zip(signals, WEIGHTS)))))
     risk = "critical" if fep >= 70 else "high" if fep >= 55 else "moderate" if fep >= 40 else "low"
+
+    # Count how many Fingertips signals resolved to real district data
+    real_ft = sum(1 for i,(k,_) in FT_SIGNAL_MAP.items()
+                  if fingertips_district.get(name, {}).get(k) is not None)
+
     districts.append({
         "name": name, "lad_code": LAD_CODES[name], "fep": fep,
         "risk": risk, "signals": signals, "signal_names": SIGNAL_NAMES,
         "pop75": POP75[name],
+        "fingertips_district_signals": real_ft,
     })
-    print(f"  {name:<25} FEP {fep:>3}  ({risk})")
+    print(f"  {name:<25} FEP {fep:>3}  ({risk})  [{real_ft}/{len(FT_SIGNAL_MAP)} real district signals]")
 
 districts.sort(key=lambda x: x["fep"], reverse=True)
 
@@ -220,24 +312,57 @@ if precursor_count == 0:
 today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 real_signals = [k for k, v in fingertips_results.items() if v.get("value")]
 
+# Derive EPD period from the actual prescribing data rather than inheriting a
+# possibly-blank meta field. Each prescribing signal carries its own "period"
+# (e.g. "Mar 2026") stamped at the last manual EPD run. Read it from the data
+# so the published period can never silently go blank.
+def derive_epd_period():
+    # 1. Prefer a non-blank inherited meta value
+    inherited = (last_meta.get("epd_period") or "").strip()
+    if inherited:
+        return inherited
+    # 2. Fall back to the period stamped on any prescribing signal
+    for sig in last_epd.values():
+        if isinstance(sig, dict):
+            p = (sig.get("period") or "").strip()
+            if p:
+                return p
+    # 3. Last resort: parse from a signal source string like "...MAR2026"
+    import re as _re
+    for sig in last_epd.values():
+        if isinstance(sig, dict):
+            src = sig.get("source", "")
+            m = _re.search(r'([A-Z]{3})(\d{4})', src.upper())
+            if m:
+                return f"{m.group(1).title()} {m.group(2)}"
+    return "unknown"
+
+epd_period = derive_epd_period()
+print(f"\nEPD period resolved: {epd_period}")
+
 output = {
     "meta": {
         "generated":         datetime.now(timezone.utc).isoformat(),
         "description":       "Kent & Medway FEP scores — Assistiv Systems Layer 2",
-        "version":           last_meta.get("version", "5.0"),
-        "refresh_type":      "daily — Fingertips only (EPD reused from last manual run)",
-        "epd_period":        last_meta.get("epd_period", ""),
+        "version":           "5.1 — real LAD-level Fingertips (district scoring)",
+        "refresh_type":      "daily — Fingertips at LAD level (EPD reused from last manual run)",
+        "epd_period":        epd_period,
         "icb":               "NHS Kent and Medway ICB (QKS)",
         "icb_ons_code":      KENT_ICB_ONS,
-        "data_quality":      f"real — {len(real_signals)} Fingertips signals + EPD from last manual run",
+        "data_quality":      f"real — {len(real_signals)} Fingertips signals (district-level where published) + EPD from last manual run",
         "signals_real":      real_signals,
         "signals_synthetic": ["alone_75", "deprivation_imd", "care_home_gap"],
+        "fingertips_resolution": fingertips_resolution,
+        "scoring_note": ("Fingertips outcome signals use real LAD-level district data normalised vs England, "
+                         "with ICB-level fallback for any district not published at LAD level. "
+                         "Synthetic signals (over-75s living alone, IMD deprivation, care home gap) remain "
+                         "modelled pending real district sources. EPD prescribing reused from last manual NHSBSA run."),
         "signal_names":      SIGNAL_NAMES,
         "weights":           WEIGHTS,
         "fep_delta_note": ("fep_delta = change vs previous daily commit. ""Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. ""Phase 2: add 111 call velocity to precursor logic."),
         "sources": {
             "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py — fetched today",
-            "epd":        f"NHSBSA EPD — {last_meta.get('epd_period', 'last manual run')} (reused)",
+            "epd":        f"NHSBSA EPD — {epd_period} (reused)",
         },
     },
     "icb_baseline": {
