@@ -6,20 +6,28 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon-32.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assistiv Systems · Frailty Intelligence for the NHS</title>
+<title>Assistiv Cloud · Frailty Intelligence for the NHS</title>
 <meta name="description" content="Assistiv Systems identifies older adults at risk before they reach crisis — using open NHS data, geographic intelligence, and community screening.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/brand.css">
 <style>
+/* ── Assistiv Cloud — activate blue brand ── */
 :root {
-  --forest:      #0f2318;
-  --forest-mid:  #1a3a2a;
-  --sage:        #2d6b47;
-  --sage-mid:    #4a7c5f;
-  --sage-light:  #7aab90;
-  --sage-pale:   #d4e8db;
-  --sage-ghost:  rgba(45,107,71,0.07);
+  --brand:       #365EBF;
+  --brand-dark:  #1e3a7a;
+  --brand-mid:   #2a4d9e;
+  --brand-pale:  #e8edf8;
+  --brand-ring:  #365EBF;
+
+  --forest:      #1e3a7a;
+  --forest-mid:  #2a4d9e;
+  --sage:        #365EBF;
+  --sage-mid:    #4a72cc;
+  --sage-light:  #7a9ee0;
+  --sage-pale:   #e8edf8;
+  --sage-ghost:  rgba(54,94,191,0.07);
   --cream:       #f7f4ee;
   --cream-mid:   #ede9e0;
   --cream-dark:  #ddd8ce;
@@ -116,7 +124,7 @@ nav {
 }
 .hero-kicker {
   font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--sage); margin-bottom: 1.5rem;
+  text-transform: uppercase; color: var(--brand); margin-bottom: 1.5rem;
   display: flex; align-items: center; gap: 0.75rem;
 }
 .hero-kicker::before {
@@ -429,12 +437,12 @@ footer {
   flex-shrink: 0;
 }
 .nav-logo-dot { border-radius: 50%; position: absolute; }
-.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
-.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
-.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
-.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
-.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
-.nav-logo-core.dk { background: #1a3a2a; }
+.nav-logo-core { width: 7px; height: 7px; background: #365EBF; z-index: 2; }
+.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #365EBF; opacity: 0.38; background: none; }
+.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #365EBF; opacity: 0.16; background: none; }
+.nav-logo-r1.dk { border-color: #365EBF; opacity: .5; }
+.nav-logo-r2.dk { border-color: #365EBF; opacity: .22; }
+.nav-logo-core.dk { background: #365EBF; }
 .nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
 .nav-wordmark-name {
   font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
@@ -528,8 +536,8 @@ footer {
         <div class="nav-logo-dot nav-logo-r2 dk"></div>
       </div>
       <div class="nav-wordmark">
-        <span class="nav-wordmark-name" style="color:#0f2318">Assistiv</span>
-        <span class="nav-wordmark-sub" style="color:#2d6b47;opacity:.75">Systems</span>
+        <span class="nav-wordmark-name" style="color:#1e3a7a">Assistiv</span>
+        <span class="nav-wordmark-sub" style="font-family:'DM Mono',monospace;font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;line-height:1;color:#365EBF;opacity:.85">Cloud</span>
       </div>
     </a>
   <ul class="nav-links">
@@ -874,13 +882,13 @@ footer {
   <div class="footer-inner">
     <div class="footer-brand">
       <div style="position:relative;width:26px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-        <div style="border-radius:50%;position:absolute;width:7px;height:7px;background:#1a3a2a;z-index:2"></div>
-        <div style="border-radius:50%;position:absolute;width:15px;height:15px;border:1.5px solid #1a3a2a;opacity:.5;background:none"></div>
-        <div style="border-radius:50%;position:absolute;width:24px;height:24px;border:1.5px solid #1a3a2a;opacity:.22;background:none"></div>
+        <div style="border-radius:50%;position:absolute;width:7px;height:7px;background:#365EBF;z-index:2"></div>
+        <div style="border-radius:50%;position:absolute;width:15px;height:15px;border:1.5px solid #365EBF;opacity:.5;background:none"></div>
+        <div style="border-radius:50%;position:absolute;width:24px;height:24px;border:1.5px solid #365EBF;opacity:.22;background:none"></div>
       </div>
       <div style="display:flex;flex-direction:column;gap:1px">
-        <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:1rem;font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#0f2318">Assistiv</span>
-        <span style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;line-height:1;color:#2d6b47;opacity:.75">Systems</span>
+        <span style="font-family:'Cabinet Grotesk','Nunito',sans-serif;font-size:1rem;font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#1e3a7a">Assistiv</span>
+        <span style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;line-height:1;color:#365EBF;opacity:.75">Cloud</span>
       </div>
     </div>
     <ul class="footer-links">
@@ -1073,12 +1081,12 @@ loadLiveData();
   flex-shrink: 0;
 }
 .nav-logo-dot { border-radius: 50%; position: absolute; }
-.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
-.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
-.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
-.nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
-.nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
-.nav-logo-core.dk { background: #1a3a2a; }
+.nav-logo-core { width: 7px; height: 7px; background: #365EBF; z-index: 2; }
+.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #365EBF; opacity: 0.38; background: none; }
+.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #365EBF; opacity: 0.16; background: none; }
+.nav-logo-r1.dk { border-color: #365EBF; opacity: .5; }
+.nav-logo-r2.dk { border-color: #365EBF; opacity: .22; }
+.nav-logo-core.dk { background: #365EBF; }
 .nav-wordmark { display: flex; flex-direction: column; gap: 1px; }
 .nav-wordmark-name {
   font-family: 'Cabinet Grotesk', 'Nunito', sans-serif;
