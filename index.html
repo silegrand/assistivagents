@@ -342,10 +342,9 @@ body {
 
 /* ── FOOTER ── */
 footer {
-  background: #ffffff;
+  background: var(--white);
   padding: 4rem 0 2.25rem;
-  border-top: 2px solid #365EBF;
-  color: #3d5245;
+  border-top: 1px solid var(--cream-dark);
 }
 .footer-inner {
   max-width: 1200px; margin: 0 auto; padding: 0 2rem;
@@ -355,13 +354,13 @@ footer {
   grid-template-columns: 240px 1fr;
   gap: 4rem;
   padding-bottom: 3rem;
-  border-bottom: 1px solid #c8d5ee;
+  border-bottom: 1px solid var(--cream-dark);
   margin-bottom: 2rem;
 }
 .footer-brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
 .footer-tagline {
   font-size: 0.82rem;
-  color: #3d5245;
+  color: var(--ink-muted);
   line-height: 1.75;
   max-width: 220px;
 }
@@ -374,29 +373,41 @@ footer {
   font-family: var(--sans);
   font-size: 0.66rem; font-weight: 700;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: #ffffff;
+  color: var(--brand);
   margin-bottom: 1rem;
 }
 .footer-nav-col a {
   display: block;
   font-size: 0.82rem;
-  color: #3d5245;
+  color: var(--ink-mid);
   margin-bottom: 0.55rem;
   text-decoration: none;
   transition: color var(--tr);
 }
-.footer-nav-col a:hover { color: #365EBF; }
+.footer-nav-col a:hover { color: var(--brand); }
 .footer-bottom {
   display: flex; justify-content: space-between;
   align-items: center; flex-wrap: wrap; gap: 1rem;
 }
 .footer-copy {
   font-family: var(--mono); font-size: 0.65rem;
-  color: #9aaa9e;
+  color: var(--ink-dim);
 }
+.footer-links { display: flex; gap: 1.5rem; }
+.footer-links a {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  text-decoration: none;
+  transition: color var(--tr);
+}
+.footer-links a:hover { color: var(--brand); }
 @media (max-width: 700px) {
   .footer-top { grid-template-columns: 1fr; gap: 2rem; }
   .footer-nav { grid-template-columns: repeat(2,1fr); }
+}
+@media (max-width: 480px) {
+  .footer-nav { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; text-align: center; }
 }
 
 /* ── RESPONSIVE ── */
@@ -971,9 +982,9 @@ footer {
           </div>
         </div>
         <p class="footer-tagline">Frailty intelligence for the NHS. Finding older adults at risk before the system has to respond.</p>
-        <p style="font-size:0.72rem;color:#9aaa9e;margin-top:0.75rem;">Powered by Anthropic, Claude 4.8</p>
+        <p style="font-size:0.72rem;color:var(--ink-dim);margin-top:0.75rem;">Powered by Anthropic, Claude 4.8</p>
       </div>
-      <nav class="footer-nav" aria-label="Footer navigation">
+      <div class="footer-nav">
         <div class="footer-nav-col">
           <h5>Platform</h5>
           <a href="#tools">Tools</a>
@@ -982,18 +993,22 @@ footer {
         </div>
         <div class="footer-nav-col">
           <h5>Ecosystem</h5>
-          <a href="https://www.assistiv.tools" target="_blank">Assistiv Tools ↗</a>
-          <a href="https://www.assistiv.co" target="_blank">Assistiv.co ↗</a>
+          <a href="https://www.assistiv.tools" target="_blank" rel="noopener">assistiv.tools ↗</a>
+          <a href="https://www.assistiv.co" target="_blank" rel="noopener">assistiv.co ↗</a>
         </div>
         <div class="footer-nav-col">
           <h5>Contact</h5>
           <a href="#contact">Get in touch</a>
           <a href="mailto:simon@assistiv.co">simon@assistiv.co</a>
         </div>
-      </nav>
+      </div>
     </div>
     <div class="footer-bottom">
-      <p class="footer-copy">© 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2019. For research and commissioning intelligence purposes only, not a clinical instrument.</p>
+      <p class="footer-copy">© 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2019. For research and commissioning intelligence purposes only.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Notice</a>
+        <a href="#">Accessibility</a>
+      </div>
     </div>
   </div>
 </footer>
