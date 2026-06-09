@@ -139,13 +139,15 @@ assert abs(sum(WEIGHTS) - 1.0) < 0.001
 ENGLAND_PRESCRIBING_RATES = {
     "hypnotics": 10.2, "anxiolytics": 8.5, "antidepressants": 110.0,
     "bisphosphonates": 6.8, "diuretics": 2.5, "ace_arb": 95.0,
-    "bladder_antimusc": 4.2, "oral_nutrition": 3.1,
+    "bladder_antimusc": 4.2, "ons_nutrition": 3.8,
     "anti_dementia": 2.8, "denosumab": 0.9, "parkinsons": 2.4,
 }
 
+# Key names MUST match what the Combined Pipeline notebook writes into
+# epd_district — the notebook uses 'ons_nutrition' (not 'oral_nutrition').
 EPD_SIGNAL_KEYS_ORDERED = [
     "hypnotics", "antidepressants", "bisphosphonates", "diuretics", "ace_arb",
-    "anxiolytics", "bladder_antimusc", "oral_nutrition", "anti_dementia", "denosumab", "parkinsons"
+    "anxiolytics", "bladder_antimusc", "ons_nutrition", "anti_dementia", "denosumab", "parkinsons"
 ]
 EPD_SIGNAL_INDICES = list(range(10, 21))
 
@@ -254,12 +256,26 @@ for name in LAD_CODES:
     real_ft = sum(1 for i,(k,_) in FT_SIGNAL_MAP.items()
                   if fingertips_district.get(name, {}).get(k) is not None)
 
-    districts.append({
+    record = {
         "name": name, "lad_code": LAD_CODES[name], "fep": fep,
         "risk": risk, "signals": signals, "signal_names": SIGNAL_NAMES,
         "pop75": POP75[name],
         "fingertips_district_signals": real_ft,
-    })
+    }
+
+    # CRITICAL: carry the district EPD prescribing data forward. The manual
+    # Combined Pipeline writes epd_district per district; this script reads it
+    # (last_epd_d) for scoring but previously did NOT write it back — so the
+    # second daily run onwards found nothing and every EPD signal collapsed to
+    # 50.0 neutral (32% of total FEP weight pinned dead). Persisting it here
+    # makes the EPD data survive between manual NHSBSA runs.
+    if last_epd_d.get(name):
+        record["epd_district"] = last_epd_d[name]
+    _last_rec = next((d for d in last.get("districts", []) if d.get("name") == name), {})
+    if _last_rec.get("list_size"):
+        record["list_size"] = _last_rec["list_size"]
+
+    districts.append(record)
     print(f"  {name:<25} FEP {fep:>3}  ({risk})  [{real_ft}/{len(FT_SIGNAL_MAP)} real district signals]")
 
 districts.sort(key=lambda x: x["fep"], reverse=True)
