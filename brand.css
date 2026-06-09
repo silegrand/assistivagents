@@ -1,0 +1,135 @@
+/*
+ * Assistiv Systems — Shared Brand Token File
+ * Version: 1.0 · June 2026
+ *
+ * Usage: link this file in each site's <head> BEFORE any site-specific styles.
+ * Each site then sets one override variable to activate its brand colour:
+ *
+ *   assistiv.co      → no override needed (Systems green is the default)
+ *   assistiv.cloud   → :root { --brand: var(--brand-cloud); --brand-dark: var(--brand-cloud-dark); --brand-pale: var(--brand-cloud-pale); --brand-ring: var(--brand-cloud-ring); }
+ *   assistiv.tools   → :root { --brand: var(--brand-tools); --brand-dark: var(--brand-tools-dark); --brand-pale: var(--brand-tools-pale); --brand-ring: var(--brand-tools-ring); }
+ *
+ * Logo colour classes:
+ *   .logo-core  → filled dot centre
+ *   .logo-r1    → inner ring
+ *   .logo-r2    → outer ring
+ *   Apply data-variant="systems|cloud|tools" to the .logo-mark wrapper to switch palette.
+ */
+
+/* ─── GLOBAL FOUNDATIONS ─────────────────────────────── */
+:root {
+
+  /* Shared neutrals — identical across all three brands */
+  --cream:       #f9f7f4;
+  --cream-mid:   #ede9e0;
+  --cream-dark:  #ddd8ce;
+  --white:       #ffffff;
+  --ink:         #0f1a14;
+  --ink-mid:     #3a4a3f;
+  --ink-soft:    #6b7d72;
+  --border:      #d8e0da;
+
+  /* Shared typography */
+  --serif:       'DM Serif Display', Georgia, serif;
+  --sans:        'DM Sans', 'Nunito', system-ui, sans-serif;
+  --mono:        'DM Mono', monospace;
+
+  /* ── Brand 1: Assistiv Systems (green) ─ assistiv.co ── */
+  --brand-systems:       #0A5F44;
+  --brand-systems-dark:  #0f2318;
+  --brand-systems-mid:   #1a3a2a;
+  --brand-systems-pale:  #e8f0eb;
+  --brand-systems-ring:  #0A5F44;
+
+  /* ── Brand 2: Assistiv Cloud (blue) ─ assistiv.cloud ── */
+  --brand-cloud:         #365EBF;
+  --brand-cloud-dark:    #1e3a7a;
+  --brand-cloud-mid:     #2a4d9e;
+  --brand-cloud-pale:    #e8edf8;
+  --brand-cloud-ring:    #365EBF;
+
+  /* ── Brand 3: Assistiv Tools (amber) ─ assistiv.tools ── */
+  --brand-tools:         #ED8C36;
+  --brand-tools-dark:    #9e5412;
+  --brand-tools-mid:     #c4702a;
+  --brand-tools-pale:    #fdf3e3;
+  --brand-tools-ring:    #ED8C36;
+
+  /* ── Active brand (defaults to Systems; override per-site) ── */
+  --brand:       var(--brand-systems);
+  --brand-dark:  var(--brand-systems-dark);
+  --brand-mid:   var(--brand-systems-mid);
+  --brand-pale:  var(--brand-systems-pale);
+  --brand-ring:  var(--brand-systems-ring);
+}
+
+/* ─── LOGO MARK ──────────────────────────────────────── */
+/*
+ * Pulse ring logo — three concentric divs.
+ * HTML pattern (copy into each nav/footer):
+ *
+ *   <div class="al-mark">
+ *     <div class="al-dot al-core"></div>
+ *     <div class="al-dot al-r1"></div>
+ *     <div class="al-dot al-r2"></div>
+ *   </div>
+ */
+
+.al-mark {
+  position: relative;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.al-dot {
+  border-radius: 50%;
+  position: absolute;
+}
+
+/* Systems (green) — default */
+.al-core            { width: 7px;  height: 7px;  background: var(--brand-systems); z-index: 2; }
+.al-r1              { width: 15px; height: 15px; border: 1.5px solid var(--brand-systems); opacity: 0.5;  background: none; }
+.al-r2              { width: 24px; height: 24px; border: 1.5px solid var(--brand-systems); opacity: 0.22; background: none; }
+
+/* Cloud (blue) — add class .al-cloud to .al-mark */
+.al-cloud .al-core  { background: var(--brand-cloud); }
+.al-cloud .al-r1    { border-color: var(--brand-cloud); }
+.al-cloud .al-r2    { border-color: var(--brand-cloud); }
+
+/* Tools (amber) — add class .al-tools to .al-mark */
+.al-tools .al-core  { background: var(--brand-tools); }
+.al-tools .al-r1    { border-color: var(--brand-tools); }
+.al-tools .al-r2    { border-color: var(--brand-tools); }
+
+/* ─── WORDMARK ───────────────────────────────────────── */
+/*
+ * HTML pattern:
+ *   <div class="al-wordmark">
+ *     <span class="al-name">Assistiv</span>
+ *     <span class="al-sub">Systems</span>   ← or Cloud / Tools
+ *   </div>
+ */
+
+.al-wordmark {
+  display: flex; flex-direction: column; gap: 1px;
+}
+
+.al-name {
+  font-family: var(--sans);
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: -0.03em; line-height: 1.1;
+  color: var(--ink);
+}
+
+.al-sub {
+  font-family: var(--mono);
+  font-size: 0.48rem; letter-spacing: 0.18em;
+  text-transform: uppercase; line-height: 1;
+  color: var(--brand); opacity: 0.85;
+}
+
+/* Sub-label colour overrides per brand */
+.al-sub-systems { color: var(--brand-systems); }
+.al-sub-cloud   { color: var(--brand-cloud); }
+.al-sub-tools   { color: var(--brand-tools); }
