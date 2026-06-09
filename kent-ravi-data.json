@@ -1,14 +1,14 @@
 {
   "meta": {
-    "generated": "2026-06-09T20:19:12.636142+00:00",
+    "generated": "2026-06-09T20:19:20.584705+00:00",
     "description": "Rural Access Vulnerability Index \u2014 Kent & Medway LSOAs",
-    "version": "2.1",
+    "version": "2.0",
     "lsoa_count": 1065,
     "sources": {
       "geo_barriers": "IMD 2025 File 7 \u2014 Geographic Barriers sub-domain (MHCLG, Oct 2025, rural-enhanced, 2021 LSOA boundaries)",
       "ruc": "mySociety/ONS RUC 2021",
       "census": "Census 2021 Nomis or England average fallback",
-      "fuel_poverty": "DESNZ Sub-regional Fuel Poverty Statistics \u2014 LILEE metric, LSOA level (2024 data)",
+      "fuel_poverty": "DESNZ Sub-regional Fuel Poverty \u2014 LILE metric, LSOA level",
       "solo65_household": "Census 2021 TS011 \u2014 single-person 65+ households via Nomis",
       "qof_frailty": "NHS Digital QOF frailty register \u2014 practice-level, district aggregated"
     },
