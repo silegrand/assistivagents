@@ -55,11 +55,11 @@ body {
 }
 
 /* ── NAV ── */
-  /* ── NAV ── */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 1000;
+    height: 72px;
     background: #365EBF;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -486,7 +486,7 @@ footer {
 .footer-brand { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
 .footer-tagline {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.42);
+  color: rgba(255,255,255,0.72);
   line-height: 1.75;
   max-width: 220px;
 }
@@ -499,13 +499,13 @@ footer {
   font-family: var(--sans);
   font-size: 0.66rem; font-weight: 700;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: #ffffff;
   margin-bottom: 1rem;
 }
 .footer-nav-col a {
   display: block;
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.58);
+  color: rgba(255,255,255,0.75);
   margin-bottom: 0.55rem;
   text-decoration: none;
   transition: color var(--tr);
@@ -517,7 +517,7 @@ footer {
 }
 .footer-copy {
   font-family: var(--mono); font-size: 0.65rem;
-  color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.5);
 }
 @media (max-width: 700px) {
   .footer-top { grid-template-columns: 1fr; gap: 2rem; }
@@ -614,35 +614,45 @@ footer {
 <body>
 
 <!-- NAV -->
-<nav id="nav" role="navigation" aria-label="Main navigation">
-  <div class="nav-inner">
-    <a class="nav-brand" href="/">
-      <div class="nav-logo-mark">
-        <div class="nav-logo-dot nav-logo-core"></div>
-        <div class="nav-logo-dot nav-logo-r1"></div>
-        <div class="nav-logo-dot nav-logo-r2"></div>
+<nav id="nav" role="navigation" aria-label="Main navigation" style="position:fixed;top:0;left:0;right:0;z-index:1000;height:72px;background:#365EBF;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.12);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;max-width:1200px;margin:0 auto;height:72px;">
+
+    <!-- Logo -->
+    <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;flex-shrink:0;">
+      <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="border-radius:50%;position:absolute;width:9px;height:9px;background:#ffffff;z-index:2;"></div>
+        <div style="border-radius:50%;position:absolute;width:20px;height:20px;border:1.5px solid rgba(255,255,255,0.6);background:none;"></div>
+        <div style="border-radius:50%;position:absolute;width:33px;height:33px;border:1.5px solid rgba(255,255,255,0.25);background:none;"></div>
       </div>
-      <div class="nav-wordmark">
-        <span class="nav-wordmark-name">Assistiv</span>
-        <span class="nav-wordmark-sub">Cloud</span>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <span style="font-family:'Nunito','DM Sans',system-ui,sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-0.03em;line-height:1.1;color:#ffffff;">Assistiv</span>
+        <span style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;line-height:1;color:rgba(255,255,255,0.65);">Cloud</span>
       </div>
     </a>
-    <ul class="nav-links">
-      <li><a href="#tools">Tools</a></li>
-      <li><a href="#how-it-works">How it works</a></li>
-      <li><a href="#evidence">Evidence</a></li>
-      <li><a href="#contact">Contact</a></li>
-      <li class="nav-dropdown">
-        <a href="#" class="nav-dropdown-toggle" onclick="return false">Ecosystem ▾</a>
-        <ul class="nav-dropdown-menu">
-          <li><a href="https://www.assistiv.tools" target="_blank">Assistiv Tools ↗</a></li>
-          <li><a href="https://www.assistiv.co" target="_blank">Assistiv.co ↗</a></li>
+
+    <!-- Links -->
+    <ul class="nav-links" style="display:flex;align-items:center;gap:1.8rem;list-style:none;margin:0;padding:0;">
+      <li><a href="#tools" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Tools</a></li>
+      <li><a href="#how-it-works" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">How it works</a></li>
+      <li><a href="#evidence" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Evidence</a></li>
+      <li><a href="#contact" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Contact</a></li>
+      <li class="nav-dropdown" style="position:relative;">
+        <a href="#" onclick="return false;" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;cursor:pointer;">Ecosystem ▾</a>
+        <ul class="nav-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 0.75rem);left:50%;transform:translateX(-50%);background:#ffffff;border-radius:8px;box-shadow:0 8px 24px rgba(30,58,122,0.18);list-style:none;min-width:160px;overflow:hidden;z-index:200;padding:0;margin:0;">
+          <li><a href="https://www.assistiv.tools" target="_blank" style="display:block;padding:0.65rem 1.1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:#1e3a7a;font-weight:500;text-decoration:none;">Assistiv Tools ↗</a></li>
+          <li><a href="https://www.assistiv.co" target="_blank" style="display:block;padding:0.65rem 1.1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:#1e3a7a;font-weight:500;text-decoration:none;">Assistiv.co ↗</a></li>
         </ul>
       </li>
     </ul>
-    <a class="nav-cta" href="#contact">Get in touch</a>
-    <button class="hamburger" id="hbg" aria-label="Open navigation menu">
-      <span></span><span></span><span></span>
+
+    <!-- CTA -->
+    <a href="#contact" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:600;color:#365EBF;background:#ffffff;text-decoration:none;padding:0.55rem 1.3rem;border-radius:6px;white-space:nowrap;flex-shrink:0;">Get in touch</a>
+
+    <!-- Hamburger -->
+    <button class="hamburger" id="hbg" aria-label="Open navigation menu" style="display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;">
+      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
+      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
+      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
     </button>
   </div>
 </nav>
@@ -658,8 +668,32 @@ footer {
 </div>
 
 <script>
+  // Hamburger
   document.getElementById('hbg').addEventListener('click',()=>document.getElementById('mob-nav').classList.add('open'));
   document.getElementById('mob-close').addEventListener('click',()=>document.getElementById('mob-nav').classList.remove('open'));
+  // Dropdown hover via JS (works on touch too)
+  document.querySelectorAll('.nav-dropdown').forEach(function(el){
+    el.addEventListener('mouseenter',function(){ el.querySelector('.nav-dropdown-menu').style.display='block'; });
+    el.addEventListener('mouseleave',function(){ el.querySelector('.nav-dropdown-menu').style.display='none'; });
+  });
+  // Responsive: show hamburger on small screens
+  function navResponsive(){
+    var w = window.innerWidth;
+    var links = document.querySelector('#nav .nav-links');
+    var cta = document.querySelector('#nav > div > a[href="#contact"]');
+    var hbg = document.getElementById('hbg');
+    if(w <= 820){
+      if(links) links.style.display='none';
+      if(cta) cta.style.display='none';
+      if(hbg) hbg.style.display='flex';
+    } else {
+      if(links) links.style.display='flex';
+      if(cta) cta.style.display='block';
+      if(hbg) hbg.style.display='none';
+    }
+  }
+  navResponsive();
+  window.addEventListener('resize', navResponsive);
 </script>
 
 <!-- HERO -->
