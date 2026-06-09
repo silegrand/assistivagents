@@ -13,14 +13,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --forest:    #0f2318;
-  --forest2:   #1a3a2a;
-  --sage:      #2d6b47;
-  --sage2:     #4a7c5f;
-  --sage3:     #7aab90;
-  --cream:     #f7f4ee;
-  --cream2:    #ede9e0;
-  --cream3:    #ddd8ce;
+  --forest:    #1e3a7a;
+  --forest2:   #365EBF;
+  --sage:      #365EBF;
+  --sage2:     #2a4d9e;
+  --sage3:     #7a9ee0;
+  --cream:     #eef2fb;
+  --cream2:    #dde5f5;
+  --cream3:    #c8d5ee;
   --ink:       #0f1a14;
   --ink2:      #5a7260;
   --ink3:      #9aaa9e;
@@ -65,7 +65,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 .view-toggle{display:flex;gap:0;border:1px solid var(--cream3);border-radius:5px;overflow:hidden;margin:1.5rem 0 0;}
 .vt-btn{font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1.1rem;background:transparent;color:var(--ink3);border:none;cursor:pointer;transition:background var(--tr),color var(--tr);border-right:1px solid var(--cream3);}
 .vt-btn:last-child{border-right:none;}
-.vt-btn.active{background:rgba(45,107,71,0.1);color:var(--sage);}
+.vt-btn.active{background:rgba(54,94,191,0.1);color:#365EBF;}
 .vt-btn:hover:not(.active){background:var(--cream2);color:var(--ink2);}
 
 /* ── MAIN LAYOUT ── */
@@ -143,7 +143,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
   border:1px solid var(--cream3);
 }
 .q-chip:hover{background:var(--cream);transform:translateX(2px);}
-.q-chip.selected{border-color:var(--sage);background:rgba(45,107,71,0.06);}
+.q-chip.selected{border-color:#365EBF;background:rgba(54,94,191,0.06);}
 .q-chip-name{font-weight:500;color:var(--ink);}
 .q-chip-scores{font-family:var(--mono);font-size:.6rem;color:var(--ink2);display:flex;gap:.4rem;}
 .q-chip-score{padding:.1rem .3rem;border-radius:2px;background:var(--cream2);}
@@ -166,7 +166,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 .br-label{font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);}
 .bar-track{height:6px;background:var(--cream3);border-radius:3px;overflow:hidden;position:relative;}
 .bar-fill-fep,.bar-fill-cbi{height:100%;border-radius:3px;transition:width .6s ease;}
-.bar-fill-fep{background:var(--sage);}
+.bar-fill-fep{background:#365EBF;}
 .bar-fill-cbi{background:var(--blue);}
 .br-scores{font-family:var(--mono);font-size:.65rem;color:var(--ink2);text-align:right;}
 
@@ -193,7 +193,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 .dh-name{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--ink);}
 .dh-scores{display:flex;gap:.6rem;}
 .dh-score{font-family:var(--mono);font-size:.65rem;letter-spacing:.06em;padding:.3rem .7rem;border-radius:4px;}
-.dh-score.fep{background:rgba(45,107,71,0.1);color:var(--sage);border:1px solid rgba(45,107,71,0.3);}
+.dh-score.fep{background:rgba(54,94,191,0.1);color:#365EBF;border:1px solid rgba(54,94,191,0.3);}
 .dh-score.cbi{background:rgba(37,99,176,0.1);color:var(--blue);border:1px solid rgba(37,99,176,0.3);}
 .dh-score.tier{background:var(--cream2);color:var(--ink2);border:1px solid var(--cream3);}
 .detail-body{padding:1.25rem;display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
@@ -208,7 +208,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 .qt-critical{background:#fef2f2;color:var(--red);border:1px solid #fca5a5;}
 .qt-monitor{background:#fffbeb;color:var(--amber);border:1px solid #fcd34d;}
 .qt-carer{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe;}
-.qt-lower{background:#f0fdf4;color:var(--sage);border:1px solid #bbf7d0;}
+.qt-lower{background:#eef2fb;color:#365EBF;border:1px solid #c8d5ee;}
 .detail-note{grid-column:1/-1;font-size:.75rem;color:var(--ink3);line-height:1.65;padding-top:.75rem;border-top:1px dashed var(--cream3);}
 
 /* ── CLOSE BTN ── */
@@ -232,14 +232,14 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 
 /* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
 .nav-logo-mark {
-  position: relative; width: 26px; height: 26px;
+  position: relative; width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .nav-logo-dot { border-radius: 50%; position: absolute; }
-.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
-.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
-.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
+.nav-logo-core { width: 8px; height: 8px; background: #ffffff; z-index: 2; }
+.nav-logo-r1 { width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); background: none; }
+.nav-logo-r2 { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); background: none; }
 .nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
 .nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
 .nav-logo-core.dk { background: #1a3a2a; }
@@ -259,7 +259,7 @@ nav{background:var(--forest2);border-bottom:2px solid var(--sage);padding:0 1.5r
 </head>
 <body>
 
-<nav style="background:#1a3a2a;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
+<nav style="background:#365EBF;padding:0 1.25rem;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(255,255,255,0.08)">
   <div style="display:flex;align-items:center;gap:0.85rem">
     <a href="index.html" style="display:inline-flex;align-items:center;gap:0.35rem;color:rgba(255,255,255,0.6);text-decoration:none;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.15s;flex-shrink:0" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">&#8592; Overview</a>
     <div style="width:1px;height:20px;background:rgba(255,255,255,0.2)"></div>
@@ -655,7 +655,7 @@ loadData();
 .agent-icon{font-size:16px;line-height:1;}
 .agent-lbl{font-size:9px;letter-spacing:.1em;font-weight:700;}
 
-#ada-btn  { right:1.5rem; background:#fff; color:var(--forest); }
+#ada-btn  { right:1.5rem; background:#fff; color:#365EBF; }
 #vera-btn { right:5rem;   background:#fff; color:#7c3aed; }
 #ada-btn  .agent-lbl { color:var(--sage); }
 #vera-btn .agent-lbl { color:#7c3aed; }
@@ -677,7 +677,7 @@ loadData();
 
 /* Headers */
 .agent-hdr { padding:.75rem 1rem; display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
-#ada-panel  .agent-hdr { background:var(--forest); }
+#ada-panel  .agent-hdr { background:#1e3a7a; }
 #vera-panel .agent-hdr { background:#4c1d95; }
 
 .agent-av { width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px; }
@@ -720,22 +720,22 @@ loadData();
 #ada-inp:focus  { border-color:var(--sage); }
 #vera-inp:focus { border-color:#7c3aed; }
 .agent-snd { color:#fff;border:none;border-radius:8px;padding:.45rem .75rem;cursor:pointer;font-size:13px; }
-#ada-snd  { background:var(--forest); }
-#ada-snd:hover  { background:var(--sage); }
+#ada-snd  { background:#365EBF; }
+#ada-snd:hover  { background:#1e3a7a; }
 #vera-snd { background:#6d28d9; }
 #vera-snd:hover { background:#4c1d95; }
 .agent-snd:disabled { opacity:.4;cursor:default; }
 
 /* ── ASSISTIV LOGO — Cabinet Grotesk + DM Mono + Pulse rings ── */
 .nav-logo-mark {
-  position: relative; width: 26px; height: 26px;
+  position: relative; width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
 .nav-logo-dot { border-radius: 50%; position: absolute; }
-.nav-logo-core { width: 7px; height: 7px; background: #7aab90; z-index: 2; }
-.nav-logo-r1 { width: 15px; height: 15px; border: 1.5px solid #7aab90; opacity: 0.38; background: none; }
-.nav-logo-r2 { width: 24px; height: 24px; border: 1.5px solid #7aab90; opacity: 0.16; background: none; }
+.nav-logo-core { width: 8px; height: 8px; background: #ffffff; z-index: 2; }
+.nav-logo-r1 { width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); background: none; }
+.nav-logo-r2 { width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); background: none; }
 .nav-logo-r1.dk { border-color: #1a3a2a; opacity: .5; }
 .nav-logo-r2.dk { border-color: #1a3a2a; opacity: .22; }
 .nav-logo-core.dk { background: #1a3a2a; }
