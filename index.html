@@ -59,7 +59,7 @@ body {
 .hero {
   min-height: 100vh;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 100px 2rem 3rem;
+  padding: 136px 2rem 3rem;
   max-width: 1200px; margin: 0 auto;
 }
 /* Two-column hero split */
@@ -637,6 +637,53 @@ footer {
   </div>
 </nav>
 <!-- ══════════════════════════════════════════════════ END NAV -->
+
+<!-- ECOSYSTEM BANNER -->
+<style>
+  .eco-banner {
+    position: fixed;
+    top: 70px;
+    left: 0; right: 0;
+    z-index: 9998;
+    background: var(--sage-pale);
+    border-bottom: 1px solid var(--cream-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-dark);
+    white-space: nowrap;
+    flex-wrap: wrap;
+  }
+  .eco-banner-label { opacity: 0.65; }
+  .eco-banner-role { font-weight: 700; }
+  .eco-banner-sep { opacity: 0.35; margin: 0 0.25rem; }
+  .eco-banner a {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.15s;
+  }
+  .eco-banner a:hover { color: var(--brand-dark); text-decoration: underline; }
+  @media (max-width: 600px) {
+    .eco-banner { font-size: 0.6rem; top: 56px; }
+  }
+</style>
+<div class="eco-banner">
+  <span class="eco-banner-label">Assistiv Ecosystem</span>
+  <span class="eco-banner-sep">·</span>
+  <span class="eco-banner-role">Population Intelligence</span>
+  <span class="eco-banner-sep">·</span>
+  <a href="https://www.assistiv.tools" target="_blank" rel="noopener">assistiv.tools</a>
+  <span class="eco-banner-sep">·</span>
+  <a href="https://www.assistiv.co" target="_blank" rel="noopener">assistiv.co</a>
+</div>
 
 <!-- HERO -->
 <div class="hero">
