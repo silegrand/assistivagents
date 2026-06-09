@@ -447,7 +447,7 @@ nav {
         <tr><td class="sig-name">Over-75s living alone</td><td class="sig-w">13%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:100%"></div></div></td><td>ONS Census 2021</td><td><span class="sig-type type-model">Modelled</span></td></tr>
         <tr><td class="sig-name">Falls admissions 65+</td><td class="sig-w">12%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:92%"></div></div></td><td>NHS Fingertips 22401</td><td><span class="sig-type type-real">Real</span></td></tr>
         <tr><td class="sig-name">Hip fracture rate 65+</td><td class="sig-w">9%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:69%"></div></div></td><td>NHS Fingertips 41401</td><td><span class="sig-type type-real">Real</span></td></tr>
-        <tr><td class="sig-name">Deprivation (IMD 2019)</td><td class="sig-w">8%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:62%"></div></div></td><td>MHCLG IMD 2019</td><td><span class="sig-type type-model">Modelled</span></td></tr>
+        <tr><td class="sig-name">Deprivation (IMD 2025)</td><td class="sig-w">8%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:62%"></div></div></td><td>MHCLG IMD 2025</td><td><span class="sig-type type-model">Modelled</span></td></tr>
         <tr><td class="sig-name">Winter mortality index</td><td class="sig-w">8%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:62%"></div></div></td><td>NHS Fingertips 90360</td><td><span class="sig-type type-real">Real</span></td></tr>
         <tr><td class="sig-name">Care home gap</td><td class="sig-w">7%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:54%"></div></div></td><td>CQC register</td><td><span class="sig-type type-model">Modelled</span></td></tr>
         <tr><td class="sig-name">Loneliness rate</td><td class="sig-w">6%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:46%"></div></div></td><td>NHS Fingertips 94175</td><td><span class="sig-type type-real">Real</span></td></tr>
@@ -502,10 +502,12 @@ FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
 
     <p>Inverted signals (where a lower value means higher risk) are handled by subtracting from 100 before weighting. Scores are capped at 100 to prevent extreme outliers from distorting the index.</p>
 
-    <h3>District multipliers</h3>
-    <p>Because NHS Fingertips data is published at ICB or county level rather than district level for most indicators, we apply district-level multipliers derived from the relative demographic and prescribing profiles of each district. These multipliers are calculated from the NHSBSA EPD practice-level data, which <em>is</em> available at district level — practices are assigned to districts by postcode. The Fingertips signals at ICB level are then scaled by these multipliers.</p>
+    <h3>District-level data resolution</h3>
+    <p>The seven NHS Fingertips outcome signals — falls admissions 65+, hip fractures 65+ and 80+, winter mortality, loneliness, social isolation, and dementia diagnosis — are drawn at Local Authority District (LAD) level directly from Fingertips where published, normalised against the England average for each district independently. Where an individual district is not published at LAD level for a given indicator, that district falls back to the ICB-level value, and this is recorded per-signal in the <code>fingertips_resolution</code> field of the published data.</p>
 
-    <p>This is the primary methodological limitation of the current model. The district-level FEP scores are not independently derived from district-level Fingertips data for all signals — they are scaled estimates. We are transparent about this in the tool interface.</p>
+    <p>Three demographic and socioeconomic signals — over-75s living alone, deprivation (IMD), and care home provision gap — remain modelled estimates, scaling a neutral baseline by a district profile. These are explicitly flagged as modelled rather than measured, and are the next candidates for upgrade to real district sources (Census 2021 TS011 for solo-65+ households and IMD 2025 at LAD level, both of which are already used elsewhere in the RAVI layer). The eleven NHSBSA EPD prescribing signals are genuinely available at practice level and aggregated to district by postcode.</p>
+
+    <p>This is an improvement on earlier versions, in which all Fingertips signals were scaled from an ICB baseline by hand-assigned multipliers. District differentiation for the outcome signals is now independently observed rather than asserted; the residual modelled component is confined to the three demographic proxies, and is disclosed as such.</p>
 
     <h3>Weather uplift</h3>
     <p>When the UKHSA/Met Office issues a Heat-Health or Cold-Health Alert for South East England, FEP scores are uplifted for high-risk districts and specific prescribing signals (anticholinergics, diuretics, hypnotics) are flagged for elevated clinical sensitivity. This uplift is fetched at runtime and applied as a multiplicative factor, not permanently incorporated into the base score.</p>
@@ -527,7 +529,7 @@ FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
         <tr><th>Signal</th><th>Weight</th><th style="min-width:60px"></th><th>Source</th></tr>
       </thead>
       <tbody>
-        <tr><td class="sig-name">Geographic Barriers to Services</td><td class="sig-w">30%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:100%"></div></div></td><td>IMD 2019 File 7 — road distance to GP, pharmacy, food store, post office</td></tr>
+        <tr><td class="sig-name">Geographic Barriers to Services</td><td class="sig-w">30%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:100%"></div></div></td><td>IMD 2025 File 7 — road distance to GP, pharmacy, food store, post office (rural-enhanced, Oct 2025)</td></tr>
         <tr><td class="sig-name">Rural Urban Classification</td><td class="sig-w">25%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:83%"></div></div></td><td>ONS/mySociety RUC 2021 — Urban, Rural town/village, Hamlet/Isolated</td></tr>
         <tr><td class="sig-name">Population aged 65+</td><td class="sig-w">20%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:67%"></div></div></td><td>Census 2021 via Nomis TS008</td></tr>
         <tr><td class="sig-name">No car or van in household</td><td class="sig-w">15%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:50%"></div></div></td><td>Census 2021 via Nomis TS045</td></tr>
@@ -620,8 +622,8 @@ FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
 
     <p>We believe transparency about limitations is not a weakness — it is the condition of being trusted. The following are the substantive limitations of the current model.</p>
 
-    <h3>1. District-level scaling from ICB baseline</h3>
-    <p>The majority of NHS Fingertips data is published at ICB level (Kent and Medway as a whole), not at Local Authority District level. District FEP scores are derived by applying district-level multipliers to the ICB baseline. These multipliers come from NHSBSA EPD data, which is genuinely available at practice level. The result is a defensible estimate, not a directly observed district measure.</p>
+    <h3>1. Residual modelled signals in district scoring</h3>
+    <p>The seven Fingertips outcome signals are now drawn at Local Authority District level and normalised independently per district, with documented ICB-level fallback only where a district is unpublished for a given indicator. Three demographic proxies — over-75s living alone, deprivation, and care home gap — remain modelled estimates rather than directly observed district measures. District differentiation is therefore real for outcome signals and modelled for the three demographic proxies, with the resolution of each signal disclosed in the published data. Upgrading the three proxies to real Census 2021 and IMD 2025 LAD-level sources is the next planned improvement.</p>
 
     <h3>2. RAVI Census signals are currently national averages</h3>
     <p>Three of the five RAVI signals (age, car access, limiting long-term illness) are using England national averages as fallback values because LSOA-level Census 2021 data is not reliably returning from the Nomis API at query time. This reduces the discriminatory power of the RAVI — current scores are driven primarily by geographic barriers and rural classification. This will be corrected as Census data access stabilises.</p>
@@ -1030,7 +1032,7 @@ YOUR ROLE: You challenge — but you don't undermine. The goal is calibrated sce
 
 KNOWN METHODOLOGICAL LIMITATIONS YOU SHOULD SURFACE WHEN RELEVANT:
 
-1. DISTRICT MULTIPLIERS: Most NHS Fingertips indicators are at ICB level (Kent as a whole), not district level. District FEP scores are estimated by applying multipliers derived from NHSBSA prescribing data. They are not independently observed for all signals. Thanet's FEP 62 is an estimate, not a directly measured district figure.
+1. RESIDUAL MODELLED SIGNALS: The seven Fingertips outcome signals (falls, hip fractures, winter mortality, loneliness, social isolation, dementia diagnosis) are now drawn at Local Authority District level and normalised per district, with ICB-level fallback only where a district is unpublished — recorded in fingertips_resolution. Three demographic proxies (over-75s living alone, IMD deprivation, care home gap) remain modelled district estimates, not directly observed. So district differentiation is real for outcome signals and modelled for the three proxies. Be precise about which is which when challenged.
 
 2. RAVI CENSUS SIGNALS: Three of five RAVI signals (age 65+, no car, limiting long-term illness) are currently using England national averages as fallback because LSOA-level Census 2021 data is not reliably returning from the Nomis API. Current RAVI scores are driven primarily by geographic barriers and rural classification. Challock scoring 77.5 reflects road distance to services and rural classification — not yet granular LSOA demographic data.
 
