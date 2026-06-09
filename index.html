@@ -11,7 +11,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/brand.css">
 <style>
 :root {
   /* ── Assistiv Cloud — blue brand ── */
@@ -185,7 +184,7 @@ body {
 .hero {
   min-height: 100vh;
   display: flex; flex-direction: column; justify-content: center;
-  padding: 110px 2rem 3rem;
+  padding: 100px 2rem 3rem;
   max-width: 1200px; margin: 0 auto;
 }
 /* Two-column hero split */
@@ -613,88 +612,144 @@ footer {
 </head>
 <body>
 
-<!-- NAV -->
-<nav id="nav" role="navigation" aria-label="Main navigation" style="position:fixed;top:0;left:0;right:0;z-index:1000;height:72px;background:#365EBF;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,0.12);">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;max-width:1200px;margin:0 auto;height:72px;">
+<!-- ═══════════════════════════════════════════════════════ NAV -->
+<style>
+  #site-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 70px;
+    background: #365EBF;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+  #site-nav .inner {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  #site-nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  #site-nav .logo-mark {
+    position: relative;
+    width: 36px; height: 36px;
+    flex-shrink: 0;
+  }
+  #site-nav .logo-mark span {
+    border-radius: 50%;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  #site-nav .logo-mark .dot  { width: 9px;  height: 9px;  background: #fff; }
+  #site-nav .logo-mark .rg1  { width: 20px; height: 20px; border: 1.5px solid rgba(255,255,255,0.6); }
+  #site-nav .logo-mark .rg2  { width: 34px; height: 34px; border: 1.5px solid rgba(255,255,255,0.25); }
+  #site-nav .logo-text { display: flex; flex-direction: column; gap: 1px; }
+  #site-nav .logo-name { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; }
+  #site-nav .logo-sub  { font-size: 0.45rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6); }
+  #site-nav .links {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  #site-nav .links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+  }
+  #site-nav .links a:hover { color: #fff; }
+  #site-nav .eco { position: relative; }
+  #site-nav .eco > a { cursor: pointer; }
+  #site-nav .eco-drop {
+    display: none;
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 28px rgba(20,40,100,0.18);
+    min-width: 170px;
+    overflow: hidden;
+    z-index: 10000;
+  }
+  #site-nav .eco:hover .eco-drop { display: block; }
+  #site-nav .eco-drop a {
+    display: block;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.83rem;
+    font-weight: 500;
+    color: #1e3a7a !important;
+    text-decoration: none;
+    border-bottom: 1px solid #eef2fb;
+  }
+  #site-nav .eco-drop a:last-child { border-bottom: none; }
+  #site-nav .eco-drop a:hover { background: #eef2fb; }
+  #site-nav .cta {
+    flex-shrink: 0;
+    background: #fff;
+    color: #365EBF;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    border-radius: 6px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  #site-nav .cta:hover { background: rgba(255,255,255,0.88); }
+  @media (max-width: 820px) {
+    #site-nav .links { display: none; }
+    #site-nav .cta   { display: none; }
+  }
+</style>
 
-    <!-- Logo -->
-    <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;flex-shrink:0;">
-      <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <div style="border-radius:50%;position:absolute;width:9px;height:9px;background:#ffffff;z-index:2;"></div>
-        <div style="border-radius:50%;position:absolute;width:20px;height:20px;border:1.5px solid rgba(255,255,255,0.6);background:none;"></div>
-        <div style="border-radius:50%;position:absolute;width:33px;height:33px;border:1.5px solid rgba(255,255,255,0.25);background:none;"></div>
+<nav id="site-nav">
+  <div class="inner">
+
+    <a href="/" class="logo">
+      <div class="logo-mark">
+        <span class="dot"></span>
+        <span class="rg1"></span>
+        <span class="rg2"></span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:2px;">
-        <span style="font-family:'Nunito','DM Sans',system-ui,sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-0.03em;line-height:1.1;color:#ffffff;">Assistiv</span>
-        <span style="font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:0.18em;text-transform:uppercase;line-height:1;color:rgba(255,255,255,0.65);">Cloud</span>
+      <div class="logo-text">
+        <span class="logo-name">Assistiv</span>
+        <span class="logo-sub">Cloud</span>
       </div>
     </a>
 
-    <!-- Links -->
-    <ul class="nav-links" style="display:flex;align-items:center;gap:1.8rem;list-style:none;margin:0;padding:0;">
-      <li><a href="#tools" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Tools</a></li>
-      <li><a href="#how-it-works" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">How it works</a></li>
-      <li><a href="#evidence" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Evidence</a></li>
-      <li><a href="#contact" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;">Contact</a></li>
-      <li class="nav-dropdown" style="position:relative;">
-        <a href="#" onclick="return false;" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:500;color:rgba(255,255,255,0.82);text-decoration:none;cursor:pointer;">Ecosystem ▾</a>
-        <ul class="nav-dropdown-menu" style="display:none;position:absolute;top:calc(100% + 0.75rem);left:50%;transform:translateX(-50%);background:#ffffff;border-radius:8px;box-shadow:0 8px 24px rgba(30,58,122,0.18);list-style:none;min-width:160px;overflow:hidden;z-index:200;padding:0;margin:0;">
-          <li><a href="https://www.assistiv.tools" target="_blank" style="display:block;padding:0.65rem 1.1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:#1e3a7a;font-weight:500;text-decoration:none;">Assistiv Tools ↗</a></li>
-          <li><a href="https://www.assistiv.co" target="_blank" style="display:block;padding:0.65rem 1.1rem;font-family:'Nunito',sans-serif;font-size:0.82rem;color:#1e3a7a;font-weight:500;text-decoration:none;">Assistiv.co ↗</a></li>
-        </ul>
+    <ul class="links">
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#evidence">Evidence</a></li>
+      <li class="eco">
+        <a>Ecosystem ▾</a>
+        <div class="eco-drop">
+          <a href="https://www.assistiv.tools" target="_blank">Assistiv Tools ↗</a>
+          <a href="https://www.assistiv.co"    target="_blank">Assistiv.co ↗</a>
+        </div>
       </li>
     </ul>
 
-    <!-- CTA -->
-    <a href="#contact" style="font-family:'Nunito',system-ui,sans-serif;font-size:0.82rem;font-weight:600;color:#365EBF;background:#ffffff;text-decoration:none;padding:0.55rem 1.3rem;border-radius:6px;white-space:nowrap;flex-shrink:0;">Get in touch</a>
+    <a href="#contact" class="cta">Get in touch</a>
 
-    <!-- Hamburger -->
-    <button class="hamburger" id="hbg" aria-label="Open navigation menu" style="display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;">
-      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
-      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
-      <span style="display:block;width:22px;height:2px;background:#ffffff;border-radius:2px;"></span>
-    </button>
   </div>
 </nav>
-
-<!-- MOBILE NAV -->
-<div class="mobile-nav" id="mob-nav">
-  <button class="m-close" id="mob-close">✕</button>
-  <a href="#tools"        onclick="document.getElementById('mob-nav').classList.remove('open')">Tools</a>
-  <a href="#how-it-works" onclick="document.getElementById('mob-nav').classList.remove('open')">How it works</a>
-  <a href="#evidence"     onclick="document.getElementById('mob-nav').classList.remove('open')">Evidence</a>
-  <a href="#contact"      onclick="document.getElementById('mob-nav').classList.remove('open')">Contact</a>
-  <a href="#contact"      onclick="document.getElementById('mob-nav').classList.remove('open')">Get in touch</a>
-</div>
-
-<script>
-  // Hamburger
-  document.getElementById('hbg').addEventListener('click',()=>document.getElementById('mob-nav').classList.add('open'));
-  document.getElementById('mob-close').addEventListener('click',()=>document.getElementById('mob-nav').classList.remove('open'));
-  // Dropdown hover via JS (works on touch too)
-  document.querySelectorAll('.nav-dropdown').forEach(function(el){
-    el.addEventListener('mouseenter',function(){ el.querySelector('.nav-dropdown-menu').style.display='block'; });
-    el.addEventListener('mouseleave',function(){ el.querySelector('.nav-dropdown-menu').style.display='none'; });
-  });
-  // Responsive: show hamburger on small screens
-  function navResponsive(){
-    var w = window.innerWidth;
-    var links = document.querySelector('#nav .nav-links');
-    var cta = document.querySelector('#nav > div > a[href="#contact"]');
-    var hbg = document.getElementById('hbg');
-    if(w <= 820){
-      if(links) links.style.display='none';
-      if(cta) cta.style.display='none';
-      if(hbg) hbg.style.display='flex';
-    } else {
-      if(links) links.style.display='flex';
-      if(cta) cta.style.display='block';
-      if(hbg) hbg.style.display='none';
-    }
-  }
-  navResponsive();
-  window.addEventListener('resize', navResponsive);
-</script>
+<!-- ══════════════════════════════════════════════════ END NAV -->
 
 <!-- HERO -->
 <div class="hero">
