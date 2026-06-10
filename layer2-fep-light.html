@@ -44,6 +44,48 @@ body {
   line-height: 1.5;
 }
 
+/* ── DISCLAIMER BANNER ── */
+.disclaimer-banner {
+  background: #fffbeb;
+  border-bottom: 2px solid #b8860b;
+  padding: 0.7rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  color: #6b4c00;
+  line-height: 1.5;
+}
+.disclaimer-banner-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+.disclaimer-banner strong {
+  font-weight: 600;
+  color: #5a3d00;
+}
+.disclaimer-banner a {
+  color: #365EBF;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.disclaimer-banner a:hover { text-decoration-style: solid; }
+
+/* ── WEIGHT DISCLAIMER NOTE ── */
+.weight-disclaimer {
+  background: rgba(54,94,191,0.06);
+  border: 1px solid rgba(54,94,191,0.2);
+  border-radius: 5px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.65rem;
+}
+.weight-disclaimer strong { color: var(--sage-dim); font-weight: 600; }
+
 /* ── TOPBAR ── */
 .topbar {
   background: var(--sage-dim);
@@ -937,6 +979,18 @@ input[type=range]::-webkit-slider-thumb:hover {
   <span class="weather-src">Open-Meteo · UKHSA · Met Office UKV</span>
 </div>
 
+<!-- DISCLAIMER BANNER -->
+<div class="disclaimer-banner">
+  <div class="disclaimer-banner-icon">⚠</div>
+  <div>
+    <strong>Scores produced here reflect your configured signal weights and will differ from the Assistiv assessment.</strong>
+    The Assistiv published FEP scores — shown on the <a href="https://www.assistiv.cloud">intelligence dashboard</a> — are calculated using our validated default weights and calibrated ICB baseline data.
+    This engine lets you adjust those weights to explore how different signal priorities affect district rankings.
+    Any score you generate is an exploratory model, not the Assistiv assessment.
+    To reproduce the published scores, restore all weights to their default values before running.
+  </div>
+</div>
+
 <!-- REAL KENT ICB DATA PANEL -->
 <div class="kent-panel">
   <div class="kent-panel-header">
@@ -1125,6 +1179,9 @@ input[type=range]::-webkit-slider-thumb:hover {
 
     <!-- Run -->
     <div>
+      <div class="weight-disclaimer">
+        <strong>Note:</strong> Scores are calculated using the weights above. Changing any weight will produce results that differ from the <a href="https://www.assistiv.cloud" style="color:var(--sage);text-decoration:underline;text-decoration-style:dotted">Assistiv published assessment</a>. Restore defaults to reproduce published figures.
+      </div>
       <button class="run-btn" id="run-btn" onclick="runScoring()">▶ Run Scoring Engine</button>
       <div class="watermark" style="margin-top:0.5rem">ICB baseline: OHID PHOF May 2026 · Zone scores: calibrated synthetic<br>Sub-ICB linkage via NHS Fingertips: Phase 2</div>
     </div>
@@ -1137,6 +1194,7 @@ input[type=range]::-webkit-slider-thumb:hover {
       <div class="empty-state-icon">◎</div>
       <div class="empty-state-title">Scoring Engine Ready</div>
       <div class="empty-state-desc">Configure signal weights, select data sources,<br>then run the engine to generate FEP scores<br>across Kent PCN zones.</div>
+      <div style="margin-top:1rem;font-size:0.7rem;color:var(--text-dim);line-height:1.5;max-width:280px;text-align:center;">Scores generated here reflect your weight configuration and will differ from the <a href="https://www.assistiv.cloud" style="color:var(--sage);text-decoration:underline;text-decoration-style:dotted">Assistiv published assessment</a>.</div>
     </div>
   </div>
 </div>
