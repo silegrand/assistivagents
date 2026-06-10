@@ -2051,7 +2051,54 @@ async function fetchWeatherRisk() {
 
 // ── START ─────────────────────────────────────────────────────────────
 fetchWeatherRisk();
-loadBoundaries();
+// ── LIVE DATA INIT — fetches kent-fep-data.json before rendering ──────
+(async function initWithLiveData() {
+  const FEP_JSON = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+  try {
+    const res = await fetch(FEP_JSON);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const live = await res.json();
+
+    // Build a LAD-code → district lookup from the JSON
+    const byCode = {};
+    const byName = {};
+    (live.districts || []).forEach(d => {
+      if (d.lad_code) byCode[d.lad_code] = d;
+      if (d.name)     byName[d.name.toLowerCase()] = d;
+    });
+
+    // Patch the DISTRICTS JS object
+    Object.entries(DISTRICTS).forEach(([code, entry]) => {
+      const ld = byCode[code] || byName[entry.name.toLowerCase()];
+      if (ld) {
+        entry.fep  = ld.fep;
+        entry.risk = ld.risk;
+        if (ld.signals) entry.signals = ld.signals;
+        if (ld.pop75)   entry.pop75   = ld.pop75;
+      }
+    });
+
+    // Patch the baked-in GeoJSON feature properties
+    (KENT_GEOJSON.features || []).forEach(f => {
+      const code = f.properties.LAD13CD || f.properties.lad_code;
+      const name = (f.properties.name || '').toLowerCase();
+      const ld   = (code && byCode[code]) || byName[name];
+      if (ld) {
+        f.properties.fep  = ld.fep;
+        f.properties.risk = ld.risk;
+      }
+    });
+
+    // Store for Ada/VERA context
+    agentLiveData = live;
+
+  } catch(e) {
+    console.warn('FEP JSON fetch failed, using baked-in scores:', e);
+  }
+
+  // Render with whatever data we have (live or fallback)
+  loadBoundaries();
+})();
 </script>
 <!-- ═══════════════════════════════════════════════════════
      ADA — Intelligence Explainer · VERA — Red Team Challenger
@@ -2220,11 +2267,6 @@ const AGENT_WORKER = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
 const AGENT_JSON   = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
 
 let agentLiveData = null;
-async function fetchAgentData() {
-  try { const r = await fetch(AGENT_JSON); agentLiveData = await r.json(); }
-  catch(e) { console.warn('Agent data:', e); }
-}
-fetchAgentData();
 
 function agentCtx() {
   const lines = [];
