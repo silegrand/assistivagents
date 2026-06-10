@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Status — Assistiv Cloud</title>
+<meta name="description" content="Where Assistiv Cloud's data comes from, how often each source refreshes, and how fresh it is right now. Live, checked in your browser.">
+<link rel="icon" type="image/svg+xml" href="favicon (1).svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand:       #365EBF;
+  --brand-dark:  #1e3a7a;
+  --brand-mid:   #2a4d9e;
+  --sage-mid:    #4a72cc;
+  --sage-light:  #7a9ee0;
+  --sage-pale:   #e8edf8;
+  --sage-ghost:  rgba(54,94,191,0.07);
+  --cream:       #eef2fb;
+  --cream-mid:   #dde5f5;
+  --cream-dark:  #c8d5ee;
+  --amber:       #8a6200;
+  --amber-pale:  #fdf3dc;
+  --green:       #2d6b47;
+  --green-pale:  #eaf3ee;
+  --red:         #b91c1c;
+  --red-pale:    #fdeaea;
+  --ink:         #1a2e1e;
+  --ink-mid:     #3d5245;
+  --ink-muted:   #6b7f71;
+  --ink-dim:     #9aaa9e;
+  --white:       #ffffff;
+  --serif:   'Cormorant Garamond', Georgia, serif;
+  --mono:    'DM Mono', monospace;
+  --sans:    'Nunito', system-ui, sans-serif;
+  --tr:      0.2s ease;
+  --radius:  8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ───────── NAV ───────── */
+nav.status-nav {
+  background: var(--brand);
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  position: sticky; top: 0; z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.nav-inner {
+  width: 100%; max-width: 1080px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+.logo-mark { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
+.logo-mark span {
+  border-radius: 50%; position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+.logo-mark .dot { width: 9px;  height: 9px;  background: #fff; }
+.logo-mark .rg1 { width: 20px; height: 20px; border: 1.5px solid rgba(255,255,255,0.6); }
+.logo-mark .rg2 { width: 34px; height: 34px; border: 1.5px solid rgba(255,255,255,0.25); }
+.logo-text { display: flex; flex-direction: column; gap: 1px; }
+.logo-name { font-size: 1.1rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; line-height: 1; font-family: var(--sans); }
+.logo-sub  { font-size: 0.45rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-family: var(--mono); }
+.nav-back {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.75);
+  text-decoration: none; transition: color var(--tr);
+}
+.nav-back:hover { color: #fff; }
+
+/* ───────── HERO ───────── */
+.hero { max-width: 1080px; margin: 0 auto; padding: 3.5rem 1.5rem 2.5rem; }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--brand); margin-bottom: 0.9rem;
+}
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(2rem, 4.2vw, 3.2rem);
+  font-weight: 700; line-height: 1.12; color: var(--brand-dark);
+  max-width: 22ch;
+}
+.hero p.lede {
+  margin-top: 1.1rem; max-width: 58ch; font-size: 1.05rem; color: var(--ink-mid);
+}
+.checked-line {
+  margin-top: 1.4rem; display: inline-flex; align-items: center; gap: 0.55rem;
+  font-family: var(--mono); font-size: 0.7rem; color: var(--ink-muted);
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 20px; padding: 0.4rem 0.9rem;
+}
+.checked-line .pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--brand);
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.5); opacity: 0.45; }
+}
+
+/* ───────── RHYTHM BOARD (signature) ───────── */
+.board-wrap { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem 1rem; }
+.section-label {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-muted); margin-bottom: 1.1rem;
+}
+.board {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: 12px; padding: 1.6rem;
+  display: grid; grid-template-columns: 1fr 110px 200px; gap: 0;
+  position: relative; overflow: hidden;
+}
+.sources { display: flex; flex-direction: column; gap: 0.9rem; }
+
+.src {
+  border: 1px solid var(--cream-dark); border-radius: var(--radius);
+  padding: 0.85rem 1rem; background: var(--white);
+  display: grid; grid-template-columns: 1fr auto; gap: 0.2rem 0.8rem;
+  align-items: center; position: relative; transition: border-color var(--tr);
+}
+.src:hover { border-color: var(--sage-light); }
+.src-name {
+  font-family: var(--sans); font-weight: 700; font-size: 0.92rem; color: var(--brand-dark);
+}
+.src-file {
+  font-family: var(--mono); font-size: 0.6rem; color: var(--ink-dim); letter-spacing: 0.02em;
+}
+.src-meta {
+  grid-column: 1; font-family: var(--mono); font-size: 0.62rem;
+  color: var(--ink-muted); margin-top: 0.15rem;
+}
+.src-cadence {
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--brand);
+  background: var(--sage-pale); border-radius: 12px; padding: 0.15rem 0.55rem;
+  justify-self: end; white-space: nowrap;
+}
+.chip {
+  grid-column: 2; grid-row: 2; justify-self: end;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono); font-size: 0.62rem; padding: 0.2rem 0.6rem;
+  border-radius: 12px; white-space: nowrap;
+}
+.chip .cdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.chip.ok     { background: var(--green-pale); color: var(--green); }
+.chip.ok .cdot { background: var(--green); }
+.chip.warn   { background: var(--amber-pale); color: var(--amber); }
+.chip.warn .cdot { background: var(--amber); }
+.chip.late   { background: var(--red-pale); color: var(--red); }
+.chip.late .cdot { background: var(--red); }
+.chip.wait   { background: var(--sage-pale); color: var(--ink-muted); }
+.chip.wait .cdot { background: var(--ink-dim); }
+
+/* channels: the moving part */
+.channels { position: relative; }
+.channel {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: var(--cream-dark); border-radius: 1px;
+}
+.channel.modelled {
+  background: none;
+  border-top: 2px dashed var(--cream-dark);
+  height: 0;
+}
+.channel .particle {
+  position: absolute; top: 50%; left: 0;
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--brand);
+  transform: translate(-50%, -50%);
+  animation-name: flow;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes flow {
+  0%   { left: 0%;   opacity: 0; }
+  8%   { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+.channel-tag {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  top: -1.15rem;
+  font-family: var(--mono); font-size: 0.52rem; letter-spacing: 0.06em;
+  color: var(--ink-dim); text-transform: uppercase; white-space: nowrap;
+}
+
+/* destination node */
+.dest {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.8rem; padding-left: 0.5rem;
+}
+.dest-node {
+  position: relative; width: 120px; height: 120px;
+  display: flex; align-items: center; justify-content: center;
+}
+.dest-node .ring {
+  position: absolute; border-radius: 50%; border: 1.5px solid var(--sage-light);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+.dest-node .r1 { width: 64px; height: 64px; opacity: 0.9; }
+.dest-node .r2 { width: 96px; height: 96px; opacity: 0.45; }
+.dest-node .r3 { width: 120px; height: 120px; opacity: 0.2; }
+.dest-node .core {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--brand);
+  animation: heartbeat 2.4s ease-in-out infinite;
+}
+.dest-label {
+  text-align: center; font-family: var(--sans); font-weight: 700;
+  font-size: 0.85rem; color: var(--brand-dark); line-height: 1.3;
+}
+.dest-label small {
+  display: block; font-family: var(--mono); font-weight: 400;
+  font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-muted); margin-top: 0.25rem;
+}
+
+.board-legend {
+  grid-column: 1 / -1; margin-top: 1.4rem; padding-top: 1rem;
+  border-top: 1px solid var(--cream-mid);
+  display: flex; flex-wrap: wrap; gap: 1.2rem;
+  font-family: var(--mono); font-size: 0.62rem; color: var(--ink-muted);
+}
+.board-legend .li { display: inline-flex; align-items: center; gap: 0.45rem; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+.legend-dash { width: 18px; border-top: 2px dashed var(--cream-dark); }
+
+/* ───────── SIGNAL COMPOSITION ───────── */
+.signals { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 1rem; }
+.signals h2, .explain h2 {
+  font-family: var(--serif); font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  font-weight: 700; color: var(--brand-dark); margin-bottom: 0.5rem;
+}
+.signals p.sub, .explain p.sub { color: var(--ink-mid); max-width: 60ch; margin-bottom: 1.5rem; }
+.comp-bar {
+  display: flex; height: 52px; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--cream-dark);
+}
+.comp-seg {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 0.7rem; color: #fff; letter-spacing: 0.04em;
+}
+.comp-seg.s-daily   { background: var(--brand);     flex: 7; }
+.comp-seg.s-monthly { background: var(--sage-mid);  flex: 11; }
+.comp-seg.s-model   { background: var(--cream-dark); color: var(--ink-mid); flex: 3; }
+.comp-key {
+  display: flex; flex-wrap: wrap; gap: 1.4rem; margin-top: 0.9rem;
+  font-size: 0.85rem; color: var(--ink-mid);
+}
+.comp-key .k { display: flex; align-items: flex-start; gap: 0.5rem; max-width: 30ch; }
+.comp-key .sw { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; margin-top: 0.3rem; }
+.comp-key .sw.d { background: var(--brand); }
+.comp-key .sw.m { background: var(--sage-mid); }
+.comp-key .sw.s { background: var(--cream-dark); }
+.comp-key strong { font-weight: 700; color: var(--brand-dark); }
+
+/* ───────── EXPLAINER ───────── */
+.explain { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+.why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.why {
+  background: var(--white); border: 1px solid var(--cream-dark);
+  border-radius: var(--radius); padding: 1.2rem 1.25rem;
+}
+.why .cad {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--brand); margin-bottom: 0.5rem;
+}
+.why h3 { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: var(--brand-dark); margin-bottom: 0.4rem; }
+.why p { font-size: 0.88rem; color: var(--ink-mid); }
+
+/* ───────── HONESTY NOTE ───────── */
+.honesty {
+  max-width: 1080px; margin: 0 auto 3rem; padding: 0 1.5rem;
+}
+.honesty-inner {
+  background: var(--sage-pale); border-left: 3px solid var(--brand);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 1.3rem 1.5rem; max-width: 760px;
+}
+.honesty-inner p { font-size: 0.92rem; color: var(--ink-mid); }
+.honesty-inner p + p { margin-top: 0.6rem; }
+.honesty-inner a { color: var(--brand); font-weight: 600; text-decoration: none; border-bottom: 1px dashed var(--sage-light); }
+.honesty-inner a:hover { border-bottom-style: solid; }
+
+/* ───────── FOOTER ───────── */
+footer {
+  background: var(--brand-dark); color: rgba(255,255,255,0.7);
+  padding: 1.6rem 1.5rem; text-align: center;
+  font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.04em;
+}
+footer a { color: rgba(255,255,255,0.9); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* ───────── RESPONSIVE ───────── */
+@media (max-width: 820px) {
+  .board { grid-template-columns: 1fr; }
+  .channels { display: none; }
+  .dest { padding: 1.4rem 0 0; }
+  .src { grid-template-columns: 1fr; }
+  .src-cadence, .chip { justify-self: start; }
+  .chip { grid-column: 1; grid-row: auto; margin-top: 0.3rem; }
+  .src-cadence { grid-row: auto; margin-top: 0.3rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .channel .particle, .checked-line .pulse, .dest-node .core { animation: none !important; }
+  .channel .particle { left: 50%; opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<nav class="status-nav">
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <div class="logo-mark"><span class="dot"></span><span class="rg1"></span><span class="rg2"></span></div>
+      <div class="logo-text"><span class="logo-name">Assistiv</span><span class="logo-sub">Cloud</span></div>
+    </a>
+    <a href="/" class="nav-back">&#8592; Back to dashboard</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">Data status &middot; Live</div>
+  <h1>Where our data comes from, and when</h1>
+  <p class="lede">
+    Every number on assistiv.cloud traces back to a published NHS or government source.
+    Different sources update at different speeds, so this page checks each one live,
+    in your browser, right now, and tells you exactly how fresh it is.
+  </p>
+  <div class="checked-line"><span class="pulse"></span><span id="checked-at">Checking sources&hellip;</span></div>
+</header>
+
+<section class="board-wrap" aria-label="Live source freshness">
+  <div class="section-label">The five data streams &middot; pulse speed = real refresh rhythm</div>
+  <div class="board">
+
+    <div class="sources" id="sources"><!-- populated by JS --></div>
+
+    <div class="channels" id="channels" aria-hidden="true"><!-- populated by JS --></div>
+
+    <div class="dest">
+      <div class="dest-node">
+        <span class="ring r3"></span><span class="ring r2"></span><span class="ring r1"></span>
+        <span class="core"></span>
+      </div>
+      <div class="dest-label">
+        assistiv.cloud<br>dashboards
+        <small>Maps &middot; scores &middot; trends</small>
+      </div>
+    </div>
+
+    <div class="board-legend">
+      <span class="li"><span class="legend-dot"></span> one pulse = one refresh cycle (sped up so you can watch it)</span>
+      <span class="li"><span class="legend-dash"></span> dashed = modelled, computed rather than collected</span>
+      <span class="li">faster pulse = more frequent updates</span>
+    </div>
+
+  </div>
+</section>
+
+<section class="signals">
+  <h2>What's inside the frailty score</h2>
+  <p class="sub">
+    The Frailty Early Predictor (FEP) blends 21 signals for every district.
+    They arrive on three rhythms:
+  </p>
+  <div class="comp-bar" role="img" aria-label="21 signals: 7 daily, 11 monthly, 3 modelled">
+    <div class="comp-seg s-daily">7 daily</div>
+    <div class="comp-seg s-monthly">11 monthly</div>
+    <div class="comp-seg s-model">3 modelled</div>
+  </div>
+  <div class="comp-key">
+    <div class="k"><span class="sw d"></span><span><strong>7 health outcome signals</strong> from NHS Fingertips, checked every morning at 6am. Falls, hip fractures, winter deaths, loneliness, dementia diagnosis.</span></div>
+    <div class="k"><span class="sw m"></span><span><strong>11 prescribing signals</strong> from 18 million NHS prescription rows, refreshed each month when the NHS publishes. Sleeping tablets, antidepressants, nutrition supplements and more.</span></div>
+    <div class="k"><span class="sw s"></span><span><strong>3 modelled estimates</strong> we calculate rather than collect: over-75s living alone, deprivation, and care home capacity. Always labelled as modelled, never passed off as measured.</span></div>
+  </div>
+</section>
+
+<section class="explain">
+  <h2>Why different speeds?</h2>
+  <p class="sub">
+    We refresh each source as fast as its publisher releases it, and no faster.
+    Pretending monthly data is daily would be dishonest; ignoring daily data would be wasteful.
+  </p>
+  <div class="why-grid">
+    <div class="why">
+      <div class="cad">Every day</div>
+      <h3>Health outcomes</h3>
+      <p>NHS Fingertips indicators are checked automatically at 6am. The underlying figures change a few times a year, but checking daily means we publish updates the morning they appear.</p>
+    </div>
+    <div class="why">
+      <div class="cad">Every month</div>
+      <h3>Prescribing &amp; 111 calls</h3>
+      <p>The NHS releases GP prescribing data and 111 call volumes monthly, about six weeks behind. We stream the new month within days of release.</p>
+    </div>
+    <div class="why">
+      <div class="cad">Periodically</div>
+      <h3>Discharge &amp; carers</h3>
+      <p>Hospital discharge pressure and our Carer Burden Index follow NHS situation reports and survey releases, refreshed whenever new figures are published.</p>
+    </div>
+    <div class="why">
+      <div class="cad">Yearly cycle</div>
+      <h3>Rural access</h3>
+      <p>Deprivation indices, Census figures and broadband coverage change on annual cycles. The rural vulnerability layer is rebuilt when its sources are, not artificially churned.</p>
+    </div>
+  </div>
+</section>
+
+<div class="honesty">
+  <div class="honesty-inner">
+    <p>
+      <strong>One honest caveat.</strong> Fresh data is not the same as proven prediction.
+      These scores are built from real, current NHS data, but whether high-scoring districts
+      go on to have more falls and admissions is a question we answer with validation studies,
+      not confident claims.
+    </p>
+    <p>
+      Read exactly how every signal is sourced, weighted and limited on our
+      <a href="methodology.html">methodology page</a>, or challenge the scores yourself
+      with VERA, our built-in validator.
+    </p>
+  </div>
+</div>
+
+<footer>
+  Assistiv Systems Ltd &middot; <a href="/">assistiv.cloud</a> &middot; <a href="methodology.html">Methodology</a> &middot; Data checked live from this page; nothing is cached or staged.
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Source registry ──────────────────────────────────────────────
+  // maxOk / maxWarn in hours. Beyond maxWarn → late (red).
+  var SOURCES = [
+    {
+      file: 'kent-fep-data.json',
+      name: 'Frailty signals (FEP)',
+      desc: 'NHS Fingertips + prescribing',
+      cadence: 'Daily 6am',
+      pulseSec: 3,          // fastest pulse — daily rhythm
+      maxOk: 30, maxWarn: 54,
+      extra: function (meta) {
+        return meta && meta.epd_period
+          ? 'Prescribing month: ' + meta.epd_period
+          : null;
+      }
+    },
+    {
+      file: 'kent-111-data.json',
+      name: 'NHS 111 demand',
+      desc: 'Monthly call volumes',
+      cadence: 'Monthly',
+      pulseSec: 9,
+      maxOk: 38 * 24, maxWarn: 55 * 24
+    },
+    {
+      file: 'kent-discharge-data.json',
+      name: 'Hospital discharge pressure',
+      desc: 'NHS acute discharge sitrep',
+      cadence: 'Per NHS release',
+      pulseSec: 9,
+      maxOk: 45 * 24, maxWarn: 75 * 24
+    },
+    {
+      file: 'kent-cbi-data.json',
+      name: 'Carer burden (CBI)',
+      desc: 'Unpaid carer pressure index',
+      cadence: 'Periodic',
+      pulseSec: 13,
+      maxOk: 60 * 24, maxWarn: 120 * 24
+    },
+    {
+      file: 'kent-ravi-data.json',
+      name: 'Rural access (RAVI)',
+      desc: 'IMD 2025 · Census · Ofcom',
+      cadence: 'Yearly cycle',
+      pulseSec: 18,         // slowest pulse — annual rhythm
+      maxOk: 400 * 24, maxWarn: 460 * 24
+    }
+  ];
+
+  // The three modelled FEP signals — shown as a sixth, dashed channel.
+  var MODELLED = {
+    name: 'Modelled estimates',
+    desc: 'Living alone · deprivation · care home gap',
+    cadence: 'Computed'
+  };
+
+  var srcWrap = document.getElementById('sources');
+  var chWrap  = document.getElementById('channels');
+
+  // ── Render source cards (waiting state) ──────────────────────────
+  SOURCES.forEach(function (s, i) {
+    var el = document.createElement('div');
+    el.className = 'src';
+    el.id = 'src-' + i;
+    el.innerHTML =
+      '<div><div class="src-name">' + s.name + '</div>' +
+      '<div class="src-file">' + s.file + ' · ' + s.desc + '</div></div>' +
+      '<span class="src-cadence">' + s.cadence + '</span>' +
+      '<div class="src-meta" id="meta-' + i + '">Checking&hellip;</div>' +
+      '<span class="chip wait" id="chip-' + i + '"><span class="cdot"></span>checking</span>';
+    srcWrap.appendChild(el);
+  });
+
+  // Modelled card (no fetch, no chip — it has no freshness)
+  var mod = document.createElement('div');
+  mod.className = 'src';
+  mod.innerHTML =
+    '<div><div class="src-name">' + MODELLED.name + '</div>' +
+    '<div class="src-file">' + MODELLED.desc + '</div></div>' +
+    '<span class="src-cadence">' + MODELLED.cadence + '</span>' +
+    '<div class="src-meta">Calculated inside the score, always labelled as modelled</div>';
+  srcWrap.appendChild(mod);
+
+  // ── Render channels (one per card, modelled dashed) ──────────────
+  function layoutChannels() {
+    chWrap.innerHTML = '';
+    var boardTop = chWrap.getBoundingClientRect().top;
+    var cards = srcWrap.children;
+    for (var i = 0; i < cards.length; i++) {
+      var r = cards[i].getBoundingClientRect();
+      var mid = r.top + r.height / 2 - boardTop;
+      var ch = document.createElement('div');
+      var isModelled = (i === cards.length - 1);
+      ch.className = 'channel' + (isModelled ? ' modelled' : '');
+      ch.style.top = mid + 'px';
+      if (!isModelled) {
+        var p = document.createElement('span');
+        p.className = 'particle';
+        p.style.animationDuration = SOURCES[i].pulseSec + 's';
+        p.style.animationDelay = (i * 0.7) + 's';
+        ch.appendChild(p);
+        var tag = document.createElement('span');
+        tag.className = 'channel-tag';
+        tag.textContent = SOURCES[i].cadence;
+        ch.appendChild(tag);
+      }
+      chWrap.appendChild(ch);
+    }
+  }
+  layoutChannels();
+  window.addEventListener('resize', layoutChannels);
+
+  // ── Live freshness checks ─────────────────────────────────────────
+  function agePhrase(hours) {
+    if (hours < 1)   return 'under an hour ago';
+    if (hours < 24)  return Math.round(hours) + (Math.round(hours) === 1 ? ' hour ago' : ' hours ago');
+    var days = Math.round(hours / 24);
+    if (days < 60)   return days + (days === 1 ? ' day ago' : ' days ago');
+    var months = Math.round(days / 30.4);
+    return months + (months === 1 ? ' month ago' : ' months ago');
+  }
+
+  function setChip(i, cls, text) {
+    var chip = document.getElementById('chip-' + i);
+    chip.className = 'chip ' + cls;
+    chip.innerHTML = '<span class="cdot"></span>' + text;
+  }
+
+  function checkSource(s, i) {
+    // Same-repo relative path first; raw GitHub as a local-preview fallback.
+    var urls = [
+      s.file,
+      'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/' + s.file
+    ];
+    function attempt(n) {
+      if (n >= urls.length) {
+        setChip(i, 'late', 'unreachable');
+        document.getElementById('meta-' + i).textContent =
+          'Could not reach this file just now — try reloading.';
+        return;
+      }
+      fetch(urls[n], { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (d) {
+          var gen = d && d.meta && d.meta.generated;
+          if (!gen) throw new Error('no meta.generated');
+          var hours = (Date.now() - new Date(gen).getTime()) / 36e5;
+          var metaEl = document.getElementById('meta-' + i);
+          var line = 'Updated ' + agePhrase(hours);
+          if (s.extra) {
+            var ex = s.extra(d.meta);
+            if (ex) line += ' · ' + ex;
+          }
+          metaEl.textContent = line;
+          if (hours <= s.maxOk)        setChip(i, 'ok',   'current');
+          else if (hours <= s.maxWarn) setChip(i, 'warn', 'due soon');
+          else                         setChip(i, 'late', 'overdue');
+        })
+        .catch(function () { attempt(n + 1); });
+    }
+    attempt(0);
+  }
+
+  SOURCES.forEach(checkSource);
+
+  // ── Checked-at line ───────────────────────────────────────────────
+  var now = new Date();
+  document.getElementById('checked-at').textContent =
+    'Checked live in your browser · ' +
+    now.toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short',
+                                  hour: '2-digit', minute: '2-digit' });
+})();
+</script>
+
+</body>
+</html>
