@@ -1,13 +1,13 @@
 {
   "meta": {
-    "generated": "2026-06-10T10:12:07.287601+00:00",
+    "generated": "2026-06-10T14:59:33.956691+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
-    "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
+    "version": "5.2 \u2014 SECAmb FOI signal added (22 signals)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
+    "data_quality": "real \u2014 10 Fingertips signals + SECAmb FOI 260608 (operational ambulance demand) + EPD from last manual run",
     "signals_real": [
       "falls_65",
       "falls_65_79",
@@ -18,7 +18,8 @@
       "dementia_diagnosis",
       "hip_fractures_65",
       "hip_fractures_80",
-      "fuel_poverty"
+      "fuel_poverty",
+      "secamb_falls_callouts"
     ],
     "signals_synthetic": [
       "alone_75",
@@ -59,35 +60,47 @@
       "Oral Nutritional Supplements",
       "Anti-Dementia Drug Rate",
       "Denosumab Prescribing",
-      "Parkinson's Drug Rate"
+      "Parkinson's Drug Rate",
+      "SECAmb Falls Callouts 65+"
     ],
     "weights": [
-      0.11,
-      0.11,
-      0.08,
-      0.07,
-      0.07,
-      0.06,
-      0.05,
-      0.05,
-      0.04,
-      0.04,
-      0.04,
-      0.04,
-      0.03,
-      0.01,
-      0.01,
-      0.03,
-      0.02,
-      0.05,
-      0.04,
-      0.02,
-      0.03
+      0.1023,
+      0.1023,
+      0.0744,
+      0.0651,
+      0.0651,
+      0.0558,
+      0.0465,
+      0.0465,
+      0.0372,
+      0.0372,
+      0.0372,
+      0.0372,
+      0.0279,
+      0.0093,
+      0.0093,
+      0.0279,
+      0.0186,
+      0.0465,
+      0.0372,
+      0.0186,
+      0.0279,
+      0.07
     ],
-    "fep_delta_note": "fep_delta = change vs previous daily commit. Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. Phase 2: add 111 call velocity to precursor logic.",
+    "fep_delta_note": "fep_delta = change vs previous daily commit. Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. Phase 2: add 111 call velocity to precursor logic. v5.2: SECAmb operational signal added \u2014 Medway +3, Ashford +2 vs v5.1.",
     "sources": {
       "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py \u2014 fetched today",
-      "epd": "NHSBSA EPD \u2014 Mar 2026 (reused)"
+      "epd": "NHSBSA EPD \u2014 Mar 2026 (reused)",
+      "secamb": "SECAmb FOI response 260608 \u2014 10 June 2026. Emergency callouts for patients 65+ where primary presenting condition was a fall (ConditionID 34, 35, 1128, 1178). Jan\u2013Dec 2025 by local authority district."
+    },
+    "secamb_note": {
+      "signal": "SECAmb Falls Callouts 65+",
+      "weight": 0.07,
+      "period": "Jan\u2013Dec 2025",
+      "source": "SECAmb FOI 260608, 10 June 2026",
+      "normalisation": "District callout rate per 1,000 population aged 65+, scaled 0\u2013100 within Kent (min=Tonbridge & Malling 23.8/1k, max=Medway 38.0/1k)",
+      "kent_rate": 31.3,
+      "seasonal_note": "January peak (980 callouts Kent-wide). Recommend Q4 screening deployment priority window."
     }
   },
   "icb_baseline": {
@@ -291,7 +304,7 @@
     {
       "name": "Thanet",
       "lad_code": "E07000114",
-      "fep": 61,
+      "fep": 62,
       "risk": "high",
       "signals": [
         65.0,
@@ -314,7 +327,8 @@
         50.0,
         58.5,
         50.0,
-        100
+        100,
+        72.4
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -337,7 +351,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 18200,
       "fingertips_district_signals": 5,
@@ -432,15 +447,21 @@
         }
       },
       "list_size": 145000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 1022,
+        "rate_per_1000_65plus": 34.1,
+        "signal_score": 72.4,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
-      "fep": 60,
-      "risk": "high",
+      "fep": 59,
+      "risk": "moderate",
       "signals": [
         42.5,
         70.9,
@@ -462,7 +483,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        42.7
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -485,7 +507,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 16700,
       "fingertips_district_signals": 5,
@@ -580,15 +603,21 @@
         }
       },
       "list_size": 183000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 925,
+        "rate_per_1000_65plus": 29.8,
+        "signal_score": 42.7,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
       "fep": 58,
-      "risk": "high",
+      "risk": "moderate",
       "signals": [
         50.0,
         53.8,
@@ -610,7 +639,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        66.4
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -633,7 +663,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 11800,
       "fingertips_district_signals": 5,
@@ -730,13 +761,19 @@
       "list_size": 106000,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 631,
+        "rate_per_1000_65plus": 33.2,
+        "signal_score": 66.4,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Dover",
       "lad_code": "E07000108",
-      "fep": 57,
-      "risk": "high",
+      "fep": 56,
+      "risk": "moderate",
       "signals": [
         59.0,
         41.6,
@@ -758,7 +795,8 @@
         50.0,
         77.2,
         50.0,
-        100
+        100,
+        42.1
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -781,7 +819,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 13800,
       "fingertips_district_signals": 5,
@@ -876,14 +915,20 @@
         }
       },
       "list_size": 115000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 714,
+        "rate_per_1000_65plus": 29.8,
+        "signal_score": 42.1,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Medway",
       "lad_code": "E06000035",
-      "fep": 54,
+      "fep": 57,
       "risk": "moderate",
       "signals": [
         53.0,
@@ -906,7 +951,8 @@
         50.0,
         92.1,
         50.0,
-        100
+        100,
+        100.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -929,7 +975,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 19400,
       "fingertips_district_signals": 7,
@@ -1024,14 +1071,20 @@
         }
       },
       "list_size": 295000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": 3,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 1558,
+        "rate_per_1000_65plus": 38.0,
+        "signal_score": 100.0,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
-      "fep": 53,
+      "fep": 51,
       "risk": "moderate",
       "signals": [
         29.0,
@@ -1054,7 +1107,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        24.4
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1077,7 +1131,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 11200,
       "fingertips_district_signals": 5,
@@ -1172,9 +1227,15 @@
         }
       },
       "list_size": 119000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -2,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 599,
+        "rate_per_1000_65plus": 27.2,
+        "signal_score": 24.4,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Folkestone & Hythe",
@@ -1202,7 +1263,8 @@
         50.0,
         74.7,
         50.0,
-        100
+        100,
+        57.4
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1225,7 +1287,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 14100,
       "fingertips_district_signals": 5,
@@ -1322,12 +1385,18 @@
       "list_size": 116000,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 894,
+        "rate_per_1000_65plus": 31.9,
+        "signal_score": 57.4,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
-      "fep": 52,
+      "fep": 53,
       "risk": "moderate",
       "signals": [
         45.0,
@@ -1350,7 +1419,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        58.3
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1373,7 +1443,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 16300,
       "fingertips_district_signals": 5,
@@ -1468,14 +1539,20 @@
         }
       },
       "list_size": 172000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": 1,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 994,
+        "rate_per_1000_65plus": 32.1,
+        "signal_score": 58.3,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Swale",
       "lad_code": "E07000113",
-      "fep": 51,
+      "fep": 50,
       "risk": "moderate",
       "signals": [
         56.0,
@@ -1498,7 +1575,8 @@
         50.0,
         80.9,
         50.0,
-        100
+        100,
+        45.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1521,7 +1599,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 15200,
       "fingertips_district_signals": 5,
@@ -1616,14 +1695,20 @@
         }
       },
       "list_size": 153000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 754,
+        "rate_per_1000_65plus": 30.2,
+        "signal_score": 45.0,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Ashford",
       "lad_code": "E07000105",
-      "fep": 51,
+      "fep": 53,
       "risk": "moderate",
       "signals": [
         48.0,
@@ -1646,7 +1731,8 @@
         50.0,
         52.0,
         50.0,
-        100
+        100,
+        76.7
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1669,7 +1755,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 13600,
       "fingertips_district_signals": 5,
@@ -1764,14 +1851,20 @@
         }
       },
       "list_size": 128000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": 2,
+      "fep_delta_direction": "rising",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 763,
+        "rate_per_1000_65plus": 34.7,
+        "signal_score": 76.7,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
-      "fep": 51,
+      "fep": 48,
       "risk": "moderate",
       "signals": [
         39.0,
@@ -1794,7 +1887,8 @@
         50.0,
         77.2,
         50.0,
-        98.6
+        98.6,
+        0.0
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1817,7 +1911,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 13100,
       "fingertips_district_signals": 5,
@@ -1912,14 +2007,20 @@
         }
       },
       "list_size": 132000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -3,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 665,
+        "rate_per_1000_65plus": 23.8,
+        "signal_score": 0.0,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
-      "fep": 51,
+      "fep": 49,
       "risk": "moderate",
       "signals": [
         32.5,
@@ -1942,7 +2043,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        27.2
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -1965,7 +2067,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 12100,
       "fingertips_district_signals": 5,
@@ -2060,14 +2163,20 @@
         }
       },
       "list_size": 118000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -2,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 663,
+        "rate_per_1000_65plus": 27.6,
+        "signal_score": 27.2,
+        "source": "SECAmb FOI 260608"
+      }
     },
     {
       "name": "Dartford",
       "lad_code": "E07000107",
-      "fep": 49,
+      "fep": 48,
       "risk": "moderate",
       "signals": [
         44.0,
@@ -2090,7 +2199,8 @@
         50.0,
         100,
         50.0,
-        100
+        100,
+        43.1
       ],
       "signal_names": [
         "Over-75s Living Alone",
@@ -2113,7 +2223,8 @@
         "Oral Nutritional Supplements",
         "Anti-Dementia Drug Rate",
         "Denosumab Prescribing",
-        "Parkinson's Drug Rate"
+        "Parkinson's Drug Rate",
+        "SECAmb Falls Callouts 65+"
       ],
       "pop75": 10800,
       "fingertips_district_signals": 5,
@@ -2208,9 +2319,15 @@
         }
       },
       "list_size": 111000,
-      "fep_delta": 0,
-      "fep_delta_direction": "stable",
-      "crisis_precursor": false
+      "fep_delta": -1,
+      "fep_delta_direction": "falling",
+      "crisis_precursor": false,
+      "secamb": {
+        "annual_callouts": 538,
+        "rate_per_1000_65plus": 29.9,
+        "signal_score": 43.1,
+        "source": "SECAmb FOI 260608"
+      }
     }
   ]
 }
