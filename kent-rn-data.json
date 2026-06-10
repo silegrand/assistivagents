@@ -1,13 +1,13 @@
 {
  "meta": {
-  "generated": "2026-06-10T09:06:18.678427+00:00",
-  "description": "Reachable Neighbourhoods — Kent & Medway, neighbourhood-level outreach targeting",
-  "version": "0.1-prototype",
-  "status": "illustrative",
-  "status_note": "PROTOTYPE: neighbourhood structure, names and deprivation are real (ONS lookup + IMD). Solo-living, access, prescribing velocity and population are illustrative placeholders until the RN pipeline is run. Do not use for targeting decisions yet.",
+  "generated": "2026-06-10T13:23:36.216637+00:00",
+  "description": "Reachable Neighbourhoods — neighbourhood-level outreach targeting",
+  "version": "0.2-live",
+  "status": "partial",
+  "status_note": "Some signals unavailable this run — flagged real:false per signal",
   "unit": "House of Commons Library MSOA neighbourhood names (~7,500 residents each)",
   "suppression": "No figure below neighbourhood level is ever published. LSOA codes listed for transport planning only.",
-  "ecological_note": "Scores describe places, not people. A high score means more people worth reaching live here — it says nothing about any individual.",
+  "ecological_note": "Scores describe places, not people.",
   "weights": {
    "deprivation": 0.3,
    "solo_living": 0.25,
@@ -20,6 +20,42 @@
    "lad_code": "E07000114",
    "neighbourhoods": [
     {
+     "neighbourhood": "Cliftonville West",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024657",
+      "E01024658",
+      "E01024659",
+      "E01024660",
+      "E01024678"
+     ],
+     "rn_score": 65,
+     "signals": {
+      "deprivation": {
+       "value": 60.9,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
+     "rank": 1
+    },
+    {
      "neighbourhood": "Margate Town",
      "lsoa_count": 5,
      "lsoa_codes": [
@@ -29,66 +65,30 @@
       "E01024697",
       "E01024710"
      ],
-     "rn_score": 78,
+     "rn_score": 60,
      "signals": {
       "deprivation": {
-       "value": 54.5,
+       "value": 50.1,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 47.1,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 67.2,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 15.6,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1827,
-     "rank": 1
-    },
-    {
-     "neighbourhood": "Dane Valley & Northdown Hill",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024633",
-      "E01024634",
-      "E01024662",
-      "E01024663",
-      "E01024666"
-     ],
-     "rn_score": 73,
-     "signals": {
-      "deprivation": {
-       "value": 51.4,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 40.7,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 72.3,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": 11.7,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1054,
+     "pop_65_est": null,
      "rank": 2
     },
     {
@@ -101,31 +101,67 @@
       "E01024685",
       "E01024687"
      ],
-     "rn_score": 72,
+     "rn_score": 60,
      "signals": {
       "deprivation": {
-       "value": 55.5,
+       "value": 51.1,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 46.2,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 59.7,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 8.9,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1304,
+     "pop_65_est": null,
      "rank": 3
+    },
+    {
+     "neighbourhood": "Dane Valley & Northdown Hill",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024633",
+      "E01024634",
+      "E01024662",
+      "E01024663",
+      "E01024666"
+     ],
+     "rn_score": 58,
+     "signals": {
+      "deprivation": {
+       "value": 47.3,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
+     "rank": 4
     },
     {
      "neighbourhood": "Ramsgate Harbour",
@@ -137,103 +173,31 @@
       "E01024667",
       "E01024671"
      ],
-     "rn_score": 68,
+     "rn_score": 58,
      "signals": {
       "deprivation": {
-       "value": 50.9,
+       "value": 46.9,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 47.6,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 51.3,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 7.6,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1688,
-     "rank": 4
-    },
-    {
-     "neighbourhood": "Cliftonville West",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024657",
-      "E01024658",
-      "E01024659",
-      "E01024660",
-      "E01024678"
-     ],
-     "rn_score": 62,
-     "signals": {
-      "deprivation": {
-       "value": 66.2,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 48.2,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 42.2,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": -3.1,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1023,
+     "pop_65_est": null,
      "rank": 5
-    },
-    {
-     "neighbourhood": "Westgate",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024641",
-      "E01024713",
-      "E01024714",
-      "E01024715",
-      "E01024716"
-     ],
-     "rn_score": 59,
-     "signals": {
-      "deprivation": {
-       "value": 27.9,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 46.7,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 41.2,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": 7.8,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1629,
-     "rank": 6
     },
     {
      "neighbourhood": "Salmestone",
@@ -245,67 +209,31 @@
       "E01024694",
       "E01024696"
      ],
-     "rn_score": 59,
+     "rn_score": 50,
      "signals": {
       "deprivation": {
-       "value": 35.2,
+       "value": 32.4,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 48.0,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 52.5,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 1.7,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1830,
-     "rank": 7
-    },
-    {
-     "neighbourhood": "Broadstairs South",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024643",
-      "E01024705",
-      "E01024706",
-      "E01024707",
-      "E01024708"
-     ],
-     "rn_score": 57,
-     "signals": {
-      "deprivation": {
-       "value": 17.4,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 46.8,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 39.5,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": 9.1,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1750,
-     "rank": 8
+     "pop_65_est": null,
+     "rank": 6
     },
     {
      "neighbourhood": "Ramsgate Ellington",
@@ -317,139 +245,67 @@
       "E01024670",
       "E01024681"
      ],
-     "rn_score": 57,
+     "rn_score": 48,
      "signals": {
       "deprivation": {
-       "value": 31.0,
+       "value": 28.5,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 45.9,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 39.0,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 5.6,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1018,
-     "rank": 9
+     "pop_65_est": null,
+     "rank": 7
     },
     {
-     "neighbourhood": "Broadstairs North",
+     "neighbourhood": "Westgate",
      "lsoa_count": 5,
      "lsoa_codes": [
-      "E01024635",
-      "E01024642",
-      "E01024644",
-      "E01024692",
-      "E01024693"
+      "E01024641",
+      "E01024713",
+      "E01024714",
+      "E01024715",
+      "E01024716"
      ],
-     "rn_score": 55,
+     "rn_score": 46,
      "signals": {
       "deprivation": {
-       "value": 12.0,
+       "value": 25.6,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 36.6,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 46.0,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 12.9,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1500,
-     "rank": 10
-    },
-    {
-     "neighbourhood": "Birchington",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024636",
-      "E01024637",
-      "E01024638",
-      "E01024639",
-      "E01024640"
-     ],
-     "rn_score": 52,
-     "signals": {
-      "deprivation": {
-       "value": 18.7,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 39.7,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 73.6,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": -0.7,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1697,
-     "rank": 11
-    },
-    {
-     "neighbourhood": "Nethercourt, Pegwell & Cliffsend",
-     "lsoa_count": 5,
-     "lsoa_codes": [
-      "E01024650",
-      "E01024651",
-      "E01024652",
-      "E01024679",
-      "E01024680"
-     ],
-     "rn_score": 49,
-     "signals": {
-      "deprivation": {
-       "value": 18.0,
-       "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
-      },
-      "solo_living_66": {
-       "value": 46.1,
-       "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
-      },
-      "access_barrier": {
-       "value": 62.9,
-       "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
-      },
-      "rx_velocity_3m": {
-       "value": -5.2,
-       "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
-      }
-     },
-     "pop_65_est": 1212,
-     "rank": 12
+     "pop_65_est": null,
+     "rank": 8
     },
     {
      "neighbourhood": "Dumpton",
@@ -461,31 +317,31 @@
       "E01024700",
       "E01024709"
      ],
-     "rn_score": 48,
+     "rn_score": 46,
      "signals": {
       "deprivation": {
-       "value": 27.8,
+       "value": 25.5,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 38.4,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 38.6,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": -0.1,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1732,
-     "rank": 13
+     "pop_65_est": null,
+     "rank": 9
     },
     {
      "neighbourhood": "Westbrook & Garlinge",
@@ -497,66 +353,210 @@
       "E01024711",
       "E01024712"
      ],
-     "rn_score": 47,
+     "rn_score": 45,
      "signals": {
       "deprivation": {
-       "value": 25.7,
+       "value": 23.7,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 31.5,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 37.9,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 3.5,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1738,
-     "rank": 14
+     "pop_65_est": null,
+     "rank": 10
+    },
+    {
+     "neighbourhood": "Westwood, Northwood & Bromstone",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024686",
+      "E01024688",
+      "E01024689",
+      "E01024690",
+      "E01024691"
+     ],
+     "rn_score": 45,
+     "signals": {
+      "deprivation": {
+       "value": 23.2,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
+     "rank": 11
     },
     {
      "neighbourhood": "Minster & St-Nicholas-at-Wade",
      "lsoa_count": 5,
      "lsoa_codes": [
+      "",
       "E01024701",
       "E01024702",
       "E01024703",
-      "E01024704",
-      ""
+      "E01024704"
      ],
-     "rn_score": 47,
+     "rn_score": 44,
      "signals": {
       "deprivation": {
-       "value": 23.4,
+       "value": 21.5,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 34.0,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 49.2,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 0.8,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1599,
+     "pop_65_est": null,
+     "rank": 12
+    },
+    {
+     "neighbourhood": "Birchington",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024636",
+      "E01024637",
+      "E01024638",
+      "E01024639",
+      "E01024640"
+     ],
+     "rn_score": 42,
+     "signals": {
+      "deprivation": {
+       "value": 17.2,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
+     "rank": 13
+    },
+    {
+     "neighbourhood": "Broadstairs South",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024643",
+      "E01024705",
+      "E01024706",
+      "E01024707",
+      "E01024708"
+     ],
+     "rn_score": 41,
+     "signals": {
+      "deprivation": {
+       "value": 16.0,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
+     "rank": 14
+    },
+    {
+     "neighbourhood": "Nethercourt, Pegwell & Cliffsend",
+     "lsoa_count": 5,
+     "lsoa_codes": [
+      "E01024650",
+      "E01024651",
+      "E01024652",
+      "E01024679",
+      "E01024680"
+     ],
+     "rn_score": 41,
+     "signals": {
+      "deprivation": {
+       "value": 16.6,
+       "real": true,
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
+      },
+      "solo_living_66": {
+       "value": null,
+       "real": false,
+       "source": "Census 2021 (NOMIS)"
+      },
+      "access_barrier": {
+       "value": null,
+       "real": false,
+       "source": "IMD Geographic Barriers"
+      },
+      "rx_velocity_3m": {
+       "value": null,
+       "real": false,
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
+      }
+     },
+     "pop_65_est": null,
      "rank": 15
     },
     {
@@ -569,66 +569,66 @@
       "E01024656",
       "E01024675"
      ],
-     "rn_score": 46,
+     "rn_score": 41,
      "signals": {
       "deprivation": {
-       "value": 17.5,
+       "value": 16.1,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 36.4,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 36.1,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 3.4,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1204,
+     "pop_65_est": null,
      "rank": 16
     },
     {
-     "neighbourhood": "Westwood, Northwood & Bromstone",
+     "neighbourhood": "Broadstairs North",
      "lsoa_count": 5,
      "lsoa_codes": [
-      "E01024686",
-      "E01024688",
-      "E01024689",
-      "E01024690",
-      "E01024691"
+      "E01024635",
+      "E01024642",
+      "E01024644",
+      "E01024692",
+      "E01024693"
      ],
-     "rn_score": 46,
+     "rn_score": 38,
      "signals": {
       "deprivation": {
-       "value": 25.2,
+       "value": 11.1,
        "real": true,
-       "source": "IMD (2019 mirror — pipeline fetches IMD 2025)"
+       "source": "IMD 2019 (mirror fallback — paste 2025 URLs to upgrade)"
       },
       "solo_living_66": {
-       "value": 33.8,
+       "value": null,
        "real": false,
-       "source": "Census 2021 TS011 — fetched by RN pipeline"
+       "source": "Census 2021 (NOMIS)"
       },
       "access_barrier": {
-       "value": 43.0,
+       "value": null,
        "real": false,
-       "source": "RAVI geographic barriers — fetched by RN pipeline"
+       "source": "IMD Geographic Barriers"
       },
       "rx_velocity_3m": {
-       "value": 0.4,
+       "value": null,
        "real": false,
-       "source": "NHSBSA EPD × GP-reg-by-LSOA — fetched by RN pipeline"
+       "source": "NHSBSA EPD × NHS Digital GP-reg-by-LSOA"
       }
      },
-     "pop_65_est": 1163,
+     "pop_65_est": null,
      "rank": 17
     }
    ]
