@@ -1,14 +1,30 @@
 {
   "meta": {
-    "generated": "2026-06-09T20:16:45.174046+00:00",
+    "generated": "2026-06-10T08:12:09.430008+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
-    "version": "5.1 \u2014 real LAD-level Fingertips district scoring + 3 new EPD signals",
+    "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
+    "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
     "epd_period": "Mar 2026",
     "icb": "NHS Kent and Medway ICB (QKS)",
     "icb_ons_code": "E54000032",
-    "signals_real_count": 19,
-    "signals_modelled_count": 3,
-    "data_quality": "19 real signals \u00b7 3 modelled (synthetic) of 21 total",
+    "data_quality": "real \u2014 10 Fingertips signals (district-level where published) + EPD from last manual run",
+    "signals_real": [
+      "falls_65",
+      "falls_65_79",
+      "falls_80",
+      "winter_mortality",
+      "loneliness",
+      "social_isolation",
+      "dementia_diagnosis",
+      "hip_fractures_65",
+      "hip_fractures_80",
+      "fuel_poverty"
+    ],
+    "signals_synthetic": [
+      "alone_75",
+      "deprivation_imd",
+      "care_home_gap"
+    ],
     "fingertips_resolution": {
       "falls_65": "district",
       "falls_65_79": "district",
@@ -21,33 +37,7 @@
       "hip_fractures_80": "district",
       "fuel_poverty": "district"
     },
-    "scoring_note": "Fingertips outcome signals use real LAD-level district data normalised vs England, with ICB-level fallback for any district not published at LAD level (see fingertips_resolution). Modelled signals (alone_75, deprivation_imd, care_home_gap) scale a neutral base by district profile, pending Census 2021 / IMD 2025 upgrade. EPD prescribing is genuine practice-level data aggregated to district by postcode.",
-    "signals_real": [
-      "falls_65",
-      "falls_65_79",
-      "falls_80",
-      "winter_mortality",
-      "loneliness",
-      "social_isolation",
-      "dementia_diagnosis",
-      "hip_fractures_65",
-      "hip_fractures_80",
-      "fuel_poverty",
-      "hypnotics",
-      "anxiolytics",
-      "antidepressants",
-      "bisphosphonates",
-      "diuretics",
-      "ace_arb",
-      "bladder_antimusc",
-      "anti_dementia",
-      "parkinsons"
-    ],
-    "signals_modelled": [
-      "alone_75",
-      "deprivation_imd",
-      "care_home_gap"
-    ],
+    "scoring_note": "Fingertips outcome signals use real LAD-level district data normalised vs England, with ICB-level fallback for any district not published at LAD level. Synthetic signals (over-75s living alone, IMD deprivation, care home gap) remain modelled pending real district sources. EPD prescribing reused from last manual NHSBSA run.",
     "signal_names": [
       "Over-75s Living Alone",
       "Falls Admissions 65+",
@@ -94,45 +84,11 @@
       0.02,
       0.03
     ],
+    "fep_delta_note": "fep_delta = change vs previous daily commit. Positive = rising risk. crisis_precursor = True when delta >= 2 AND risk is high/critical. Phase 2: add 111 call velocity to precursor logic.",
     "sources": {
-      "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py",
-      "epd": "NHSBSA EPD practice-level \u2014 Mar 2026",
-      "epd_method": "Practice POSTCODE (col 13) \u2192 district via POSTCODE_TO_DISTRICT",
-      "demographic": "ONS Census 2021 \u00b7 IMD 2019 \u00b7 CQC register",
-      "weather": "UKHSA Weather-Health Alerting / Met Office"
-    },
-    "new_in_v4": [
-      "UKHSA/Met Office Weather-Health Alert fetched at run time",
-      "fep_weather field: weather-uplifted FEP for live map display",
-      "weather_alert block added to JSON root for Layer 4 context injection",
-      "data_quality metadata corrected: 14 real, 3 modelled (was incorrectly '17 real')"
-    ],
-    "new_in_v5": [
-      "Signal 18: ons_nutrition \u2014 BNF 090402 oral nutritional supplements",
-      "Weight 3% \u2014 direct FRAIL Scale (Loss of weight) clinical signal",
-      "Funded by: bladder_antimusc 2%\u21921%, diuretics 1%\u21920% (retained for reporting)",
-      "England reference rate: 3.8 per 1,000 patients/month (OpenPrescribing 2024/25)"
-    ],
-    "new_in_v5_1": [
-      "District scoring: 7 Fingertips outcome signals now use REAL LAD-level data \u2014 hand-assigned PROFILES multipliers removed",
-      "fingertips_resolution metadata records per-signal district vs ICB-fallback resolution",
-      "fingertips_district_signals per district counts real district signals",
-      "3 new EPD signals: anti_dementia (BNF 0411), denosumab (0606020C0, split from bisphosphonates), parkinsons (0409)",
-      "21-signal model \u2014 weights rebalanced, sum verified 1.00",
-      "epd_period stamped in meta from streamed EPD release"
-    ],
-    "note": "fep = base score (weather-independent, use for longitudinal comparison). fep_weather = live score including weather uplift (use for operational map display). EPD: district-level actual. Fingertips + modelled: ICB \u00d7 demographic profile. Phase 2: MSOA Fingertips linkage."
-  },
-  "weather_alert": {
-    "alert_level": "green",
-    "alert_type": "heat",
-    "region": "South East England",
-    "fetched_at": "2026-06-09T20:09:11.650075+00:00",
-    "source": "UKHSA Weather-Health Alerting / Met Office",
-    "api_status": "error: HTTPSConnectionPool(host='api.ukhsa.gov.uk', port=443): Max retries exceeded wit",
-    "med_risk_signals": [],
-    "fep_uplift": 0,
-    "layer4_context": ""
+      "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py \u2014 fetched today",
+      "epd": "NHSBSA EPD \u2014 Mar 2026 (reused)"
+    }
   },
   "icb_baseline": {
     "fingertips": {
@@ -176,7 +132,7 @@
         "england": 46.87,
         "period": "2024/25",
         "source": "NHS Fingertips indicator 90280",
-        "label": "Social isolation - SC users"
+        "label": "Social isolation SC users"
       },
       "dementia_diagnosis": {
         "value": 62.3,
@@ -201,7 +157,7 @@
       },
       "fuel_poverty": {
         "value": 10.97,
-        "england": 34.59,
+        "england": 13.71,
         "period": "2023",
         "source": "NHS Fingertips indicator 93759",
         "label": "Fuel poverty"
@@ -336,9 +292,7 @@
       "name": "Thanet",
       "lad_code": "E07000114",
       "fep": 61,
-      "fep_weather": 61,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         65.0,
         50.5,
@@ -386,7 +340,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 18200,
-      "list_size": 145000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 12.062,
@@ -477,15 +431,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 145000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Maidstone",
       "lad_code": "E07000110",
       "fep": 60,
-      "fep_weather": 60,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         42.5,
         70.9,
@@ -533,7 +488,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16700,
-      "list_size": 183000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 14.366,
@@ -624,15 +579,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 183000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Gravesham",
       "lad_code": "E07000109",
       "fep": 58,
-      "fep_weather": 58,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         50.0,
         53.8,
@@ -680,7 +636,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11800,
-      "list_size": 106000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 11.142,
@@ -771,15 +727,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 106000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Dover",
       "lad_code": "E07000108",
       "fep": 57,
-      "fep_weather": 57,
       "risk": "high",
-      "risk_weather": "high",
       "signals": [
         59.0,
         41.6,
@@ -827,7 +784,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13800,
-      "list_size": 115000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 8.922,
@@ -918,15 +875,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 115000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Medway",
       "lad_code": "E06000035",
       "fep": 54,
-      "fep_weather": 54,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         53.0,
         40.3,
@@ -974,7 +932,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 19400,
-      "list_size": 295000,
+      "fingertips_district_signals": 7,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 10.98,
@@ -1065,15 +1023,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 7
+      "list_size": 295000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Tunbridge Wells",
       "lad_code": "E07000116",
       "fep": 53,
-      "fep_weather": 53,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         29.0,
         69.5,
@@ -1121,7 +1080,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 11200,
-      "list_size": 119000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 11.866,
@@ -1212,15 +1171,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 119000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Folkestone & Hythe",
       "lad_code": "E07000112",
       "fep": 52,
-      "fep_weather": 52,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         61.0,
         45.4,
@@ -1268,7 +1228,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 14100,
-      "list_size": 116000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 9.103,
@@ -1359,15 +1319,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 116000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Canterbury",
       "lad_code": "E07000106",
       "fep": 52,
-      "fep_weather": 52,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         45.0,
         42.1,
@@ -1415,7 +1376,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 16300,
-      "list_size": 172000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 16.041,
@@ -1506,15 +1467,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 172000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Swale",
       "lad_code": "E07000113",
       "fep": 51,
-      "fep_weather": 51,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         56.0,
         39.7,
@@ -1562,7 +1524,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 15200,
-      "list_size": 153000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 9.562,
@@ -1653,15 +1615,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 153000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Ashford",
       "lad_code": "E07000105",
       "fep": 51,
-      "fep_weather": 51,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         48.0,
         41.8,
@@ -1709,7 +1672,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13600,
-      "list_size": 128000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 8.172,
@@ -1800,15 +1763,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 128000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Tonbridge & Malling",
       "lad_code": "E07000115",
       "fep": 51,
-      "fep_weather": 51,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         39.0,
         65.7,
@@ -1856,7 +1820,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 13100,
-      "list_size": 132000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 8.394,
@@ -1947,15 +1911,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 132000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Sevenoaks",
       "lad_code": "E07000111",
       "fep": 51,
-      "fep_weather": 51,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         32.5,
         60.5,
@@ -2003,7 +1968,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 12100,
-      "list_size": 118000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 11.881,
@@ -2094,15 +2059,16 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 118000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Dartford",
       "lad_code": "E07000107",
       "fep": 49,
-      "fep_weather": 49,
       "risk": "moderate",
-      "risk_weather": "moderate",
       "signals": [
         44.0,
         53.6,
@@ -2150,7 +2116,7 @@
         "Parkinson's Drug Rate"
       ],
       "pop75": 10800,
-      "list_size": 111000,
+      "fingertips_district_signals": 5,
       "epd_district": {
         "hypnotics": {
           "rate_per_1000": 10.946,
@@ -2241,7 +2207,10 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "fingertips_district_signals": 5
+      "list_size": 111000,
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     }
   ]
 }
