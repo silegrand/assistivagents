@@ -945,16 +945,16 @@ const SIGNAL_NAMES = ['Over-75s Alone','Unplanned Admissions','Polypharmacy','De
 const SIGNAL_COLORS = ['#2d6b47','#1d4ed8','#b45309','#7c3aed','#0e7490','#b91c1c'];
 
 function fepColor(score) {
-  if (score >= 75) return '#991b1b';
-  if (score >= 60) return '#b45309';
-  if (score >= 45) return '#1d4ed8';
+  if (score >= 70) return '#991b1b';
+  if (score >= 55) return '#b45309';
+  if (score >= 40) return '#1d4ed8';
   return '#166534';
 }
 
 function fepFill(score) {
-  if (score >= 75) return 'rgba(153,27,27,0.55)';
-  if (score >= 60) return 'rgba(180,83,9,0.45)';
-  if (score >= 45) return 'rgba(29,78,216,0.35)';
+  if (score >= 70) return 'rgba(153,27,27,0.55)';
+  if (score >= 55) return 'rgba(180,83,9,0.45)';
+  if (score >= 40) return 'rgba(29,78,216,0.35)';
   return 'rgba(22,101,52,0.3)';
 }
 
@@ -1653,7 +1653,7 @@ function exportPDF(districtName) {
       const TEXT   = [26, 46, 30];
       const MUTED  = [90, 114, 96];
 
-      const riskColor = d.fep >= 75 ? RED : d.fep >= 60 ? AMBER : d.fep >= 45 ? BLUE : GREEN;
+      const riskColor = d.fep >= 70 ? RED : d.fep >= 55 ? AMBER : d.fep >= 40 ? BLUE : GREEN;
       const riskLabel = d.risk.charAt(0).toUpperCase() + d.risk.slice(1);
       const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
