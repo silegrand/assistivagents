@@ -187,6 +187,7 @@ nav {
 }
 .type-real { background: var(--sage-pale); color: var(--sage); }
 .type-model { background: #eef2fb; color: #365EBF; }
+.type-operational { background: #fef3c7; color: #92400e; }
 
 /* ── WEIGHT BAR ── */
 .weight-bar-wrap {
@@ -330,8 +331,8 @@ nav {
       A plain-language account of the Assistiv intelligence framework — what data we use, how we combine it, what our scores mean, and where we are honest about their limitations.
     </p>
     <div class="page-meta">
-      <div class="meta-item"><strong>Current version</strong>FEP v5.0 · RAVI v1.4 · CBI v1.0</div>
-      <div class="meta-item"><strong>Data period</strong>NHS Fingertips 2024/25 · EPD Mar 2026</div>
+      <div class="meta-item"><strong>Current version</strong>FEP v5.2 · RAVI v1.4 · CBI v1.0</div>
+      <div class="meta-item"><strong>Data period</strong>NHS Fingertips 2024/25 · EPD Mar 2026 · SECAmb FOI Jan–Dec 2025</div>
       <div class="meta-item"><strong>Geography</strong>Kent &amp; Medway ICB (QKS)</div>
       <div class="meta-item"><strong>Coverage</strong>13 districts · 1,065 LSOAs</div>
     </div>
@@ -343,7 +344,7 @@ nav {
     <ol>
       <li><a href="#problem">1. The problem we are solving</a></li>
       <li><a href="#fep">2. The Frailty Emergence Probability (FEP) score</a></li>
-      <li><a href="#signals">3. Signal selection and weighting</a></li>
+      <li><a href="#signals">3. Signal selection and weighting (22 signals)</a></li>
       <li><a href="#scoring">4. How scores are calculated</a></li>
       <li><a href="#ravi">5. The Rural Access Vulnerability Index (RAVI)</a></li>
       <li><a href="#cbi">6. The Carer Burden Index (CBI)</a></li>
@@ -421,15 +422,17 @@ nav {
     <div class="section-num">Section 3</div>
     <h2>Signal selection and weighting</h2>
 
-    <p>The FEP score is calculated from 18 signals drawn from three data categories. Signal selection was guided by three criteria: clinical face validity (does this signal have a plausible causal relationship with frailty?), data quality and currency (is this from a reliable, regularly updated source?), and geographic availability (can we obtain this at district level for Kent?).</p>
+    <p>The FEP score is calculated from 22 signals drawn from four data categories. Signal selection was guided by three criteria: clinical face validity (does this signal have a plausible causal relationship with frailty?), data quality and currency (is this from a reliable, regularly updated source?), and geographic availability (can we obtain this at district level for Kent?).</p>
 
     <h3>Signal categories</h3>
 
-    <p><strong>Demographic and socioeconomic signals (3 signals, 28% combined weight)</strong> — proxy measures where direct frailty data is unavailable at district level. Older adults living alone, deprivation index, and care home provision gaps. These are flagged as modelled estimates, not direct measurements.</p>
+    <p><strong>Demographic and socioeconomic signals (3 signals, 26% combined weight)</strong> — proxy measures where direct frailty data is unavailable at district level. Older adults living alone, deprivation index, and care home provision gaps. These are flagged as modelled estimates, not direct measurements.</p>
 
-    <p><strong>NHS Fingertips outcomes indicators (10 signals, 47% combined weight)</strong> — published OHID data on falls admissions, hip fractures, winter mortality, dementia diagnosis rate, loneliness, and social isolation. All real data; all benchmarked against England averages with published confidence intervals.</p>
+    <p><strong>NHS Fingertips outcomes indicators (10 signals, 44% combined weight)</strong> — published OHID data on falls admissions, hip fractures, winter mortality, dementia diagnosis rate, loneliness, and social isolation. All real data; all benchmarked against England averages with published confidence intervals.</p>
 
-    <p><strong>NHSBSA prescribing signals (5 signals, 25% combined weight)</strong> — practice-level dispensing data from the NHS Business Services Authority, aggregated to district. Prescribing patterns are among the most sensitive indicators of frailty burden available in routine NHS data: hypnotics, anxiolytics, bisphosphonates, oral nutritional supplements, and anticholinergic medications all proxy specific clinical domains.</p>
+    <p><strong>NHSBSA prescribing signals (8 signals, 23% combined weight)</strong> — practice-level dispensing data from the NHS Business Services Authority, aggregated to district. Prescribing patterns are among the most sensitive indicators of frailty burden available in routine NHS data: hypnotics, anxiolytics, bisphosphonates, oral nutritional supplements, and anticholinergic medications all proxy specific clinical domains.</p>
+
+    <p><strong>Operational NHS data (1 signal, 7% combined weight)</strong> — district-level emergency ambulance callout data held operationally by NHS trusts. Not published in open datasets. Obtained via Freedom of Information request. SECAmb falls callouts 65+ (Jan–Dec 2025) is the first signal in this category. Unlike administrative proxies, this measures real-world acute demand directly — the moment frailty converts to a 999 call.</p>
 
     <h3>Complete signal list with weights</h3>
 
@@ -462,6 +465,21 @@ nav {
         <tr><td class="sig-name">Bladder antimuscarinics</td><td class="sig-w">2%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:15%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
         <tr><td class="sig-name">ACE/ARB prescribing</td><td class="sig-w">1%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:8%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
         <tr><td class="sig-name">Diuretics rate</td><td class="sig-w">1%</td><td><div class="weight-bar-wrap"><div class="weight-bar" style="width:8%"></div></div></td><td>NHSBSA EPD Mar 2026</td><td><span class="sig-type type-real">Real</span></td></tr>
+        <tr>
+          <td colspan="5" style="padding:0.35rem 0.75rem;background:var(--cream-mid);font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-dim);">
+            Operational NHS data — FOI-sourced
+          </td>
+        </tr>
+        <tr>
+          <td class="sig-name">
+            SECAmb falls callouts 65+
+            <div style="font-size:0.75rem;color:var(--ink-dim);margin-top:0.2rem;font-family:var(--mono);">Emergency callouts where primary condition was a fall. Jan–Dec 2025. Normalised per 1,000 population aged 65+.</div>
+          </td>
+          <td class="sig-w">7%</td>
+          <td><div class="weight-bar-wrap"><div class="weight-bar" style="width:54%"></div></div></td>
+          <td style="font-size:0.8rem;">SECAmb FOI 260608<br><span style="font-size:0.72rem;color:var(--ink-dim);">Response dated 10 June 2026. ConditionID 34, 35, 1128, 1178.</span></td>
+          <td><span class="sig-type type-operational">Operational</span></td>
+        </tr>
       </tbody>
     </table>
 
@@ -494,7 +512,7 @@ signal_score = (district_value / england_value) × 50
 signal_score = (1917 / 1870) × 50 = 51.3
 
 <span class="comment"># Composite FEP score</span>
-FEP = Σ (signal_score × weight) for all 18 signals
+FEP = Σ (signal_score × weight) for all 22 signals
 
 <span class="comment"># Example district (simplified)</span>
 FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
@@ -508,6 +526,35 @@ FEP_Thanet = (51.3 × 0.13) + (54.2 × 0.12) + ... = 62
     <p>Three demographic and socioeconomic signals — over-75s living alone, deprivation (IMD), and care home provision gap — remain modelled estimates, scaling a neutral baseline by a district profile. These are explicitly flagged as modelled rather than measured, and are the next candidates for upgrade to real district sources (Census 2021 TS011 for solo-65+ households and IMD 2025 at LAD level, both of which are already used elsewhere in the RAVI layer). The eleven NHSBSA EPD prescribing signals are genuinely available at practice level and aggregated to district by postcode.</p>
 
     <p>This is an improvement on earlier versions, in which all Fingertips signals were scaled from an ICB baseline by hand-assigned multipliers. District differentiation for the outcome signals is now independently observed rather than asserted; the residual modelled component is confined to the three demographic proxies, and is disclosed as such.</p>
+
+    <h3>Operational signal validation — SECAmb (v5.2)</h3>
+    <p>In June 2026, Assistiv Systems submitted a Freedom of Information request to South East Coast Ambulance Service (SECAmb) for district-level falls callout data for patients aged 65+, January to December 2025. The response (FOI reference 260608, received 10 June 2026) provided 10,720 callout records disaggregated by local authority district across 12 months.</p>
+    <p>Cross-referencing these operational callout rates (per 1,000 population aged 65+) against the FEP v5.1 scores revealed six material divergences — districts where actual ambulance demand differed significantly from what the existing 21-signal model predicted:</p>
+
+    <table class="signal-table" style="margin:1.25rem 0">
+      <thead>
+        <tr>
+          <th>District</th>
+          <th>FEP v5.1 rank</th>
+          <th>Callout rate rank</th>
+          <th>Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="sig-name">Medway</td><td>5th</td><td>1st (38.0/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Higher acute demand than model predicted. FEP was underscoring.</td></tr>
+        <tr><td class="sig-name">Ashford</td><td>7th</td><td>2nd (34.7/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Higher acute demand than model predicted. FEP was underscoring.</td></tr>
+        <tr><td class="sig-name">Canterbury</td><td>9th</td><td>5th (32.1/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Disproportionate demand relative to FEP rank.</td></tr>
+        <tr><td class="sig-name">Folkestone &amp; Hythe</td><td>2nd</td><td>6th (31.9/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Lower acute demand than model predicted — consistent with high frailty risk not yet converting to crisis. Supports preventative case.</td></tr>
+        <tr><td class="sig-name">Dover</td><td>3rd</td><td>10th (29.8/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Lower acute demand than FEP rank predicts. Same interpretation as Folkestone.</td></tr>
+        <tr><td class="sig-name">Dartford</td><td>13th (lowest)</td><td>8th (29.9/1k)</td><td style="font-size:0.82rem;color:var(--ink-mid)">Higher demand than lowest FEP rank suggests. Warrants monitoring.</td></tr>
+      </tbody>
+    </table>
+
+    <p>The SECAmb signal was added to the FEP model at 7% weight in v5.2. Existing signal weights were scaled proportionally to maintain a total of 100%. The key score movements from this integration: Medway +3 (54→57), Ashford +2 (51→53), Tonbridge &amp; Malling −3 (51→48). The divergences for Folkestone &amp; Hythe and Dover — where high FEP risk has not yet translated to high ambulance demand — are interpreted as evidence of unmet preventative need rather than model error, and these districts remain high priority for screening deployment.</p>
+
+    <div class="callout callout-amber">
+      <strong>Seasonal finding:</strong> January is the peak month for falls callouts across Kent (980 callouts, 27% above the February low of 770). This is consistent with cold weather, reduced activity, and post-holiday service gaps. PCN leads deploying ASSISTIV.TOOLS community screening should consider October–December as the priority deployment window to identify and support at-risk individuals before peak ambulance demand arrives.
+    </div>
 
     <h3>Weather uplift</h3>
     <p>When the UKHSA/Met Office issues a Heat-Health or Cold-Health Alert for South East England, FEP scores are uplifted for high-risk districts and specific prescribing signals (anticholinergics, diuretics, hypnotics) are flagged for elevated clinical sensitivity. This uplift is fetched at runtime and applied as a multiplicative factor, not permanently incorporated into the base score.</p>
@@ -943,7 +990,7 @@ const ADA_SYS = `You are Ada, an AI assistant built by Assistiv Systems. You hel
 
 TONE: Plain English. Warm but precise. No clinical jargon unless the person uses it.
 
-THE MODEL: FEP scores 0-100, England average = 50. Higher = more frailty risk concentration. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+. 18 signals: 10 NHS Fingertips, 5 NHSBSA EPD prescribing, 3 synthetic/modelled.
+THE MODEL: FEP scores 0-100, England average = 50. Higher = more frailty risk concentration. Bands: Low <40, Moderate 40-54, High 55-69, Critical 70+. 22 signals: 10 NHS Fingertips, 8 NHSBSA EPD prescribing, 3 synthetic/modelled, 1 operational (SECAmb FOI 260608).
 
 KENT CONTEXT: Thanet, Folkestone & Hythe, Dover — coastal east Kent, higher deprivation, older demographics. Sevenoaks, Tunbridge Wells — lowest FEP but 21 critical rural LSOA hotspots each.
 
