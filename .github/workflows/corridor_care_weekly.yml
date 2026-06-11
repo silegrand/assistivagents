@@ -35,3 +35,8 @@ jobs:
             echo "kent-corridor-data.json exists locally"
             python -c "import json; d=json.load(open('kent-corridor-data.json')); print('Period:', d['meta'].get('period_label', d['meta'].get('week_ending','unknown')))"
           fi
+
+      - name: Inject static stat fallbacks into HTML (commits via API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python inject_stats.py
