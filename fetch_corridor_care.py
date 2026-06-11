@@ -194,37 +194,30 @@ def parse_corridor_csv(csv_content, trust_codes):
         except (ValueError, TypeError):
             continue
 
-        # Route to correct bucket by Subject
-        is_ed   = "ed" in subject.lower()
-        # Ward subjects: CorridorCare_bed_adult, CorridorCare_bed_total, CorridorCare_bed_paeds
-        is_ward = "ward" in subject.lower() or "bed" in subject.lower()
-        # Exclude paeds from ward total — use adult or total only
-        if "paed" in subject.lower():
-            is_ward = False
-        # Prefer _bed_total over _bed_adult to avoid double-counting
-        is_ward_total = "bed_total" in subject.lower()
-        is_ward_adult = "bed_adult" in subject.lower() and not is_ward_total
+        # Route by Subject — simple exact matching on known subject strings
+        subj = subject.lower()
 
-        # Only use bed_total for ward (avoids double-counting adult + paeds)
-        # If no bed_total exists, fall back to bed_adult
-        use_ward = is_ward_total or (is_ward_adult and
-                   trust_accumulator[matched_code].get("ward_monthly_avg") is None and
-                   not any("bed_total" in str(r.get("Subject","")) for r in rows
-                           if str(r.get("Org Code","")).upper() == matched_code))
-
-        if "monthly average" in metric:
-            if is_ed:
+        if subj == "corridorcare_ed":
+            if "monthly average" in metric:
                 trust_accumulator[matched_code]["ed_monthly_avg"] = value
-            elif is_ward_total:
+            else:
+                trust_accumulator[matched_code]["ed_values"].append(value)
+
+        elif subj == "corridorcare_bed_total":
+            if "monthly average" in metric:
                 trust_accumulator[matched_code]["ward_monthly_avg"] = value
-            elif is_ward_adult and trust_accumulator[matched_code]["ward_monthly_avg"] is None:
-                trust_accumulator[matched_code]["ward_monthly_avg"] = value
-        elif is_ed:
-            trust_accumulator[matched_code]["ed_values"].append(value)
-        elif is_ward_total:
-            trust_accumulator[matched_code]["ward_values"].append(value)
-        elif is_ward_adult and not trust_accumulator[matched_code]["ward_values"]:
-            trust_accumulator[matched_code]["ward_values"].append(value)
+            else:
+                trust_accumulator[matched_code]["ward_values"].append(value)
+
+        elif subj == "corridorcare_bed_adult":
+            # Only use if bed_total not already set
+            if "monthly average" in metric:
+                if trust_accumulator[matched_code]["ward_monthly_avg"] is None:
+                    trust_accumulator[matched_code]["ward_monthly_avg"] = value
+            else:
+                if not trust_accumulator[matched_code]["ward_values"]:
+                    trust_accumulator[matched_code]["ward_values"].append(value)
+        # corridorcare_bed_paeds excluded intentionally
 
     # Build results
     print(f"\n  Accumulator results:")
