@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "generated": "2026-06-11T11:16:20.128849+00:00",
+    "description": "Kent GP registered patients by district \u2014 Assistiv Systems",
+    "version": "1.1",
+    "refresh_type": "monthly \u2014 NHS Digital GP Registration",
+    "snapshot_date": "2026-06-01",
+    "zip_url": "https://files.digital.nhs.uk/7E/DC8059/gp-reg-pat-prac-quin-age.zip",
+    "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/june-2026",
+    "source": "NHS Digital Patients Registered at a GP Practice",
+    "licence": "Open Government Licence v3.0",
+    "icb": "NHS Kent and Medway ICB (QKS)",
+    "update_note": "Add new ZIP URL monthly to KNOWN_GP_REG in fetch_shmi_gp.py"
+  },
+  "districts": {
+    "Thanet": {
+      "lad_code": "E07000114",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Folkestone & Hythe": {
+      "lad_code": "E07000112",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Dover": {
+      "lad_code": "E07000108",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Swale": {
+      "lad_code": "E07000113",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Medway": {
+      "lad_code": "E06000035",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Gravesham": {
+      "lad_code": "E07000109",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Ashford": {
+      "lad_code": "E07000105",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Canterbury": {
+      "lad_code": "E07000106",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Dartford": {
+      "lad_code": "E07000107",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Maidstone": {
+      "lad_code": "E07000110",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Tonbridge & Malling": {
+      "lad_code": "E07000115",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Sevenoaks": {
+      "lad_code": "E07000111",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    },
+    "Tunbridge Wells": {
+      "lad_code": "E07000116",
+      "total_list_size": 0,
+      "pop_75plus": 0,
+      "pop_65plus": 0,
+      "by_age_band": {},
+      "snapshot_date": "2026-06-01"
+    }
+  },
+  "history": [
+    {
+      "snapshot_date": "2026-06-01",
+      "fetched": "2026-06-11",
+      "districts": {
+        "Thanet": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Folkestone & Hythe": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Dover": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Swale": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Medway": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Gravesham": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Ashford": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Canterbury": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Dartford": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Maidstone": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Tonbridge & Malling": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Sevenoaks": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        },
+        "Tunbridge Wells": {
+          "total_list_size": 0,
+          "pop_75plus": 0
+        }
+      }
+    }
+  ]
+}
