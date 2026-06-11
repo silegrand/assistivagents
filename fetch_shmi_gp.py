@@ -364,30 +364,52 @@ def fetch_and_write_gp_reg():
     matched = 0
     skipped = 0
 
-    # Check what sex codes are present
-    sex_codes = set(str(r.get(sex_col or "", "")).strip() for r in rows[:200])
+    # NHS GP registration structure:
+    #   SEX=ALL rows have AGE_GROUP_5='ALL' only — use for total list size
+    #   SEX=MALE and SEX=FEMALE rows have full age band breakdown — sum for persons total
+    sex_codes = set(str(r.get(sex_col or "", "")).strip().upper() for r in rows[:200])
     print(f"  Sex codes in data: {sex_codes}")
-    # NHS GP reg typically uses 1=Male, 2=Female only (no persons-total row).
-    # Summing M+F gives the correct total persons count per practice per age band.
-    has_persons_total = any(s in sex_codes for s in ("0", "PERSONS", "ALL", "TOTAL"))
-    print(f"  Has persons-total rows: {has_persons_total}")
 
+    # Two-pass approach:
+    # Pass 1: ALL rows -> total list size per district
+    # Pass 2: MALE+FEMALE rows -> age-banded counts per district
+
+    # Pass 1: list sizes from ALL rows
     for row in rows:
-        if sex_col and has_persons_total:
-            # Only keep persons-total rows to avoid double counting
+        if sex_col:
             sex_val = str(row.get(sex_col, "")).strip().upper()
-            if sex_val not in ("", "PERSONS", "ALL", "0", "TOTAL"):
+            if sex_val != "ALL":
                 continue
-        # If no persons-total row, include all sex rows (M+F sums to persons total)
+        postcode = str(row.get(postcode_col or "", "")).strip()
+        district = postcode_to_district(postcode)
+        if not district:
+            continue
+        if district not in district_data:
+            district_data[district] = {
+                "total_list_size": 0, "pop_75plus": 0,
+                "pop_65plus": 0, "by_age_band": {},
+            }
+        try:
+            count = int(float(str(row.get(count_col or "", "0")).replace(",", "")))
+        except (ValueError, TypeError):
+            count = 0
+        district_data[district]["total_list_size"] += count
+
+    print(f"  Pass 1 (list sizes) complete — districts: {sorted(district_data.keys())}")
+
+    # Pass 2: age breakdown from MALE+FEMALE rows (sum = persons total per age band)
+    for row in rows:
+        if sex_col:
+            sex_val = str(row.get(sex_col, "")).strip().upper()
+            if sex_val not in ("MALE", "FEMALE", "1", "2"):
+                continue
 
         # Map practice postcode to Kent district
         postcode = str(row.get(postcode_col or "", "")).strip()
         district = postcode_to_district(postcode)
         if not district:
-            skipped += 1
             continue
 
-        matched += 1
         if district not in district_data:
             district_data[district] = {
                 "total_list_size": 0, "pop_75plus": 0,
@@ -400,7 +422,6 @@ def fetch_and_write_gp_reg():
             count = 0
 
         age_val = str(row.get(age_col or "", "")).strip()
-        district_data[district]["total_list_size"] += count
         if age_val:
             district_data[district]["by_age_band"][age_val] = (
                 district_data[district]["by_age_band"].get(age_val, 0) + count
@@ -410,7 +431,8 @@ def fetch_and_write_gp_reg():
             if age_is_65plus(age_val):
                 district_data[district]["pop_65plus"] += count
 
-    print(f"\n  Matched: {matched:,} rows, skipped (non-Kent): {skipped:,}")
+    print(f"  Pass 2 (age bands) complete")
+
     print(f"  Districts found: {sorted(district_data.keys())}")
 
     districts_output = {}
