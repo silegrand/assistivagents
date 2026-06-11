@@ -161,10 +161,22 @@ def extract_trust_metrics(wb, trust_codes):
         if not trust_rows:
             continue
 
+        # Dump ALL header cell values from rows 1-12 so we can see exact column names
+        print(f"  ALL header cells in '{sheet_name}' (rows 1-12):")
+        all_headers = []
+        for hrow in ws.iter_rows(min_row=1, max_row=12):
+            for cell in hrow:
+                if cell.value and str(cell.value).strip():
+                    all_headers.append(f"R{cell.row}C{cell.column}:{str(cell.value).strip()[:50]}")
+        # Print in chunks of 6
+        for i in range(0, min(len(all_headers), 120), 6):
+            print(f"    {all_headers[i:i+6]}")
+
         cols = find_column_header(ws, HEADER_PATTERNS)
         if not cols:
             print("  No matching column headers found in this sheet")
-            continue
+            # Don't skip — continue to extract what we can
+            cols = {}
 
         # Find the most recent data column (rightmost non-empty numeric column
         # to the right of the header area — SitRep Excel is time-series wide)
