@@ -1,15 +1,17 @@
 {
   "meta": {
-    "generated": "2026-06-11T11:51:40.636022+00:00",
-    "description": "Kent NHS Trust corridor care and UEC pressure \u2014 Assistiv Systems",
-    "version": "1.0",
-    "refresh_type": "weekly \u2014 NHS England UEC Daily SitRep (Thursdays)",
-    "week_ending": "2026-06-11",
-    "source_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/04/Web-File-Timeseries-UEC-Daily-SitRep-2526-ed389pw.xlsx",
-    "source": "NHS England UEC Daily Situation Reports 2025-26",
+    "generated": "2026-06-11T11:56:58.516202+00:00",
+    "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
+    "version": "2.0",
+    "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
+    "period_label": "May 2026",
+    "pub_url": "https://www.england.nhs.uk/statistics/statistical-work-areas/corridor-care-urgent-and-emergency-care-daily-situation-reports/",
+    "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
+    "source": "NHS England Corridor Care \u2013 UEC Daily Situation Reports",
     "licence": "Open Government Licence v3.0",
-    "corridor_care_definition": "Patient has experienced corridor care if they spent \u226545 minutes in a clinically inappropriate area of an ED or general & acute ward. NHS England definition, March 2026. ED count: previous 24h midnight-to-midnight. Ward count: 8am snapshot of occupied corridor beds.",
-    "data_currency_note": "SitRep data published weekly by NHS England, typically every Thursday at 09:30. Data covers the week ending the previous Sunday. Corridor care fields introduced March 2026.",
+    "data_note": "Experimental data \u2014 NHS England note this collection is new and figures will evolve as reporting matures. Values are monthly averages of daily submissions. Blank submission = no data submitted; zero = confirmed zero corridor care.",
+    "corridor_care_definition": "Patient has experienced corridor care if they spent \u226545 minutes in a clinically inappropriate area of an ED or general & acute ward. NHS England definition, March 2026.",
+    "update_note": "Each month add the new CSV URL from the corridor care publication page to KNOWN_RELEASES in fetch_corridor_care.py",
     "trust_codes": [
       "RVV",
       "RWF"
@@ -29,12 +31,15 @@
       "corridor_ed": null,
       "corridor_ward": null,
       "corridor_total": null,
+      "corridor_ed_max": null,
+      "corridor_ward_max": null,
+      "days_submitted": 128,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
       "corridor_trend": "unknown",
-      "week_ending": "2026-06-11"
+      "period_label": "May 2026"
     },
     "RWF": {
       "name": "Maidstone and Tunbridge Wells NHS Trust",
@@ -51,12 +56,15 @@
       "corridor_ed": null,
       "corridor_ward": null,
       "corridor_total": null,
+      "corridor_ed_max": null,
+      "corridor_ward_max": null,
+      "days_submitted": 128,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
       "corridor_trend": "unknown",
-      "week_ending": "2026-06-11"
+      "period_label": "May 2026"
     }
   },
   "history": [
@@ -72,6 +80,27 @@
         },
         "RWF": {
           "corridor_total": null,
+          "name": "Maidstone and Tunbridge Wells NHS Trust",
+          "short": "Maidstone & Tunbridge Wells"
+        }
+      }
+    },
+    {
+      "period_label": "May 2026",
+      "fetched": "2026-06-11",
+      "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
+      "trusts": {
+        "RVV": {
+          "corridor_total": null,
+          "corridor_ed": null,
+          "corridor_ward": null,
+          "name": "East Kent Hospitals University NHS Foundation Trust",
+          "short": "East Kent Hospitals"
+        },
+        "RWF": {
+          "corridor_total": null,
+          "corridor_ed": null,
+          "corridor_ward": null,
           "name": "Maidstone and Tunbridge Wells NHS Trust",
           "short": "Maidstone & Tunbridge Wells"
         }
