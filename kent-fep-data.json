@@ -88,7 +88,9 @@
     "sources": {
       "fingertips": "NHS Fingertips/OHID PHOF via fingertips_py \u2014 fetched today",
       "epd": "NHSBSA EPD \u2014 Mar 2026 (reused)"
-    }
+    },
+    "list_size_updated": "2026-06-11",
+    "list_size_source": "NHS GP Registration monthly snapshot"
   },
   "icb_baseline": {
     "fingertips": {
@@ -431,7 +433,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 145000,
+      "list_size": 132994,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -579,7 +581,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 183000,
+      "list_size": 196223,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -727,7 +729,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 106000,
+      "list_size": 123189,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -875,7 +877,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 115000,
+      "list_size": 105906,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1023,7 +1025,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 295000,
+      "list_size": 337497,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1171,7 +1173,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 119000,
+      "list_size": 377485,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1319,7 +1321,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 116000,
+      "list_size": 88498,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1467,7 +1469,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 172000,
+      "list_size": 210006,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1615,7 +1617,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 153000,
+      "list_size": 148829,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1763,7 +1765,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 128000,
+      "list_size": 133672,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -1911,7 +1913,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 132000,
+      "list_size": 127302,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -2059,7 +2061,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 118000,
+      "list_size": 85004,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
@@ -2207,7 +2209,7 @@
           "source": "NHSBSA EPD practice-level \u2014 Mar 2026"
         }
       },
-      "list_size": 111000,
+      "list_size": 269871,
       "fep_delta": 0,
       "fep_delta_direction": "stable",
       "crisis_precursor": false
