@@ -185,25 +185,33 @@ def fetch_and_write_shmi():
         print(f"  Downloading SHMI CSV: {csv_url}")
         r = requests.get(csv_url, headers=HEADERS, timeout=60)
         if r.status_code == 200:
-            content = r.content.decode("utf-8-sig", errors="replace")
-            reader  = csv.DictReader(StringIO(content))
-            rows    = list(reader)
-            fields  = reader.fieldnames or []
-            print(f"  {len(rows):,} rows")
+            # utf-8-sig strips BOM; also strip BOM from field names manually
+            csv_text = r.content.decode("utf-8-sig", errors="replace")
+            reader   = csv.DictReader(StringIO(csv_text))
+            rows     = list(reader)
+            # Strip BOM and whitespace from all field names
+            clean_fields = [f.lstrip("\ufeff").strip() for f in (reader.fieldnames or [])]
+            print(f"  {len(rows):,} rows, fields: {clean_fields}")
 
-            org_col     = find_col(fields, "org code", "org_code", "prov", "code")
-            shmi_col    = find_col(fields, "shmi value", "shmi")
-            banding_col = find_col(fields, "banding", "band")
-            obs_col     = find_col(fields, "observed", "actual")
-            pred_col    = find_col(fields, "predicted", "expected")
-            spells_col  = find_col(fields, "spell", "discharge", "total")
+            # Known columns from NHS Digital SHMI trust-level CSV:
+            # INDICATOR_CODE, PROVIDER_CODE, PROVIDER_NAME, SHMI_VALUE,
+            # SHMI_BANDING, SPELLS, OBSERVED, EXPECTED, PO_LL, PO_UL, OD_LL, OD_UL
+            org_col     = find_col(clean_fields, "provider_code", "provider code", "prov", "org code")
+            shmi_col    = find_col(clean_fields, "shmi_value", "shmi value", "shmi")
+            banding_col = find_col(clean_fields, "shmi_banding", "banding", "band")
+            obs_col     = find_col(clean_fields, "observed", "actual")
+            pred_col    = find_col(clean_fields, "expected", "predicted")
+            spells_col  = find_col(clean_fields, "spells", "spell")
+            print(f"  Cols → org:{org_col} shmi:{shmi_col} banding:{banding_col}")
 
             BANDING_LABELS = {"1": "Higher than expected",
                               "2": "As expected",
                               "3": "Lower than expected"}
 
             for row in rows:
-                code = str(row.get(org_col or "", "")).strip().upper()
+                # Strip BOM from row keys
+                row = {k.lstrip("\ufeff").strip(): v for k, v in row.items()}
+                code = str(row.get(org_col or "PROVIDER_CODE", "")).strip().upper()
                 if code not in KENT_TRUSTS:
                     continue
                 def sf(c):
@@ -214,7 +222,7 @@ def fetch_and_write_shmi():
                     if not c: return None
                     try: return int(float(str(row.get(c, "")).replace(",", "")))
                     except: return None
-                band_raw = str(row.get(banding_col or "", "")).strip()
+                band_raw = str(row.get(banding_col or "SHMI_BANDING", "")).strip()
                 trust_data[code] = {
                     "shmi_value":       sf(shmi_col),
                     "banding_code":     band_raw,
