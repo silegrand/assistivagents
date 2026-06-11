@@ -799,11 +799,11 @@ function showDistrictDetail(name) {
 
   html += `
     <div class="data-panel emergency">
-      <div class="panel-title">🏥 Emergency Admissions · 65+</div>
+      <div class="panel-title">🏥 Emergency Admissions</div>
       <div class="metric-grid">
         <div class="metric-box">
           <span class="metric-val blue">${fmtK(emerg65)}</span>
-          <div class="metric-label">65+ emergency admissions${hesPeriod ? '<br>'+hesPeriod : ''}</div>
+          <div class="metric-label">Total non-elective admissions${hesPeriod ? '<br>'+hesPeriod : ''}</div>
         </div>
         <div class="metric-box">
           <span class="metric-val blue">${fmtK(geriTotal)}</span>
@@ -812,8 +812,7 @@ function showDistrictDetail(name) {
       </div>
       ${yoyStr ? `<div class="trend-row"><span class="${yoyPct > 0 ? 'trend-up' : 'trend-down'} trend-arrow">${yoyPct > 0 ? '▲' : '▼'}</span><span>${yoyStr}</span></div>` : ''}
       <div class="panel-note">
-        NHS Digital Provisional Monthly HES · ${trustShort} · Emergency = admitted patient care,
-        non-elective · Specialty 430 = Geriatric Medicine
+        NHS Digital HES MAR · ${trustShort} · All-age non-elective admissions · Full year ${hesPeriod || ''}
       </div>
     </div>
   `;
