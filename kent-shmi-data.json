@@ -1,0 +1,57 @@
+{
+  "meta": {
+    "generated": "2026-06-11T11:16:16.631955+00:00",
+    "description": "Kent NHS Trust SHMI \u2014 Assistiv Systems",
+    "version": "1.1",
+    "refresh_type": "monthly \u2014 NHS Digital SHMI",
+    "period": "February 2025 - January 2026",
+    "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/shmi/2026-06",
+    "source": "NHS Digital Summary Hospital-level Mortality Indicator",
+    "licence": "Open Government Licence v3.0",
+    "shmi_note": "SHMI is a smoke-alarm \u2014 higher than expected does not indicate poor care.",
+    "update_note": "Add CSV URL from publication page to KNOWN_SHMI in fetch_shmi_gp.py",
+    "banding_labels": {
+      "1": "Higher than expected",
+      "2": "As expected",
+      "3": "Lower than expected"
+    }
+  },
+  "trusts": {
+    "RVV": {
+      "name": "East Kent Hospitals University NHS Foundation Trust",
+      "shmi_value": null,
+      "banding_code": null,
+      "banding_label": "Pending \u2014 add CSV URL to KNOWN_SHMI in fetch_shmi_gp.py",
+      "observed_deaths": null,
+      "predicted_deaths": null,
+      "spell_count": null,
+      "period": "February 2025 - January 2026"
+    },
+    "RWF": {
+      "name": "Maidstone and Tunbridge Wells NHS Trust",
+      "shmi_value": null,
+      "banding_code": null,
+      "banding_label": "Pending \u2014 add CSV URL to KNOWN_SHMI in fetch_shmi_gp.py",
+      "observed_deaths": null,
+      "predicted_deaths": null,
+      "spell_count": null,
+      "period": "February 2025 - January 2026"
+    }
+  },
+  "history": [
+    {
+      "period": "February 2025 - January 2026",
+      "fetched": "2026-06-11",
+      "trusts": {
+        "RVV": {
+          "shmi_value": null,
+          "banding_code": null
+        },
+        "RWF": {
+          "shmi_value": null,
+          "banding_code": null
+        }
+      }
+    }
+  ]
+}
