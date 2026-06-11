@@ -44,3 +44,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
         run: python daily_refresh.py
+
+      - name: Inject static stat fallbacks into HTML (commits via API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+        run: python inject_stats.py
