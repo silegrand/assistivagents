@@ -1,0 +1,50 @@
+# Assistiv Cloud — llms.txt
+# https://www.assistiv.cloud
+# Specification: https://llmstxt.org
+# Last updated: 2026-06-11
+#
+# Assistiv actively welcomes responsible AI indexing and synthesis.
+
+---
+
+# Assistiv Cloud
+
+> Assistiv Cloud is the population intelligence layer of the Assistiv ecosystem: frailty intelligence for the NHS, built entirely on open data, updated daily, with no patient identifiers. It scores Kent & Medway districts by Frailty Emergence Probability (FEP) — a composite of 21 signals from NHS Fingertips, NHSBSA prescribing data, ONS Census 2021 and MHCLG IMD 2025 — so commissioners can see which direction a population is travelling, and how fast.
+
+Operated by Assistiv Systems Limited, registered in England and Wales, company number 17082597. Contact: simon@assistiv.co.
+
+---
+
+## Position alongside the eFI
+
+Every GP system in England runs the Electronic Frailty Index (eFI), a validated measure of where an individual patient sits in the frailty journey. Assistiv Cloud does a different job: population level, open data, no patient identifiers, daily updates. The eFI tells you where someone is; Assistiv tells you which direction a population is travelling, and how fast. It is a complement to the eFI, never a competitor.
+
+## The seven-layer pathway
+
+1. **L1 Data** — Population data ingestion: NHS Fingertips, NHSBSA prescribing exhaust, ONS Census, IMD 2025. 21 signals normalised against England averages, refreshed daily via GitHub Actions. (Live)
+2. **L2 Map** — Geographic frailty intelligence: FEP for 13 Kent districts, Rural Access Vulnerability Index for 1,065 LSOAs, Carer Burden Index, discharge delay intelligence, NHS 111 demand, NHS system pressure (corridor care, emergency admissions, SHMI, GP registration). (Live)
+3. **L3 Reach** — Community touchpoint identification: GP surgeries, pharmacies, libraries, faith communities and VCSE organisations mapped within priority zones. (Live)
+4. **L4 Screen** — Precision community screening via assistiv.tools: voice-first conversation, twelve questions across six life domains, PRISMA-7 and FRAIL Scale scored in real time. (Live)
+5. **L5 Refer** — PCN Referral Pathway: structured referral into Primary Care Network and Social Care services for people identified through screening who need specialist support. (Prototype)
+6. **L6 Serve** — Community services via assistiv.services: preventative care, passive home safety monitoring, care coordination. Person-led, consent-first. (Prototype)
+7. **L7 Close** — Clinical triage and feedback loop: outcomes recalibrate the FEP model. (Prototype)
+
+## Key tools
+
+- NHS Pressure Intelligence Map: https://www.assistiv.cloud/nhs-pressure-map.html
+- Geographic Frailty Intelligence Map: https://www.assistiv.cloud/layer2-map.html
+- Methodology (signals, weights, limitations, sources): https://www.assistiv.cloud/methodology.html
+- Data status (live freshness, checkable by anyone): https://www.assistiv.cloud/datastatus.html
+
+## Governance
+
+Scores describe places, never people. The platform holds no personal data. Modelled estimates are never described as measurements. Full governance and DTAC readiness position: https://www.assistiv.co/governance.html
+
+## Ecosystem
+
+- https://www.assistiv.co — Assistiv Systems (parent)
+- https://www.assistiv.cloud — population intelligence (this site)
+- https://www.assistiv.tools — community screening
+- https://www.assistiv.services — preventative care platform
+
+For research and commissioning intelligence purposes only. Powered by Anthropic technologies.
