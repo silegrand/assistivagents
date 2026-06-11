@@ -63,15 +63,16 @@ KENT_TRUSTS = {
 #   outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new
 KNOWN_RELEASES = {
     "April 2025 - March 2026 (M13)": {
-        "age_groups": "https://files.digital.nhs.uk/9A/82E85E/HES_M13_OPEN_DATA_AGE_GROUPS.csv",
-        "specialty":  "https://files.digital.nhs.uk/E0/3D5386/HES_M13_OPEN_DATA_TREATMENT_SPECIALTY.csv",
-        "pub_url":    "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
+        # Kent-filtered CCG by Provider CSV committed to repo
+        # Source: HES MAR 2025-26 M13 CCG by Provider ZIP (35MB full file)
+        # Filtered to RVV + RWF only (1,925 rows) for repo efficiency
+        "kent_csv":  "https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/HES_MAR_M13_Kent_Trusts.csv",
+        "pub_url":   "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
     },
-    # Add new releases here as they publish, e.g.:
+    # Add new releases here each month:
     # "May 2025 - April 2026 (M1)": {
-    #     "age_groups": "https://files.digital.nhs.uk/XX/XXXXXX/HES_M1_OPEN_DATA_AGE_GROUPS.csv",
-    #     "specialty":  "https://files.digital.nhs.uk/XX/XXXXXX/HES_M1_OPEN_DATA_TREATMENT_SPECIALTY.csv",
-    #     "pub_url":    "https://digital.nhs.uk/...",
+    #     "kent_csv": "https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/HES_MAR_M1_Kent_Trusts.csv",
+    #     "pub_url":  "https://digital.nhs.uk/...",
     # },
 }
 
@@ -127,6 +128,57 @@ def find_col(fieldnames, *patterns):
             if p.lower() in n:
                 return name
     return None
+
+
+def extract_nonelective_admissions(rows, fieldnames, trust_codes):
+    """
+    Extract total non-elective admissions from the Kent-filtered
+    CCG by Provider CSV. Sums across all CCG rows per provider
+    to get trust-level totals for the full year.
+
+    Columns: Provider code, Provider name, Activity Month,
+             All specialties: Non-Elective, etc.
+
+    Returns dict: {trust_code: {total_emerg_65plus (proxy), by_month}}
+    Note: this file has no age breakdown — total_emerg_65plus is used
+    as the field name for compatibility but contains all-age non-elective.
+    """
+    prov_col  = find_col(fieldnames, "provider code", "provider_code")
+    nonel_col = find_col(fieldnames, "all specialties: non-elective",
+                         "non-elective", "non_elective")
+    month_col = find_col(fieldnames, "activity month", "month")
+
+    print(f"  CCG by Provider cols → provider:{prov_col} "
+          f"non-elective:{nonel_col} month:{month_col}")
+
+    results = {code: {"total_emerg_65plus": 0, "by_month": {}, "by_age_band": {}}
+               for code in trust_codes}
+
+    for row in rows:
+        code = str(row.get(prov_col or "Provider code", "")).strip().upper()
+        if code not in trust_codes:
+            continue
+
+        val_str = str(row.get(nonel_col or "", "")).strip()
+        # '*' means suppressed small number — treat as 0 for aggregation
+        try:
+            val = int(float(val_str.replace(",", ""))) if val_str != "*" else 0
+        except (ValueError, TypeError):
+            val = 0
+
+        results[code]["total_emerg_65plus"] += val
+
+        month = str(row.get(month_col or "", "")).strip()
+        if month:
+            results[code]["by_month"][month] = (
+                results[code]["by_month"].get(month, 0) + val
+            )
+
+    for code in trust_codes:
+        total = results[code]["total_emerg_65plus"]
+        print(f"  {code}: {total:,} total non-elective admissions (all ages, full year)")
+
+    return results
 
 
 def extract_65plus_emergency(rows, fieldnames, trust_codes):
