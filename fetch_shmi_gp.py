@@ -58,8 +58,15 @@ KNOWN_SHMI = {
     "February 2025 - January 2026": {
         "period":  "February 2025 - January 2026",
         "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/shmi/2026-06",
-        "csv_url": None,
+        # CSV committed directly to repo from NHS Digital ZIP download (June 2026 publication)
+        "csv_url": "https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/SHMI_data_at_trust_level_Feb25-Jan26_csv.csv",
     },
+    # Add new months here — commit the trust-level CSV to the repo root each month:
+    # "March 2025 - February 2026": {
+    #     "period":  "March 2025 - February 2026",
+    #     "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/shmi/2026-07",
+    #     "csv_url": "https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/SHMI_data_at_trust_level_Mar25-Feb26_csv.csv",
+    # },
 }
 
 # GP Registration: two files per month from the publication page:
