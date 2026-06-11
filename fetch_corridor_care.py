@@ -115,12 +115,19 @@ def commit_json(content_dict, filepath, message):
 def parse_corridor_csv(csv_content, trust_codes):
     """
     Parse the NHS England corridor care CSV publication.
-    The CSV contains daily provider-level data for:
-      - Corridor care in ED (24h count of patients ≥45 mins in inappropriate ED area)
-      - Corridor care in wards (8am snapshot of patients in non-designated bed spaces)
 
-    Returns dict: {trust_code: {corridor_ed, corridor_ward, corridor_total,
-                                avg_corridor_ed, avg_corridor_ward, days_submitted}}
+    The CSV is in long format with columns:
+      Region, ICB Name, Org Code, Org Name, Provider Type,
+      Subject, Metric, Period, Value
+
+    Subject values:
+      CorridorCare_ED   — patients in ED corridor care ≥45 mins (24h count)
+      CorridorCare_Ward — patients in ward corridor care (8am snapshot)
+
+    Metric values:
+      Monthly Average, Daily Value (one row per day per trust per subject)
+
+    Returns dict: {trust_code: {corridor_ed, corridor_ward, corridor_total, ...}}
     """
     reader = csv.DictReader(StringIO(csv_content))
     rows   = list(reader)
@@ -131,55 +138,39 @@ def parse_corridor_csv(csv_content, trust_codes):
     if not rows:
         return {}
 
-    # Show sample rows
     print(f"\n  First 3 rows (sample):")
     for row in rows[:3]:
         print(f"    {dict(row)}")
 
-    # Identify key columns
-    # NHS publication likely has: Org Code/Provider Code, Org Name,
-    # Date/Period, Corridor ED count, Corridor Ward count, Region, ICB
-    org_col    = find_col(fields, "org code", "provider code", "code",
-                          "trust code", "ods", "org_code")
-    name_col   = find_col(fields, "org name", "provider name", "trust name",
-                          "organisation name", "name")
-    date_col   = find_col(fields, "date", "period", "day", "reporting")
-    ed_col     = find_col(fields, "ed corridor", "corridor ed", "corridor care ed",
-                          "emergency department", "a&e corridor", "type 1",
-                          "corridor_ed", "ed_corridor")
-    ward_col   = find_col(fields, "ward corridor", "corridor ward", "corridor care ward",
-                          "inpatient corridor", "general acute", "ward_corridor",
-                          "corridor_ward", "beds")
-    region_col = find_col(fields, "region", "nhs region")
-    icb_col    = find_col(fields, "icb", "integrated care")
+    # Show unique Subject values
+    subjects = sorted(set(str(r.get("Subject","")).strip() for r in rows if r.get("Subject","")))
+    print(f"\n  Unique Subject values: {subjects}")
 
-    print(f"\n  Column map:")
-    print(f"    org:{org_col} name:{name_col} date:{date_col}")
-    print(f"    ed:{ed_col} ward:{ward_col} region:{region_col} icb:{icb_col}")
+    # Show unique Metric values
+    metrics = sorted(set(str(r.get("Metric","")).strip() for r in rows if r.get("Metric","")))
+    print(f"  Unique Metric values: {metrics}")
 
-    # If we can't find org column, try to identify trust rows by name
-    results = {}
-
-    # Accumulate daily values per trust for averaging
+    # Accumulate per trust
     trust_accumulator = {}
 
     for row in rows:
-        # Try to identify trust by code
-        code_val = str(row.get(org_col or "", "")).strip().upper()
-        name_val = str(row.get(name_col or "", "")).strip().upper()
+        org_code  = str(row.get("Org Code", "")).strip().upper()
+        org_name  = str(row.get("Org Name", "")).strip().upper()
+        subject   = str(row.get("Subject", "")).strip()
+        metric    = str(row.get("Metric",  "")).strip().lower()
+        value_str = str(row.get("Value",   "")).strip()
 
+        # Match to Kent trust
         matched_code = None
-        if code_val in trust_codes:
-            matched_code = code_val
+        if org_code in trust_codes:
+            matched_code = org_code
         else:
-            # Try name matching
             for tc in trust_codes:
-                trust_name = KENT_TRUSTS[tc]["name"].upper()
-                trust_short = KENT_TRUSTS[tc]["short"].upper()
-                if (trust_name in name_val or trust_short in name_val or
-                        tc in code_val or
-                        ("EAST KENT" in name_val and tc == "RVV") or
-                        ("MAIDSTONE" in name_val and tc == "RWF")):
+                t_name  = KENT_TRUSTS[tc]["name"].upper()
+                t_short = KENT_TRUSTS[tc]["short"].upper()
+                if (t_name in org_name or t_short in org_name or
+                        ("EAST KENT" in org_name and tc == "RVV") or
+                        ("MAIDSTONE" in org_name and tc == "RWF")):
                     matched_code = tc
                     break
 
@@ -189,43 +180,52 @@ def parse_corridor_csv(csv_content, trust_codes):
         if matched_code not in trust_accumulator:
             trust_accumulator[matched_code] = {
                 "ed_values": [], "ward_values": [],
+                "ed_monthly_avg": None, "ward_monthly_avg": None,
                 "rows_found": 0,
             }
 
         trust_accumulator[matched_code]["rows_found"] += 1
 
-        def safe_float(col):
-            if not col: return None
-            val = str(row.get(col, "")).strip()
-            if not val or val.lower() in ("", "na", "n/a", "-", "null"):
-                return None
-            try:
-                return float(val.replace(",", ""))
-            except (ValueError, TypeError):
-                return None
+        # Parse value
+        if not value_str or value_str.lower() in ("", "na", "n/a", "-", "null"):
+            continue
+        try:
+            value = float(value_str.replace(",", ""))
+        except (ValueError, TypeError):
+            continue
 
-        ed_val   = safe_float(ed_col)
-        ward_val = safe_float(ward_col)
+        # Route to correct bucket by Subject
+        is_ed   = "ed" in subject.lower()
+        is_ward = "ward" in subject.lower()
 
-        if ed_val is not None:
-            trust_accumulator[matched_code]["ed_values"].append(ed_val)
-        if ward_val is not None:
-            trust_accumulator[matched_code]["ward_values"].append(ward_val)
+        if "monthly average" in metric:
+            # Use pre-computed monthly average directly
+            if is_ed:
+                trust_accumulator[matched_code]["ed_monthly_avg"] = value
+            elif is_ward:
+                trust_accumulator[matched_code]["ward_monthly_avg"] = value
+        elif is_ed:
+            trust_accumulator[matched_code]["ed_values"].append(value)
+        elif is_ward:
+            trust_accumulator[matched_code]["ward_values"].append(value)
 
-    # Compute averages and totals
+    # Build results
     print(f"\n  Accumulator results:")
+    results = {}
     for code, acc in trust_accumulator.items():
-        print(f"    {code}: {acc['rows_found']} rows, "
-              f"{len(acc['ed_values'])} ED values, "
-              f"{len(acc['ward_values'])} ward values")
+        print(f"    {code}: {acc['rows_found']} rows found")
 
-        ed_vals   = acc["ed_values"]
-        ward_vals = acc["ward_values"]
+        # Prefer pre-computed monthly average; fallback to computing from daily values
+        avg_ed = acc["ed_monthly_avg"]
+        if avg_ed is None and acc["ed_values"]:
+            avg_ed = round(sum(acc["ed_values"]) / len(acc["ed_values"]), 1)
 
-        avg_ed   = round(sum(ed_vals) / len(ed_vals), 1) if ed_vals else None
-        avg_ward = round(sum(ward_vals) / len(ward_vals), 1) if ward_vals else None
-        max_ed   = round(max(ed_vals), 1) if ed_vals else None
-        max_ward = round(max(ward_vals), 1) if ward_vals else None
+        avg_ward = acc["ward_monthly_avg"]
+        if avg_ward is None and acc["ward_values"]:
+            avg_ward = round(sum(acc["ward_values"]) / len(acc["ward_values"]), 1)
+
+        max_ed   = round(max(acc["ed_values"]), 1) if acc["ed_values"] else None
+        max_ward = round(max(acc["ward_values"]), 1) if acc["ward_values"] else None
 
         total = None
         if avg_ed is not None and avg_ward is not None:
@@ -236,14 +236,14 @@ def parse_corridor_csv(csv_content, trust_codes):
             total = avg_ward
 
         results[code] = {
-            "corridor_ed":      avg_ed,
-            "corridor_ward":    avg_ward,
-            "corridor_total":   total,
-            "corridor_ed_max":  max_ed,
+            "corridor_ed":       avg_ed,
+            "corridor_ward":     avg_ward,
+            "corridor_total":    total,
+            "corridor_ed_max":   max_ed,
             "corridor_ward_max": max_ward,
-            "days_submitted":   acc["rows_found"],
+            "days_submitted":    acc["rows_found"],
         }
-        print(f"    → ED avg:{avg_ed} ward avg:{avg_ward} total:{total} "
+        print(f"    → ED:{avg_ed} ward:{avg_ward} total:{total} "
               f"(max ED:{max_ed} max ward:{max_ward})")
 
     return results
