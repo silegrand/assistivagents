@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -399,19 +399,19 @@ body {
   <div class="currency-left">
     <span class="currency-label">NHS Open Data ·</span>
     <div class="currency-stat" id="banner-corridor">
-      <span class="currency-val" id="bv-corridor">–</span>
+      <span class="currency-val" id="bv-corridor"><!--INJECT:corridor_total-->22<!--/INJECT--></span>
       <span class="currency-desc">Corridor patients this week</span>
     </div>
     <div class="currency-stat" id="banner-emerg">
-      <span class="currency-val" id="bv-emerg">–</span>
+      <span class="currency-val" id="bv-emerg"><!--INJECT:emerg_65plus-->111,385<!--/INJECT--></span>
       <span class="currency-desc">65+ emergency admissions</span>
     </div>
     <div class="currency-stat" id="banner-shmi">
-      <span class="currency-val" id="bv-shmi">–</span>
+      <span class="currency-val" id="bv-shmi"><!--INJECT:shmi_ek-->1.15<!--/INJECT--></span>
       <span class="currency-desc">SHMI — East Kent</span>
     </div>
     <div class="currency-stat" id="banner-pop">
-      <span class="currency-val" id="bv-pop">–</span>
+      <span class="currency-val" id="bv-pop"><!--INJECT:pop_75plus-->241,986<!--/INJECT--></span>
       <span class="currency-desc">75+ registered Kent</span>
     </div>
   </div>
@@ -437,7 +437,7 @@ body {
     </div>
     <div class="panel-content" id="panel-content">
       <div class="empty-state">
-        <div class="empty-icon">🏥</div>
+        <div class="empty-icon" aria-hidden="true">🏥</div>
         <div class="empty-title">Select a district</div>
         <div class="empty-desc">Click any district to see NHS system pressure and Missing Middle risk for that area.</div>
       </div>
@@ -1081,7 +1081,7 @@ function switchTab(tab) {
   } else if (tab === 'detail') {
     content.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🏥</div>
+        <div class="empty-icon" aria-hidden="true">🏥</div>
         <div class="empty-title">Select a district</div>
         <div class="empty-desc">Click any district to see NHS system pressure and Missing Middle risk for that area.</div>
       </div>
@@ -1103,5 +1103,18 @@ function fmtK(val) {
 // ── INIT ──────────────────────────────────────────────────────────────
 fetchAll();
 </script>
+
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:1.4rem 1.5rem;text-align:center;">
+  <p style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);line-height:1.8;max-width:880px;margin:0 auto;">
+    © 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.<br>
+    <a href="index.html" style="color:var(--text-muted);text-decoration:none;">assistiv.cloud</a> ·
+    <a href="datastatus.html" style="color:var(--text-muted);text-decoration:none;">Data status</a> ·
+    <a href="methodology.html" style="color:var(--text-muted);text-decoration:none;">Methodology</a> ·
+    <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">Governance</a> ·
+    <a href="privacy.html" style="color:var(--text-muted);text-decoration:none;">Privacy</a> ·
+    <a href="terms.html" style="color:var(--text-muted);text-decoration:none;">Terms</a> ·
+    <a href="accessibility.html" style="color:var(--text-muted);text-decoration:none;">Accessibility</a>
+  </p>
+</footer>
 </body>
 </html>
