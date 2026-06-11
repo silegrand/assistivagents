@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T12:28:50.543357+00:00",
+    "generated": "2026-06-11T12:33:04.605881+00:00",
     "description": "Kent NHS Trust SHMI \u2014 Assistiv Systems",
     "version": "1.1",
     "refresh_type": "monthly \u2014 NHS Digital SHMI",
@@ -19,22 +19,22 @@
   "trusts": {
     "RVV": {
       "name": "East Kent Hospitals University NHS Foundation Trust",
-      "shmi_value": null,
-      "banding_code": null,
-      "banding_label": "Pending \u2014 add CSV URL to KNOWN_SHMI in fetch_shmi_gp.py",
-      "observed_deaths": null,
-      "predicted_deaths": null,
-      "spell_count": null,
+      "shmi_value": 1.1451,
+      "banding_code": "2",
+      "banding_label": "As expected",
+      "observed_deaths": 3370,
+      "predicted_deaths": 2940.0,
+      "spell_count": 71275,
       "period": "February 2025 - January 2026"
     },
     "RWF": {
       "name": "Maidstone and Tunbridge Wells NHS Trust",
-      "shmi_value": null,
-      "banding_code": null,
-      "banding_label": "Pending \u2014 add CSV URL to KNOWN_SHMI in fetch_shmi_gp.py",
-      "observed_deaths": null,
-      "predicted_deaths": null,
-      "spell_count": null,
+      "shmi_value": 0.9372,
+      "banding_code": "2",
+      "banding_label": "As expected",
+      "observed_deaths": 2170,
+      "predicted_deaths": 2315.0,
+      "spell_count": 84870,
       "period": "February 2025 - January 2026"
     }
   },
@@ -44,12 +44,12 @@
       "fetched": "2026-06-11",
       "trusts": {
         "RVV": {
-          "shmi_value": null,
-          "banding_code": null
+          "shmi_value": 1.1451,
+          "banding_code": "2"
         },
         "RWF": {
-          "shmi_value": null,
-          "banding_code": null
+          "shmi_value": 0.9372,
+          "banding_code": "2"
         }
       }
     }
