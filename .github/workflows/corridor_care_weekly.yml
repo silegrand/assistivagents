@@ -33,5 +33,5 @@ jobs:
         run: |
           if [ -f kent-corridor-data.json ]; then
             echo "kent-corridor-data.json exists locally"
-            python -c "import json; d=json.load(open('kent-corridor-data.json')); print('Week ending:', d['meta']['week_ending'])"
+            python -c "import json; d=json.load(open('kent-corridor-data.json')); print('Period:', d['meta'].get('period_label', d['meta'].get('week_ending','unknown')))"
           fi
