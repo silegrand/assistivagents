@@ -1,410 +1,386 @@
 """
 fetch_corridor_care.py — Assistiv Systems NHS Pressure Intelligence
-Corridor Care Weekly Fetcher
+Corridor Care Monthly Fetcher
 
-Runs in GitHub Actions every Thursday at 10:00 UTC (UEC SitRep publishes at 09:30).
-Scrapes the NHS England UEC SitRep 2025-26 page, finds the current weekly Excel file,
-downloads it, extracts corridor care and related pressure metrics for Kent trusts,
-and writes kent-corridor-data.json to the repo.
+Fetches the NHS England Corridor Care monthly publication (new from June 2026).
+Uses direct CSV download URLs — bypasses the publication index page which
+blocks cloud runner IPs with 403.
 
-Kent Trusts covered:
+Publication page:
+  https://www.england.nhs.uk/statistics/statistical-work-areas/
+  corridor-care-urgent-and-emergency-care-daily-situation-reports/
+
+Published monthly. First publication: 11 June 2026 (covering May 2026).
+Data is experimental and immature — NHS England note that figures will
+evolve as reporting matures ahead of winter.
+
+Kent Trusts:
   RVV — East Kent Hospitals University NHS Foundation Trust
-        (Thanet, Dover, Folkestone & Hythe, Canterbury, Swale, Shepway)
   RWF — Maidstone and Tunbridge Wells NHS Trust
-        (Maidstone, Tonbridge & Malling, Tunbridge Wells, Sevenoaks, Ashford,
-         Gravesham, Dartford)
 
-Data source: NHS England UEC Daily Situation Reports
-URL: https://www.england.nhs.uk/statistics/statistical-work-areas/uec-sitrep/
 Licence: Open Government Licence v3.0
 """
 
 import os
 import re
+import csv
 import json
 import base64
 import requests
 from datetime import datetime, timezone
-from bs4 import BeautifulSoup
-import openpyxl
-from io import BytesIO
+from io import StringIO
 
 # ── CONFIG ────────────────────────────────────────────────────────────
-GITHUB_REPO   = "silegrand/assistiv_cloud"
-GITHUB_FILE   = "kent-corridor-data.json"
-GITHUB_TOKEN  = os.environ.get("GITHUB_TOKEN", "")
+GITHUB_REPO  = "silegrand/assistiv_cloud"
+GITHUB_FILE  = "kent-corridor-data.json"
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+RAW_URL      = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{GITHUB_FILE}"
 
-SITREP_INDEX  = "https://www.england.nhs.uk/statistics/statistical-work-areas/uec-sitrep/urgent-and-emergency-care-daily-situation-reports-2025-26/"
-RAW_URL       = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main/{GITHUB_FILE}"
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; AssistivSystems/1.0; +https://assistiv.co)"
+}
 
-# Kent trust codes (ODS codes used in NHS SitRep Excel)
 KENT_TRUSTS = {
     "RVV": {
-        "name": "East Kent Hospitals University NHS Foundation Trust",
-        "short": "East Kent Hospitals",
+        "name":      "East Kent Hospitals University NHS Foundation Trust",
+        "short":     "East Kent Hospitals",
         "districts": ["Thanet", "Dover", "Folkestone & Hythe", "Canterbury", "Swale"],
     },
     "RWF": {
-        "name": "Maidstone and Tunbridge Wells NHS Trust",
-        "short": "Maidstone & Tunbridge Wells",
+        "name":      "Maidstone and Tunbridge Wells NHS Trust",
+        "short":     "Maidstone & Tunbridge Wells",
         "districts": ["Maidstone", "Tonbridge & Malling", "Tunbridge Wells",
                       "Sevenoaks", "Ashford", "Gravesham", "Dartford"],
     },
 }
 
-HEADERS = {
-    "User-Agent": "AssistivSystems/1.0 (NHS open data; simon@assistiv.co)"
+# ── KNOWN DIRECT URLS ─────────────────────────────────────────────────
+# Each month add the new CSV URL from the corridor care publication page.
+# Page: https://www.england.nhs.uk/statistics/statistical-work-areas/
+#       corridor-care-urgent-and-emergency-care-daily-situation-reports/
+KNOWN_RELEASES = {
+    "2026-05": {
+        "period_label": "May 2026",
+        "pub_url": "https://www.england.nhs.uk/statistics/statistical-work-areas/corridor-care-urgent-and-emergency-care-daily-situation-reports/",
+        "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
+        "xlsx_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2.xlsx",
+    },
+    # Add new months here:
+    # "2026-06": {
+    #     "period_label": "June 2026",
+    #     "pub_url": "https://www.england.nhs.uk/statistics/...",
+    #     "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/07/Corridor-Care-Publication-2026.06-June-prov-vX-csv.csv",
+    # },
 }
 
 
-def find_sitrep_excel_url(tab_name="UEC Daily SitRep"):
-    """
-    Scrape the UEC SitRep index page and find the current weekly Excel download URL.
-    Looks for the 'Web-File-Timeseries-UEC-Daily-SitRep' link.
-    """
-    print(f"Scraping SitRep index: {SITREP_INDEX}")
-    r = requests.get(SITREP_INDEX, headers=HEADERS, timeout=20)
-    r.raise_for_status()
-    soup = BeautifulSoup(r.text, "html.parser")
-    for a in soup.find_all("a", href=True):
-        href = a["href"]
-        if "Timeseries-UEC-Daily-SitRep" in href and href.endswith(".xlsx"):
-            url = href if href.startswith("http") else "https://www.england.nhs.uk" + href
-            print(f"  Found SitRep Excel: {url}")
-            return url
-    raise ValueError("Could not find UEC Daily SitRep Excel URL on index page")
-
-
-def download_excel(url):
-    """Download Excel file, return as BytesIO."""
-    print(f"Downloading: {url}")
-    r = requests.get(url, headers=HEADERS, timeout=60)
-    r.raise_for_status()
-    print(f"  Downloaded {len(r.content):,} bytes")
-    return BytesIO(r.content)
-
-
-def find_trust_rows(ws, trust_codes):
-    """
-    Scan worksheet for rows matching Kent trust ODS codes.
-    Returns dict: {trust_code: row_index}
-    SitRep Excel typically has trust codes in column A or B.
-    """
-    trust_rows = {}
-    for row_idx, row in enumerate(ws.iter_rows(min_row=1, max_row=ws.max_row), start=1):
-        for cell in row[:4]:  # check first 4 cols
-            if cell.value and str(cell.value).strip().upper() in trust_codes:
-                code = str(cell.value).strip().upper()
-                if code not in trust_rows:
-                    trust_rows[code] = row_idx
-                    print(f"  Found {code} at row {row_idx}, col {cell.column}")
-    return trust_rows
-
-
-def find_column_header(ws, header_patterns, search_rows=10):
-    """
-    Find column indices for corridor care fields by matching header text patterns.
-    Returns dict: {pattern_key: col_index}
-    """
-    cols = {}
-    for row in ws.iter_rows(min_row=1, max_row=search_rows):
-        for cell in row:
-            if not cell.value:
-                continue
-            val = str(cell.value).lower().strip()
-            for key, patterns in header_patterns.items():
-                if key not in cols:
-                    if any(p.lower() in val for p in patterns):
-                        cols[key] = cell.column
-                        print(f"  Column '{key}' → col {cell.column}: '{cell.value}'")
-    return cols
-
-
-def extract_trust_metrics(wb, trust_codes):
-    """
-    Extract corridor care and pressure metrics per trust.
-    Tries each sheet in the workbook to find trust data.
-    
-    Corridor care fields (new from March 2026, per NHS England definition):
-      - corridor_care_ed: patients in ED corridor care >45 mins
-      - corridor_care_ward: patients in ward corridor care >45 mins
-      - corridor_care_total: sum of above
-    
-    Supporting pressure metrics:
-      - twelve_hour_waits: patients waiting >12h for admission decision
-      - beds_occupied_pct: general & acute bed occupancy %
-      - delayed_discharges: patients not meeting criteria to reside
-    """
-    results = {}
-
-    # Header patterns to search for — corridor care fields added March 2026
-    HEADER_PATTERNS = {
-        "corridor_ed":      ["corridor", "ed corridor", "corridor care ed",
-                             "care ed", "inappropriate area ed"],
-        "corridor_ward":    ["corridor ward", "ward corridor", "corridor care ward",
-                             "inappropriate area ward", "care ward"],
-        "twelve_hour":      ["12 hour", "12-hour", "12hr", "trolley waits",
-                             "decision to admit", ">12"],
-        "beds_occ":         ["occupancy", "occupied beds", "beds occupied",
-                             "g&a occupied", "general and acute occupied"],
-        "delayed_discharge":["delayed", "no criteria", "medically fit",
-                             "criteria to reside"],
-    }
-
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        if ws.max_row < 5:
-            continue
-        print(f"\n  Scanning sheet: '{sheet_name}' ({ws.max_row} rows × {ws.max_column} cols)")
-
-        trust_rows = find_trust_rows(ws, set(trust_codes.keys()))
-        if not trust_rows:
-            continue
-
-        # Dump ALL header cell values from rows 1-12 so we can see exact column names
-        print(f"  ALL header cells in '{sheet_name}' (rows 1-12):")
-        all_headers = []
-        for hrow in ws.iter_rows(min_row=1, max_row=12):
-            for cell in hrow:
-                if cell.value and str(cell.value).strip():
-                    all_headers.append(f"R{cell.row}C{cell.column}:{str(cell.value).strip()[:50]}")
-        # Print in chunks of 6
-        for i in range(0, min(len(all_headers), 120), 6):
-            print(f"    {all_headers[i:i+6]}")
-
-        cols = find_column_header(ws, HEADER_PATTERNS)
-        if not cols:
-            print("  No matching column headers found in this sheet")
-            # Don't skip — continue to extract what we can
-            cols = {}
-
-        # Find the most recent data column (rightmost non-empty numeric column
-        # to the right of the header area — SitRep Excel is time-series wide)
-        # Strategy: for a known trust row, scan right from col 5 for the last
-        # non-None numeric value
-        for code, row_idx in trust_rows.items():
-            trust_data = {}
-            row = list(ws.iter_rows(min_row=row_idx, max_row=row_idx,
-                                    values_only=True))[0]
-
-            for metric_key, col_idx in cols.items():
-                try:
-                    val = ws.cell(row=row_idx, column=col_idx).value
-                    # For time-series sheets the column found may be a header row;
-                    # scan rightward from that column to find most recent non-null value
-                    if val is None or not isinstance(val, (int, float)):
-                        for scan_col in range(col_idx, min(col_idx + 60, ws.max_column + 1)):
-                            candidate = ws.cell(row=row_idx, column=scan_col).value
-                            if isinstance(candidate, (int, float)):
-                                val = candidate
-                                break
-                    trust_data[metric_key] = round(float(val), 1) if isinstance(val, (int, float)) else None
-                except Exception:
-                    trust_data[metric_key] = None
-
-            # Derive corridor_total
-            ed   = trust_data.get("corridor_ed")
-            ward = trust_data.get("corridor_ward")
-            if ed is not None and ward is not None:
-                trust_data["corridor_total"] = ed + ward
-            elif ed is not None:
-                trust_data["corridor_total"] = ed
-            elif ward is not None:
-                trust_data["corridor_total"] = ward
-            else:
-                trust_data["corridor_total"] = None
-
-            results[code] = trust_data
-            print(f"  {code}: {trust_data}")
-
-        if results:
-            break  # Found the data sheet
-
-    return results
-
-
-def get_last_published_week(wb):
-    """
-    Try to extract the week-ending date from the workbook.
-    Returns ISO date string or None.
-    """
-    for sheet_name in wb.sheetnames:
-        ws = wb[sheet_name]
-        for row in ws.iter_rows(min_row=1, max_row=6, values_only=True):
-            for cell in row:
-                if isinstance(cell, datetime):
-                    return cell.date().isoformat()
-                if isinstance(cell, str):
-                    m = re.search(r'(\d{1,2})[/\-](\d{1,2})[/\-](20\d{2})', cell)
-                    if m:
-                        try:
-                            d = datetime.strptime(m.group(0).replace("-", "/"), "%d/%m/%Y")
-                            return d.date().isoformat()
-                        except ValueError:
-                            pass
+def find_col(fieldnames, *patterns):
+    for name in fieldnames:
+        n = name.lower().replace("_", " ").strip()
+        for p in patterns:
+            if p.lower() in n:
+                return name
     return None
 
 
 def load_last_json():
-    """Load previously committed JSON for history preservation."""
     try:
         r = requests.get(RAW_URL, timeout=10)
-        if r.status_code == 200:
-            return r.json()
+        return r.json() if r.status_code == 200 else {}
     except Exception:
-        pass
-    return {}
+        return {}
 
 
 def commit_json(content_dict, filepath, message):
-    """Commit JSON file to GitHub via API."""
     if not GITHUB_TOKEN:
-        print(f"  [DRY RUN — no token] Would commit {filepath}")
+        print(f"  [DRY RUN] Would commit {filepath}")
         return True
-
     api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/{filepath}"
-    headers = {
-        "Authorization": f"token {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github.v3+json",
-    }
-    b64 = base64.b64encode(json.dumps(content_dict, indent=2).encode()).decode()
-    r = requests.get(api_url, headers=headers)
-    sha = r.json().get("sha") if r.status_code == 200 else None
+    hdrs    = {"Authorization": f"token {GITHUB_TOKEN}",
+               "Accept": "application/vnd.github.v3+json"}
+    b64     = base64.b64encode(json.dumps(content_dict, indent=2).encode()).decode()
+    r       = requests.get(api_url, headers=hdrs)
+    sha     = r.json().get("sha") if r.status_code == 200 else None
     payload = {"message": message, "content": b64, "branch": "main"}
     if sha:
         payload["sha"] = sha
-    r = requests.put(api_url, headers=headers, json=payload)
+    r = requests.put(api_url, headers=hdrs, json=payload)
     if r.status_code in (200, 201):
         print(f"  ✓ Committed {filepath}")
         return True
-    print(f"  ✗ Failed {filepath}: {r.status_code} — {r.json().get('message','')}")
+    print(f"  ✗ Failed: {r.status_code} — {r.json().get('message','')}")
     return False
 
 
-# ── MAIN ──────────────────────────────────────────────────────────────
+def parse_corridor_csv(csv_content, trust_codes):
+    """
+    Parse the NHS England corridor care CSV publication.
+    The CSV contains daily provider-level data for:
+      - Corridor care in ED (24h count of patients ≥45 mins in inappropriate ED area)
+      - Corridor care in wards (8am snapshot of patients in non-designated bed spaces)
+
+    Returns dict: {trust_code: {corridor_ed, corridor_ward, corridor_total,
+                                avg_corridor_ed, avg_corridor_ward, days_submitted}}
+    """
+    reader = csv.DictReader(StringIO(csv_content))
+    rows   = list(reader)
+    fields = reader.fieldnames or []
+    print(f"  CSV: {len(rows):,} rows, {len(fields)} columns")
+    print(f"  Columns: {fields}")
+
+    if not rows:
+        return {}
+
+    # Show sample rows
+    print(f"\n  First 3 rows (sample):")
+    for row in rows[:3]:
+        print(f"    {dict(row)}")
+
+    # Identify key columns
+    # NHS publication likely has: Org Code/Provider Code, Org Name,
+    # Date/Period, Corridor ED count, Corridor Ward count, Region, ICB
+    org_col    = find_col(fields, "org code", "provider code", "code",
+                          "trust code", "ods", "org_code")
+    name_col   = find_col(fields, "org name", "provider name", "trust name",
+                          "organisation name", "name")
+    date_col   = find_col(fields, "date", "period", "day", "reporting")
+    ed_col     = find_col(fields, "ed corridor", "corridor ed", "corridor care ed",
+                          "emergency department", "a&e corridor", "type 1",
+                          "corridor_ed", "ed_corridor")
+    ward_col   = find_col(fields, "ward corridor", "corridor ward", "corridor care ward",
+                          "inpatient corridor", "general acute", "ward_corridor",
+                          "corridor_ward", "beds")
+    region_col = find_col(fields, "region", "nhs region")
+    icb_col    = find_col(fields, "icb", "integrated care")
+
+    print(f"\n  Column map:")
+    print(f"    org:{org_col} name:{name_col} date:{date_col}")
+    print(f"    ed:{ed_col} ward:{ward_col} region:{region_col} icb:{icb_col}")
+
+    # If we can't find org column, try to identify trust rows by name
+    results = {}
+
+    # Accumulate daily values per trust for averaging
+    trust_accumulator = {}
+
+    for row in rows:
+        # Try to identify trust by code
+        code_val = str(row.get(org_col or "", "")).strip().upper()
+        name_val = str(row.get(name_col or "", "")).strip().upper()
+
+        matched_code = None
+        if code_val in trust_codes:
+            matched_code = code_val
+        else:
+            # Try name matching
+            for tc in trust_codes:
+                trust_name = KENT_TRUSTS[tc]["name"].upper()
+                trust_short = KENT_TRUSTS[tc]["short"].upper()
+                if (trust_name in name_val or trust_short in name_val or
+                        tc in code_val or
+                        ("EAST KENT" in name_val and tc == "RVV") or
+                        ("MAIDSTONE" in name_val and tc == "RWF")):
+                    matched_code = tc
+                    break
+
+        if not matched_code:
+            continue
+
+        if matched_code not in trust_accumulator:
+            trust_accumulator[matched_code] = {
+                "ed_values": [], "ward_values": [],
+                "rows_found": 0,
+            }
+
+        trust_accumulator[matched_code]["rows_found"] += 1
+
+        def safe_float(col):
+            if not col: return None
+            val = str(row.get(col, "")).strip()
+            if not val or val.lower() in ("", "na", "n/a", "-", "null"):
+                return None
+            try:
+                return float(val.replace(",", ""))
+            except (ValueError, TypeError):
+                return None
+
+        ed_val   = safe_float(ed_col)
+        ward_val = safe_float(ward_col)
+
+        if ed_val is not None:
+            trust_accumulator[matched_code]["ed_values"].append(ed_val)
+        if ward_val is not None:
+            trust_accumulator[matched_code]["ward_values"].append(ward_val)
+
+    # Compute averages and totals
+    print(f"\n  Accumulator results:")
+    for code, acc in trust_accumulator.items():
+        print(f"    {code}: {acc['rows_found']} rows, "
+              f"{len(acc['ed_values'])} ED values, "
+              f"{len(acc['ward_values'])} ward values")
+
+        ed_vals   = acc["ed_values"]
+        ward_vals = acc["ward_values"]
+
+        avg_ed   = round(sum(ed_vals) / len(ed_vals), 1) if ed_vals else None
+        avg_ward = round(sum(ward_vals) / len(ward_vals), 1) if ward_vals else None
+        max_ed   = round(max(ed_vals), 1) if ed_vals else None
+        max_ward = round(max(ward_vals), 1) if ward_vals else None
+
+        total = None
+        if avg_ed is not None and avg_ward is not None:
+            total = round(avg_ed + avg_ward, 1)
+        elif avg_ed is not None:
+            total = avg_ed
+        elif avg_ward is not None:
+            total = avg_ward
+
+        results[code] = {
+            "corridor_ed":      avg_ed,
+            "corridor_ward":    avg_ward,
+            "corridor_total":   total,
+            "corridor_ed_max":  max_ed,
+            "corridor_ward_max": max_ward,
+            "days_submitted":   acc["rows_found"],
+        }
+        print(f"    → ED avg:{avg_ed} ward avg:{avg_ward} total:{total} "
+              f"(max ED:{max_ed} max ward:{max_ward})")
+
+    return results
+
 
 def main():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     print(f"\n── Assistiv Corridor Care Fetcher ── {today} ──\n")
 
-    # 1. Find and download the SitRep Excel
-    try:
-        excel_url = find_sitrep_excel_url()
-    except Exception as e:
-        print(f"ERROR finding SitRep URL: {e}")
-        raise
+    # Get latest release
+    latest_key   = sorted(KNOWN_RELEASES.keys())[-1]
+    release      = KNOWN_RELEASES[latest_key]
+    period_label = release["period_label"]
+    csv_url      = release["csv_url"]
+    pub_url      = release["pub_url"]
 
-    excel_bytes = download_excel(excel_url)
-    wb = openpyxl.load_workbook(excel_bytes, read_only=True, data_only=True)
-    print(f"\nWorkbook sheets: {wb.sheetnames}")
+    print(f"Using release: {period_label}")
+    print(f"CSV URL: {csv_url}")
 
-    week_ending = get_last_published_week(wb)
-    print(f"Week ending detected: {week_ending or 'unknown'}")
+    # Download CSV
+    print(f"\nDownloading corridor care CSV...")
+    r = requests.get(csv_url, headers=HEADERS, timeout=60)
+    if r.status_code != 200:
+        print(f"ERROR: HTTP {r.status_code} — {r.text[:200]}")
+        raise Exception(f"CSV download failed: {r.status_code}")
 
-    # 2. Extract Kent trust metrics
-    trust_metrics = extract_trust_metrics(wb, KENT_TRUSTS)
+    print(f"Downloaded {len(r.content):,} bytes")
+    csv_content = r.content.decode("utf-8-sig", errors="replace")
+
+    trust_codes   = set(KENT_TRUSTS.keys())
+    trust_metrics = parse_corridor_csv(csv_content, trust_codes)
 
     if not trust_metrics:
-        print("\nWARNING: No trust data extracted — corridor care fields may not yet be")
-        print("present in the SitRep Excel. The new fields were mandated from 6 March 2026")
-        print("and publication was committed from May 2026. Check sheet structure manually.")
+        print("\nWARNING: No Kent trust data found in corridor care CSV.")
+        print("The publication may use different provider codes or names.")
+        print("Check the sample rows above and update the name matching logic.")
 
-    # 3. Load history and append this week
-    last = load_last_json()
+    # Load history
+    last    = load_last_json()
     history = last.get("history", [])
 
-    # Add today's snapshot to history (keep last 52 weeks)
-    snapshot = {
-        "week_ending": week_ending or today,
-        "fetched": today,
-        "source_url": excel_url,
-        "trusts": {},
-    }
-    for code, metrics in trust_metrics.items():
-        snapshot["trusts"][code] = {
-            **metrics,
-            "name": KENT_TRUSTS[code]["name"],
-            "short": KENT_TRUSTS[code]["short"],
-        }
-
-    # Deduplicate by week_ending
-    history = [h for h in history if h.get("week_ending") != snapshot["week_ending"]]
-    history.append(snapshot)
-    history = sorted(history, key=lambda x: x["week_ending"])[-52:]
-
-    # 4. Build current-state trust objects with trend
+    # Build current trust objects
     trusts_current = {}
     for code, info in KENT_TRUSTS.items():
         metrics = trust_metrics.get(code, {})
-        # Compute 4-week trend for corridor_total
+
+        # Compute trend vs last history snapshot
         recent = [
             h["trusts"].get(code, {}).get("corridor_total")
             for h in history[-5:]
             if h["trusts"].get(code, {}).get("corridor_total") is not None
         ]
-        if len(recent) >= 2:
-            delta  = recent[-1] - recent[-2]
-            trend  = "rising" if delta > 2 else "falling" if delta < -2 else "stable"
+        ct    = metrics.get("corridor_total")
+        if len(recent) >= 1 and ct is not None:
+            delta = round(ct - recent[-1], 1)
+            trend = "rising" if delta > 1 else "falling" if delta < -1 else "stable"
         else:
             delta = None
             trend = "unknown"
 
         trusts_current[code] = {
-            "name":         info["name"],
-            "short":        info["short"],
-            "districts":    info["districts"],
-            "corridor_ed":        metrics.get("corridor_ed"),
-            "corridor_ward":      metrics.get("corridor_ward"),
-            "corridor_total":     metrics.get("corridor_total"),
-            "twelve_hour_waits":  metrics.get("twelve_hour"),
-            "beds_occupancy_pct": metrics.get("beds_occ"),
-            "delayed_discharges": metrics.get("delayed_discharge"),
-            "corridor_delta":     delta,
-            "corridor_trend":     trend,
-            "week_ending":        week_ending or today,
+            "name":              info["name"],
+            "short":             info["short"],
+            "districts":         info["districts"],
+            "corridor_ed":       metrics.get("corridor_ed"),
+            "corridor_ward":     metrics.get("corridor_ward"),
+            "corridor_total":    ct,
+            "corridor_ed_max":   metrics.get("corridor_ed_max"),
+            "corridor_ward_max": metrics.get("corridor_ward_max"),
+            "days_submitted":    metrics.get("days_submitted"),
+            "twelve_hour_waits": None,   # not in this publication
+            "beds_occupancy_pct": None,  # not in this publication
+            "delayed_discharges": None,  # not in this publication
+            "corridor_delta":    delta,
+            "corridor_trend":    trend,
+            "period_label":      period_label,
         }
 
-    # 5. Assemble output JSON
+    # History snapshot
+    snapshot = {
+        "period_label": period_label,
+        "fetched":      today,
+        "csv_url":      csv_url,
+        "trusts":       {
+            code: {
+                "corridor_total": trusts_current[code]["corridor_total"],
+                "corridor_ed":    trusts_current[code]["corridor_ed"],
+                "corridor_ward":  trusts_current[code]["corridor_ward"],
+                "name":           trusts_current[code]["name"],
+                "short":          trusts_current[code]["short"],
+            }
+            for code in KENT_TRUSTS
+        },
+    }
+    history = [h for h in history if h.get("period_label") != period_label]
+    history.append(snapshot)
+    history = sorted(history, key=lambda x: x.get("period_label", ""))[-24:]
+
     output = {
         "meta": {
             "generated":    datetime.now(timezone.utc).isoformat(),
-            "description":  "Kent NHS Trust corridor care and UEC pressure — Assistiv Systems",
-            "version":      "1.0",
-            "refresh_type": "weekly — NHS England UEC Daily SitRep (Thursdays)",
-            "week_ending":  week_ending or today,
-            "source_url":   excel_url,
-            "source":       "NHS England UEC Daily Situation Reports 2025-26",
+            "description":  "Kent NHS Trust corridor care — Assistiv Systems",
+            "version":      "2.0",
+            "refresh_type": "monthly — NHS England Corridor Care publication",
+            "period_label": period_label,
+            "pub_url":      pub_url,
+            "csv_url":      csv_url,
+            "source":       "NHS England Corridor Care – UEC Daily Situation Reports",
             "licence":      "Open Government Licence v3.0",
+            "data_note":    ("Experimental data — NHS England note this collection is new "
+                             "and figures will evolve as reporting matures. "
+                             "Values are monthly averages of daily submissions. "
+                             "Blank submission = no data submitted; zero = confirmed zero corridor care."),
             "corridor_care_definition": (
                 "Patient has experienced corridor care if they spent ≥45 minutes "
                 "in a clinically inappropriate area of an ED or general & acute ward. "
-                "NHS England definition, March 2026. "
-                "ED count: previous 24h midnight-to-midnight. "
-                "Ward count: 8am snapshot of occupied corridor beds."
+                "NHS England definition, March 2026."
             ),
-            "data_currency_note": (
-                "SitRep data published weekly by NHS England, typically every Thursday at 09:30. "
-                "Data covers the week ending the previous Sunday. "
-                "Corridor care fields introduced March 2026."
-            ),
+            "update_note": ("Each month add the new CSV URL from the corridor care "
+                            "publication page to KNOWN_RELEASES in fetch_corridor_care.py"),
             "trust_codes": list(KENT_TRUSTS.keys()),
         },
-        "trusts": trusts_current,
+        "trusts":  trusts_current,
         "history": history,
     }
 
-    # 6. Print summary
-    print(f"\n── Corridor Care Summary ── Week ending {week_ending or today} ──")
+    # Print summary
+    print(f"\n── Corridor Care Summary ── {period_label} ──")
     for code, t in trusts_current.items():
         print(f"  {code} ({t['short']})")
-        print(f"    Corridor (ED):   {t['corridor_ed']}")
-        print(f"    Corridor (Ward): {t['corridor_ward']}")
-        print(f"    Corridor Total:  {t['corridor_total']} ({t['corridor_trend']})")
-        print(f"    12hr Waits:      {t['twelve_hour_waits']}")
-        print(f"    Beds Occ%:       {t['beds_occupancy_pct']}")
+        print(f"    Corridor ED (avg/day):   {t['corridor_ed']} (max: {t['corridor_ed_max']})")
+        print(f"    Corridor Ward (avg/day): {t['corridor_ward']} (max: {t['corridor_ward_max']})")
+        print(f"    Corridor Total:          {t['corridor_total']} ({t['corridor_trend']})")
+        print(f"    Days submitted:          {t['days_submitted']}")
 
-    # 7. Commit
-    msg = f"Corridor care refresh — week ending {week_ending or today}"
+    # Commit
+    msg = f"Corridor care refresh — {period_label} — {today}"
     print(f"\nCommitting {GITHUB_FILE}...")
     commit_json(output, GITHUB_FILE, msg)
     print(f"\nDone — {today}")
