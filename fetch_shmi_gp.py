@@ -86,12 +86,41 @@ KNOWN_GP_REG = {
 ALL_75_PLUS = {
     "75-79", "80-84", "85-89", "90-94", "95+",
     "75 to 79", "80 to 84", "85 to 89", "90 to 94", "95 and over",
+    "75_79", "80_84", "85_89", "90_94",
 }
 OVER_65_BANDS = {
     "65-69", "70-74", "75-79", "80-84", "85-89", "90-94", "95+",
     "65 to 69", "70 to 74", "75 to 79", "80 to 84", "85 to 89",
     "90 to 94", "95 and over",
+    "65_69", "70_74", "75_79", "80_84", "85_89", "90_94",
 }
+
+def age_is_75plus(age_val):
+    """Flexible 75+ age band check — handles varied NHS formatting."""
+    if not age_val:
+        return False
+    av = age_val.strip().lower().replace(" ", "").replace("_", "-")
+    # Extract leading number
+    import re
+    m = re.match(r'(\d+)', av)
+    if m:
+        start_age = int(m.group(1))
+        return start_age >= 75
+    return any(b.replace(" ","").replace("_","-") in av
+               for b in ALL_75_PLUS)
+
+def age_is_65plus(age_val):
+    """Flexible 65+ age band check."""
+    if not age_val:
+        return False
+    av = age_val.strip().lower().replace(" ", "").replace("_", "-")
+    import re
+    m = re.match(r'(\d+)', av)
+    if m:
+        start_age = int(m.group(1))
+        return start_age >= 65
+    return any(b.replace(" ","").replace("_","-") in av
+               for b in OVER_65_BANDS)
 
 
 def find_col(fieldnames, *patterns):
@@ -323,6 +352,14 @@ def fetch_and_write_gp_reg():
     print(f"  Cols → postcode:{postcode_col} age:{age_col} "
           f"count:{count_col} sex:{sex_col}")
 
+    # Print sample age values to confirm format
+    sample_ages = list(dict.fromkeys(
+        str(r.get(age_col or "", "")).strip()
+        for r in rows
+        if str(r.get(sex_col or "", "")).strip().upper() == "ALL"
+    ))[:20]
+    print(f"  Sample AGE_GROUP_5 values: {sample_ages}")
+
     district_data = {}
     matched = 0
     skipped = 0
@@ -368,9 +405,9 @@ def fetch_and_write_gp_reg():
             district_data[district]["by_age_band"][age_val] = (
                 district_data[district]["by_age_band"].get(age_val, 0) + count
             )
-            if any(b in age_val for b in ALL_75_PLUS):
+            if age_is_75plus(age_val):
                 district_data[district]["pop_75plus"] += count
-            if any(b in age_val for b in OVER_65_BANDS):
+            if age_is_65plus(age_val):
                 district_data[district]["pop_65plus"] += count
 
     print(f"\n  Matched: {matched:,} rows, skipped (non-Kent): {skipped:,}")
