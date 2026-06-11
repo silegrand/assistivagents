@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T11:38:14.286650+00:00",
+    "generated": "2026-06-11T11:51:40.636022+00:00",
     "description": "Kent NHS Trust corridor care and UEC pressure \u2014 Assistiv Systems",
     "version": "1.0",
     "refresh_type": "weekly \u2014 NHS England UEC Daily SitRep (Thursdays)",
@@ -30,7 +30,7 @@
       "corridor_ward": null,
       "corridor_total": null,
       "twelve_hour_waits": null,
-      "beds_occupancy_pct": 484.0,
+      "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
       "corridor_trend": "unknown",
@@ -52,7 +52,7 @@
       "corridor_ward": null,
       "corridor_total": null,
       "twelve_hour_waits": null,
-      "beds_occupancy_pct": 330.0,
+      "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
       "corridor_trend": "unknown",
@@ -66,13 +66,11 @@
       "source_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/04/Web-File-Timeseries-UEC-Daily-SitRep-2526-ed389pw.xlsx",
       "trusts": {
         "RVV": {
-          "beds_occ": 484.0,
           "corridor_total": null,
           "name": "East Kent Hospitals University NHS Foundation Trust",
           "short": "East Kent Hospitals"
         },
         "RWF": {
-          "beds_occ": 330.0,
           "corridor_total": null,
           "name": "Maidstone and Tunbridge Wells NHS Trust",
           "short": "Maidstone & Tunbridge Wells"
