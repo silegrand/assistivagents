@@ -6,7 +6,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/favicon-32.png">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assistiv Systems · Frailty Intelligence for the NHS</title>
+<title>Assistiv Cloud — Frailty Intelligence for the NHS · Assistiv Systems</title>
 <meta name="description" content="Assistiv Systems identifies older adults at risk before they reach crisis — using open NHS data, geographic intelligence, and community screening.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -274,7 +274,10 @@ body {
 }
 .badge-live { background: var(--sage-ghost); color: var(--sage); }
 .badge-live::before { content: '● '; }
-.badge-phase2 { background: var(--amber-pale); color: var(--amber); }
+.badge-proto { background: var(--amber-pale); color: var(--amber); }
+.badge-proto::before { content: '◐ '; }
+.badge-sim { background: var(--cream-mid); color: var(--ink-muted); }
+.badge-sim::before { content: '○ '; }
 
 /* ── DATA SNAPSHOT ── */
 .data-section {
@@ -704,7 +707,7 @@ footer {
       <div class="ticker" id="live-ticker">
         <div class="ticker-dot"></div>
         <div class="ticker-text">
-          <strong id="ticker-content">Loading live data…</strong>
+          <strong id="ticker-content"><!--INJECT:ticker-->Live: Thanet 61 · Maidstone 60 · Gravesham 58 · Data refreshed daily<!--/INJECT--></strong>
         </div>
       </div>
     </div>
@@ -734,7 +737,7 @@ footer {
   <div class="audience-grid">
 
     <a href="#tools" class="aud-card">
-      <div class="aud-icon">📊</div>
+      <div class="aud-icon" aria-hidden="true">📊</div>
       <div class="aud-role">For commissioners</div>
       <div class="aud-title">I need to understand risk in my patch right now</div>
       <p class="aud-desc">Open the live Frailty Heat Map, download a PDF commissioner briefing, and see the economic cost of inaction, district by district and updated daily.</p>
@@ -742,7 +745,7 @@ footer {
     </a>
 
     <a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="aud-card">
-      <div class="aud-icon">🏥</div>
+      <div class="aud-icon" aria-hidden="true">🏥</div>
       <div class="aud-role">For clinicians &amp; PCN leads</div>
       <div class="aud-title">I want to identify frail patients before crisis</div>
       <p class="aud-desc">Assistiv Tools are a voice-first community frailty screen. 12 conversational questions, real-time PRISMA-7 scoring and structured GP referral if needed. Deployable in any community setting.</p>
@@ -750,7 +753,7 @@ footer {
     </a>
 
     <a href="methodology.html" class="aud-card">
-      <div class="aud-icon">🔬</div>
+      <div class="aud-icon" aria-hidden="true">🔬</div>
       <div class="aud-role">For academics &amp; researchers</div>
       <div class="aud-title">I want to understand the methodology</div>
       <p class="aud-desc">21-signal composite scoring, LSOA-level Rural Access Vulnerability Index, Carer Burden Index, all built on open NHS data with full signal weights, sources and uncertainty bounds documented.</p>
@@ -758,10 +761,10 @@ footer {
     </a>
 
     <a href="#contact" class="aud-card">
-      <div class="aud-icon">🤝</div>
+      <div class="aud-icon" aria-hidden="true">🤝</div>
       <div class="aud-role">For investors &amp; partners</div>
       <div class="aud-title">I want to understand the opportunity</div>
-      <p class="aud-desc">3.5 million people in the Missing Middle nationally. Three granted patents. Working tools on live NHS data. A validated pathway from geographic intelligence to clinical screening in one system.</p>
+      <p class="aud-desc">3.5 million people in the Missing Middle nationally. Proprietary intellectual property across the full pathway. Working tools on live NHS data. A validated pathway from geographic intelligence to clinical screening in one system.</p>
       <div class="aud-action">Request a briefing →</div>
     </a>
 
@@ -777,28 +780,44 @@ footer {
     </div>
     <div class="data-grid" id="data-grid">
       <div class="data-stat">
-        <div class="data-val" id="stat-top-district">—</div>
+        <div class="data-val" id="stat-top-district"><!--INJECT:top_district-->Thanet 61<!--/INJECT--></div>
         <div class="data-label">Highest FEP district in Kent</div>
         <div class="data-source">Frailty Emergence Probability · 21 signals</div>
       </div>
       <div class="data-stat">
-        <div class="data-val" id="stat-high-count">—</div>
+        <div class="data-val" id="stat-high-count"><!--INJECT:high_count-->4<!--/INJECT--></div>
         <div class="data-label">Districts at high or critical FEP risk</div>
         <div class="data-source">Of 13 Kent &amp; Medway districts</div>
       </div>
       <div class="data-stat">
-        <div class="data-val" id="stat-ravi-count">—</div>
+        <div class="data-val" id="stat-ravi-count"><!--INJECT:ravi_count-->40<!--/INJECT--></div>
         <div class="data-label">Rural LSOAs with critical isolation risk</div>
         <div class="data-source">Rural Access Vulnerability Index · 1,065 LSOAs</div>
       </div>
       <div class="data-stat">
-        <div class="data-val">185</div>
+        <div class="data-val" id="stat-discharge"><!--INJECT:discharge_count-->185<!--/INJECT--></div>
         <div class="data-label">Patients delayed daily at East Kent Hospitals</div>
-        <div class="data-source">NHS England Discharge Sitrep · Apr 2026</div>
+        <div class="data-source">NHS England Discharge Sitrep · <span id="stat-discharge-period"><!--INJECT:discharge_period-->Apr 2026<!--/INJECT--></span></div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- EFI POSITIONING -->
+<div style="background:var(--white);border-bottom:1px solid var(--cream-dark);padding:3.5rem 2rem;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:minmax(260px,1fr) 2fr;gap:2.5rem;align-items:center;" class="efi-grid">
+      <div>
+        <div class="section-label">Where this sits alongside the eFI</div>
+        <div style="font-family:var(--serif);font-size:clamp(1.5rem,2.6vw,2.1rem);font-weight:700;line-height:1.25;color:var(--forest-mid);letter-spacing:-0.01em;">The eFI tells you where someone <em>is</em>. Assistiv tells you which direction a population is <em>travelling</em> — and how fast.</div>
+      </div>
+      <div style="font-size:0.92rem;color:var(--ink-mid);line-height:1.75;border-left:3px solid var(--sage);padding-left:1.5rem;">
+        Every GP system in England runs the Electronic Frailty Index, a validated, clinician-trusted measure of where an individual patient sits in the frailty journey. This platform does a different job: it works at population level, on open data, with no patient identifiers, and it updates daily. Every Primary Care Network in England is contractually required to identify and manage frailty under the PCN Directed Enhanced Service, yet no commissioned tool covers the space between appointments and ahead of presentation. That is the gap this intelligence layer exists to fill — as a complement to the eFI, never a competitor.
+      </div>
+    </div>
+  </div>
+</div>
+<style>@media (max-width: 860px) { .efi-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; } }</style>
 
 <!-- TOOLS -->
 <div class="tools-section" id="tools">
@@ -859,7 +878,7 @@ footer {
       <a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
         <div class="tool-tag">Community screening · Layer 4</div>
         <div class="tool-title">Voice-First Frailty Screen</div>
-        <div class="tool-desc">12 conversational questions across six clinical domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
+        <div class="tool-desc">Twelve conversational questions across six life domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
         <div class="tool-link">Open assistiv.tools ↗</div>
       </a>
     </div>
@@ -869,8 +888,8 @@ footer {
 <!-- HOW IT WORKS -->
 <div class="how-section" id="how-it-works">
   <div class="section-label">The pathway</div>
-  <div class="section-heading">Six layers. One proactive system.</div>
-  <div class="section-sub">Each layer feeds the next, from public data through geographic mapping, community identification, precision screening, community services, and clinical triage.</div>
+  <div class="section-heading">Seven layers. One proactive system.</div>
+  <div class="section-sub">Each layer feeds the next, from public data through geographic mapping, community identification, precision screening, PCN referral, community services, and clinical triage.</div>
 
   <div class="layers">
     <div class="layer">
@@ -906,26 +925,34 @@ footer {
       </div>
     </div>
     <div class="layer">
-      <div class="layer-num"><strong>L5</strong>Serve</div>
+      <div class="layer-num"><strong>L5</strong>Refer</div>
       <div class="layer-content">
-        <a href="https://www.assistiv.services" target="_blank" rel="noopener" class="layer-title" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(45,107,71,0.4);padding-bottom:1px;transition:border-color .15s" onmouseover="this.style.borderColor='#2d6b47'" onmouseout="this.style.borderColor='rgba(45,107,71,0.4)'">Community Services — Assistiv Services ↗</a>
-        <div class="layer-desc">For people identified through screening who fall below the acute threshold: preventative care, passive home safety monitoring, care coordination, and community connections, delivered through Assistiv Services. Person-led from day one, through a warm onboarding conversation. Technology introduced only in response to what the person says they need, always reversible, always on their terms.</div>
-        <span class="layer-badge badge-phase2">Phase 2 · In development</span>
+        <div class="layer-title">PCN Referral Pathway</div>
+        <div class="layer-desc">For people identified through screening who need specialist support: a structured referral into Primary Care Network and Social Care services. Domain scores, screening summary and a CGA preparation brief travel with the person, so the frailty team starts informed rather than from zero. Referral thresholds calibrated by district FEP score.</div>
+        <span class="layer-badge badge-proto">Prototype · In development</span>
       </div>
     </div>
     <div class="layer">
-      <div class="layer-num"><strong>L6</strong>Close</div>
+      <div class="layer-num"><strong>L6</strong>Serve</div>
+      <div class="layer-content">
+        <a href="https://www.assistiv.services" target="_blank" rel="noopener" class="layer-title" style="color:inherit;text-decoration:none;border-bottom:1px dashed rgba(45,107,71,0.4);padding-bottom:1px;transition:border-color .15s" onmouseover="this.style.borderColor='#2d6b47'" onmouseout="this.style.borderColor='rgba(45,107,71,0.4)'">Community Services — Assistiv Services ↗</a>
+        <div class="layer-desc">For people identified through screening who fall below the acute threshold: preventative care, passive home safety monitoring, care coordination, and community connections, delivered through Assistiv Services. Person-led from day one, through a warm onboarding conversation. Technology introduced only in response to what the person says they need, always reversible, always on their terms.</div>
+        <span class="layer-badge badge-proto">Prototype · In development</span>
+      </div>
+    </div>
+    <div class="layer">
+      <div class="layer-num"><strong>L7</strong>Close</div>
       <div class="layer-content">
         <div class="layer-title">Clinical Triage &amp; Feedback Loop</div>
-        <div class="layer-desc">Structured referral to GP, community nurse, or social prescriber. Screening outcomes fed back into the geographic model, districts where more frailty is found recalibrate the FEP scoring. The dataset becomes the competitive advantage.</div>
-        <span class="layer-badge badge-phase2">Phase 2 · In development</span>
+        <div class="layer-desc">Screening and referral outcomes fed back into the geographic model — districts where more frailty is found recalibrate the FEP scoring, and the pathway between screening, PCN referral and community services tightens with every cycle. The dataset becomes the competitive advantage.</div>
+        <span class="layer-badge badge-proto">Prototype · In development</span>
       </div>
     </div>
 
     <div style="margin-top:2.5rem;padding:1.25rem 1.75rem;background:var(--sage-ghost);border:1px solid var(--sage-pale);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
       <div>
         <div style="font-family:var(--serif);font-size:1.1rem;font-weight:700;color:var(--forest-mid);margin-bottom:0.25rem">See how it all connects</div>
-        <div style="font-size:0.85rem;color:var(--ink-muted)">An animated walkthrough of the six-layer pathway — from data ingestion to clinical referral.</div>
+        <div style="font-size:0.85rem;color:var(--ink-muted)">An animated walkthrough of the seven-layer pathway — from data ingestion through PCN referral to clinical triage.</div>
       </div>
       <a href="pathway-animation.html" style="font-family:var(--mono);font-size:0.72rem;letter-spacing:0.06em;color:var(--white);background:var(--sage);padding:0.55rem 1.2rem;border-radius:4px;text-decoration:none;white-space:nowrap;">Watch the animated explainer →</a>
     </div>
@@ -951,12 +978,6 @@ footer {
       <div>
         <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest-mid);margin-bottom:0.5rem">Economic model</div>
         <div style="font-size:0.82rem;color:var(--ink-muted);line-height:1.65">Falls cost: NHS Improvement £2,600 CPI-uplifted. Hip fracture cost: £14,642 (Lancet Healthy Longevity 2023, n=178,757). Preventability: BGS Fit for Frailty &amp; NICE QS86. Bed day cost: £562 NHS England 2025/26. All sources cited in-tool.</div>
-      </div>
-    </div>
-    <div style="margin-top:2.2rem;background:var(--sage-pale,#eef2fb);border-left:3px solid var(--sage,#365EBF);border-radius:0 8px 8px 0;padding:1.3rem 1.5rem;max-width:860px">
-      <div style="font-family:var(--serif);font-size:1.15rem;font-weight:700;color:var(--forest-mid,#1e3a7a);margin-bottom:0.4rem">Where this sits alongside the eFI</div>
-      <div style="font-size:0.88rem;color:var(--ink-mid,#3d5245);line-height:1.7">
-        Every GP system in England runs the Electronic Frailty Index, a validated, clinician-trusted measure of where an individual patient sits in the frailty journey. This platform does a different job: it works at population level, on open data, with no patient identifiers, and it updates daily. The eFI tells you where someone is. Assistiv tells you which direction a population is travelling, and how fast. Every Primary Care Network in England is contractually required to identify and manage frailty under the PCN Directed Enhanced Service, yet no commissioned tool covers the space between appointments and ahead of presentation. That is the gap this intelligence layer exists to fill, as a complement to the eFI, never a competitor.
       </div>
     </div>
     <div style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--cream-dark);display:flex;gap:1.5rem;flex-wrap:wrap">
@@ -1054,21 +1075,21 @@ footer {
     </p>
     <div style="display:flex;flex-direction:column;gap:1rem">
       <div style="display:flex;align-items:flex-start;gap:1rem">
-        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">📋</div>
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-hidden="true">📋</div>
         <div>
           <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Commissioner briefing</div>
           <div style="font-size:0.82rem;color:var(--ink-muted)">A 30-minute live demonstration of the FEP intelligence layer for your patch.</div>
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:1rem">
-        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">🔬</div>
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-hidden="true">🔬</div>
         <div>
           <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Academic collaboration</div>
           <div style="font-size:0.82rem;color:var(--ink-muted)">Methodology review, co-authorship, or validation study design.</div>
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;gap:1rem">
-        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">💼</div>
+        <div style="width:36px;height:36px;background:var(--sage-ghost);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0" aria-hidden="true">💼</div>
         <div>
           <div style="font-weight:600;color:var(--forest-mid);font-size:0.9rem;margin-bottom:0.2rem">Investment &amp; partnership</div>
           <div style="font-size:0.82rem;color:var(--ink-muted)">Pre-seed conversation, strategic partnership, or clinical trial funding.</div>
@@ -1132,7 +1153,7 @@ footer {
           </div>
         </div>
         <p class="footer-tagline">Frailty intelligence for the NHS. Finding older adults at risk before the system has to respond.</p>
-        <p style="font-size:0.72rem;color:var(--ink-dim);margin-top:0.75rem;">Powered by Anthropic, Claude 4.8</p>
+        <p style="font-size:0.72rem;color:var(--ink-dim);margin-top:0.75rem;">Powered by Anthropic technologies</p>
       </div>
       <div class="footer-nav">
         <div class="footer-nav-col">
@@ -1141,8 +1162,7 @@ footer {
           <a href="#how-it-works">How it works</a>
           <a href="#evidence">Evidence</a>
           <a href="datastatus.html">Data status</a>
-        <a href="https://www.assistiv.co/governance.html">Governance &amp; Assurance</a>
-          <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance</a>
+        <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
         </div>
         <div class="footer-nav-col">
           <h5>Ecosystem</h5>
@@ -1160,8 +1180,9 @@ footer {
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.</p>
       <div class="footer-links">
-        <a href="#">Privacy Notice</a>
-        <a href="#">Accessibility</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="accessibility.html">Accessibility</a>
       </div>
     </div>
   </div>
@@ -1169,8 +1190,8 @@ footer {
 
 <script>
 // ── LIVE DATA FROM JSON ───────────────────────────────────────────────
-const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
-const RAVI_URL = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-ravi-data.json';
+const FEP_URL  = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-fep-data.json';
+const RAVI_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-ravi-data.json';
 
 async function loadLiveData() {
   try {
