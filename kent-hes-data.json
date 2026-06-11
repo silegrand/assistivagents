@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T12:33:03.412622+00:00",
+    "generated": "2026-06-11T12:52:24.520803+00:00",
     "description": "Kent NHS Trust HES 65+ emergency admissions and geriatric medicine",
     "version": "1.1",
     "refresh_type": "monthly \u2014 NHS Digital provisional HES",
@@ -21,7 +21,7 @@
         "Canterbury",
         "Swale"
       ],
-      "total_emerg_65plus": null,
+      "total_emerg_65plus": 51015,
       "emerg_by_age_band": {},
       "geri_total_episodes": null,
       "geri_emergency_episodes": null,
@@ -41,7 +41,7 @@
         "Gravesham",
         "Dartford"
       ],
-      "total_emerg_65plus": null,
+      "total_emerg_65plus": 60370,
       "emerg_by_age_band": {},
       "geri_total_episodes": null,
       "geri_emergency_episodes": null,
@@ -57,11 +57,11 @@
       "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
       "trusts": {
         "RVV": {
-          "total_emerg_65plus": null,
+          "total_emerg_65plus": 51015,
           "geri_total_episodes": null
         },
         "RWF": {
-          "total_emerg_65plus": null,
+          "total_emerg_65plus": 60370,
           "geri_total_episodes": null
         }
       }
