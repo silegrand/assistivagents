@@ -44,3 +44,8 @@ jobs:
               echo "WARNING: $f not found"
             fi
           done
+
+      - name: Inject static stat fallbacks into HTML (commits via API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python inject_stats.py
