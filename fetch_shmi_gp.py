@@ -62,14 +62,25 @@ KNOWN_SHMI = {
     },
 }
 
-# GP Registration: find the 5-year age groups ZIP on the monthly publication page.
-# June 2026 ZIP URL confirmed from publication page today.
+# GP Registration: two files per month from the publication page:
+#   zip_url:     "5-year age groups (GP practice)" — practice patient counts by age
+#   mapping_url: "Mapping (Commissioning Regions-ICBs-SICBLs-PCNs-GP practice)"
+#                — maps each GP practice ODS code to ICB and LAD
+# June 2026 URLs confirmed from NHS Digital publication page.
 KNOWN_GP_REG = {
     "2026-06-01": {
         "snapshot_date": "2026-06-01",
-        "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/june-2026",
-        "zip_url": "https://files.digital.nhs.uk/7E/DC8059/gp-reg-pat-prac-quin-age.zip",
+        "pub_url":     "https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/june-2026",
+        "zip_url":     "https://files.digital.nhs.uk/7E/DC8059/gp-reg-pat-prac-quin-age.zip",
+        "mapping_url": "https://files.digital.nhs.uk/8B/68C830/gp-reg-pat-prac-map.zip",
     },
+    # Add new months here:
+    # "2026-07-01": {
+    #     "snapshot_date": "2026-07-01",
+    #     "pub_url":     "https://digital.nhs.uk/.../july-2026",
+    #     "zip_url":     "https://files.digital.nhs.uk/XX/XXXXXX/gp-reg-pat-prac-quin-age.zip",
+    #     "mapping_url": "https://files.digital.nhs.uk/XX/XXXXXX/gp-reg-pat-prac-map.zip",
+    # },
 }
 
 ALL_75_PLUS = {
@@ -228,6 +239,59 @@ def fetch_and_write_shmi():
     }
 
 
+def build_practice_lad_lookup(mapping_url):
+    """
+    Download the GP practice mapping ZIP and build a dict:
+      {practice_ods_code: lad_name}
+    for all Kent & Medway practices.
+    Mapping CSV columns include ORG_CODE, SUBICB_LOC_NAME, ICB_NAME, LAD_NAME etc.
+    """
+    print(f"  Downloading mapping ZIP: {mapping_url}")
+    r = requests.get(mapping_url, headers=HEADERS, timeout=60)
+    r.raise_for_status()
+    print(f"  Mapping ZIP: {len(r.content):,} bytes")
+
+    with zipfile.ZipFile(BytesIO(r.content)) as zf:
+        csv_names = [n for n in zf.namelist() if n.endswith(".csv")]
+        print(f"  Mapping ZIP files: {csv_names}")
+        target  = csv_names[0] if csv_names else None
+        if not target:
+            raise ValueError("No CSV in mapping ZIP")
+        content_str = zf.read(target).decode("utf-8-sig", errors="replace")
+
+    reader = csv.DictReader(StringIO(content_str))
+    rows   = list(reader)
+    fields = reader.fieldnames or []
+    print(f"  Mapping: {len(rows):,} rows, columns: {fields}")
+
+    # Identify columns
+    org_col  = find_col(fields, "org_code", "org code", "practice code", "code")
+    icb_col  = find_col(fields, "icb_name", "icb name", "icb")
+    lad_col  = find_col(fields, "lad_name", "lad name", "local authority")
+
+    print(f"  Mapping cols → org:{org_col} icb:{icb_col} lad:{lad_col}")
+
+    # Build lookup: practice_code → lad_name, filtered to Kent ICB
+    lookup = {}
+    kent_icb_found = set()
+    for row in rows:
+        icb_val = str(row.get(icb_col or "", "")).strip()
+        if "kent" not in icb_val.lower():
+            continue
+        kent_icb_found.add(icb_val)
+        code    = str(row.get(org_col or "", "")).strip().upper()
+        lad_val = str(row.get(lad_col or "", "")).strip()
+        if code and lad_val:
+            lookup[code] = lad_val
+
+    print(f"  Kent ICB values found: {kent_icb_found}")
+    print(f"  Kent practices in lookup: {len(lookup)}")
+    if lookup:
+        sample = list(lookup.items())[:3]
+        print(f"  Sample: {sample}")
+    return lookup
+
+
 def fetch_and_write_gp_reg():
     today   = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     last    = load_json("kent-gp-reg-data.json")
@@ -236,70 +300,77 @@ def fetch_and_write_gp_reg():
     latest_snap = sorted(KNOWN_GP_REG.keys())[-1]
     release     = KNOWN_GP_REG[latest_snap]
     zip_url     = release["zip_url"]
+    mapping_url = release.get("mapping_url")
     snap_date   = release["snapshot_date"]
     pub_url     = release.get("pub_url", "")
 
-    print(f"  Downloading GP registration ZIP: {zip_url}")
+    # Step 1: Build practice → LAD lookup from mapping file
+    practice_lad = {}
+    if mapping_url:
+        try:
+            practice_lad = build_practice_lad_lookup(mapping_url)
+        except Exception as e:
+            print(f"  WARNING: Could not build mapping lookup: {e}")
+    else:
+        print("  WARNING: No mapping_url configured — all counts will be zero")
+
+    # Step 2: Download patient count ZIP
+    print(f"\n  Downloading patient counts ZIP: {zip_url}")
     r = requests.get(zip_url, headers=HEADERS, timeout=120)
     r.raise_for_status()
     print(f"  Downloaded {len(r.content):,} bytes")
 
-    district_data = {}
     with zipfile.ZipFile(BytesIO(r.content)) as zf:
         csv_names = [n for n in zf.namelist() if n.endswith(".csv")]
         print(f"  Files in ZIP: {csv_names}")
-        target = None
-        for name in csv_names:
-            if any(x in name.lower() for x in ["icb", "region", "quin", "sicbl"]):
-                target = name
-                break
+        target  = csv_names[0] if csv_names else None
         if not target:
-            target = csv_names[0] if csv_names else None
-        if not target:
-            raise ValueError("No CSV in ZIP")
+            raise ValueError("No CSV in patient counts ZIP")
         print(f"  Parsing: {target}")
-        content = zf.read(target).decode("utf-8-sig", errors="replace")
+        content_str = zf.read(target).decode("utf-8-sig", errors="replace")
 
-    reader = csv.DictReader(StringIO(content))
+    reader = csv.DictReader(StringIO(content_str))
     rows   = list(reader)
     fields = reader.fieldnames or []
     print(f"  {len(rows):,} rows, {len(fields)} columns")
-    print(f"  Columns: {fields[:12]}")
+    print(f"  Columns: {fields}")
 
-    icb_col      = find_col(fields, "icb code", "icb_code", "icb ons", "icb")
-    lad_name_col = find_col(fields, "lad name", "lad_name", "district name")
-    lad_col      = find_col(fields, "lad code", "lad_code", "lad")
-    age_col      = find_col(fields, "age_group_5", "age group", "age band",
-                            "agegrp", "age_grp", "age_band")
-    count_col    = find_col(fields, "number_of_patients", "patients", "count",
-                            "total", "number")
-    sex_col      = find_col(fields, "sex", "gender")
+    org_col   = find_col(fields, "org_code", "org code", "practice code", "code")
+    age_col   = find_col(fields, "age_group_5", "age group", "age band", "agegrp")
+    count_col = find_col(fields, "number_of_patients", "patients", "count", "number")
+    sex_col   = find_col(fields, "sex", "gender")
 
-    print(f"  Map → icb:{icb_col} lad_name:{lad_name_col} age:{age_col} "
-          f"count:{count_col} sex:{sex_col}")
+    print(f"  Cols → org:{org_col} age:{age_col} count:{count_col} sex:{sex_col}")
+
+    district_data = {}
+    matched = 0
+    skipped = 0
 
     for row in rows:
-        icb_val = str(row.get(icb_col or "", "")).strip().upper()
-        if "QKS" not in icb_val and "KENT" not in icb_val and "E54000032" not in icb_val:
-            continue
-
+        # Skip male/female rows — only keep persons total
         if sex_col:
             sex_val = str(row.get(sex_col, "")).strip().upper()
             if sex_val not in ("", "PERSONS", "ALL", "0", "9", "TOTAL"):
                 continue
 
-        lad_name = str(row.get(lad_name_col or lad_col or "", "")).strip()
+        # Map practice code to LAD
+        org_code = str(row.get(org_col or "", "")).strip().upper()
+        lad_name = practice_lad.get(org_code)
         if not lad_name:
+            skipped += 1
             continue
 
+        # Map LAD name to our district names
         district = None
         for d_name in KENT_LAD_CODES:
             if d_name.lower() in lad_name.lower() or lad_name.lower() in d_name.lower():
                 district = d_name
                 break
         if not district:
+            skipped += 1
             continue
 
+        matched += 1
         if district not in district_data:
             district_data[district] = {
                 "total_list_size": 0, "pop_75plus": 0,
@@ -322,7 +393,8 @@ def fetch_and_write_gp_reg():
             if any(b in age_val for b in OVER_65_BANDS):
                 district_data[district]["pop_65plus"] += count
 
-    print(f"\n  Districts found: {sorted(district_data.keys())}")
+    print(f"\n  Rows matched to Kent districts: {matched:,}, skipped: {skipped:,}")
+    print(f"  Districts found: {sorted(district_data.keys())}")
 
     districts_output = {}
     for name in KENT_LAD_CODES:
@@ -352,15 +424,16 @@ def fetch_and_write_gp_reg():
         "meta": {
             "generated":     datetime.now(timezone.utc).isoformat(),
             "description":   "Kent GP registered patients by district — Assistiv Systems",
-            "version":       "1.1",
+            "version":       "1.2",
             "refresh_type":  "monthly — NHS Digital GP Registration",
             "snapshot_date": snap_date,
             "zip_url":       zip_url,
+            "mapping_url":   mapping_url,
             "pub_url":       pub_url,
             "source":        "NHS Digital Patients Registered at a GP Practice",
             "licence":       "Open Government Licence v3.0",
             "icb":           "NHS Kent and Medway ICB (QKS)",
-            "update_note":   "Add new ZIP URL monthly to KNOWN_GP_REG in fetch_shmi_gp.py",
+            "update_note":   "Add both zip_url and mapping_url monthly to KNOWN_GP_REG in fetch_shmi_gp.py",
         },
         "districts": districts_output,
         "history":   history,
