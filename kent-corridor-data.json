@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T11:56:58.516202+00:00",
+    "generated": "2026-06-11T12:00:25.451380+00:00",
     "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
     "version": "2.0",
     "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
@@ -28,10 +28,10 @@
         "Canterbury",
         "Swale"
       ],
-      "corridor_ed": null,
+      "corridor_ed": 0.0,
       "corridor_ward": null,
-      "corridor_total": null,
-      "corridor_ed_max": null,
+      "corridor_total": 0.0,
+      "corridor_ed_max": 14.0,
       "corridor_ward_max": null,
       "days_submitted": 128,
       "twelve_hour_waits": null,
@@ -53,10 +53,10 @@
         "Gravesham",
         "Dartford"
       ],
-      "corridor_ed": null,
+      "corridor_ed": 2.0,
       "corridor_ward": null,
-      "corridor_total": null,
-      "corridor_ed_max": null,
+      "corridor_total": 2.0,
+      "corridor_ed_max": 36.0,
       "corridor_ward_max": null,
       "days_submitted": 128,
       "twelve_hour_waits": null,
@@ -91,15 +91,15 @@
       "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
       "trusts": {
         "RVV": {
-          "corridor_total": null,
-          "corridor_ed": null,
+          "corridor_total": 0.0,
+          "corridor_ed": 0.0,
           "corridor_ward": null,
           "name": "East Kent Hospitals University NHS Foundation Trust",
           "short": "East Kent Hospitals"
         },
         "RWF": {
-          "corridor_total": null,
-          "corridor_ed": null,
+          "corridor_total": 2.0,
+          "corridor_ed": 2.0,
           "corridor_ward": null,
           "name": "Maidstone and Tunbridge Wells NHS Trust",
           "short": "Maidstone & Tunbridge Wells"
