@@ -1,16 +1,17 @@
 {
   "meta": {
-    "generated": "2026-06-11T11:16:20.128849+00:00",
+    "generated": "2026-06-11T11:24:30.752118+00:00",
     "description": "Kent GP registered patients by district \u2014 Assistiv Systems",
-    "version": "1.1",
+    "version": "1.2",
     "refresh_type": "monthly \u2014 NHS Digital GP Registration",
     "snapshot_date": "2026-06-01",
     "zip_url": "https://files.digital.nhs.uk/7E/DC8059/gp-reg-pat-prac-quin-age.zip",
+    "mapping_url": "https://files.digital.nhs.uk/8B/68C830/gp-reg-pat-prac-map.zip",
     "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/patients-registered-at-a-gp-practice/june-2026",
     "source": "NHS Digital Patients Registered at a GP Practice",
     "licence": "Open Government Licence v3.0",
     "icb": "NHS Kent and Medway ICB (QKS)",
-    "update_note": "Add new ZIP URL monthly to KNOWN_GP_REG in fetch_shmi_gp.py"
+    "update_note": "Add both zip_url and mapping_url monthly to KNOWN_GP_REG in fetch_shmi_gp.py"
   },
   "districts": {
     "Thanet": {
