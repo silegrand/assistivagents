@@ -1,0 +1,46 @@
+name: HES + SHMI + GP Registration Monthly Refresh
+
+on:
+  schedule:
+    - cron: '0 8 12 * *'
+  workflow_dispatch:
+
+jobs:
+  fetch-monthly-nhs-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 openpyxl lxml
+
+      - name: Run HES monthly fetcher
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fetch_hes_monthly.py
+
+      - name: Run SHMI + GP registration fetcher
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fetch_shmi_gp.py
+
+      - name: Confirm outputs
+        run: |
+          for f in kent-hes-data.json kent-shmi-data.json kent-gp-reg-data.json; do
+            if [ -f "$f" ]; then
+              echo "$f exists"
+              python -c "import json; d=json.load(open('$f')); print('  Generated:', d['meta']['generated'][:10])"
+            else
+              echo "WARNING: $f not found"
+            fi
+          done
