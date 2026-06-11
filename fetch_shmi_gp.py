@@ -327,12 +327,21 @@ def fetch_and_write_gp_reg():
     matched = 0
     skipped = 0
 
+    # Check what sex codes are present
+    sex_codes = set(str(r.get(sex_col or "", "")).strip() for r in rows[:200])
+    print(f"  Sex codes in data: {sex_codes}")
+    # NHS GP reg typically uses 1=Male, 2=Female only (no persons-total row).
+    # Summing M+F gives the correct total persons count per practice per age band.
+    has_persons_total = any(s in sex_codes for s in ("0", "PERSONS", "ALL", "TOTAL"))
+    print(f"  Has persons-total rows: {has_persons_total}")
+
     for row in rows:
-        # Keep persons total only — skip M/F rows to avoid double counting
-        if sex_col:
+        if sex_col and has_persons_total:
+            # Only keep persons-total rows to avoid double counting
             sex_val = str(row.get(sex_col, "")).strip().upper()
-            if sex_val not in ("", "PERSONS", "ALL", "0", "9", "TOTAL"):
+            if sex_val not in ("", "PERSONS", "ALL", "0", "TOTAL"):
                 continue
+        # If no persons-total row, include all sex rows (M+F sums to persons total)
 
         # Map practice postcode to Kent district
         postcode = str(row.get(postcode_col or "", "")).strip()
