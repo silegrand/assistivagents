@@ -1,0 +1,37 @@
+name: Corridor Care Weekly Refresh
+
+on:
+  schedule:
+    - cron: '0 10 * * 4'
+  workflow_dispatch:
+
+jobs:
+  fetch-corridor-care:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install requests beautifulsoup4 openpyxl lxml
+
+      - name: Run corridor care fetcher
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fetch_corridor_care.py
+
+      - name: Confirm output
+        run: |
+          if [ -f kent-corridor-data.json ]; then
+            echo "kent-corridor-data.json exists locally"
+            python -c "import json; d=json.load(open('kent-corridor-data.json')); print('Week ending:', d['meta']['week_ending'])"
+          fi
