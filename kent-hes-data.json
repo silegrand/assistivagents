@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "generated": "2026-06-11T11:07:04.764155+00:00",
+    "description": "Kent NHS Trust HES 65+ emergency admissions and geriatric medicine",
+    "version": "1.1",
+    "refresh_type": "monthly \u2014 NHS Digital provisional HES",
+    "period_label": "April 2025 - March 2026 (M13)",
+    "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
+    "source": "NHS Digital Provisional Monthly Hospital Episode Statistics",
+    "licence": "Open Government Licence v3.0",
+    "data_currency_note": "Provisional monthly HES. Data covers admissions approximately 8-10 weeks prior to publication date. Update KNOWN_RELEASES dict in fetch_hes_monthly.py each month with new direct CSV URLs from files.digital.nhs.uk."
+  },
+  "trusts": {
+    "RVV": {
+      "name": "East Kent Hospitals University NHS Foundation Trust",
+      "short": "East Kent Hospitals",
+      "districts": [
+        "Thanet",
+        "Dover",
+        "Folkestone & Hythe",
+        "Canterbury",
+        "Swale"
+      ],
+      "total_emerg_65plus": null,
+      "emerg_by_age_band": {},
+      "geri_total_episodes": null,
+      "geri_emergency_episodes": null,
+      "emerg_65plus_yoy_delta": null,
+      "emerg_65plus_yoy_pct": null,
+      "period_label": "April 2025 - March 2026 (M13)"
+    },
+    "RWF": {
+      "name": "Maidstone and Tunbridge Wells NHS Trust",
+      "short": "Maidstone & Tunbridge Wells",
+      "districts": [
+        "Maidstone",
+        "Tonbridge & Malling",
+        "Tunbridge Wells",
+        "Sevenoaks",
+        "Ashford",
+        "Gravesham",
+        "Dartford"
+      ],
+      "total_emerg_65plus": null,
+      "emerg_by_age_band": {},
+      "geri_total_episodes": null,
+      "geri_emergency_episodes": null,
+      "emerg_65plus_yoy_delta": null,
+      "emerg_65plus_yoy_pct": null,
+      "period_label": "April 2025 - March 2026 (M13)"
+    }
+  },
+  "history": [
+    {
+      "period_label": "April 2025 - March 2026 (M13)",
+      "fetched": "2026-06-11",
+      "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
+      "trusts": {
+        "RVV": {
+          "total_emerg_65plus": null,
+          "geri_total_episodes": null
+        },
+        "RWF": {
+          "total_emerg_65plus": null,
+          "geri_total_episodes": null
+        }
+      }
+    }
+  ]
+}
