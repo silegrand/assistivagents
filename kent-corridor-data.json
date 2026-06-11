@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T12:00:25.451380+00:00",
+    "generated": "2026-06-11T12:09:16.669473+00:00",
     "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
     "version": "2.0",
     "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
@@ -37,8 +37,8 @@
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
-      "corridor_delta": null,
-      "corridor_trend": "unknown",
+      "corridor_delta": 0.0,
+      "corridor_trend": "stable",
       "period_label": "May 2026"
     },
     "RWF": {
@@ -62,8 +62,8 @@
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
-      "corridor_delta": null,
-      "corridor_trend": "unknown",
+      "corridor_delta": 0.0,
+      "corridor_trend": "stable",
       "period_label": "May 2026"
     }
   },
