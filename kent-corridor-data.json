@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T12:13:22.288000+00:00",
+    "generated": "2026-06-11T12:18:53.465037+00:00",
     "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
     "version": "2.0",
     "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
@@ -28,16 +28,16 @@
         "Canterbury",
         "Swale"
       ],
-      "corridor_ed": 0.0,
-      "corridor_ward": null,
-      "corridor_total": 0.0,
+      "corridor_ed": 1.0,
+      "corridor_ward": 0.0,
+      "corridor_total": 1.0,
       "corridor_ed_max": 14.0,
-      "corridor_ward_max": null,
+      "corridor_ward_max": 0.0,
       "days_submitted": 128,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
-      "corridor_delta": 0.0,
+      "corridor_delta": 1.0,
       "corridor_trend": "stable",
       "period_label": "May 2026"
     },
@@ -53,17 +53,17 @@
         "Gravesham",
         "Dartford"
       ],
-      "corridor_ed": 2.0,
-      "corridor_ward": null,
-      "corridor_total": 2.0,
+      "corridor_ed": 19.0,
+      "corridor_ward": 2.0,
+      "corridor_total": 21.0,
       "corridor_ed_max": 36.0,
-      "corridor_ward_max": null,
+      "corridor_ward_max": 10.0,
       "days_submitted": 128,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
-      "corridor_delta": 0.0,
-      "corridor_trend": "stable",
+      "corridor_delta": 19.0,
+      "corridor_trend": "rising",
       "period_label": "May 2026"
     }
   },
@@ -91,16 +91,16 @@
       "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
       "trusts": {
         "RVV": {
-          "corridor_total": 0.0,
-          "corridor_ed": 0.0,
-          "corridor_ward": null,
+          "corridor_total": 1.0,
+          "corridor_ed": 1.0,
+          "corridor_ward": 0.0,
           "name": "East Kent Hospitals University NHS Foundation Trust",
           "short": "East Kent Hospitals"
         },
         "RWF": {
-          "corridor_total": 2.0,
-          "corridor_ed": 2.0,
-          "corridor_ward": null,
+          "corridor_total": 21.0,
+          "corridor_ed": 19.0,
+          "corridor_ward": 2.0,
           "name": "Maidstone and Tunbridge Wells NHS Trust",
           "short": "Maidstone & Tunbridge Wells"
         }
