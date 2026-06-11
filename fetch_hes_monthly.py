@@ -318,28 +318,20 @@ def main():
 
     trust_codes = set(KENT_TRUSTS.keys())
 
-    # Age groups CSV
-    emerg_data = {}
-    age_rows, age_fields = download_csv(urls["age_groups"], "Age Groups CSV")
-    if age_rows:
-        emerg_data = extract_65plus_emergency(age_rows, age_fields, trust_codes)
-        print(f"\n  65+ emergency admissions:")
-        for code, d in emerg_data.items():
-            print(f"    {code}: {d['total_emerg_65plus']:,}")
-    else:
-        print("  No age groups data retrieved")
+    # Use Kent-filtered CCG by Provider CSV committed to repo
+    kent_csv_url = urls.get("kent_csv")
+    emerg_data   = {}
+    geri_data    = {}
 
-    # Specialty CSV
-    geri_data = {}
-    spec_rows, spec_fields = download_csv(urls["specialty"], "Treatment Specialty CSV")
-    if spec_rows:
-        geri_data = extract_geriatric_medicine(spec_rows, spec_fields, trust_codes)
-        print(f"\n  Geriatric medicine (spec 430):")
-        for code, d in geri_data.items():
-            print(f"    {code}: {d['geri_total_episodes']:,} total, "
-                  f"{d['geri_emergency_episodes']:,} emergency")
+    if kent_csv_url:
+        rows, fieldnames = download_csv(kent_csv_url, "Kent Trusts CCG by Provider")
+        if rows:
+            emerg_data = extract_nonelective_admissions(rows, fieldnames, trust_codes)
+            print(f"\n  Non-elective admissions extracted:")
+            for code, data in emerg_data.items():
+                print(f"    {code}: {data.get('total_emerg_65plus',0):,} total non-elective")
     else:
-        print("  No specialty data retrieved")
+        print("WARNING: No kent_csv URL configured for this release")
 
     # Load history
     last    = load_last_json()
