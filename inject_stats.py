@@ -155,6 +155,16 @@ def derive_pressure_values():
                 if d.get("pop_75plus") is not None]
         if pops:
             vals["pop_75plus"] = f"{sum(pops):,}"
+
+    iuc = get_json("kent-111-data.json")
+    est = (iuc or {}).get("kent_icb_estimated", {})
+    if est.get("calls_received") is not None:
+        vals["calls_111"] = f"{est['calls_received']:,}"
+        period = (iuc.get("meta", {}) or {}).get("period_nice", "")
+        mon = period.split()[0][:3] if period else ""
+        vals["calls_111_label"] = (
+            f"111 calls — K&amp;M est., {mon}" if mon
+            else "111 calls — K&amp;M est.")
     return vals
 
 
