@@ -66,6 +66,31 @@ TRUST_NAMES = {
     "RWF": "Maidstone and Tunbridge Wells NHS Trust",
 }
 
+# ── CENSUS-DERIVED 75+ POPULATION ─────────────────────────────────────────────
+# GP registration figures are inflated for several districts due to cross-boundary
+# catchment (practices whose postcodes map to one district but whose patients
+# live in adjacent areas). Tunbridge Wells GP reg shows 49,965 aged 75+ against
+# a district population of ~115k — clearly pulling East Sussex and Weald patients.
+# Dartford (2.0x), Canterbury (1.43x), and Medway (1.41x) are similarly affected.
+# These census-derived figures (ONS mid-year estimates, consistent with the FEP
+# model's POP75 dict in daily_refresh.py) are used for narratives and pop_75plus
+# in the output JSON. GP list_size is retained separately as a separate field.
+POP75_CENSUS = {
+    "Thanet":              18200,
+    "Folkestone & Hythe":  14100,
+    "Dover":               13800,
+    "Swale":               15200,
+    "Medway":              19400,
+    "Gravesham":           11800,
+    "Ashford":             13600,
+    "Canterbury":          16300,
+    "Dartford":            10800,
+    "Maidstone":           16700,
+    "Tonbridge & Malling": 13100,
+    "Sevenoaks":           12100,
+    "Tunbridge Wells":     11200,
+}
+
 # ── SEASONAL EVIDENCE CONSTANTS ───────────────────────────────────────────────
 # From published evidence — baked in as per build plan
 # These calibrate the seasonal amplifier component
@@ -200,11 +225,11 @@ def component_baseline_frailty(district_name, fep_rec, gp_rec):
     Normalised so England-average FEP (50) with median Kent pop75 → 50.
     """
     fep_score = fep_rec.get("fep", 50)
-    pop75 = gp_rec.get("pop_75plus", fep_rec.get("pop75", 0))
+    pop75 = POP75_CENSUS.get(district_name, fep_rec.get("pop75", 0))
 
-    # Kent median pop75 ≈ 13,800 (derived from GP reg data)
+    # Kent median pop75 ≈ 13,800 (census-derived; consistent with FEP model POP75 dict)
     KENT_MEDIAN_POP75 = 13800
-    MAX_POP75         = 22000   # Medway upper bound
+    MAX_POP75         = 19400   # Medway upper bound (census)
 
     # Scale: FEP as intensity (0–100), pop75 as concentration (0–100)
     fep_component = fep_score  # already 0–100
@@ -344,7 +369,7 @@ def winter_narrative(district_name, fep_rec, wvi_score, wvi_tier, component_scor
     Plain-English three-sentence commissioner narrative per district.
     Mirrors the Ada approach: specific, data-grounded, action-oriented.
     """
-    pop75     = gp_rec.get("pop_75plus", fep_rec.get("pop75", 0))
+    pop75     = POP75_CENSUS.get(district_name, fep_rec.get("pop75", 0))
     fep_score = fep_rec.get("fep", 50)
     trust_code = DISTRICT_TO_TRUST.get(district_name, "RWF")
     trust_short = "East Kent Hospitals" if trust_code == "RVV" else "Maidstone & Tunbridge Wells"
@@ -435,7 +460,8 @@ for district_name in LAD_CODES:
         "historical_peak_uplift_pct": SEASONAL_UPLIFT["falls_jan_uplift_pct"],
         "fep_score":  fep_rec.get("fep"),
         "fep_risk":   fep_rec.get("risk"),
-        "pop_75plus": gp_rec.get("pop_75plus", fep_rec.get("pop75")),
+        "pop_75plus": POP75_CENSUS.get(district_name, fep_rec.get("pop75")),
+        "pop_75plus_gp_reg": gp_rec.get("pop_75plus"),  # retained for reference; inflated by cross-boundary catchment in some districts
         "list_size":  gp_rec.get("total_list_size"),
         "lad_code":   LAD_CODES[district_name],
         "trust_code": trust_code,
