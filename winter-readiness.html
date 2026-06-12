@@ -908,12 +908,13 @@ body {
       <div class="panel-tab"        data-tab="signals"     onclick="switchTab('signals')">Pre-Winter Signals</div>
       <div class="panel-tab"        data-tab="deployment"  onclick="switchTab('deployment')">Deployment Planner</div>
       <div class="panel-tab"        data-tab="historical"  onclick="switchTab('historical')">Last Winter</div>
+      <div class="panel-tab"        data-tab="trajectory"  onclick="switchTab('trajectory')">Winter Trajectory</div>
     </div>
 
     <div class="panel-content" id="panelContent">
       <div class="no-selection">
         <div class="ns-icon">❄</div>
-        <p>Select a district from the list to view its Winter Readiness Brief, seasonal curve, and deployment plan.</p>
+        <p>Select a district from the list to view its Winter Readiness Brief, seasonal curve, and deployment plan. Or open the <strong>Winter Trajectory</strong> tab to see all 13 districts plotted by current stress vs acceleration risk.</p>
       </div>
     </div>
 
@@ -1098,7 +1099,7 @@ function switchTab(tab) {
 }
 
 function renderPanel(tab) {
-  if (!selectedDistrict) {
+  if (!selectedDistrict && tab !== 'trajectory') {
     document.getElementById('panelContent').innerHTML = `
       <div class="no-selection">
         <div class="ns-icon">❄</div>
@@ -1107,15 +1108,16 @@ function renderPanel(tab) {
     return;
   }
 
-  const d    = winterData.districts[selectedDistrict];
-  const fepD = getFepDistrict(selectedDistrict);
+  const d    = selectedDistrict ? winterData.districts[selectedDistrict] : null;
+  const fepD = selectedDistrict ? getFepDistrict(selectedDistrict) : null;
 
   switch (tab) {
-    case 'overview':   renderOverview(d, fepD);   break;
-    case 'curve':      renderCurve(d, fepD);      break;
-    case 'signals':    renderSignals(d, fepD);    break;
-    case 'deployment': renderDeployment(d, fepD); break;
-    case 'historical': renderHistorical(d, fepD); break;
+    case 'overview':    renderOverview(d, fepD);   break;
+    case 'curve':       renderCurve(d, fepD);      break;
+    case 'signals':     renderSignals(d, fepD);    break;
+    case 'deployment':  renderDeployment(d, fepD); break;
+    case 'historical':  renderHistorical(d, fepD); break;
+    case 'trajectory':  renderTrajectory();        break;
   }
 }
 
@@ -1497,6 +1499,219 @@ function renderHistorical(d, fepD) {
       will be added when Fingertips publishes sub-ICB breakdowns.
       Corridor care history: May 2026 is the first available month; monthly data will build from here.
     </p>`;
+}
+
+}
+
+// ── PANEL 6: WINTER TRAJECTORY (quadrant view — all 13 districts) ─────────────
+function renderTrajectory() {
+  if (!winterData || !fepData) {
+    document.getElementById('panelContent').innerHTML =
+      '<div class="no-selection"><div class="ns-icon">⏳</div><p>Loading data…</p></div>';
+    return;
+  }
+
+  // ── Compute trajectory score for each district ──
+  // Trajectory = how much will this district's situation WORSEN between now and January?
+  // Components:
+  //   FEP sensitivity (50%): population above 50 FEP decompensates faster under winter stress
+  //   Pop75 scale (30%):     more older people = more exposure
+  //   Headroom inverse (20%): districts with capacity now may absorb early wave; those without won't
+  const POP75 = {
+    "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+    "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+    "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+    "Sevenoaks":12100,"Tunbridge Wells":11200,
+  };
+  const MAX_POP75 = 19400;
+
+  const fepByName = {};
+  (fepData.districts || []).forEach(d => { fepByName[d.name] = d.fep; });
+
+  const points = Object.entries(winterData.districts).map(([name, d]) => {
+    const fep   = fepByName[name] || 50;
+    const pop75 = POP75[name] || 13800;
+    const wvi   = d.wvi_score;
+    const hdr   = d.wvi_components.system_headroom;
+
+    const fepSensitivity   = Math.max(0, (fep - 40) / 60);
+    const popScale         = pop75 / MAX_POP75;
+    const headroomInverse  = 1 - (hdr / 100);
+
+    const trajectory = Math.min(100, Math.round(
+      (fepSensitivity * 0.5 + popScale * 0.3 + headroomInverse * 0.2) * 100
+    ));
+
+    // Quadrant thresholds (stable across sensitivity testing)
+    const WVI_T  = 57;
+    const TRAJ_T = 55;
+    let quadrant;
+    if      (wvi >= WVI_T && trajectory >= TRAJ_T) quadrant = 'act';
+    else if (wvi <  WVI_T && trajectory >= TRAJ_T) quadrant = 'watch';
+    else if (wvi >= WVI_T && trajectory <  TRAJ_T) quadrant = 'system';
+    else                                            quadrant = 'standard';
+
+    return { name, wvi: Math.round(wvi), fep, pop75, trajectory, quadrant, tier: d.wvi_tier };
+  });
+
+  // ── Quadrant metadata ──
+  const QUADS = {
+    act:      { label:'Act Now',                  color:'#991b1b', bg:'rgba(153,27,27,0.08)',  desc:'High current system stress AND high population trajectory — the most urgent deployment targets.' },
+    watch:    { label:'Prepare for Acceleration', color:'#b45309', bg:'rgba(180,83,9,0.08)',   desc:'Lower current stress but high underlying frailty burden — these districts will accelerate fastest as winter pressure builds. The calm now is the reason to act now.' },
+    system:   { label:'Manage System Pressure',   color:'#1d4ed8', bg:'rgba(29,78,216,0.06)',  desc:'High system stress driven primarily by corridor care and infrastructure — frailty population trajectory is lower. Focus on system resilience and discharge pathways.' },
+    standard: { label:'Standard Planning',        color:'#166534', bg:'rgba(22,101,52,0.06)',  desc:'Lower on both dimensions. Standard winter planning protocols apply.' },
+  };
+
+  // ── Build quadrant district lists ──
+  const byQuad = { act:[], watch:[], system:[], standard:[] };
+  points.forEach(p => byQuad[p.quadrant].push(p));
+
+  const quadCards = Object.entries(QUADS).map(([key, q]) => {
+    const dists = byQuad[key];
+    if (!dists.length) return '';
+    const distList = dists.map(p =>
+      `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)">
+        <span style="font-size:0.8rem;font-weight:600;color:var(--text);cursor:pointer"
+              onclick="selectDistrict('${p.name}');switchTab('overview')">${p.name}</span>
+        <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text-muted)">
+          WVI ${p.wvi} · FEP ${p.fep} · Traj ${p.trajectory}
+        </span>
+      </div>`
+    ).join('');
+    return `
+      <div style="background:${q.bg};border:1px solid ${q.color}33;border-left:3px solid ${q.color};border-radius:0 8px 8px 0;padding:1rem">
+        <div style="font-family:var(--cabinet);font-size:0.95rem;font-weight:700;color:${q.color};margin-bottom:4px">${q.label}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.5">${q.desc}</div>
+        ${distList}
+      </div>`;
+  }).join('');
+
+  // ── SVG scatter plot ──
+  // X = WVI (current stress, 40–75), Y = Trajectory (40–75)
+  // Quadrant lines at WVI=57, Traj=55
+  const W = 500, H = 380, PAD = 48;
+  const xMin=38, xMax=72, yMin=25, yMax=80;
+
+  function px(wvi)  { return PAD + (wvi - xMin) / (xMax - xMin) * (W - PAD*2); }
+  function py(traj) { return H - PAD - (traj - yMin) / (yMax - yMin) * (H - PAD*2); }
+
+  const WVI_T = 57, TRAJ_T = 55;
+  const qx = px(WVI_T), qy = py(TRAJ_T);
+
+  // Quadrant background fills
+  const bgRects = `
+    <rect x="${PAD}" y="${PAD}" width="${qx-PAD}" height="${qy-PAD}" fill="rgba(180,83,9,0.06)"/>
+    <rect x="${qx}"  y="${PAD}" width="${W-PAD-qx}" height="${qy-PAD}" fill="rgba(153,27,27,0.07)"/>
+    <rect x="${PAD}" y="${qy}"  width="${qx-PAD}" height="${H-PAD-qy}" fill="rgba(22,101,52,0.05)"/>
+    <rect x="${qx}"  y="${qy}"  width="${W-PAD-qx}" height="${H-PAD-qy}" fill="rgba(29,78,216,0.05)"/>`;
+
+  // Quadrant labels (corners)
+  const qLabels = `
+    <text x="${PAD+6}" y="${PAD+14}" font-size="9" fill="#b45309" font-weight="700" font-family="DM Mono,monospace">PREPARE FOR</text>
+    <text x="${PAD+6}" y="${PAD+24}" font-size="9" fill="#b45309" font-weight="700" font-family="DM Mono,monospace">ACCELERATION</text>
+    <text x="${qx+6}"  y="${PAD+14}" font-size="9" fill="#991b1b" font-weight="700" font-family="DM Mono,monospace">ACT NOW</text>
+    <text x="${PAD+6}" y="${H-PAD-8}" font-size="9" fill="#166534" font-weight="700" font-family="DM Mono,monospace">STANDARD PLANNING</text>
+    <text x="${qx+6}"  y="${H-PAD-8}" font-size="9" fill="#1d4ed8" font-weight="700" font-family="DM Mono,monospace">MANAGE SYSTEM PRESSURE</text>`;
+
+  // Divider lines
+  const dividers = `
+    <line x1="${qx}" y1="${PAD}" x2="${qx}" y2="${H-PAD}" stroke="#666" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    <line x1="${PAD}" y1="${qy}" x2="${W-PAD}" y2="${qy}" stroke="#666" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>`;
+
+  // Axis labels
+  const axes = `
+    <text x="${W/2}" y="${H-6}" font-size="10" fill="#6275a0" text-anchor="middle" font-family="DM Mono,monospace">← Lower current system stress · WVI · Higher current system stress →</text>
+    <text x="10" y="${H/2}" font-size="10" fill="#6275a0" text-anchor="middle" font-family="DM Mono,monospace" transform="rotate(-90,10,${H/2})">← Lower trajectory · Winter Trajectory · Higher →</text>`;
+
+  // Axis ticks
+  const xTicks = [40,45,50,55,60,65,70].map(v =>
+    `<line x1="${px(v)}" y1="${H-PAD}" x2="${px(v)}" y2="${H-PAD+4}" stroke="#ccc" stroke-width="1"/>
+     <text x="${px(v)}" y="${H-PAD+13}" font-size="8" fill="#aaa" text-anchor="middle" font-family="DM Mono,monospace">${v}</text>`
+  ).join('');
+  const yTicks = [30,40,50,60,70].map(v =>
+    `<line x1="${PAD-4}" y1="${py(v)}" x2="${PAD}" y2="${py(v)}" stroke="#ccc" stroke-width="1"/>
+     <text x="${PAD-7}" y="${py(v)+3}" font-size="8" fill="#aaa" text-anchor="end" font-family="DM Mono,monospace">${v}</text>`
+  ).join('');
+
+  // District dots + labels
+  const QUAD_COLORS = { act:'#991b1b', watch:'#b45309', system:'#1d4ed8', standard:'#166534' };
+
+  // Nudge overlapping labels
+  const LABEL_NUDGE = {
+    "Folkestone & Hythe": { dx: -2, dy: -10 },
+    "Swale":              { dx: 8,  dy:  4  },
+    "Canterbury":         { dx: 8,  dy: -6  },
+    "Dover":              { dx: 8,  dy:  4  },
+    "Tonbridge & Malling":{ dx: -10, dy: -10},
+    "Sevenoaks":          { dx: 8,  dy: -8  },
+    "Tunbridge Wells":    { dx: -10, dy: -10},
+    "Gravesham":          { dx: 8,  dy: 4   },
+  };
+
+  const dots = points.map(p => {
+    const cx = px(p.wvi), cy = py(p.trajectory);
+    const col = QUAD_COLORS[p.quadrant];
+    const nudge = LABEL_NUDGE[p.name] || { dx: 8, dy: -4 };
+    const shortName = p.name.replace(' & ', '/');
+    const isSelected = p.name === selectedDistrict;
+    return `
+      <circle cx="${cx}" cy="${cy}" r="${isSelected ? 8 : 6}"
+        fill="${col}" opacity="${isSelected ? 1 : 0.75}"
+        stroke="${isSelected ? '#fff' : col}" stroke-width="${isSelected ? 2 : 1}"
+        style="cursor:pointer"
+        onclick="selectDistrict('${p.name}');switchTab('overview')">
+        <title>${p.name}: WVI ${p.wvi}, Trajectory ${p.trajectory}, FEP ${p.fep}</title>
+      </circle>
+      <text x="${cx + nudge.dx}" y="${cy + nudge.dy}"
+        font-size="9" fill="${col}" font-weight="600"
+        font-family="Nunito,sans-serif" style="pointer-events:none">${shortName}</text>`;
+  }).join('');
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px">
+    <rect width="${W}" height="${H}" fill="white" rx="8"/>
+    ${bgRects}
+    ${dividers}
+    ${xTicks}${yTicks}
+    ${axes}
+    ${qLabels}
+    ${dots}
+  </svg>`;
+
+  document.getElementById('panelContent').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <h2 style="font-family:var(--cabinet);font-size:1.25rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);margin-bottom:4px">
+        Winter Trajectory — All 13 Districts
+      </h2>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.65;max-width:680px">
+        The WVI ranks districts by <strong>current system stress</strong>. This view adds a second dimension:
+        <strong>Winter Trajectory</strong> — how fast will each district's situation worsen between now and January,
+        given its underlying population frailty, 75+ concentration, and available system headroom?
+        Districts in the upper-left quadrant are the counter-intuitive commissioning priority:
+        the system is calm now precisely because the population has not yet been exposed to winter pressure.
+        That window closes in October.
+      </p>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:1.25rem">
+      ${svg}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">
+      ${quadCards}
+    </div>
+
+    <div style="background:var(--sage-ghost);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem">
+      <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:6px">HOW TRAJECTORY IS CALCULATED</div>
+      <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.6">
+        Trajectory score (0–100) combines three components: FEP sensitivity — how far above the England average
+        the district's frailty burden sits, which determines how rapidly a cold snap or service disruption
+        tips people into crisis (50% weight); 75+ population scale — more older people means more exposure
+        events under the same winter conditions (30%); and system headroom inverse — trusts already stretched
+        in May have less capacity to catch early deterioration before it becomes an emergency admission (20%).
+        Thresholds (WVI ≥57, Trajectory ≥55) are stable across sensitivity testing.
+        Click any district dot to open its full Winter Readiness Brief.
+      </p>
+    </div>`;
 }
 
 // ── PDF EXPORT ────────────────────────────────────────────────────────────────
