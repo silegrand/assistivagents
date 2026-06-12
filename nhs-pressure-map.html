@@ -495,6 +495,7 @@ const SOURCES = {
   gp:       BASE + 'kent-gp-reg-data.json',
   iuc:      BASE + 'kent-111-data.json',
   ae:       BASE + 'kent-ae-monthly.json',
+  hscm:     BASE + 'kent-hscm-data.json',
 };
 
 // ── DISTRICT → TRUST MAPPING ─────────────────────────────────────────
@@ -574,7 +575,7 @@ function tierBorder(tier) {
 }
 
 // ── GLOBAL STATE ──────────────────────────────────────────────────────
-let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null, ae: null };
+let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null, ae: null, hscm: null };
 let currentTab = 'detail';
 let selectedDistrict = null;
 
@@ -1161,6 +1162,43 @@ function showDistrictDetail(name) {
     </div>
   `;
 
+  // ── DISEASE PREVALENCE (KPHO HSCM data) ──
+  const hscmD2 = DATA.hscm?.districts?.[name] || {};
+  const diseaseInds = [
+    { key: 'copd',        label: 'COPD',           eng: 1.89, icon: '🫁', note: 'Chronic obstructive pulmonary disease prevalence (KMCR Dec 2025)' },
+    { key: 'dementia',    label: 'Dementia',        eng: 0.78, icon: '🧠', note: 'Dementia prevalence (KMCR Dec 2025)' },
+    { key: 'depression',  label: 'Depression',      eng: 14.3, icon: '💙', note: 'Depression prevalence (KMCR Dec 2025)' },
+    { key: 'heart_failure', label: 'Heart failure', eng: 1.1,  icon: '❤', note: 'Heart failure prevalence (KMCR Dec 2025)' },
+    { key: 'stroke',      label: 'Stroke',          eng: 1.89, icon: '⚡', note: 'Stroke prevalence (KMCR Dec 2025)' },
+    { key: 'hypertension',label: 'Hypertension',    eng: 15.2, icon: '🩺', note: 'Hypertension prevalence (KMCR Dec 2025)' },
+  ];
+  const availDisease = diseaseInds.filter(d => hscmD2[d.key]?.value != null);
+  if (availDisease.length > 0) {
+    const dCards = availDisease.map(d => {
+      const val   = hscmD2[d.key].value;
+      const ratio = d.eng > 0 ? val / d.eng : 1;
+      const pct   = Math.round((ratio - 1) * 100);
+      const col   = ratio > 1.15 ? '#991b1b' : ratio > 1.05 ? '#b45309' : '#166534';
+      const dir   = ratio > 1.05 ? '▲' : ratio < 0.95 ? '▼' : '→';
+      return `<div class="metric-box">
+        <span class="metric-val" style="color:${col}">${val.toFixed(1)}%</span>
+        <div class="metric-label">${d.icon} ${d.label}<br>
+          <span style="font-size:0.65rem;color:${col}">${dir} ${pct > 0 ? '+' : ''}${pct}% vs England</span>
+        </div>
+      </div>`;
+    }).join('');
+    html += `
+      <div class="data-panel" style="border-left:4px solid #7c3aed">
+        <div class="panel-title" style="color:#7c3aed">🔬 Disease Prevalence — KPHO KMCR Data</div>
+        <div class="metric-grid">${dCards}</div>
+        <div class="panel-note">
+          Source: Kent and Medway Care Record (KMCR), December 2025. Linked primary care data — more comprehensive than QOF.
+          KPHO Health and Social Care Maps V1.6 · OGL v3.
+        </div>
+      </div>
+    `;
+  }
+
   // ── COMMISSIONING SIGNAL ──
   const signals = getCommissioningSignals(name, trustCode, fepScore, cTotal, shmiBand, pop75 || fepPop75);
   if (signals.length > 0) {
@@ -1177,52 +1215,66 @@ function showDistrictDetail(name) {
     `;
   }
 
-  // ── COLD HOME RISK ──
-  const fepRec  = DATA.fep?.districts?.find(d => d.name === name);
-  const sigs    = fepRec?.signals || [];
-  const depSig  = sigs[3] || 0;
-  const aloneSig= sigs[0] || 0;
-  const COASTAL = {"Thanet":1.15,"Dover":1.12,"Folkestone & Hythe":1.10,"Swale":1.05,"Medway":1.03};
-  const coastal = COASTAL[name] || 1.0;
-  const POP75C  = {"Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
-                   "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
-                   "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
-                   "Sevenoaks":12100,"Tunbridge Wells":11200};
-  const pop75c  = POP75C[name] || 13800;
-  const coldScore = Math.min(100, Math.round((depSig * 0.4 + aloneSig * 0.4) * coastal * (pop75c / 18200) * 0.35));
+  // ── COLD HOME RISK (sourced from KPHO HSCM data) ──
+  const hscmDist  = DATA.hscm?.districts?.[name] || {};
+  const fuelPov   = hscmDist.fuel_poverty?.value;        // KPHO % households in fuel poverty (2023)
+  const olderAlone= hscmDist.older_alone?.value;         // KPHO % older adults living alone (2021)
+  const unpaidHeavy = hscmDist.unpaid_heavy?.numerator;  // Census count: 50+ hrs/week unpaid care
+  const winterFuel= hscmDist.winter_fuel_pmt?.value;     // % receiving winter fuel payment
+  const COASTAL   = {"Thanet":1.15,"Dover":1.12,"Folkestone & Hythe":1.10,"Swale":1.05,"Medway":1.03};
+  const coastal   = COASTAL[name] || 1.0;
+  const POP75C    = {"Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+                     "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+                     "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+                     "Sevenoaks":12100,"Tunbridge Wells":11200};
+  const pop75c    = POP75C[name] || 13800;
+
+  // Cold Home Risk: now uses actual KPHO fuel poverty % and older-alone %
+  // (replaces proxy FEP signals; KPHO figures are published measurements not model estimates)
+  const fuelNorm  = fuelPov  != null ? Math.min(100, fuelPov  * 4.5) : 50;
+  const aloneNorm = olderAlone!= null ? Math.min(100, olderAlone * 4.5) : 50;
+  const coldScore = Math.min(100, Math.round((fuelNorm * 0.4 + aloneNorm * 0.4) * coastal * (pop75c / 18200) * 0.35));
   const coldColor = coldScore >= 18 ? '#991b1b' : coldScore >= 12 ? '#b45309' : '#1d4ed8';
   const coldLabel = coldScore >= 18 ? 'High thermal risk' : coldScore >= 12 ? 'Elevated thermal risk' : 'Moderate thermal risk';
+  const sevWVI    = Math.min(100, Math.round(((winterData?.districts?.[name]?.wvi_score) || fepScore * 0.9 || 50) * 1.20));
 
-  if (depSig > 0 || aloneSig > 0) {
-    const sevWVI = DATA.fep ? Math.min(100, Math.round((fepScore || 50) * 1.4)) : null;
+  if (fuelPov != null || olderAlone != null) {
     html += `
       <div class="data-panel" style="border-left:4px solid #0369a1">
-        <div class="panel-title" style="color:#0369a1">❄ Cold Home Risk</div>
+        <div class="panel-title" style="color:#0369a1">❄ Cold Home Risk — KPHO Data</div>
         <div class="metric-grid">
           <div class="metric-box">
             <span class="metric-val" style="color:${coldColor}">${coldScore}</span>
             <div class="metric-label">Cold Home Risk Index<br>${coldLabel}</div>
           </div>
           <div class="metric-box">
-            <span class="metric-val">${Math.round(depSig)}</span>
-            <div class="metric-label">Fuel poverty signal<br>(0–100, higher = worse)</div>
+            <span class="metric-val" style="color:${(fuelPov||0) > 12 ? '#991b1b' : 'inherit'}">${fuelPov != null ? fuelPov.toFixed(1)+'%' : '–'}</span>
+            <div class="metric-label">Fuel poverty<br>(KPHO, ${hscmDist.fuel_poverty?.period || '2023'})</div>
           </div>
           <div class="metric-box">
-            <span class="metric-val">${Math.round(aloneSig)}</span>
-            <div class="metric-label">Over-75s living alone<br>(0–100 signal)</div>
+            <span class="metric-val">${olderAlone != null ? olderAlone.toFixed(1)+'%' : '–'}</span>
+            <div class="metric-label">Older adults living alone<br>(KPHO, ${hscmDist.older_alone?.period || '2021'})</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val">${unpaidHeavy != null ? unpaidHeavy.toLocaleString() : '–'}</span>
+            <div class="metric-label">Providing 50+ hrs/wk<br>unpaid care (Census 2021)</div>
           </div>
           ${coastal > 1 ? `<div class="metric-box">
             <span class="metric-val warn">${coastal}×</span>
             <div class="metric-label">Coastal exposure<br>multiplier</div>
           </div>` : ''}
+          ${winterFuel != null ? `<div class="metric-box">
+            <span class="metric-val">${winterFuel.toFixed(1)}%</span>
+            <div class="metric-label">Winter fuel payment<br>recipients (${hscmDist.winter_fuel_pmt?.period || '2023/24'})</div>
+          </div>` : ''}
         </div>
-        ${sevWVI ? `<div class="trend-row" style="margin-top:0.5rem">
-          <span style="color:#0369a1;font-size:0.75rem">Under a severe winter (Jan mean &lt;2.5°C), estimated WVI rises to <strong>${sevWVI}</strong> — PHE Cold Weather Plan evidence: cold spell amplifies frailty decompensation ~20% above standard seasonal curve.</span>
-        </div>` : ''}
+        <div class="trend-row" style="margin-top:0.5rem">
+          <span style="color:#0369a1;font-size:0.75rem">Under a severe winter (Jan mean &lt;2.5°C), estimated WVI rises to <strong>${sevWVI}</strong>. PHE Cold Weather Plan: cold spell amplifies frailty decompensation ~20% above the standard seasonal curve.</span>
+        </div>
         <div class="panel-note">
-          Cold Home Risk = fuel poverty × isolation × coastal exposure × population scale.
-          Derived from Fingertips indicators and FEP signals — no new data agreement required.
-          PHE Cold Weather Plan 2023 · BRE cold homes research · ONS excess winter mortality.
+          Fuel poverty and older adults living alone: KPHO Health and Social Care Maps V1.6 (published figures, not model estimates).
+          Unpaid care 50+ hrs/week: ONS Census 2021. Coastal multiplier: BRE cold homes research.
+          PHE Cold Weather Plan 2023 · OGL v3.
         </div>
       </div>
     `;
@@ -1255,22 +1307,40 @@ function renderDualCrisis() {
 
   const fepDistricts = DATA.fep?.districts || [];
 
-  // Build matrix points: X = NHS trust corridor pressure, Y = social care demand proxy
-  // NHS: corridor avg from corridor data (RVV=1, RWF=21)
-  // Social care demand proxy: FEP deprivation signal × pop75 / 10000
+  // Build matrix points: X = NHS trust corridor pressure, Y = social care demand
+  // Social care pressure now uses KPHO published figures where available:
+  //   pension_credit %  (most deprived = highest social care demand)
+  //   dla_65plus %      (disability benefit = care need proxy)
+  //   unpaid_heavy %    (50+hrs/wk carers = highest carer strain)
+  // Falls back to FEP deprivation signal if HSCM not loaded.
   const points = fepDistricts.map(d => {
-    const tc       = DISTRICT_TRUST[d.name] || 'RVV';
-    const corridor = DATA.corridor?.trusts?.[tc]?.corridor_total ?? TRUST_CORRIDOR[tc] ?? 1;
-    const sigs     = d.signals || [];
-    const depSig   = sigs[3] || 40;
-    const aloneSig = sigs[0] || 40;
-    const pop75    = POP75C[d.name] || 13800;
-    // Social care pressure proxy = deprivation × isolation × population scale
-    const scProxy  = Math.min(100, Math.round((depSig * 0.55 + aloneSig * 0.45) * (pop75 / 16000)));
-    // Estimated delayed discharge days per month per district (proxy)
-    const delayDays= Math.round(corridor * 0.8 * (scProxy / 60));
-    const delayCost= delayDays * 350 * 30; // £350/day × ~30 days/month
-    return { name: d.name, fep: d.fep, tc, corridor, scProxy, delayDays, delayCost, pop75 };
+    const tc        = DISTRICT_TRUST[d.name] || 'RVV';
+    const corridor  = DATA.corridor?.trusts?.[tc]?.corridor_total ?? TRUST_CORRIDOR[tc] ?? 1;
+    const hscmD     = DATA.hscm?.districts?.[d.name] || {};
+    const pop75     = POP75C[d.name] || 13800;
+
+    // KPHO social care demand indicators (0-100 normalised)
+    const pensionPct = hscmD.pension_credit?.value;   // % on Pension Credit (2024)
+    const dlaPct     = hscmD.dla_65plus?.value;        // % DLA 65+ (2024/25)
+    const unpaidPct  = hscmD.unpaid_heavy?.value;      // % providing 50+hrs/wk care (2021)
+
+    let scProxy;
+    if (pensionPct != null || dlaPct != null) {
+      // Blend three KPHO indicators: pension credit (40%), DLA (35%), unpaid heavy (25%)
+      const pc  = pensionPct != null ? Math.min(100, pensionPct * 5)   : 50;
+      const dla = dlaPct     != null ? Math.min(100, dlaPct * 25)      : 50;
+      const uc  = unpaidPct  != null ? Math.min(100, unpaidPct * 20)   : 50;
+      scProxy = Math.min(100, Math.round(pc * 0.40 + dla * 0.35 + uc * 0.25));
+    } else {
+      // Fallback: FEP deprivation + isolation signals
+      const sigs = d.signals || [];
+      scProxy = Math.min(100, Math.round((sigs[3]||40) * 0.55 + (sigs[0]||40) * 0.45));
+    }
+
+    const delayDays = Math.round(corridor * 0.8 * (scProxy / 60));
+    const delayCost = delayDays * 350 * 30;
+    return { name: d.name, fep: d.fep, tc, corridor, scProxy, delayDays, delayCost, pop75,
+             pensionPct, dlaPct, unpaidPct };
   });
 
   // Quadrant thresholds
