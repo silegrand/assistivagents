@@ -87,7 +87,7 @@ with zipfile.ZipFile('HES_MAR_[period]_CCG_by_Provider.zip') as zf:
     content = zf.read(fname).decode('utf-8-sig')
 reader = csv.DictReader(io.StringIO(content))
 rows = list(reader)
-kent = [r for r in rows if r.get('Provider code','').strip().upper() in ('RVV','RWF')]
+kent = [r for r in rows if r.get('Provider code','').strip().upper() in ('RVV','RWF','RPA','RN7')]
 # Write kent rows to new CSV and upload to repo
 ```
 3. Upload the Kent-filtered CSV to the repo root as `HES_MAR_[M-number]_Kent_Trusts.csv`
@@ -126,7 +126,9 @@ kent = [r for r in rows if r.get('Provider code','').strip().upper() in ('RVV','
 ---
 
 ## Kent trust ODS codes
-- **RVV** — East Kent Hospitals University NHS Foundation Trust
+- **RVV** — East Kent Hospitals University NHS Foundation Trust (Thanet, Dover, Folkestone & Hythe, Canterbury, Ashford)
   - Serves: Thanet, Dover, Folkestone & Hythe, Canterbury, Swale, Medway
-- **RWF** — Maidstone and Tunbridge Wells NHS Trust
+- **RWF** — Maidstone and Tunbridge Wells NHS Trust (Maidstone, Tonbridge & Malling, Tunbridge Wells, Sevenoaks)
+- **RPA** — Medway NHS Foundation Trust (Medway, Swale)
+- **RN7** — Dartford and Gravesham NHS Trust (Dartford, Gravesham)
   - Serves: Maidstone, Tonbridge & Malling, Tunbridge Wells, Sevenoaks, Ashford, Gravesham, Dartford
