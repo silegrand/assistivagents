@@ -3,6 +3,13 @@ name: Monthly NHS 111 Data Fetch
 # Runs on the 1st of every month at 07:00 UTC
 # Scrapes NHS England IUCADC page to find latest CSV (randomised URLs)
 # Data published ~6 weeks after month end — fully automated, no manual updates
+#
+# NOTE: fetch_111_data.py commits kent-111-data.json and the history/ snapshot
+# itself via the GitHub API. There must be NO git commit/push step in this
+# workflow — the script's API commits advance the remote branch mid-run, so a
+# trailing git push from the (now stale) checkout is always rejected. That
+# rejected push was why this workflow showed as failed even though the data
+# was landing correctly.
 
 on:
   schedule:
@@ -10,7 +17,7 @@ on:
   workflow_dispatch:        # manual trigger from Actions tab
 
 permissions:
-  contents: write           # required to push commits back to the repo
+  contents: write           # required for the script's API commits
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -34,15 +41,20 @@ jobs:
       - name: Install dependencies
         run: pip install requests pandas beautifulsoup4
 
-      - name: Run NHS 111 data fetcher
+      - name: Run NHS 111 data fetcher (script commits via API)
         env:
           GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
         run: python fetch_111_data.py
 
-      - name: Commit updated files
+      - name: Confirm output
         run: |
-          git config user.name  "Assistiv Data Bot"
-          git config user.email "bot@assistiv.health"
-          git add kent-111-data.json history/
-          git diff --staged --quiet || git commit -m "NHS 111 monthly refresh — $(date -u '+%Y-%m-%d')"
-          git push
+          if [ -f kent-111-data.json ]; then
+            python -c "import json; d=json.load(open('kent-111-data.json')); print('Period:', d['meta'].get('period_nice','unknown'), '| Kent calls (est.):', d.get('kent_icb_estimated',{}).get('calls_received','n/a'))"
+          else
+            echo "WARNING: kent-111-data.json not found locally (script may have skipped — already committed this period)"
+          fi
+
+      - name: Inject static stat fallbacks into HTML (commits via API)
+        env:
+          GITHUB_TOKEN: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+        run: python inject_stats.py
