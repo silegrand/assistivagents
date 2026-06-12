@@ -1159,10 +1159,12 @@ body {
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const DATA_URL   = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-winter-data.json';
 const FEP_URL    = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-fep-data.json';
+const HSCM_URL   = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-hscm-data.json';
 const AGENT_URL  = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
 
 let winterData = null;
 let fepData    = null;
+let hscmData   = null;
 let selectedDistrict = null;
 let currentTab = 'overview';
 let seasonalChart = null;
@@ -1237,9 +1239,10 @@ async function init() {
     weeksLeft > 0 ? `Weeks to October deployment deadline` : 'October deployment window open';
 
   try {
-    const [wRes, fRes] = await Promise.all([fetch(DATA_URL), fetch(FEP_URL)]);
+    const [wRes, fRes, hRes] = await Promise.all([fetch(DATA_URL), fetch(FEP_URL), fetch(HSCM_URL)]);
     winterData = await wRes.json();
     fepData    = await fRes.json();
+    hscmData   = hRes.ok ? await hRes.json() : null;
   } catch (e) {
     console.warn('Data load error:', e);
   }
@@ -1630,6 +1633,46 @@ function renderSignals(d, fepD) {
 
   document.getElementById('panelContent').innerHTML = `
     ${districtHeaderHTML(d, name)}
+    ${(() => {
+      const hscmD = hscmData?.districts?.[name] || {};
+      const frailtyPct  = hscmD.frailty_pct?.value;
+      const frailtyQ1   = hscmD.frailty_q1?.value;
+      const frailtyQ5   = hscmD.frailty_q5?.value;
+      const fallsHip    = hscmD.falls_hip_65?.value;
+      const osteo       = hscmD.osteoporosis?.value;
+      const physAct     = hscmD.phys_act_65plus?.value;
+      const FALLS_ENG   = 532;
+      const OSTEO_ENG   = 1.2;
+      if (!frailtyPct) return '';
+      const fallsColor  = fallsHip > FALLS_ENG * 1.05 ? 'var(--wvi-critical)' : fallsHip > FALLS_ENG * 0.95 ? 'var(--wvi-high)' : 'var(--wvi-managed)';
+      const depGap      = frailtyQ1 && frailtyQ5 ? (frailtyQ1 - frailtyQ5).toFixed(1) : null;
+      return `<div style="background:var(--sage-pale);border:1px solid var(--cream-mid);border-left:3px solid var(--brand);border-radius:0 8px 8px 0;padding:0.85rem 1rem;margin-bottom:1rem">
+        <div style="font-family:var(--mono);font-size:0.65rem;letter-spacing:0.08em;color:var(--brand);margin-bottom:0.5rem">KPHO CLINICAL FRAILTY — GP RECORDED CFS (NOV 2025)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.5rem">
+          <div style="background:rgba(255,255,255,0.7);border-radius:6px;padding:0.6rem;text-align:center">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--brand)">${frailtyPct.toFixed(2)}%</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Frailty prevalence<br>(all registered patients)</div>
+          </div>
+          ${frailtyQ1 && frailtyQ5 ? `<div style="background:rgba(255,255,255,0.7);border-radius:6px;padding:0.6rem;text-align:center">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--wvi-critical)">${depGap}pp</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Deprivation gap<br>(Q1 most deprived vs Q5)</div>
+          </div>` : ''}
+          ${fallsHip ? `<div style="background:rgba(255,255,255,0.7);border-radius:6px;padding:0.6rem;text-align:center">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:${fallsColor}">${fallsHip}</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Falls-hip rate/100k<br>vs England ${FALLS_ENG}</div>
+          </div>` : ''}
+          ${osteo ? `<div style="background:rgba(255,255,255,0.7);border-radius:6px;padding:0.6rem;text-align:center">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:${osteo > OSTEO_ENG * 1.1 ? 'var(--wvi-high)' : 'inherit'}">${osteo.toFixed(2)}%</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Osteoporosis<br>vs England ${OSTEO_ENG}%</div>
+          </div>` : ''}
+          ${physAct ? `<div style="background:rgba(255,255,255,0.7);border-radius:6px;padding:0.6rem;text-align:center">
+            <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:${physAct < 60 ? 'var(--wvi-high)' : 'var(--wvi-managed)'}">${physAct.toFixed(1)}%</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">Older adults<br>physically active</div>
+          </div>` : ''}
+        </div>
+        <div style="font-size:0.67rem;color:var(--text-muted);margin-top:6px">KPHO Health and Social Care Maps V1.6 · GP-recorded Clinical Frailty Scale · OGL v3</div>
+      </div>`;
+    })()}
     <h3 style="font-size:0.78rem;font-weight:700;color:var(--text-muted);letter-spacing:0.06em;margin-bottom:0.75rem;font-family:var(--mono)">EPD PRESCRIBING SIGNALS — ${fepData?.meta?.epd_period || 'latest'}</h3>
     <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.85rem;line-height:1.6">
       Six high-frailty drug classes normalised against England average. Rising rate in September = leading indicator of January admission pressure.
@@ -2418,25 +2461,38 @@ function renderFestive() {
     </tr>`;
   }).join('');
 
-  // Per-district medication dependency estimates
+  // Per-district dependency estimates — now uses KPHO actual carer counts where available
   const districtRows = Object.entries(POP75_CENSUS).map(([name, pop75]) => {
-    const fd  = fepByName[name] || {};
-    const epd = fd.epd_district || {};
-    const hyp = epd.hypnotics?.rate_per_1000  || 0;
+    const fd    = fepByName[name] || {};
+    const epd   = fd.epd_district || {};
+    const hscmD = hscmData?.districts?.[name] || {};
+
+    // Daily medication estimate: EPD-derived (unchanged — EPD is the best source for this)
+    const hyp = epd.hypnotics?.rate_per_1000    || 0;
     const adm = epd.anti_dementia?.rate_per_1000 || 0;
-    const pk  = epd.parkinsons?.rate_per_1000 || 0;
-    // Patients needing daily or near-daily medication access over the fortnight
+    const pk  = epd.parkinsons?.rate_per_1000   || 0;
     const dailyMeds = Math.round(pop75 * (hyp + adm + pk) / 1000);
-    // Estimated home care recipients (proxy: ~8% of 75+ receive regular home care — NHS Digital)
-    const homeCare  = Math.round(pop75 * 0.08);
-    const wvi = winterData?.districts?.[name];
+
+    // Heavy unpaid carers: use KPHO Census 2021 count (actual published figure)
+    // Falls back to ~8% of 75+ proxy if HSCM not loaded
+    const heavyCarers = hscmD.unpaid_heavy?.numerator != null
+      ? hscmD.unpaid_heavy.numerator
+      : Math.round(pop75 * 0.038);  // ~3.8% Kent average (Census 2021)
+    const carerSource = hscmD.unpaid_heavy?.numerator != null ? 'KPHO Census 2021' : 'est.';
+
+    // Regular home care: ~8% of 75+ (NHS Digital Social Care Survey)
+    const homeCare = Math.round(pop75 * 0.08);
+
+    const wvi  = winterData?.districts?.[name];
     const tier = wvi?.wvi_tier || 'elevated';
     const col  = RISK_COLORS[tier === 'critical' ? 'critical' : tier === 'high' ? 'high' : 'elevated'];
+    const highRisk = dailyMeds > 1500 || heavyCarers > 3500;
     return `<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:0.45rem 0.75rem;font-size:0.78rem;font-weight:600;color:${col}">${name}</td>
       <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center">${dailyMeds.toLocaleString()}</td>
       <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center">${homeCare.toLocaleString()}</td>
-      <td style="padding:0.45rem 0.75rem;font-size:0.72rem;color:var(--text-muted)">${dailyMeds + homeCare > 2500 ? '⚠ High dependency cluster' : 'Standard planning'}</td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center;color:${heavyCarers > 4000 ? 'var(--wvi-critical)' : 'inherit'}">${heavyCarers.toLocaleString()} <span style="font-size:0.6rem;color:var(--text-muted)">(${carerSource})</span></td>
+      <td style="padding:0.45rem 0.75rem;font-size:0.72rem;color:var(--text-muted)">${highRisk ? '⚠ High dependency cluster' : 'Standard planning'}</td>
     </tr>`;
   }).join('');
 
@@ -2493,15 +2549,16 @@ function renderFestive() {
           <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em">District</th>
           <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Daily med. dependent</th>
           <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Regular home care</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Heavy unpaid carers</th>
           <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem">Assessment</th>
         </tr>
       </thead>
       <tbody>${districtRows}</tbody>
     </table>
     <p style="font-size:0.67rem;color:var(--text-muted);line-height:1.5">
-      Service availability estimates: NHS Digital GP appointment data (Dec-Jan trend) · ADASS Winter Pressures Survey ·
-      NHS England UEC SitRep historical data. Home care figure: ~8% of 75+ receive regular home care (NHS Digital Social Care Survey).
-      Daily medication dependency: estimated patients on hypnotics, anti-dementia, and Parkinson's drugs (NHSBSA EPD Mar 2026).
+      Service availability estimates: NHS Digital GP appointment data · ADASS Winter Pressures Survey · NHS England UEC SitRep.
+      Home care: ~8% of 75+ (NHS Digital Social Care Survey). Daily medication: hypnotics + anti-dementia + Parkinson's (NHSBSA EPD).
+      Heavy unpaid carers (50+hrs/wk): KPHO Health and Social Care Maps V1.6, ONS Census 2021 — actual counts, not estimates.
     </p>`;
 }
 
@@ -2545,16 +2602,20 @@ function renderThermal() {
   const SEVERE_AMP = 1.20;
 
   const districtRows = Object.entries(POP75).map(([name, pop75]) => {
-    const fd    = fepByName[name] || {};
-    const sigs  = fd.signals || [];
-    const dep   = sigs[3] || 50;
-    const alone = sigs[0] || 50;
+    const fd      = fepByName[name] || {};
+    const hscmD   = hscmData?.districts?.[name] || {};
     const coastal = COASTAL[name] || 1.0;
-    const fep   = fd.fep || 50;
+    const fep     = fd.fep || 50;
 
-    // Cold Home Risk Index: fuel poverty × isolation × coastal × population scale
-    const coldRaw  = (dep * 0.4 + alone * 0.4) * coastal;
+    // Cold Home Risk: KPHO published figures where available, FEP proxy fallback
+    const fuelPov   = hscmD.fuel_poverty?.value;    // KPHO % households (2023)
+    const olderAl   = hscmD.older_alone?.value;     // KPHO % older adults alone (2021)
+    const fuelNorm  = fuelPov  != null ? Math.min(100, fuelPov  * 4.5) : ((fd.signals||[])[3] || 50);
+    const aloneNorm = olderAl  != null ? Math.min(100, olderAl  * 4.5) : ((fd.signals||[])[0] || 50);
+    const coldRaw   = (fuelNorm * 0.4 + aloneNorm * 0.4) * coastal;
     const coldScore = Math.min(100, Math.round(coldRaw * (pop75 / 18200) * 0.35));
+    const fuelLabel = fuelPov  != null ? fuelPov.toFixed(1)+'% (KPHO)'  : fuelNorm.toFixed(0)+' (proxy)';
+    const aloneLabel= olderAl  != null ? olderAl.toFixed(1)+'% (KPHO)'  : aloneNorm.toFixed(0)+' (proxy)';
 
     // WVI under severe winter
     const wvi     = winterData?.districts?.[name]?.wvi_score || 50;
@@ -2572,8 +2633,8 @@ function renderThermal() {
     return `<tr style="border-bottom:1px solid var(--border)">
       <td style="padding:0.45rem 0.75rem;font-size:0.78rem;font-weight:600;color:var(--text)">${name}</td>
       <td style="padding:0.45rem 0.75rem;text-align:center">
-        <div style="display:inline-block;width:${coldScore}%;min-width:3px;height:8px;background:${coldScore > 18 ? 'var(--wvi-critical)' : coldScore > 12 ? 'var(--wvi-high)' : 'var(--wvi-elevated)'};border-radius:2px"></div>
-        <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text-muted);margin-left:4px">${coldScore}</span>
+        <div style="display:inline-block;width:${coldScore}%;min-width:3px;height:8px;background:${coldScore > 18 ? 'var(--wvi-critical)' : coldScore > 12 ? 'var(--wvi-high)' : 'var(--wvi-elevated)'};border-radius:2px;max-width:60px"></div>
+        <span style="font-family:var(--mono);font-size:0.68rem;color:var(--text-muted);margin-left:4px">${coldScore}<br><span style="font-size:0.6rem">${fuelLabel}</span></span>
       </td>
       <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center;color:${colSev}">${wviSev}</td>
       <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center;color:var(--wvi-high)">+${extra}</td>
@@ -2634,7 +2695,7 @@ function renderThermal() {
       <tbody>${districtRows}</tbody>
     </table>
     <p style="font-size:0.67rem;color:var(--text-muted);line-height:1.5">
-      Cold Home Risk derived from Fingertips fuel poverty indicator (93759) and FEP isolation signals.
+      Cold Home Risk derived from KPHO fuel poverty % and older adults living alone % (published figures, not proxy estimates) where available; FEP signals used as fallback.
       Severe winter WVI = standard WVI × 1.20 (PHE Cold Weather Plan; cold spell amplification evidence).
       Temperature scenarios from Met Office Kent historical record (1981–2024 January means).
       Coastal exposure multiplier applied to Thanet, Dover, Folkestone, Swale, Medway (BRE cold homes research).
