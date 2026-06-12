@@ -144,6 +144,28 @@ body {
   font-family: var(--mono); font-size: 0.55rem; color: rgba(255,255,255,0.55);
   letter-spacing: 0.04em; text-transform: uppercase;
 }
+.trust-strip {
+  display: flex; gap: 0; flex-shrink: 0;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.trust-card {
+  flex: 1 1 0; min-width: 170px; padding: 0.55rem 1rem 0.6rem;
+  border-left: 4px solid #94a3b8; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.trust-card:last-child { border-right: none; }
+.trust-card.c-high { border-left-color: #b91c1c; background: rgba(185,28,28,0.06); }
+.trust-card.c-med  { border-left-color: #c2410c; background: rgba(194,65,12,0.05); }
+.trust-card.c-low  { border-left-color: #b45309; background: rgba(180,83,9,0.04); }
+.trust-card.c-min  { border-left-color: #15803d; }
+.trust-card.c-na   { border-left-color: #94a3b8; opacity: 0.75; }
+.tc-name { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); white-space: nowrap; }
+.tc-row  { display: flex; align-items: baseline; gap: 0.45rem; }
+.tc-avg  { font-size: 1.15rem; font-weight: 800; color: var(--text); line-height: 1; }
+.tc-peak { font-size: 0.68rem; font-weight: 600; color: #b91c1c; white-space: nowrap; }
+.tc-sub  { font-size: 0.62rem; color: var(--text-dim); white-space: nowrap; }
+
 .currency-note {
   font-family: var(--mono); font-size: 0.52rem; color: rgba(255,255,255,0.4);
   letter-spacing: 0.03em;
@@ -392,7 +414,7 @@ body {
     <span class="currency-label">NHS Open Data ·</span>
     <div class="currency-stat" id="banner-corridor">
       <span class="currency-val" id="bv-corridor"><!--INJECT:corridor_total-->22<!--/INJECT--></span>
-      <span class="currency-desc">Corridor patients this week</span>
+      <span class="currency-desc" id="bv-corridor-label"><!--INJECT:corridor_label-->Corridor patients/day — May<!--/INJECT--></span>
     </div>
     <div class="currency-stat" id="banner-emerg">
       <span class="currency-val" id="bv-emerg"><!--INJECT:emerg_65plus-->111,385<!--/INJECT--></span>
@@ -413,6 +435,9 @@ body {
   </div>
   <div class="currency-note" id="data-currency-note">Data loading…</div>
 </div>
+
+<!-- HOSPITAL CORRIDOR PRESSURE STRIP -->
+<div class="trust-strip" id="trust-strip" title="Corridor care by acute trust — NHS England monthly publication"><!--INJECT:corridor_strip--><div class="trust-card c-min"><div class="tc-name">East Kent Hospitals</div><div class="tc-row"><span class="tc-avg">1</span><span class="tc-peak">peak 14</span></div><div class="tc-sub">corridor patients/day · May</div></div><div class="trust-card c-med"><div class="tc-name">Maidstone &amp; T. Wells</div><div class="tc-row"><span class="tc-avg">21</span><span class="tc-peak">peak 36</span></div><div class="tc-sub">corridor patients/day · May</div></div><div class="trust-card c-na"><div class="tc-name">Medway Maritime</div><div class="tc-row"><span class="tc-avg">–</span></div><div class="tc-sub">awaiting first publication</div></div><div class="trust-card c-na"><div class="tc-name">Darent Valley</div><div class="tc-row"><span class="tc-avg">–</span></div><div class="tc-sub">awaiting first publication</div></div><!--/INJECT--></div>
 
 <!-- MAIN -->
 <div class="main">
@@ -544,6 +569,41 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 
 let geojsonLayer = null;
 
+// ── HOSPITAL CORRIDOR STRIP ──────────────────────────────────────────
+function corridorIntensity(avg) {
+  if (avg == null) return 'c-na';
+  if (avg >= 25)   return 'c-high';
+  if (avg >= 10)   return 'c-med';
+  if (avg >= 3)    return 'c-low';
+  return 'c-min';
+}
+
+function renderTrustStrip() {
+  const el = document.getElementById('trust-strip');
+  if (!el || !DATA.corridor?.trusts) return;
+  const mon = (DATA.corridor.meta?.period_label || '').split(' ')[0].slice(0,3);
+  let html = '';
+  Object.entries(DATA.corridor.trusts).forEach(([code, t]) => {
+    const avg  = t.corridor_total;
+    const peak = Math.max(t.corridor_ed_max ?? 0, t.corridor_ward_max ?? 0) || null;
+    const cls  = corridorIntensity(avg);
+    const name = TRUST_NAMES[code] || t.short || code;
+    if (avg == null) {
+      html += `<div class="trust-card c-na"><div class="tc-name">${name}</div>` +
+              `<div class="tc-row"><span class="tc-avg">–</span></div>` +
+              `<div class="tc-sub">awaiting first publication</div></div>`;
+    } else {
+      html += `<div class="trust-card ${cls}"><div class="tc-name">${name}</div>` +
+              `<div class="tc-row"><span class="tc-avg">${Math.round(avg)}</span>` +
+              (peak ? `<span class="tc-peak">peak ${Math.round(peak)}</span>` : '') + `</div>` +
+              `<div class="tc-sub">corridor patients/day${mon ? ' · ' + mon : ''}</div></div>`;
+    }
+  });
+  el.innerHTML = html;
+  const lbl = document.getElementById('bv-corridor-label');
+  if (lbl) lbl.textContent = `Corridor patients/day${mon ? ' — ' + mon : ''}`;
+}
+
 // ── FETCH ALL DATA ────────────────────────────────────────────────────
 async function fetchAll() {
   const results = await Promise.allSettled(
@@ -562,6 +622,7 @@ async function fetchAll() {
   console.log('Data loaded:', Object.entries(DATA).map(([k,v]) => `${k}:${v?'ok':'null'}`).join(' '));
 
   updateBanner();
+  renderTrustStrip();
   loadMap();
 }
 
@@ -752,48 +813,52 @@ function showDistrictDetail(name) {
     </div>
   `;
 
-  // ── CORRIDOR CARE ──
-  const cEd    = corridorT?.corridor_ed;
-  const cWard  = corridorT?.corridor_ward;
-  const cTotal = corridorT?.corridor_total;
-  const c12hr  = corridorT?.twelve_hour_waits;
-  const cBeds  = corridorT?.beds_occupancy_pct;
-  const cTrend = corridorT?.corridor_trend || 'unknown';
-  const weekEnd = corridorT?.week_ending || DATA.corridor?.meta?.week_ending;
+  // ── CORRIDOR CARE (monthly publication: daily averages + worst day) ──
+  const cEd     = corridorT?.corridor_ed;
+  const cWard   = corridorT?.corridor_ward;
+  const cTotal  = corridorT?.corridor_total;
+  const cPeak   = Math.max(corridorT?.corridor_ed_max ?? 0, corridorT?.corridor_ward_max ?? 0) || null;
+  const cBeds   = corridorT?.beds_occupancy_pct;
+  const cDelta  = corridorT?.corridor_delta;
+  const cPeriod = DATA.corridor?.meta?.period_label || '';
 
-  const trendArrow = cTrend === 'rising' ? '▲' : cTrend === 'falling' ? '▼' : '→';
-  const trendClass = cTrend === 'rising' ? 'trend-up' : cTrend === 'falling' ? 'trend-down' : 'trend-flat';
+  let deltaRow = '';
+  if (cDelta != null && cTotal != null) {
+    const arrow = cDelta > 0 ? '▲' : cDelta < 0 ? '▼' : '→';
+    const cls   = cDelta > 0 ? 'trend-up' : cDelta < 0 ? 'trend-down' : 'trend-flat';
+    const txt   = cDelta > 0 ? `up ${Math.abs(cDelta).toFixed(0)}/day vs previous month`
+                : cDelta < 0 ? `down ${Math.abs(cDelta).toFixed(0)}/day vs previous month`
+                : 'level with previous month';
+    deltaRow = `<div class="trend-row"><span class="trend-arrow ${cls}">${arrow}</span><span>Corridor trend: ${txt}</span></div>`;
+  }
 
   html += `
     <div class="data-panel corridor">
-      <div class="panel-title">🚨 Corridor Care</div>
+      <div class="panel-title">🚨 Corridor Care — ${cPeriod || 'latest month'}</div>
       <div class="metric-grid">
         <div class="metric-box">
-          <span class="metric-val warn">${fmt(cTotal)}</span>
-          <div class="metric-label">Total corridor patients${weekEnd ? '<br>week of '+weekEnd : ''}</div>
+          <span class="metric-val warn">${fmt(cTotal != null ? Math.round(cTotal) : null)}</span>
+          <div class="metric-label">Corridor patients<br>per day (average)</div>
         </div>
         <div class="metric-box">
-          <span class="metric-val">${fmt(c12hr)}</span>
-          <div class="metric-label">12-hour waits<br>in this trust</div>
+          <span class="metric-val warn">${fmt(cPeak != null ? Math.round(cPeak) : null)}</span>
+          <div class="metric-label">Worst day<br>this month</div>
         </div>
         <div class="metric-box">
-          <span class="metric-val">${fmt(cEd)}</span>
-          <div class="metric-label">ED corridor<br>(24h count)</div>
+          <span class="metric-val">${fmt(cEd != null ? Math.round(cEd) : null)}</span>
+          <div class="metric-label">ED corridor<br>daily average</div>
         </div>
         <div class="metric-box">
-          <span class="metric-val">${fmt(cWard)}</span>
-          <div class="metric-label">Ward corridor<br>(8am snapshot)</div>
+          <span class="metric-val">${fmt(cWard != null ? Math.round(cWard) : null)}</span>
+          <div class="metric-label">Ward corridor<br>daily average</div>
         </div>
       </div>
-      <div class="trend-row">
-        <span class="trend-arrow ${trendClass}">${trendArrow}</span>
-        <span>Corridor trend: ${cTrend === 'rising' ? 'rising week-on-week' : cTrend === 'falling' ? 'falling week-on-week' : 'stable'}</span>
-      </div>
+      ${deltaRow}
       ${bedsBar(cBeds)}
       <div class="panel-note">
-        NHS England UEC Daily SitRep · ${trustShort} (${trustCode}) ·
+        NHS England Corridor Care monthly publication · ${trustShort} (${trustCode}) ·
         Corridor care = patient in clinically inappropriate area ≥45 min ·
-        Definition introduced March 2026
+        Experimental statistics, definition introduced March 2026
       </div>
     </div>
   `;
