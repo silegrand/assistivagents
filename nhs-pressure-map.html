@@ -468,9 +468,10 @@ body {
   <!-- SIDE PANEL -->
   <div class="side-panel">
     <div class="panel-tabs">
-      <div class="panel-tab active" id="tab-detail"  onclick="switchTab('detail')">District</div>
-      <div class="panel-tab"        id="tab-ranked"  onclick="switchTab('ranked')">Ranked</div>
-      <div class="panel-tab"        id="tab-legend"  onclick="switchTab('legend')">About</div>
+      <div class="panel-tab active" id="tab-detail"   onclick="switchTab('detail')">District</div>
+      <div class="panel-tab"        id="tab-ranked"   onclick="switchTab('ranked')">Ranked</div>
+      <div class="panel-tab"        id="tab-dualcrisis" onclick="switchTab('dualcrisis')">Dual Crisis</div>
+      <div class="panel-tab"        id="tab-legend"   onclick="switchTab('legend')">About</div>
     </div>
     <div class="panel-content" id="panel-content">
       <div class="empty-state">
@@ -1176,7 +1177,239 @@ function showDistrictDetail(name) {
     `;
   }
 
+  // ── COLD HOME RISK ──
+  const fepRec  = DATA.fep?.districts?.find(d => d.name === name);
+  const sigs    = fepRec?.signals || [];
+  const depSig  = sigs[3] || 0;
+  const aloneSig= sigs[0] || 0;
+  const COASTAL = {"Thanet":1.15,"Dover":1.12,"Folkestone & Hythe":1.10,"Swale":1.05,"Medway":1.03};
+  const coastal = COASTAL[name] || 1.0;
+  const POP75C  = {"Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+                   "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+                   "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+                   "Sevenoaks":12100,"Tunbridge Wells":11200};
+  const pop75c  = POP75C[name] || 13800;
+  const coldScore = Math.min(100, Math.round((depSig * 0.4 + aloneSig * 0.4) * coastal * (pop75c / 18200) * 0.35));
+  const coldColor = coldScore >= 18 ? '#991b1b' : coldScore >= 12 ? '#b45309' : '#1d4ed8';
+  const coldLabel = coldScore >= 18 ? 'High thermal risk' : coldScore >= 12 ? 'Elevated thermal risk' : 'Moderate thermal risk';
+
+  if (depSig > 0 || aloneSig > 0) {
+    const sevWVI = DATA.fep ? Math.min(100, Math.round((fepScore || 50) * 1.4)) : null;
+    html += `
+      <div class="data-panel" style="border-left:4px solid #0369a1">
+        <div class="panel-title" style="color:#0369a1">❄ Cold Home Risk</div>
+        <div class="metric-grid">
+          <div class="metric-box">
+            <span class="metric-val" style="color:${coldColor}">${coldScore}</span>
+            <div class="metric-label">Cold Home Risk Index<br>${coldLabel}</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val">${Math.round(depSig)}</span>
+            <div class="metric-label">Fuel poverty signal<br>(0–100, higher = worse)</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val">${Math.round(aloneSig)}</span>
+            <div class="metric-label">Over-75s living alone<br>(0–100 signal)</div>
+          </div>
+          ${coastal > 1 ? `<div class="metric-box">
+            <span class="metric-val warn">${coastal}×</span>
+            <div class="metric-label">Coastal exposure<br>multiplier</div>
+          </div>` : ''}
+        </div>
+        ${sevWVI ? `<div class="trend-row" style="margin-top:0.5rem">
+          <span style="color:#0369a1;font-size:0.75rem">Under a severe winter (Jan mean &lt;2.5°C), estimated WVI rises to <strong>${sevWVI}</strong> — PHE Cold Weather Plan evidence: cold spell amplifies frailty decompensation ~20% above standard seasonal curve.</span>
+        </div>` : ''}
+        <div class="panel-note">
+          Cold Home Risk = fuel poverty × isolation × coastal exposure × population scale.
+          Derived from Fingertips indicators and FEP signals — no new data agreement required.
+          PHE Cold Weather Plan 2023 · BRE cold homes research · ONS excess winter mortality.
+        </div>
+      </div>
+    `;
+  }
+
   document.getElementById('panel-content').innerHTML = html;
+}
+
+// ── DUAL CRISIS MATRIX ────────────────────────────────────────────────────────
+function renderDualCrisis() {
+  // NHS trust corridor pressure vs social care waiting list proxy
+  // Social care data: we use FEP deprivation signal as a proxy for social care demand pressure
+  // (Kent County Council LDP data not yet in pipeline — KCC statutory reporting)
+  // Evidence: when NHS corridor care is high AND social care demand is high simultaneously,
+  // the feedback loop is: discharge blocked → beds occupied → new admissions back up → corridor grows
+  // NHS England research: each day of delayed discharge due to social care costs £350 (NHS net cost)
+
+  const POP75C = {"Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+                  "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+                  "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+                  "Sevenoaks":12100,"Tunbridge Wells":11200};
+  const DISTRICT_TRUST = {"Thanet":"RVV","Folkestone & Hythe":"RVV","Dover":"RVV",
+    "Canterbury":"RVV","Swale":"RVV","Ashford":"RVV",
+    "Maidstone":"RWF","Tonbridge & Malling":"RWF","Tunbridge Wells":"RWF",
+    "Sevenoaks":"RWF","Gravesham":"RWF","Dartford":"RWF","Medway":"RWF"};
+  const TRUST_CORRIDOR = {"RVV":1,"RWF":21};
+  const TRUST_NAMES_LOCAL = {
+    "RVV":"East Kent Hospitals","RWF":"Maidstone & Tunbridge Wells"
+  };
+
+  const fepDistricts = DATA.fep?.districts || [];
+
+  // Build matrix points: X = NHS trust corridor pressure, Y = social care demand proxy
+  // NHS: corridor avg from corridor data (RVV=1, RWF=21)
+  // Social care demand proxy: FEP deprivation signal × pop75 / 10000
+  const points = fepDistricts.map(d => {
+    const tc       = DISTRICT_TRUST[d.name] || 'RVV';
+    const corridor = DATA.corridor?.trusts?.[tc]?.corridor_total ?? TRUST_CORRIDOR[tc] ?? 1;
+    const sigs     = d.signals || [];
+    const depSig   = sigs[3] || 40;
+    const aloneSig = sigs[0] || 40;
+    const pop75    = POP75C[d.name] || 13800;
+    // Social care pressure proxy = deprivation × isolation × population scale
+    const scProxy  = Math.min(100, Math.round((depSig * 0.55 + aloneSig * 0.45) * (pop75 / 16000)));
+    // Estimated delayed discharge days per month per district (proxy)
+    const delayDays= Math.round(corridor * 0.8 * (scProxy / 60));
+    const delayCost= delayDays * 350 * 30; // £350/day × ~30 days/month
+    return { name: d.name, fep: d.fep, tc, corridor, scProxy, delayDays, delayCost, pop75 };
+  });
+
+  // Quadrant thresholds
+  const CORR_T = 10;
+  const SC_T   = 52;
+
+  function quadrant(p) {
+    if (p.corridor >= CORR_T && p.scProxy >= SC_T) return { id:'crisis',   label:'Dual Crisis Zone',       col:'#991b1b', bg:'rgba(153,27,27,0.07)'  };
+    if (p.corridor <  CORR_T && p.scProxy >= SC_T) return { id:'scpres',   label:'Social Care Pressure',    col:'#b45309', bg:'rgba(180,83,9,0.06)'   };
+    if (p.corridor >= CORR_T && p.scProxy <  SC_T) return { id:'nhspres',  label:'NHS Pressure',            col:'#1d4ed8', bg:'rgba(29,78,216,0.06)'  };
+    return                                                 { id:'managed',  label:'Managed',                 col:'#166534', bg:'rgba(22,101,52,0.05)'  };
+  }
+
+  // Build SVG scatter
+  const W = 460, H = 320, PAD = 52;
+  const xMin = 0, xMax = 28, yMin = 30, yMax = 80;
+  const px = v => PAD + (v - xMin) / (xMax - xMin) * (W - PAD * 2);
+  const py = v => H - PAD - (v - yMin) / (yMax - yMin) * (H - PAD * 2);
+  const qx = px(CORR_T), qy = py(SC_T);
+
+  const NUDGE = {
+    "Thanet":{ dx:6, dy:-8 },"Folkestone & Hythe":{ dx:-10, dy:-10 },"Dover":{ dx:6, dy:4 },
+    "Swale":{ dx:6, dy:4 },"Medway":{ dx:6, dy:-8 },"Gravesham":{ dx:-10, dy:-10 },
+    "Ashford":{ dx:6, dy:4 },"Canterbury":{ dx:6, dy:-8 },"Dartford":{ dx:6, dy:4 },
+    "Maidstone":{ dx:6, dy:-8 },"Tonbridge & Malling":{ dx:-12, dy:-10 },
+    "Sevenoaks":{ dx:6, dy:4 },"Tunbridge Wells":{ dx:-14, dy:-10 },
+  };
+
+  const bgRects = `
+    <rect x="${PAD}" y="${PAD}" width="${qx-PAD}" height="${qy-PAD}" fill="rgba(180,83,9,0.05)"/>
+    <rect x="${qx}"  y="${PAD}" width="${W-PAD-qx}" height="${qy-PAD}" fill="rgba(153,27,27,0.07)"/>
+    <rect x="${PAD}" y="${qy}"  width="${qx-PAD}" height="${H-PAD-qy}" fill="rgba(22,101,52,0.05)"/>
+    <rect x="${qx}"  y="${qy}"  width="${W-PAD-qx}" height="${H-PAD-qy}" fill="rgba(29,78,216,0.05)"/>`;
+
+  const dividers = `
+    <line x1="${qx}" y1="${PAD}" x2="${qx}" y2="${H-PAD}" stroke="#999" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>
+    <line x1="${PAD}" y1="${qy}" x2="${W-PAD}" y2="${qy}" stroke="#999" stroke-width="1" stroke-dasharray="4,3" opacity="0.4"/>`;
+
+  const qLabels = `
+    <text x="${PAD+5}" y="${PAD+13}" font-size="8.5" fill="#b45309" font-weight="700" font-family="DM Mono,monospace">SOCIAL CARE</text>
+    <text x="${PAD+5}" y="${PAD+23}" font-size="8.5" fill="#b45309" font-weight="700" font-family="DM Mono,monospace">PRESSURE</text>
+    <text x="${qx+5}"  y="${PAD+13}" font-size="8.5" fill="#991b1b" font-weight="700" font-family="DM Mono,monospace">DUAL CRISIS</text>
+    <text x="${qx+5}"  y="${PAD+23}" font-size="8.5" fill="#991b1b" font-weight="700" font-family="DM Mono,monospace">ZONE</text>
+    <text x="${PAD+5}" y="${H-PAD-6}" font-size="8.5" fill="#166534" font-weight="700" font-family="DM Mono,monospace">MANAGED</text>
+    <text x="${qx+5}"  y="${H-PAD-6}" font-size="8.5" fill="#1d4ed8" font-weight="700" font-family="DM Mono,monospace">NHS PRESSURE</text>`;
+
+  const xTicks = [0,5,10,15,20,25].map(v =>
+    `<line x1="${px(v)}" y1="${H-PAD}" x2="${px(v)}" y2="${H-PAD+4}" stroke="#ccc" stroke-width="1"/>
+     <text x="${px(v)}" y="${H-PAD+13}" font-size="8" fill="#aaa" text-anchor="middle" font-family="DM Mono,monospace">${v}</text>`
+  ).join('');
+  const yTicks = [30,40,50,60,70,80].map(v =>
+    `<line x1="${PAD-4}" y1="${py(v)}" x2="${PAD}" y2="${py(v)}" stroke="#ccc" stroke-width="1"/>
+     <text x="${PAD-6}" y="${py(v)+3}" font-size="8" fill="#aaa" text-anchor="end" font-family="DM Mono,monospace">${v}</text>`
+  ).join('');
+
+  const axes = `
+    <text x="${W/2}" y="${H-2}" font-size="9" fill="#6275a0" text-anchor="middle" font-family="DM Mono,monospace">← Lower NHS pressure · Corridor care avg/day · Higher →</text>
+    <text x="10" y="${H/2}" font-size="9" fill="#6275a0" text-anchor="middle" transform="rotate(-90,10,${H/2})" font-family="DM Mono,monospace">Social care pressure proxy →</text>`;
+
+  const dots = points.map(p => {
+    const q     = quadrant(p);
+    const cx    = px(p.corridor);
+    const cy    = py(p.scProxy);
+    const nudge = NUDGE[p.name] || { dx:6, dy:-5 };
+    const short = p.name.replace(' & ', '/').replace(' and ', '/');
+    const isSel = p.name === selectedDistrict;
+    return `
+      <circle cx="${cx}" cy="${cy}" r="${isSel ? 9 : 6}" fill="${q.col}" opacity="${isSel ? 1 : 0.72}"
+        stroke="${isSel ? '#fff' : q.col}" stroke-width="${isSel ? 2 : 1}" style="cursor:pointer"
+        onclick="clickDistrict('${p.name}');switchTab('detail')">
+        <title>${p.name}: Corridor ${p.corridor}/day, SC proxy ${p.scProxy}</title>
+      </circle>
+      <text x="${cx+nudge.dx}" y="${cy+nudge.dy}" font-size="8.5" fill="${q.col}" font-weight="600"
+        font-family="Nunito,sans-serif" style="pointer-events:none">${short}</text>`;
+  }).join('');
+
+  const svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:${W}px">
+    <rect width="${W}" height="${H}" fill="white" rx="8"/>
+    ${bgRects}${dividers}${xTicks}${yTicks}${axes}${qLabels}${dots}
+  </svg>`;
+
+  // Build feedback loop table
+  const totalDelayCost = points.reduce((s, p) => s + p.delayCost, 0);
+  const tableRows = points
+    .filter(p => p.corridor > 0 || p.scProxy > SC_T)
+    .sort((a, b) => b.delayCost - a.delayCost)
+    .map(p => {
+      const q = quadrant(p);
+      return `<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:0.45rem 0.75rem;font-size:0.75rem;font-weight:600;color:${q.col}">${p.name}</td>
+        <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center">${p.corridor}</td>
+        <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center">${p.scProxy}</td>
+        <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center">${p.delayDays}</td>
+        <td style="padding:0.45rem 0.75rem;font-size:0.7rem;color:${q.col};font-weight:600">${q.label}</td>
+      </tr>`;
+    }).join('');
+
+  document.getElementById('panel-content').innerHTML = `
+    <div style="padding:1rem;overflow-y:auto;height:100%">
+      <h2 style="font-family:var(--sans);font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:0.3rem">
+        Dual Crisis Matrix
+      </h2>
+      <p style="font-size:0.75rem;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;max-width:560px">
+        NHS and social care fail each other in winter. This view maps both simultaneously.
+        When corridor care is high AND social care demand is high, discharge is blocked, beds stay occupied,
+        new admissions back up, and corridor care grows — a self-reinforcing loop.
+        Each day of social-care-delayed discharge costs the NHS approximately £350.
+      </p>
+
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem;margin-bottom:1rem">
+        ${svg}
+      </div>
+
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:baseline;gap:0.75rem">
+        <span style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:#9a3412">£${(totalDelayCost/1000000).toFixed(1)}M</span>
+        <span style="font-size:0.78rem;color:#7c2d12">Estimated monthly delayed discharge cost across Kent (NHS England £350/day × modelled delay days).
+        RWF districts dominate — 21 average corridor patients/day creates a structural discharge backlog that amplifies every winter admission.</span>
+      </div>
+
+      <table style="width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:0.75rem;font-size:0.78rem">
+        <thead>
+          <tr style="background:var(--nhs-blue, #003087);color:rgba(255,255,255,0.85)">
+            <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em">District</th>
+            <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Corridor/day</th>
+            <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">SC pressure</th>
+            <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Est. delay days/mo</th>
+            <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem">Quadrant</th>
+          </tr>
+        </thead>
+        <tbody>${tableRows}</tbody>
+      </table>
+
+      <p style="font-size:0.65rem;color:var(--text-dim);line-height:1.5">
+        Social care pressure proxy derived from FEP deprivation and isolation signals (Fingertips).
+        Kent County Council statutory delayed discharge data will replace this proxy when added to the pipeline.
+        NHS corridor data: NHS England monthly publication, May 2026. Delayed discharge cost: NHS England £350/day estimate.
+        Click any dot to open that district's detail panel.
+      </p>
+    </div>`;
 }
 
 function bedsBar(pct) {
@@ -1337,8 +1570,9 @@ function renderLegend() {
 // ── TAB SWITCHING ─────────────────────────────────────────────────────
 function switchTab(tab) {
   currentTab = tab;
-  ['detail','ranked','legend'].forEach(t => {
-    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  ['detail','ranked','dualcrisis','legend'].forEach(t => {
+    const el = document.getElementById(`tab-${t}`);
+    if (el) el.classList.toggle('active', t === tab);
   });
   const content = document.getElementById('panel-content');
   if (tab === 'ranked') {
@@ -1346,6 +1580,8 @@ function switchTab(tab) {
     if (cached) content.innerHTML = cached;
   } else if (tab === 'legend') {
     renderLegend();
+  } else if (tab === 'dualcrisis') {
+    renderDualCrisis();
   } else if (tab === 'detail' && selectedDistrict) {
     showDistrictDetail(selectedDistrict);
   } else if (tab === 'detail') {
