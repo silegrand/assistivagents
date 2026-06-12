@@ -119,58 +119,67 @@ body {
 /* ── DATA CURRENCY BANNER ── */
 .currency-banner {
   background: #e8edf8;
-  padding: 0.5rem 1.25rem;
+  padding: 0.3rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+  gap: 0.5rem;
   border-bottom: 1px solid #c9d4ec;
+  min-height: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 .currency-left {
-  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 0.6rem; flex-wrap: nowrap; overflow: hidden;
 }
 .currency-label {
-  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: #365EBF;
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #365EBF; white-space: nowrap; flex-shrink: 0;
 }
 .currency-stat {
-  display: flex; align-items: baseline; gap: 0.45rem;
+  display: flex; align-items: baseline; gap: 0.3rem; white-space: nowrap; flex-shrink: 0;
 }
 .currency-val {
-  font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: #1e3a7a;
+  font-family: var(--mono); font-size: 0.82rem; font-weight: 700; color: #1e3a7a;
 }
 .currency-desc {
-  font-family: var(--mono); font-size: 0.66rem; color: #365EBF;
-  letter-spacing: 0.04em; text-transform: uppercase;
+  font-family: var(--mono); font-size: 0.58rem; color: #365EBF;
+  letter-spacing: 0.03em; text-transform: uppercase;
 }
+.currency-sep {
+  color: #b0bcd8; font-size: 0.65rem; flex-shrink: 0; user-select: none;
+}
+.currency-note {
+  font-family: var(--mono); font-size: 0.55rem; color: #6b7fa8;
+  letter-spacing: 0.02em; white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis; flex-shrink: 1; min-width: 0;
+}
+
+/* ── TRUST STRIP — compact single-line chips ── */
 .trust-strip {
-  display: flex; gap: 0; flex-shrink: 0;
-  background: var(--surface); border-bottom: 1px solid var(--border);
-  overflow-x: auto;
+  display: flex; align-items: center; gap: 0; flex-shrink: 0;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+  padding: 0.2rem 1.25rem; overflow-x: auto; min-height: 0;
 }
 .trust-card {
-  flex: 1 1 0; min-width: 170px; padding: 0.55rem 1rem 0.6rem;
-  border-left: 4px solid #94a3b8; border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; gap: 0.15rem;
+  display: flex; align-items: center; gap: 0.45rem;
+  padding: 0.2rem 0.9rem 0.2rem 0.6rem;
+  border-left: 3px solid #94a3b8;
+  border-right: 1px solid var(--border);
+  white-space: nowrap;
 }
 .trust-card:last-child { border-right: none; }
-.trust-card.c-high { border-left-color: #b91c1c; background: rgba(185,28,28,0.06); }
-.trust-card.c-med  { border-left-color: #c2410c; background: rgba(194,65,12,0.05); }
-.trust-card.c-low  { border-left-color: #b45309; background: rgba(180,83,9,0.04); }
+.trust-card.c-high { border-left-color: #b91c1c; background: rgba(185,28,28,0.04); }
+.trust-card.c-med  { border-left-color: #c2410c; background: rgba(194,65,12,0.03); }
+.trust-card.c-low  { border-left-color: #b45309; background: rgba(180,83,9,0.03); }
 .trust-card.c-min  { border-left-color: #15803d; }
 .trust-card.c-na   { border-left-color: #94a3b8; opacity: 0.75; }
-.tc-name { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); white-space: nowrap; }
-.tc-row  { display: flex; align-items: baseline; gap: 0.45rem; }
-.tc-avg  { font-size: 1.15rem; font-weight: 800; color: var(--text); line-height: 1; }
-.tc-peak { font-size: 0.68rem; font-weight: 600; color: #b91c1c; white-space: nowrap; }
-.tc-sub  { font-size: 0.62rem; color: var(--text-dim); white-space: nowrap; }
-
-.currency-note {
-  font-family: var(--mono); font-size: 0.6rem; color: #6b7fa8;
-  letter-spacing: 0.03em;
-}
+.tc-name { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); }
+.tc-row  { display: flex; align-items: baseline; gap: 0.3rem; }
+.tc-avg  { font-family: var(--mono); font-size: 0.88rem; font-weight: 800; color: var(--text); line-height: 1; }
+.tc-peak { font-family: var(--mono); font-size: 0.62rem; font-weight: 600; color: #b91c1c; }
+.tc-sub  { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); }
 
 /* ── MAIN LAYOUT ── */
 .main { display: flex; flex: 1; overflow: hidden; }
@@ -444,7 +453,7 @@ body {
 </div>
 
 <!-- HOSPITAL CORRIDOR PRESSURE STRIP -->
-<div class="trust-strip" id="trust-strip" title="Corridor care by acute trust — NHS England monthly publication"><!--INJECT:corridor_strip--><div class="trust-card c-min"><div class="tc-name">East Kent Hospitals</div><div class="tc-row"><span class="tc-avg">1</span><span class="tc-peak">peak 14</span></div><div class="tc-sub">corridor patients/day &middot; May</div></div><div class="trust-card c-med"><div class="tc-name">Maidstone &amp; T. Wells</div><div class="tc-row"><span class="tc-avg">21</span><span class="tc-peak">peak 36</span></div><div class="tc-sub">corridor patients/day &middot; May</div></div><!--/INJECT--></div>
+<div class="trust-strip" id="trust-strip" title="Corridor care by acute trust — NHS England monthly publication"><!--INJECT:corridor_strip--><div class="trust-card c-min"><span class="tc-name">East Kent Hospitals</span><div class="tc-row"><span class="tc-avg">1</span><span class="tc-peak">pk 14</span></div><span class="tc-sub">corridor/day · May</span></div><div class="trust-card c-med"><span class="tc-name">Maidstone &amp; T. Wells</span><div class="tc-row"><span class="tc-avg">21</span><span class="tc-peak">pk 36</span></div><span class="tc-sub">corridor/day · May</span></div><!--/INJECT--></div>
 
 <!-- MAIN -->
 <div class="main">
@@ -597,19 +606,21 @@ function renderTrustStrip() {
     const cls  = corridorIntensity(avg);
     const name = TRUST_NAMES[code] || t.short || code;
     if (avg == null) {
-      html += `<div class="trust-card c-na"><div class="tc-name">${name}</div>` +
-              `<div class="tc-row"><span class="tc-avg">–</span></div>` +
-              `<div class="tc-sub">awaiting first publication</div></div>`;
+      html += `<div class="trust-card c-na">` +
+              `<span class="tc-name">${name}</span>` +
+              `<span class="tc-avg">–</span>` +
+              `<span class="tc-sub">no data</span></div>`;
     } else {
-      html += `<div class="trust-card ${cls}"><div class="tc-name">${name}</div>` +
+      html += `<div class="trust-card ${cls}">` +
+              `<span class="tc-name">${name}</span>` +
               `<div class="tc-row"><span class="tc-avg">${Math.round(avg)}</span>` +
-              (peak ? `<span class="tc-peak">peak ${Math.round(peak)}</span>` : '') + `</div>` +
-              `<div class="tc-sub">corridor patients/day${mon ? ' · ' + mon : ''}</div></div>`;
+              (peak ? `<span class="tc-peak">pk ${Math.round(peak)}</span>` : '') + `</div>` +
+              `<span class="tc-sub">corridor/day${mon ? ' · ' + mon : ''}</span></div>`;
     }
   });
   el.innerHTML = html;
   const lbl = document.getElementById('bv-corridor-label');
-  if (lbl) lbl.textContent = `Corridor patients/day${mon ? ' — ' + mon : ''}`;
+  if (lbl) lbl.textContent = `Corridor/day${mon ? ' — ' + mon : ''}`;
 }
 
 // ── FETCH ALL DATA ────────────────────────────────────────────────────
@@ -1363,17 +1374,14 @@ function fmtK(val) {
 fetchAll();
 </script>
 
-<footer style="border-top:1px solid var(--border);background:var(--surface);padding:1.4rem 1.5rem;text-align:center;">
-  <p style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);line-height:1.8;max-width:880px;margin:0 auto;">
-    © 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.<br>
-    <a href="index.html" style="color:var(--text-muted);text-decoration:none;">assistiv.cloud</a> ·
-    <a href="datastatus.html" style="color:var(--text-muted);text-decoration:none;">Data status</a> ·
-    <a href="methodology.html" style="color:var(--text-muted);text-decoration:none;">Methodology</a> ·
-    <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">Governance</a> ·
-    <a href="privacy.html" style="color:var(--text-muted);text-decoration:none;">Privacy</a> ·
-    <a href="terms.html" style="color:var(--text-muted);text-decoration:none;">Terms</a> ·
-    <a href="accessibility.html" style="color:var(--text-muted);text-decoration:none;">Accessibility</a>
-  </p>
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:0.35rem 1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;flex-shrink:0;">
+  <span style="font-family:var(--mono);font-size:0.52rem;color:var(--text-dim);">© 2026 Assistiv Systems Ltd · Co. 17082597 · Research &amp; commissioning intelligence only · NHS open data under OGL v3</span>
+  <span style="font-family:var(--mono);font-size:0.52rem;color:var(--text-dim);display:flex;gap:0.75rem;">
+    <a href="index.html" style="color:var(--text-muted);text-decoration:none;">Home</a>
+    <a href="methodology.html" style="color:var(--text-muted);text-decoration:none;">Methodology</a>
+    <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">Governance</a>
+    <a href="privacy.html" style="color:var(--text-muted);text-decoration:none;">Privacy</a>
+  </span>
 </footer>
 </body>
 </html>
