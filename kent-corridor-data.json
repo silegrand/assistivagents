@@ -14,8 +14,11 @@
     "update_note": "Each month add the new CSV URL from the corridor care publication page to KNOWN_RELEASES in fetch_corridor_care.py",
     "trust_codes": [
       "RVV",
-      "RWF"
-    ]
+      "RWF",
+      "RPA",
+      "RN7"
+    ],
+    "catchment_note": "District catchments aligned to actual acute patient flows, June 2026. RPA/RN7 metrics populate on next corridor refresh."
   },
   "trusts": {
     "RVV": {
@@ -26,7 +29,7 @@
         "Dover",
         "Folkestone & Hythe",
         "Canterbury",
-        "Swale"
+        "Ashford"
       ],
       "corridor_ed": 1.0,
       "corridor_ward": 0.0,
@@ -48,10 +51,7 @@
         "Maidstone",
         "Tonbridge & Malling",
         "Tunbridge Wells",
-        "Sevenoaks",
-        "Ashford",
-        "Gravesham",
-        "Dartford"
+        "Sevenoaks"
       ],
       "corridor_ed": 19.0,
       "corridor_ward": 2.0,
@@ -65,6 +65,46 @@
       "corridor_delta": 19.0,
       "corridor_trend": "rising",
       "period_label": "May 2026"
+    },
+    "RPA": {
+      "name": "Medway NHS Foundation Trust",
+      "short": "Medway Maritime",
+      "districts": [
+        "Medway",
+        "Swale"
+      ],
+      "corridor_ed": null,
+      "corridor_ward": null,
+      "corridor_total": null,
+      "corridor_ed_max": null,
+      "corridor_ward_max": null,
+      "days_submitted": null,
+      "twelve_hour_waits": null,
+      "beds_occupancy_pct": null,
+      "delayed_discharges": null,
+      "corridor_delta": null,
+      "corridor_trend": null,
+      "period_label": null
+    },
+    "RN7": {
+      "name": "Dartford and Gravesham NHS Trust",
+      "short": "Darent Valley",
+      "districts": [
+        "Dartford",
+        "Gravesham"
+      ],
+      "corridor_ed": null,
+      "corridor_ward": null,
+      "corridor_total": null,
+      "corridor_ed_max": null,
+      "corridor_ward_max": null,
+      "days_submitted": null,
+      "twelve_hour_waits": null,
+      "beds_occupancy_pct": null,
+      "delayed_discharges": null,
+      "corridor_delta": null,
+      "corridor_trend": null,
+      "period_label": null
     }
   },
   "history": [
