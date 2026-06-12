@@ -34,7 +34,9 @@
       "dla_65plus": 0.59,
       "pip": 9.71,
       "access_healthcare": -0.09
-    }
+    },
+    "fallback": true,
+    "fallback_reason": "403 Client Error: Forbidden for url: https://www.kpho.org.uk/__data/assets/excel_doc/0018/207234/hscm_combined-V1.6.xlsx"
   },
   "districts": {
     "Ashford": {
