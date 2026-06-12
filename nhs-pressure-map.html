@@ -159,14 +159,6 @@ body {
   font-family: var(--mono) !important; font-size: 0.5rem !important;
   background: rgba(247,245,240,0.9) !important;
 }
-.leaflet-tooltip {
-  font-family: var(--mono) !important; font-size: 0.65rem !important;
-  background: var(--nhs-blue) !important; color: white !important;
-  border: none !important; border-radius: 4px !important;
-  padding: 0.3rem 0.65rem !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
-}
-.leaflet-tooltip::before { border-top-color: var(--nhs-blue) !important; }
 
 /* Map loading overlay */
 .map-loading {
@@ -389,7 +381,7 @@ body {
   </div>
   <div class="topbar-right">
     <span class="badge">Kent &amp; Medway · 13 Districts</span>
-    <span class="badge">2 NHS Trusts</span>
+    <span class="badge">4 NHS Trusts</span>
     <span class="badge live" id="data-freshness-badge">Loading data…</span>
   </div>
 </nav>
@@ -407,8 +399,8 @@ body {
       <span class="currency-desc">65+ emergency admissions</span>
     </div>
     <div class="currency-stat" id="banner-shmi">
-      <span class="currency-val" id="bv-shmi"><!--INJECT:shmi_ek-->1.15<!--/INJECT--></span>
-      <span class="currency-desc">SHMI — East Kent</span>
+      <span class="currency-val" id="bv-shmi"><!--INJECT:shmi_max-->1.30<!--/INJECT--></span>
+      <span class="currency-desc" id="bv-shmi-label"><!--INJECT:shmi_label-->SHMI — Medway (highest)<!--/INJECT--></span>
     </div>
     <div class="currency-stat" id="banner-pop">
       <span class="currency-val" id="bv-pop"><!--INJECT:pop_75plus-->241,986<!--/INJECT--></span>
@@ -460,24 +452,27 @@ const SOURCES = {
 // ── DISTRICT → TRUST MAPPING ─────────────────────────────────────────
 // Which NHS acute trust primarily serves each district
 const DISTRICT_TRUST = {
-  'Thanet':              'RVV',
+  // Catchments aligned to actual acute patient flows, June 2026
+  'Thanet':              'RVV',   // QEQM Margate
   'Dover':               'RVV',
   'Folkestone & Hythe':  'RVV',
-  'Canterbury':          'RVV',
-  'Swale':               'RVV',
-  'Maidstone':           'RWF',
+  'Canterbury':          'RVV',   // Kent & Canterbury
+  'Ashford':             'RVV',   // William Harvey Hospital
+  'Maidstone':           'RWF',   // Maidstone Hospital
   'Tonbridge & Malling': 'RWF',
-  'Tunbridge Wells':     'RWF',
+  'Tunbridge Wells':     'RWF',   // Tunbridge Wells Hospital, Pembury
   'Sevenoaks':           'RWF',
-  'Ashford':             'RWF',
-  'Gravesham':           'RWF',
-  'Dartford':            'RWF',
-  'Medway':              'RVV',   // Medway Maritime served by East Kent/Medway Trust
+  'Medway':              'RPA',   // Medway Maritime Hospital
+  'Swale':               'RPA',   // Sittingbourne & Sheppey flows to Medway Maritime
+  'Dartford':            'RN7',   // Darent Valley Hospital
+  'Gravesham':           'RN7',
 };
 
 const TRUST_NAMES = {
   RVV: 'East Kent Hospitals',
   RWF: 'Maidstone & Tunbridge Wells',
+  RPA: 'Medway Maritime',
+  RN7: 'Darent Valley',
 };
 
 // ── PRESSURE TIER LOGIC ───────────────────────────────────────────────
@@ -508,6 +503,7 @@ function computePressureTier(fepScore, corridorTotal, shmiBanding) {
 
   if      (score >= 80) return 'critical';
   else if (score >= 60) return 'high';
+  else if (fepScore >= 60) return 'high';   // FEP 60+ is always at least High, regardless of trust-level inputs
   else if (score >= 40) return 'moderate';
   else                  return 'low';
 }
@@ -594,10 +590,19 @@ function updateBanner() {
   }
   document.getElementById('bv-emerg').textContent = hesFound ? hesSum.toLocaleString() : '–';
 
-  // SHMI — East Kent (RVV)
-  const rvvShmi = DATA.shmi?.trusts?.RVV;
-  if (rvvShmi?.shmi_value != null) {
-    document.getElementById('bv-shmi').textContent = rvvShmi.shmi_value.toFixed(2);
+  // SHMI — highest across Kent acute trusts
+  if (DATA.shmi?.trusts) {
+    let worst = null, worstCode = null;
+    Object.entries(DATA.shmi.trusts).forEach(([code, t]) => {
+      if (t.shmi_value != null && (worst == null || t.shmi_value > worst)) {
+        worst = t.shmi_value; worstCode = code;
+      }
+    });
+    if (worst != null) {
+      document.getElementById('bv-shmi').textContent = worst.toFixed(2);
+      const nm = (TRUST_NAMES[worstCode] || worstCode).replace(' Hospitals','').replace(' Maritime','');
+      document.getElementById('bv-shmi-label').textContent = `SHMI — ${nm} (highest)`;
+    }
   }
 
   // GP 75+ total
@@ -644,7 +649,6 @@ function renderMap(geojson) {
     onEachFeature: (feature, layer) => {
       const name = getDistrictName(feature);
       const tier = getDistrictTier(name);
-      layer.bindTooltip(buildTooltip(name, tier), { sticky: true, className: '' });
 
       layer.on('mouseover', () => {
         if (selectedDistrict !== name) {
@@ -697,14 +701,6 @@ function districtStyle(feature, selected) {
   };
 }
 
-function buildTooltip(name, tier) {
-  const trustCode = DISTRICT_TRUST[name] || 'RVV';
-  const fepDistrict = DATA.fep?.districts?.find?.(d => d.name === name);
-  const fep = fepDistrict?.fep ?? '–';
-  const corridor = DATA.corridor?.trusts?.[trustCode]?.corridor_total;
-  const tierLabel = { critical:'Critical', high:'High', moderate:'Moderate', low:'Low' }[tier] || tier;
-  return `<strong>${name}</strong><br>FEP ${fep} · ${tierLabel} pressure<br>${TRUST_NAMES[trustCode]} · Corridor: ${corridor ?? '–'}`;
-}
 
 // ── DISTRICT DETAIL PANEL ─────────────────────────────────────────────
 function showDistrictDetail(name) {
@@ -1006,7 +1002,7 @@ function renderLegend() {
       </div>
       <div class="legend-item">
         <div class="legend-swatch" style="background:rgba(194,65,12,0.48);border:2px solid #c2410c"></div>
-        <div><div class="legend-text">High</div><div class="legend-sub">Significant combined risk — intervention priority</div></div>
+        <div><div class="legend-text">High</div><div class="legend-sub">Significant combined risk, or FEP score of 60+ — intervention priority</div></div>
       </div>
       <div class="legend-item">
         <div class="legend-swatch" style="background:rgba(29,78,216,0.35);border:2px solid #1d4ed8"></div>
