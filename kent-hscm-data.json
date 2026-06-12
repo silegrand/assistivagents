@@ -1,0 +1,4169 @@
+{
+  "meta": {
+    "generated": "2026-06-12T14:38:44.960915+00:00",
+    "source": "Kent Public Health Observatory \u2014 Health and Social Care Maps",
+    "source_url": "https://www.kpho.org.uk/joint-strategic-needs-assessment/health-and-social-care-maps",
+    "version": "V1.6",
+    "version_date": "March 2026",
+    "download_url": "https://www.kpho.org.uk/__data/assets/excel_doc/0018/207234/hscm_combined-V1.6.xlsx",
+    "licence": "Open Government Licence v3.0",
+    "refresh_note": "KPHO publish new HSCM versions quarterly. Update HSCM_DOWNLOAD_URL in fetch_hscm.py when a new version appears at the source_url above.",
+    "kpho_frailty_kent_min": 2.74,
+    "kpho_frailty_kent_max": 6.47,
+    "kpho_fep_weight": 0.4,
+    "fep_recalibration_note": "KPHO frailty_pct is GP-recorded Clinical Frailty Scale data. Normalised to 0-100 on Kent scale and blended into FEP at 40% weight. Key corrections: Dartford rises (FEP was underestimating clinical burden); Maidstone falls (prescribing signals overstated vs GP-recorded prevalence).",
+    "districts": 13,
+    "msoa_areas": 220,
+    "pcn_areas": 45,
+    "england_benchmarks": {
+      "falls_hip_65": 532.0,
+      "fuel_poverty": 11.4,
+      "winter_fuel_pmt": 17.6,
+      "older_alone": 17.3,
+      "unpaid_carers": 8.3,
+      "unpaid_heavy": 2.6,
+      "osteoporosis": 1.2,
+      "phys_act_65plus": 63.3,
+      "copd": 1.89,
+      "dementia": 0.78,
+      "depression": 14.3,
+      "heart_failure": 1.1,
+      "stroke": 1.89,
+      "hypertension": 15.2,
+      "pension_credit": 11.1,
+      "dla_65plus": 0.59,
+      "pip": 9.71,
+      "access_healthcare": -0.09
+    }
+  },
+  "districts": {
+    "Ashford": {
+      "frailty_pct": {
+        "value": 3.29,
+        "numerator": 880,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 4.52,
+        "numerator": 188,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 3.08,
+        "numerator": 145,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 36.2,
+        "numerator": 444,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 537.0,
+        "numerator": 440,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 9.86,
+        "numerator": 5574,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 18.8,
+        "numerator": 25065,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.71,
+        "numerator": 944,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 60.2,
+        "numerator": 19466,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.78,
+        "numerator": 2562,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.78,
+        "numerator": 1114,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 18.0,
+        "numerator": 20301,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.98,
+        "numerator": 1405,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.9,
+        "numerator": 2725,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 16.0,
+        "numerator": 23022,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.82,
+        "numerator": 488,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 9.02,
+        "numerator": 7420,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.5,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 14.7
+    },
+    "Canterbury": {
+      "frailty_pct": {
+        "value": 3.65,
+        "numerator": 1264,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 4.56,
+        "numerator": 215,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 3.05,
+        "numerator": 258,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 38.6,
+        "numerator": 636,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 551.0,
+        "numerator": 626,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 12.0,
+        "numerator": 8077,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 20.8,
+        "numerator": 32556,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.95,
+        "numerator": 1429,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 63.8,
+        "numerator": 24095,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.99,
+        "numerator": 3738,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 1.0,
+        "numerator": 1874,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 17.3,
+        "numerator": 26695,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.86,
+        "numerator": 1627,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 2.05,
+        "numerator": 3865,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 15.6,
+        "numerator": 29370,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.71,
+        "numerator": 599,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 10.1,
+        "numerator": 9864,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.02,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 24.4
+    },
+    "Dartford": {
+      "frailty_pct": {
+        "value": 5.14,
+        "numerator": 831,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 4.04,
+        "numerator": 113,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 4.11,
+        "numerator": 146,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 37.6,
+        "numerator": 333,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 520.0,
+        "numerator": 270,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 8.62,
+        "numerator": 4172,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 13.0,
+        "numerator": 15210,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.31,
+        "numerator": 565,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 57.5,
+        "numerator": 12573,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.61,
+        "numerator": 2190,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.74,
+        "numerator": 1006,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 15.5,
+        "numerator": 15876,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.81,
+        "numerator": 1094,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.54,
+        "numerator": 2090,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 15.9,
+        "numerator": 21573,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.79,
+        "numerator": 290,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 7.51,
+        "numerator": 5687,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.02,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 64.3
+    },
+    "Dover": {
+      "frailty_pct": {
+        "value": 3.87,
+        "numerator": 1070,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 4.38,
+        "numerator": 163,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 4.42,
+        "numerator": 315,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 39.0,
+        "numerator": 521,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 534.0,
+        "numerator": 470,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 12.9,
+        "numerator": 6891,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 22.8,
+        "numerator": 26575,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 0.71,
+        "numerator": 377,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 62.7,
+        "numerator": 20351,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 3.11,
+        "numerator": 3715,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.9,
+        "numerator": 1071,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 18.8,
+        "numerator": 18109,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.09,
+        "numerator": 1297,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 2.31,
+        "numerator": 2754,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 18.3,
+        "numerator": 21916,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 2.29,
+        "numerator": 654,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 13.2,
+        "numerator": 9017,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.14,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 30.3
+    },
+    "Folkestone & Hythe": {
+      "frailty_pct": {
+        "value": 4.46,
+        "numerator": 1215,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 3.06,
+        "numerator": 111,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 6.51,
+        "numerator": 400,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 38.5,
+        "numerator": 541,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 548.0,
+        "numerator": 482,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 12.8,
+        "numerator": 6513,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 23.8,
+        "numerator": 26147,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 0.94,
+        "numerator": 506,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 63.4,
+        "numerator": 19334,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 2.73,
+        "numerator": 3171,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 1.03,
+        "numerator": 1192,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 18.4,
+        "numerator": 17515,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.19,
+        "numerator": 1382,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 2.38,
+        "numerator": 2765,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 18.6,
+        "numerator": 21591,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 2.49,
+        "numerator": 698,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 13.4,
+        "numerator": 8561,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": -0.01,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 46.1
+    },
+    "Gravesham": {
+      "frailty_pct": {
+        "value": 3.23,
+        "numerator": 597,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 5.16,
+        "numerator": 147,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 3.33,
+        "numerator": 148,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 35.9,
+        "numerator": 329,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 531.0,
+        "numerator": 309,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 11.4,
+        "numerator": 5018,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 16.3,
+        "numerator": 17395,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 0.77,
+        "numerator": 330,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 58.9,
+        "numerator": 13308,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.57,
+        "numerator": 2114,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.53,
+        "numerator": 714,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "depression": {
+        "value": 11.7,
+        "numerator": 12197,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.56,
+        "numerator": 757,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.52,
+        "numerator": 2051,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 13.4,
+        "numerator": 18069,
+        "period": "2020/21",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.82,
+        "numerator": 335,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 9.77,
+        "numerator": 6433,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": -0.11,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 13.1
+    },
+    "Maidstone": {
+      "frailty_pct": {
+        "value": 2.83,
+        "numerator": 951,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 2.28,
+        "numerator": 107,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 2.84,
+        "numerator": 204,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 38.9,
+        "numerator": 649,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 594.0,
+        "numerator": 654,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 9.26,
+        "numerator": 6951,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 18.1,
+        "numerator": 32023,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.1,
+        "numerator": 806,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 61.8,
+        "numerator": 25098,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.73,
+        "numerator": 3334,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.85,
+        "numerator": 1628,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 15.9,
+        "numerator": 23935,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.91,
+        "numerator": 1758,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.83,
+        "numerator": 3525,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 16.0,
+        "numerator": 30708,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.33,
+        "numerator": 458,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 8.09,
+        "numerator": 8972,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.14,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 2.4
+    },
+    "Medway": {
+      "kpho_frailty_normalised": null
+    },
+    "Sevenoaks": {
+      "frailty_pct": {
+        "value": 4.28,
+        "numerator": 1000,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 6.29,
+        "numerator": 268,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 4.32,
+        "numerator": 222,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 37.4,
+        "numerator": 461,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 515.0,
+        "numerator": 470,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 9.63,
+        "numerator": 4984,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 20.6,
+        "numerator": 24843,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.07,
+        "numerator": 473,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 66.2,
+        "numerator": 19473,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.64,
+        "numerator": 1763,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.97,
+        "numerator": 1048,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 15.5,
+        "numerator": 13038,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.11,
+        "numerator": 1191,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 2.07,
+        "numerator": 2232,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 16.6,
+        "numerator": 17885,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.06,
+        "numerator": 280,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 6.96,
+        "numerator": 4918,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.35,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 41.3
+    },
+    "Swale": {
+      "frailty_pct": {
+        "value": 2.74,
+        "numerator": 813,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 2.54,
+        "numerator": 121,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 3.81,
+        "numerator": 267,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 40.1,
+        "numerator": 566,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 542.0,
+        "numerator": 472,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 11.3,
+        "numerator": 7233,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 18.2,
+        "numerator": 27752,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.43,
+        "numerator": 830,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 57.0,
+        "numerator": 20880,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 2.34,
+        "numerator": 3485,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.7,
+        "numerator": 1038,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 19.0,
+        "numerator": 22172,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.13,
+        "numerator": 1674,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.77,
+        "numerator": 2626,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 17.0,
+        "numerator": 25329,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 2.63,
+        "numerator": 777,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 12.4,
+        "numerator": 11720,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.25,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 0
+    },
+    "Thanet": {
+      "frailty_pct": {
+        "value": 6.47,
+        "numerator": 2128,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 7.12,
+        "numerator": 326,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 5.95,
+        "numerator": 461,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 38.6,
+        "numerator": 711,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 564.0,
+        "numerator": 581,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 14.0,
+        "numerator": 9196,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 22.4,
+        "numerator": 31522,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.53,
+        "numerator": 1018,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 59.1,
+        "numerator": 21569,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 3.19,
+        "numerator": 4937,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.8,
+        "numerator": 1244,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 20.1,
+        "numerator": 25069,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.13,
+        "numerator": 1752,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 2.36,
+        "numerator": 3660,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 18.8,
+        "numerator": 29078,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 2.66,
+        "numerator": 897,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 15.3,
+        "numerator": 12541,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": -0.31,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 100
+    },
+    "Tonbridge & Malling": {
+      "frailty_pct": {
+        "value": 2.85,
+        "numerator": 698,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 2.91,
+        "numerator": 135,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 2.65,
+        "numerator": 106,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 37.2,
+        "numerator": 444,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 576.0,
+        "numerator": 477,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 8.63,
+        "numerator": 4886,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 18.3,
+        "numerator": 24277,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.39,
+        "numerator": 805,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 62.0,
+        "numerator": 19152,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.64,
+        "numerator": 2356,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.67,
+        "numerator": 962,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 16.8,
+        "numerator": 18927,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 1.01,
+        "numerator": 1449,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.84,
+        "numerator": 2653,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 15.5,
+        "numerator": 22238,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 1.2,
+        "numerator": 311,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 7.5,
+        "numerator": 6074,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.29,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 2.9
+    },
+    "Tunbridge Wells": {
+      "frailty_pct": {
+        "value": 4.51,
+        "numerator": 979,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q1": {
+        "value": 3.29,
+        "numerator": 124,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "frailty_q5": {
+        "value": 4.93,
+        "numerator": 217,
+        "period": "November 2025",
+        "tier": 1
+      },
+      "winter_mortality": {
+        "value": 38.4,
+        "numerator": 411,
+        "period": "2023/24",
+        "tier": 1
+      },
+      "falls_hip_65": {
+        "value": 517.0,
+        "numerator": 413,
+        "period": "2022/23-2024/25",
+        "tier": 1
+      },
+      "fuel_poverty": {
+        "value": 10.8,
+        "numerator": 5480,
+        "period": "2023",
+        "tier": 2
+      },
+      "winter_fuel_pmt": {
+        "value": 18.6,
+        "numerator": 21508,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "osteoporosis": {
+        "value": 1.57,
+        "numerator": 837,
+        "period": "2024/25",
+        "tier": 2
+      },
+      "phys_act_65plus": {
+        "value": 66.4,
+        "numerator": 17999,
+        "period": "2023/24",
+        "tier": 2
+      },
+      "copd": {
+        "value": 1.57,
+        "numerator": 2075,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dementia": {
+        "value": 0.89,
+        "numerator": 1172,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "depression": {
+        "value": 16.2,
+        "numerator": 16860,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "heart_failure": {
+        "value": 0.96,
+        "numerator": 1269,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "stroke": {
+        "value": 1.98,
+        "numerator": 2612,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "hypertension": {
+        "value": 14.8,
+        "numerator": 19534,
+        "period": "2024/25",
+        "tier": 3
+      },
+      "dla_65plus": {
+        "value": 0.69,
+        "numerator": 160,
+        "period": "2024/25 Q3",
+        "tier": 4
+      },
+      "pip": {
+        "value": 6.54,
+        "numerator": 4577,
+        "period": "February 2025",
+        "tier": 4
+      },
+      "access_healthcare": {
+        "value": 0.13,
+        "numerator": null,
+        "period": "2024",
+        "tier": 4
+      },
+      "kpho_frailty_normalised": 47.5
+    }
+  },
+  "msoa": {
+    "Allington": {
+      "area_code": "E02005070",
+      "frailty_pct": 3.65,
+      "frailty_n": 88,
+      "frailty_denom": 2412,
+      "fuel_poverty": 6.41,
+      "winter_mortality": 49.0,
+      "falls_hip_65": 524.0,
+      "pension_credit": 3.92,
+      "winter_fuel": 25.8,
+      "phys_act_65": 62.8
+    },
+    "Ash & Wingham": {
+      "area_code": "E02005041",
+      "frailty_pct": 2.03,
+      "frailty_n": 40,
+      "frailty_denom": 1968,
+      "fuel_poverty": 15.6,
+      "winter_mortality": 42.6,
+      "falls_hip_65": 479.8,
+      "pension_credit": 8.03,
+      "winter_fuel": 26.0,
+      "phys_act_65": 65.3
+    },
+    "Ashford Central": {
+      "area_code": "E02005000",
+      "frailty_pct": 2.88,
+      "frailty_n": 44,
+      "frailty_denom": 1530,
+      "fuel_poverty": 12.0,
+      "winter_mortality": 30.6,
+      "falls_hip_65": 508.0,
+      "pension_credit": 20.2,
+      "winter_fuel": 11.3,
+      "phys_act_65": 56.6
+    },
+    "Aylesford, Wouldham & Blue Bell Hill": {
+      "area_code": "E02005149",
+      "frailty_pct": 4.69,
+      "frailty_n": 94,
+      "frailty_denom": 2004,
+      "fuel_poverty": 6.36,
+      "winter_mortality": 38.6,
+      "falls_hip_65": 746.0,
+      "pension_credit": 5.66,
+      "winter_fuel": 16.4,
+      "phys_act_65": 62.2
+    },
+    "Aylesham & Elvington": {
+      "area_code": "E02005046",
+      "frailty_pct": 1.3,
+      "frailty_n": 18,
+      "frailty_denom": 1380,
+      "fuel_poverty": 13.0,
+      "winter_mortality": 47.9,
+      "falls_hip_65": 555.0,
+      "pension_credit": 11.7,
+      "winter_fuel": 14.1,
+      "phys_act_65": 61.0
+    },
+    "Barming": {
+      "area_code": "E02005075",
+      "frailty_pct": 1.89,
+      "frailty_n": 26,
+      "frailty_denom": 1376,
+      "fuel_poverty": 8.31,
+      "winter_mortality": 46.6,
+      "falls_hip_65": 654.0,
+      "pension_credit": 11.1,
+      "winter_fuel": 11.7,
+      "phys_act_65": 60.2
+    },
+    "Bean, Darenth & Sutton at Hone": {
+      "area_code": "E02005039",
+      "frailty_pct": 4.75,
+      "frailty_n": 60,
+      "frailty_denom": 1263,
+      "fuel_poverty": 10.2,
+      "winter_mortality": 36.4,
+      "falls_hip_65": 536.0,
+      "pension_credit": 9.98,
+      "winter_fuel": 17.6,
+      "phys_act_65": 58.5
+    },
+    "Bearsted & Downswood": {
+      "area_code": "E02005074",
+      "frailty_pct": 3.2,
+      "frailty_n": 67,
+      "frailty_denom": 2095,
+      "fuel_poverty": 7.35,
+      "winter_mortality": 43.0,
+      "falls_hip_65": 541.0,
+      "pension_credit": 4.85,
+      "winter_fuel": 25.7,
+      "phys_act_65": 63.7
+    },
+    "Beaver & Singleton": {
+      "area_code": "E02005002",
+      "frailty_pct": 3.8,
+      "frailty_n": 59,
+      "frailty_denom": 1554,
+      "fuel_poverty": 8.68,
+      "winter_mortality": 34.7,
+      "falls_hip_65": 605.0,
+      "pension_credit": 18.5,
+      "winter_fuel": 13.6,
+      "phys_act_65": 56.4
+    },
+    "Beltinge & Bishopstone": {
+      "area_code": "E02005011",
+      "frailty_pct": 3.14,
+      "frailty_n": 86,
+      "frailty_denom": 2738,
+      "fuel_poverty": 8.05,
+      "winter_mortality": 40.4,
+      "falls_hip_65": 675.0,
+      "pension_credit": 6.32,
+      "winter_fuel": 34.8,
+      "phys_act_65": 63.8
+    },
+    "Biddenden, Smarden & High Halden": {
+      "area_code": "E02005006",
+      "frailty_pct": 4.12,
+      "frailty_n": 77,
+      "frailty_denom": 1870,
+      "fuel_poverty": 13.3,
+      "winter_mortality": 41.3,
+      "falls_hip_65": 484.7,
+      "pension_credit": 6.51,
+      "winter_fuel": 26.9,
+      "phys_act_65": 62.4
+    },
+    "Birchington": {
+      "area_code": "E02005139",
+      "frailty_pct": 7.94,
+      "frailty_n": 270,
+      "frailty_denom": 3401,
+      "fuel_poverty": 10.7,
+      "winter_mortality": 44.8,
+      "falls_hip_65": 447.1,
+      "pension_credit": 7.12,
+      "winter_fuel": 38.8,
+      "phys_act_65": 60.5
+    },
+    "Blean Forest, Chartham Hatch & University": {
+      "area_code": "E02005021",
+      "frailty_pct": 4.5,
+      "frailty_n": 74,
+      "frailty_denom": 1646,
+      "fuel_poverty": 11.7,
+      "winter_mortality": 39.1,
+      "falls_hip_65": 605.0,
+      "pension_credit": 5.75,
+      "winter_fuel": 15.3,
+      "phys_act_65": 65.5
+    },
+    "Borden & The Meads": {
+      "area_code": "E02005123",
+      "frailty_pct": 5.2,
+      "frailty_n": 116,
+      "frailty_denom": 2229,
+      "fuel_poverty": 8.53,
+      "winter_mortality": 40.0,
+      "falls_hip_65": 356.1,
+      "pension_credit": 8.72,
+      "winter_fuel": 15.2,
+      "phys_act_65": 57.6
+    },
+    "Borough Green, Wrotham & Shipbourne": {
+      "area_code": "E02005154",
+      "frailty_pct": 1.26,
+      "frailty_n": 32,
+      "frailty_denom": 2541,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 38.1,
+      "falls_hip_65": 575.0,
+      "pension_credit": 5.14,
+      "winter_fuel": 20.7,
+      "phys_act_65": 64.2
+    },
+    "Boughton & Selling": {
+      "area_code": "E02005131",
+      "frailty_pct": 1.54,
+      "frailty_n": 22,
+      "frailty_denom": 1424,
+      "fuel_poverty": 13.4,
+      "winter_mortality": 26.1,
+      "falls_hip_65": 613.0,
+      "pension_credit": 8.19,
+      "winter_fuel": 23.8,
+      "phys_act_65": 60.3
+    },
+    "Boxley & Detling": {
+      "area_code": "E02005068",
+      "frailty_pct": 1.49,
+      "frailty_n": 20,
+      "frailty_denom": 1345,
+      "fuel_poverty": 6.72,
+      "winter_mortality": 28.6,
+      "falls_hip_65": 394.7,
+      "pension_credit": 5.89,
+      "winter_fuel": 17.0,
+      "phys_act_65": 64.8
+    },
+    "Brabourne Lees & North Romney": {
+      "area_code": "E02005005",
+      "frailty_pct": 2.45,
+      "frailty_n": 53,
+      "frailty_denom": 2159,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 32.9,
+      "falls_hip_65": 350.6,
+      "pension_credit": 5.17,
+      "winter_fuel": 19.2,
+      "phys_act_65": 62.6
+    },
+    "Brent & Fleet Estate": {
+      "area_code": "E02005035",
+      "frailty_pct": 9.48,
+      "frailty_n": 143,
+      "frailty_denom": 1509,
+      "fuel_poverty": 8.17,
+      "winter_mortality": 39.7,
+      "falls_hip_65": 677.0,
+      "pension_credit": 7.67,
+      "winter_fuel": 15.6,
+      "phys_act_65": 57.9
+    },
+    "Bridge, Bishopsbourne & Barham": {
+      "area_code": "E02005027",
+      "frailty_pct": 7.62,
+      "frailty_n": 117,
+      "frailty_denom": 1536,
+      "fuel_poverty": 13.4,
+      "winter_mortality": 33.8,
+      "falls_hip_65": 557.0,
+      "pension_credit": 5.8,
+      "winter_fuel": 26.1,
+      "phys_act_65": 66.2
+    },
+    "Broadstairs North": {
+      "area_code": "E02005140",
+      "frailty_pct": 6.58,
+      "frailty_n": 155,
+      "frailty_denom": 2355,
+      "fuel_poverty": 11.0,
+      "winter_mortality": 30.1,
+      "falls_hip_65": 663.0,
+      "pension_credit": 7.84,
+      "winter_fuel": 30.4,
+      "phys_act_65": 62.2
+    },
+    "Broadstairs South": {
+      "area_code": "E02005141",
+      "frailty_pct": 5.02,
+      "frailty_n": 96,
+      "frailty_denom": 1913,
+      "fuel_poverty": 11.8,
+      "winter_mortality": 33.7,
+      "falls_hip_65": 522.0,
+      "pension_credit": 7.58,
+      "winter_fuel": 27.4,
+      "phys_act_65": 61.8
+    },
+    "Broomhill": {
+      "area_code": "E02003318",
+      "frailty_pct": 2.54,
+      "frailty_n": 31,
+      "frailty_denom": 1222,
+      "falls_hip_65": 239.1,
+      "pension_credit": 3.77,
+      "winter_fuel": 21.2,
+      "phys_act_65": 58.0
+    },
+    "Buckland & St Radigunds": {
+      "area_code": "E02005051",
+      "frailty_pct": 4.41,
+      "frailty_n": 81,
+      "frailty_denom": 1836,
+      "fuel_poverty": 14.9,
+      "winter_mortality": 37.7,
+      "falls_hip_65": 1027.0,
+      "pension_credit": 16.5,
+      "winter_fuel": 12.5,
+      "phys_act_65": 59.0
+    },
+    "Bybrook, Orchard Park & Godinton": {
+      "area_code": "E02004999",
+      "frailty_pct": 5.18,
+      "frailty_n": 135,
+      "frailty_denom": 2607,
+      "fuel_poverty": 7.34,
+      "winter_mortality": 37.3,
+      "falls_hip_65": 714.0,
+      "pension_credit": 15.1,
+      "winter_fuel": 15.2,
+      "phys_act_65": 58.5
+    },
+    "Canterbury Barracks": {
+      "area_code": "E02005023",
+      "frailty_pct": 5.38,
+      "frailty_n": 56,
+      "frailty_denom": 1041,
+      "fuel_poverty": 15.4,
+      "winter_mortality": 32.8,
+      "falls_hip_65": 954.0,
+      "pension_credit": 24.2,
+      "winter_fuel": 8.93,
+      "phys_act_65": 57.6
+    },
+    "Canterbury Central & Westgate": {
+      "area_code": "E02006856",
+      "frailty_pct": 3.91,
+      "frailty_n": 63,
+      "frailty_denom": 1610,
+      "fuel_poverty": 14.7,
+      "winter_mortality": 36.3,
+      "falls_hip_65": 672.0,
+      "pension_credit": 12.6,
+      "winter_fuel": 13.8,
+      "phys_act_65": 63.6
+    },
+    "Canterbury St Stephen's": {
+      "area_code": "E02005022",
+      "frailty_pct": 2.48,
+      "frailty_n": 24,
+      "frailty_denom": 969,
+      "fuel_poverty": 21.5,
+      "winter_mortality": 46.2,
+      "falls_hip_65": null,
+      "pension_credit": 13.6,
+      "winter_fuel": 11.9,
+      "phys_act_65": 63.2
+    },
+    "Canterbury Wincheap": {
+      "area_code": "E02006855",
+      "frailty_pct": 4.89,
+      "frailty_n": 35,
+      "frailty_denom": 716,
+      "fuel_poverty": 16.9,
+      "winter_mortality": 30.6,
+      "falls_hip_65": 688.0,
+      "pension_credit": 18.7,
+      "winter_fuel": 9.64,
+      "phys_act_65": 61.6
+    },
+    "Capstone": {
+      "area_code": "E02003344",
+      "frailty_pct": 3.2,
+      "frailty_n": 38,
+      "frailty_denom": 1188,
+      "falls_hip_65": 783.0,
+      "pension_credit": 15.2,
+      "winter_fuel": 16.8,
+      "phys_act_65": 55.2
+    },
+    "Central Dartford & West Hill": {
+      "area_code": "E02005030",
+      "frailty_pct": 4.68,
+      "frailty_n": 68,
+      "frailty_denom": 1452,
+      "fuel_poverty": 9.39,
+      "winter_mortality": 36.4,
+      "falls_hip_65": 459.4,
+      "pension_credit": 9.28,
+      "winter_fuel": 10.0,
+      "phys_act_65": 57.2
+    },
+    "Charing, Pluckley & Challock": {
+      "area_code": "E02004997",
+      "frailty_pct": 4.98,
+      "frailty_n": 113,
+      "frailty_denom": 2271,
+      "fuel_poverty": 13.4,
+      "winter_mortality": 44.0,
+      "falls_hip_65": 415.3,
+      "pension_credit": 7.17,
+      "winter_fuel": 26.0,
+      "phys_act_65": 62.4
+    },
+    "Chatham Central and Rochester Riverside": {
+      "area_code": "E02003328",
+      "frailty_pct": 3.15,
+      "frailty_n": 34,
+      "frailty_denom": 1080,
+      "falls_hip_65": 906.0,
+      "pension_credit": 22.4,
+      "winter_fuel": 8.38,
+      "phys_act_65": 52.2
+    },
+    "Chatham Maritime": {
+      "area_code": "E02003320",
+      "frailty_pct": 2.78,
+      "frailty_n": 33,
+      "frailty_denom": 1185,
+      "falls_hip_65": 644.0,
+      "pension_credit": 14.5,
+      "winter_fuel": 10.7,
+      "phys_act_65": 57.2
+    },
+    "Chatham South East": {
+      "area_code": "E02003335",
+      "frailty_pct": 2.05,
+      "frailty_n": 13,
+      "frailty_denom": 634,
+      "falls_hip_65": 2262.0,
+      "pension_credit": 23.8,
+      "winter_fuel": 7.38,
+      "phys_act_65": 52.5
+    },
+    "Chatham South West": {
+      "area_code": "E02003334",
+      "frailty_pct": 3.19,
+      "frailty_n": 25,
+      "frailty_denom": 783,
+      "falls_hip_65": null,
+      "pension_credit": 11.6,
+      "winter_fuel": 11.3,
+      "phys_act_65": 54.1
+    },
+    "Cheriton & Horn Street": {
+      "area_code": "E02005106",
+      "frailty_pct": 2.71,
+      "frailty_n": 48,
+      "frailty_denom": 1770,
+      "fuel_poverty": 11.8,
+      "winter_mortality": 41.0,
+      "falls_hip_65": 789.0,
+      "pension_credit": 17.1,
+      "winter_fuel": 15.8,
+      "phys_act_65": 61.1
+    },
+    "Chestfield & South Tankerton": {
+      "area_code": "E02005014",
+      "frailty_pct": 1.57,
+      "frailty_n": 46,
+      "frailty_denom": 2936,
+      "fuel_poverty": 7.93,
+      "winter_mortality": 38.3,
+      "falls_hip_65": 393.7,
+      "pension_credit": 3.93,
+      "winter_fuel": 34.6,
+      "phys_act_65": 65.5
+    },
+    "Cliffe": {
+      "area_code": "E02003315",
+      "frailty_pct": 1.98,
+      "frailty_n": 24,
+      "frailty_denom": 1213,
+      "falls_hip_65": 464.6,
+      "pension_credit": 5.61,
+      "winter_fuel": 21.1,
+      "phys_act_65": 58.3
+    },
+    "Cliftonville East & Kingsgate": {
+      "area_code": "E02005133",
+      "frailty_pct": 7.35,
+      "frailty_n": 212,
+      "frailty_denom": 2886,
+      "fuel_poverty": 8.26,
+      "winter_mortality": 36.3,
+      "falls_hip_65": 461.9,
+      "pension_credit": 8.72,
+      "winter_fuel": 32.0,
+      "phys_act_65": 61.3
+    },
+    "Cliftonville West": {
+      "area_code": "E02005132",
+      "frailty_pct": 13.3,
+      "frailty_n": 213,
+      "frailty_denom": 1602,
+      "fuel_poverty": 22.9,
+      "winter_mortality": 36.4,
+      "falls_hip_65": 981.0,
+      "pension_credit": 32.0,
+      "winter_fuel": 13.6,
+      "phys_act_65": 54.8
+    },
+    "Cranbrook, Sissinghurst & Frittenden": {
+      "area_code": "E02005174",
+      "frailty_pct": 3.49,
+      "frailty_n": 66,
+      "frailty_denom": 1892,
+      "fuel_poverty": 14.3,
+      "winter_mortality": 33.3,
+      "falls_hip_65": 551.0,
+      "pension_credit": 7.62,
+      "winter_fuel": 23.2,
+      "phys_act_65": 66.9
+    },
+    "Cuxton & Halling": {
+      "area_code": "E02003341",
+      "frailty_pct": 2.05,
+      "frailty_n": 26,
+      "frailty_denom": 1271,
+      "falls_hip_65": 340.4,
+      "pension_credit": 6.28,
+      "winter_fuel": 18.9,
+      "phys_act_65": 58.8
+    },
+    "Dane Valley & Northdown Hill": {
+      "area_code": "E02005137",
+      "frailty_pct": 6.45,
+      "frailty_n": 88,
+      "frailty_denom": 1365,
+      "fuel_poverty": 13.8,
+      "winter_mortality": 32.2,
+      "falls_hip_65": 600.0,
+      "pension_credit": 22.5,
+      "winter_fuel": 17.3,
+      "phys_act_65": 56.8
+    },
+    "Darenth Valley": {
+      "area_code": "E02005091",
+      "frailty_pct": 6.93,
+      "frailty_n": 56,
+      "frailty_denom": 808,
+      "fuel_poverty": 9.32,
+      "winter_mortality": 27.7,
+      "falls_hip_65": 603.0,
+      "pension_credit": 7.26,
+      "winter_fuel": 23.4,
+      "phys_act_65": 66.7
+    },
+    "Deal East": {
+      "area_code": "E02005044",
+      "frailty_pct": 3.91,
+      "frailty_n": 74,
+      "frailty_denom": 1895,
+      "fuel_poverty": 12.7,
+      "winter_mortality": 31.0,
+      "falls_hip_65": 281.0,
+      "pension_credit": 8.83,
+      "winter_fuel": 30.4,
+      "phys_act_65": 64.4
+    },
+    "Deal North & West": {
+      "area_code": "E02005043",
+      "frailty_pct": 6.83,
+      "frailty_n": 146,
+      "frailty_denom": 2139,
+      "fuel_poverty": 9.33,
+      "winter_mortality": 42.2,
+      "falls_hip_65": 654.0,
+      "pension_credit": 10.5,
+      "winter_fuel": 28.2,
+      "phys_act_65": 62.9
+    },
+    "Ditton": {
+      "area_code": "E02005153",
+      "frailty_pct": 2.82,
+      "frailty_n": 39,
+      "frailty_denom": 1381,
+      "fuel_poverty": 8.35,
+      "winter_mortality": 33.0,
+      "falls_hip_65": 598.0,
+      "pension_credit": 9.43,
+      "winter_fuel": 20.3,
+      "phys_act_65": 60.9
+    },
+    "Dover East": {
+      "area_code": "E02005052",
+      "frailty_pct": 3.29,
+      "frailty_n": 52,
+      "frailty_denom": 1579,
+      "fuel_poverty": 16.5,
+      "winter_mortality": 48.8,
+      "falls_hip_65": 576.0,
+      "pension_credit": 14.2,
+      "winter_fuel": 17.5,
+      "phys_act_65": 59.7
+    },
+    "Dover West": {
+      "area_code": "E02005053",
+      "frailty_pct": 4.3,
+      "frailty_n": 55,
+      "frailty_denom": 1280,
+      "fuel_poverty": 19.0,
+      "winter_mortality": 43.2,
+      "falls_hip_65": 602.0,
+      "pension_credit": 16.1,
+      "winter_fuel": 13.0,
+      "phys_act_65": 59.4
+    },
+    "Dumpton": {
+      "area_code": "E02005143",
+      "frailty_pct": 4.43,
+      "frailty_n": 73,
+      "frailty_denom": 1647,
+      "fuel_poverty": 14.3,
+      "winter_mortality": 24.4,
+      "falls_hip_65": 431.1,
+      "pension_credit": 10.4,
+      "winter_fuel": 19.9,
+      "phys_act_65": 60.1
+    },
+    "Dymchurch, St Mary's Bay & Brookland": {
+      "area_code": "E02005112",
+      "frailty_pct": 1.91,
+      "frailty_n": 44,
+      "frailty_denom": 2300,
+      "fuel_poverty": 13.1,
+      "winter_mortality": 40.5,
+      "falls_hip_65": 479.9,
+      "pension_credit": 11.6,
+      "winter_fuel": 31.4,
+      "phys_act_65": 62.5
+    },
+    "East Malling, West Malling & Trottiscliffe": {
+      "area_code": "E02006833",
+      "frailty_pct": 2.45,
+      "frailty_n": 68,
+      "frailty_denom": 2778,
+      "fuel_poverty": 9.79,
+      "winter_mortality": 43.3,
+      "falls_hip_65": 585.0,
+      "pension_credit": 6.83,
+      "winter_fuel": 20.9,
+      "phys_act_65": 63.2
+    },
+    "Ebbsfleet & Greenhithe": {
+      "area_code": "E02005029",
+      "frailty_pct": 3.06,
+      "frailty_n": 38,
+      "frailty_denom": 1242,
+      "fuel_poverty": 6.43,
+      "winter_mortality": 39.4,
+      "falls_hip_65": 706.0,
+      "pension_credit": 10.8,
+      "winter_fuel": 6.29,
+      "phys_act_65": 58.7
+    },
+    "Edenbridge": {
+      "area_code": "E02005100",
+      "frailty_pct": 3.81,
+      "frailty_n": 74,
+      "frailty_denom": 1943,
+      "fuel_poverty": 8.47,
+      "winter_mortality": 38.9,
+      "falls_hip_65": 548.0,
+      "pension_credit": 6.78,
+      "winter_fuel": 19.1,
+      "phys_act_65": 65.4
+    },
+    "Elms Vale & Capel-le-Ferne": {
+      "area_code": "E02005054",
+      "frailty_pct": 2.72,
+      "frailty_n": 52,
+      "frailty_denom": 1912,
+      "fuel_poverty": 10.5,
+      "winter_mortality": 32.5,
+      "falls_hip_65": 484.7,
+      "pension_credit": 6.7,
+      "winter_fuel": 27.8,
+      "phys_act_65": 63.7
+    },
+    "Eythorne & Shepherdswell": {
+      "area_code": "E02005048",
+      "frailty_pct": 4.63,
+      "frailty_n": 92,
+      "frailty_denom": 1985,
+      "fuel_poverty": 12.6,
+      "winter_mortality": 32.7,
+      "falls_hip_65": 507.0,
+      "pension_credit": 4.79,
+      "winter_fuel": 28.3,
+      "phys_act_65": 64.6
+    },
+    "Faversham East": {
+      "area_code": "E02005129",
+      "frailty_pct": 2.25,
+      "frailty_n": 56,
+      "frailty_denom": 2484,
+      "fuel_poverty": 11.0,
+      "winter_mortality": 38.1,
+      "falls_hip_65": 437.3,
+      "pension_credit": 10.4,
+      "winter_fuel": 21.3,
+      "phys_act_65": 57.8
+    },
+    "Faversham West": {
+      "area_code": "E02005128",
+      "frailty_pct": 2.66,
+      "frailty_n": 56,
+      "frailty_denom": 2109,
+      "fuel_poverty": 8.09,
+      "winter_mortality": 38.4,
+      "falls_hip_65": 755.0,
+      "pension_credit": 8.67,
+      "winter_fuel": 21.7,
+      "phys_act_65": 58.3
+    },
+    "Ferndale & Hawkenbury": {
+      "area_code": "E02005170",
+      "frailty_pct": 7.44,
+      "frailty_n": 125,
+      "frailty_denom": 1681,
+      "fuel_poverty": 9.82,
+      "winter_mortality": 41.5,
+      "falls_hip_65": 514.0,
+      "pension_credit": 6.55,
+      "winter_fuel": 17.2,
+      "phys_act_65": 67.1
+    },
+    "Folkestone Central": {
+      "area_code": "E02006880",
+      "frailty_pct": 11.7,
+      "frailty_n": 183,
+      "frailty_denom": 1568,
+      "fuel_poverty": 15.8,
+      "winter_mortality": 35.0,
+      "falls_hip_65": 650.0,
+      "pension_credit": 15.4,
+      "winter_fuel": 21.3,
+      "phys_act_65": 62.7
+    },
+    "Folkestone Foord": {
+      "area_code": "E02005105",
+      "frailty_pct": 2.6,
+      "frailty_n": 25,
+      "frailty_denom": 960,
+      "fuel_poverty": 19.1,
+      "winter_mortality": 40.4,
+      "falls_hip_65": 595.0,
+      "pension_credit": 23.8,
+      "winter_fuel": 11.7,
+      "phys_act_65": 60.6
+    },
+    "Folkestone Harbour": {
+      "area_code": "E02006879",
+      "frailty_pct": 5.46,
+      "frailty_n": 56,
+      "frailty_denom": 1026,
+      "fuel_poverty": 20.6,
+      "winter_mortality": 33.8,
+      "falls_hip_65": 630.0,
+      "pension_credit": 22.9,
+      "winter_fuel": 14.5,
+      "phys_act_65": 60.2
+    },
+    "Folkestone Morehall & Sandgate": {
+      "area_code": "E02005107",
+      "frailty_pct": 5.82,
+      "frailty_n": 170,
+      "frailty_denom": 2919,
+      "fuel_poverty": 10.9,
+      "winter_mortality": 40.0,
+      "falls_hip_65": 442.0,
+      "pension_credit": 7.98,
+      "winter_fuel": 22.0,
+      "phys_act_65": 65.2
+    },
+    "Folkestone North East": {
+      "area_code": "E02005104",
+      "frailty_pct": 1.86,
+      "frailty_n": 30,
+      "frailty_denom": 1616,
+      "fuel_poverty": 12.4,
+      "winter_mortality": 41.4,
+      "falls_hip_65": 693.0,
+      "pension_credit": 16.2,
+      "winter_fuel": 19.8,
+      "phys_act_65": 61.3
+    },
+    "Gillingham Central": {
+      "area_code": "E02003325",
+      "frailty_pct": 2.48,
+      "frailty_n": 20,
+      "frailty_denom": 806,
+      "falls_hip_65": 860.0,
+      "pension_credit": 24.2,
+      "winter_fuel": 9.47,
+      "phys_act_65": 52.0
+    },
+    "Gillingham East": {
+      "area_code": "E02003326",
+      "frailty_pct": 5.75,
+      "frailty_n": 62,
+      "frailty_denom": 1079,
+      "falls_hip_65": 341.0,
+      "pension_credit": 11.0,
+      "winter_fuel": 12.4,
+      "phys_act_65": 54.7
+    },
+    "Gillingham North": {
+      "area_code": "E02003322",
+      "frailty_pct": 3.59,
+      "frailty_n": 28,
+      "frailty_denom": 779,
+      "falls_hip_65": 901.0,
+      "pension_credit": 18.6,
+      "winter_fuel": 8.37,
+      "phys_act_65": 53.0
+    },
+    "Gillingham North East": {
+      "area_code": "E02003323",
+      "frailty_pct": 4.69,
+      "frailty_n": 45,
+      "frailty_denom": 960,
+      "falls_hip_65": 433.9,
+      "pension_credit": 13.5,
+      "winter_fuel": 11.6,
+      "phys_act_65": 54.8
+    },
+    "Gillingham South": {
+      "area_code": "E02003329",
+      "frailty_pct": 3.71,
+      "frailty_n": 29,
+      "frailty_denom": 781,
+      "falls_hip_65": 830.0,
+      "pension_credit": 13.5,
+      "winter_fuel": 9.87,
+      "phys_act_65": 53.8
+    },
+    "Gillingham South East": {
+      "area_code": "E02003332",
+      "frailty_pct": 5.11,
+      "frailty_n": 65,
+      "frailty_denom": 1273,
+      "falls_hip_65": 754.0,
+      "pension_credit": 9.15,
+      "winter_fuel": 17.6,
+      "phys_act_65": 56.3
+    },
+    "Goudhurst, Horsmonden & Lamberhurst": {
+      "area_code": "E02005172",
+      "frailty_pct": 0.73,
+      "frailty_n": 13,
+      "frailty_denom": 1779,
+      "fuel_poverty": 15.5,
+      "winter_mortality": 43.5,
+      "falls_hip_65": 426.2,
+      "pension_credit": 5.13,
+      "winter_fuel": 20.4,
+      "phys_act_65": 68.5
+    },
+    "Gravesend South & Coldharbour": {
+      "area_code": "E02005063",
+      "frailty_pct": 2.93,
+      "frailty_n": 40,
+      "frailty_denom": 1363,
+      "fuel_poverty": 8.6,
+      "winter_mortality": 40.6,
+      "falls_hip_65": 653.0,
+      "pension_credit": 8.96,
+      "winter_fuel": 16.5,
+      "phys_act_65": 59.8
+    },
+    "Gravesend Town": {
+      "area_code": "E02005056",
+      "frailty_pct": 3.79,
+      "frailty_n": 54,
+      "frailty_denom": 1423,
+      "fuel_poverty": 14.1,
+      "winter_mortality": 32.6,
+      "falls_hip_65": 491.1,
+      "pension_credit": 22.8,
+      "winter_fuel": 12.2,
+      "phys_act_65": 53.5
+    },
+    "Great Chart, Bethersden & Woodchurch": {
+      "area_code": "E02005007",
+      "frailty_pct": 3.21,
+      "frailty_n": 71,
+      "frailty_denom": 2213,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 37.0,
+      "falls_hip_65": 524.0,
+      "pension_credit": 7.99,
+      "winter_fuel": 21.8,
+      "phys_act_65": 61.6
+    },
+    "Grove Green": {
+      "area_code": "E02005072",
+      "frailty_pct": 2.6,
+      "frailty_n": 49,
+      "frailty_denom": 1885,
+      "fuel_poverty": 5.42,
+      "winter_mortality": 31.1,
+      "falls_hip_65": 582.0,
+      "pension_credit": 5.23,
+      "winter_fuel": 23.4,
+      "phys_act_65": 63.7
+    },
+    "Hadlow & East Peckham": {
+      "area_code": "E02005156",
+      "frailty_pct": 2.15,
+      "frailty_n": 35,
+      "frailty_denom": 1629,
+      "fuel_poverty": 11.5,
+      "winter_mortality": 39.0,
+      "falls_hip_65": 502.0,
+      "pension_credit": 5.87,
+      "winter_fuel": 23.8,
+      "phys_act_65": 62.0
+    },
+    "Hampton, West End & Swalecliffe": {
+      "area_code": "E02005013",
+      "frailty_pct": 2.58,
+      "frailty_n": 62,
+      "frailty_denom": 2401,
+      "fuel_poverty": 10.1,
+      "winter_mortality": 46.9,
+      "falls_hip_65": 357.4,
+      "pension_credit": 10.4,
+      "winter_fuel": 27.6,
+      "phys_act_65": 61.9
+    },
+    "Hamstreet & Isle of Oxney": {
+      "area_code": "E02005009",
+      "frailty_pct": 2.55,
+      "frailty_n": 41,
+      "frailty_denom": 1607,
+      "fuel_poverty": 13.6,
+      "winter_mortality": 25.8,
+      "falls_hip_65": 472.6,
+      "pension_credit": 7.3,
+      "winter_fuel": 28.0,
+      "phys_act_65": 62.0
+    },
+    "Harrietsham, Hollingbourne & Lenham": {
+      "area_code": "E02005078",
+      "frailty_pct": 1.7,
+      "frailty_n": 42,
+      "frailty_denom": 2477,
+      "fuel_poverty": 12.2,
+      "winter_mortality": 38.3,
+      "falls_hip_65": 526.0,
+      "pension_credit": 6.89,
+      "winter_fuel": 24.2,
+      "phys_act_65": 63.0
+    },
+    "Hartley & Hodsoll Street": {
+      "area_code": "E02005090",
+      "frailty_pct": 9.75,
+      "frailty_n": 170,
+      "frailty_denom": 1743,
+      "fuel_poverty": 8.25,
+      "winter_mortality": 37.7,
+      "falls_hip_65": 540.0,
+      "pension_credit": 5.05,
+      "winter_fuel": 30.1,
+      "phys_act_65": 66.2
+    },
+    "Hawkhurst, Benenden & Sandhurst": {
+      "area_code": "E02005175",
+      "frailty_pct": 2.28,
+      "frailty_n": 46,
+      "frailty_denom": 2016,
+      "fuel_poverty": 14.6,
+      "winter_mortality": 36.0,
+      "falls_hip_65": 520.0,
+      "pension_credit": 8.39,
+      "winter_fuel": 23.3,
+      "phys_act_65": 67.0
+    },
+    "Hawkinge": {
+      "area_code": "E02005103",
+      "frailty_pct": 5.1,
+      "frailty_n": 94,
+      "frailty_denom": 1843,
+      "fuel_poverty": 6.67,
+      "winter_mortality": 34.4,
+      "falls_hip_65": 574.0,
+      "pension_credit": 9.17,
+      "winter_fuel": 17.2,
+      "phys_act_65": 63.8
+    },
+    "Headcorn & Sutton Valence": {
+      "area_code": "E02005084",
+      "frailty_pct": 2.54,
+      "frailty_n": 45,
+      "frailty_denom": 1770,
+      "fuel_poverty": 11.3,
+      "winter_mortality": 41.8,
+      "falls_hip_65": 366.5,
+      "pension_credit": 5.51,
+      "winter_fuel": 21.7,
+      "phys_act_65": 64.3
+    },
+    "Heath": {
+      "area_code": "E02005034",
+      "frailty_pct": 3.63,
+      "frailty_n": 48,
+      "frailty_denom": 1323,
+      "fuel_poverty": 9.13,
+      "winter_mortality": 30.0,
+      "falls_hip_65": 443.3,
+      "pension_credit": 3.96,
+      "winter_fuel": 17.7,
+      "phys_act_65": 59.7
+    },
+    "Hempstead & Wigmore": {
+      "area_code": "E02003348",
+      "frailty_pct": 4.13,
+      "frailty_n": 92,
+      "frailty_denom": 2229,
+      "falls_hip_65": 390.1,
+      "pension_credit": 3.74,
+      "winter_fuel": 26.3,
+      "phys_act_65": 60.0
+    },
+    "Herne & Broomfield": {
+      "area_code": "E02005015",
+      "frailty_pct": 4.45,
+      "frailty_n": 96,
+      "frailty_denom": 2158,
+      "fuel_poverty": 7.01,
+      "winter_mortality": 35.1,
+      "falls_hip_65": 595.0,
+      "pension_credit": 6.81,
+      "winter_fuel": 21.0,
+      "phys_act_65": 64.3
+    },
+    "Herne Bay Parade": {
+      "area_code": "E02005010",
+      "frailty_pct": 5.65,
+      "frailty_n": 104,
+      "frailty_denom": 1841,
+      "fuel_poverty": 14.5,
+      "winter_mortality": 36.0,
+      "falls_hip_65": 740.0,
+      "pension_credit": 16.9,
+      "winter_fuel": 21.2,
+      "phys_act_65": 62.2
+    },
+    "Herne Bay South & Greenhill": {
+      "area_code": "E02005012",
+      "frailty_pct": 4.16,
+      "frailty_n": 97,
+      "frailty_denom": 2332,
+      "fuel_poverty": 10.2,
+      "winter_mortality": 36.2,
+      "falls_hip_65": 631.0,
+      "pension_credit": 10.0,
+      "winter_fuel": 24.1,
+      "phys_act_65": 61.7
+    },
+    "Hever, Leigh & Penshurst": {
+      "area_code": "E02005101",
+      "frailty_pct": 1.85,
+      "frailty_n": 27,
+      "frailty_denom": 1461,
+      "fuel_poverty": 14.8,
+      "winter_mortality": 43.1,
+      "falls_hip_65": null,
+      "pension_credit": 5.6,
+      "winter_fuel": 20.6,
+      "phys_act_65": 68.4
+    },
+    "High Brooms & Sherwood": {
+      "area_code": "E02005166",
+      "frailty_pct": 3.29,
+      "frailty_n": 30,
+      "frailty_denom": 912,
+      "fuel_poverty": 9.9,
+      "winter_mortality": 37.5,
+      "falls_hip_65": 413.2,
+      "pension_credit": 15.8,
+      "winter_fuel": 12.8,
+      "phys_act_65": 61.4
+    },
+    "Higham & Shorne": {
+      "area_code": "E02005064",
+      "frailty_pct": 1.92,
+      "frailty_n": 32,
+      "frailty_denom": 1670,
+      "fuel_poverty": 9.81,
+      "winter_mortality": 30.9,
+      "falls_hip_65": 532.0,
+      "pension_credit": 5.24,
+      "winter_fuel": 26.2,
+      "phys_act_65": 62.7
+    },
+    "Highfield & Willesborough": {
+      "area_code": "E02005001",
+      "frailty_pct": 2.39,
+      "frailty_n": 48,
+      "frailty_denom": 2008,
+      "fuel_poverty": 8.17,
+      "winter_mortality": 36.7,
+      "falls_hip_65": 936.0,
+      "pension_credit": 6.81,
+      "winter_fuel": 18.9,
+      "phys_act_65": 59.5
+    },
+    "Hildenborough": {
+      "area_code": "E02005158",
+      "frailty_pct": 5.0,
+      "frailty_n": 75,
+      "frailty_denom": 1499,
+      "fuel_poverty": 8.8,
+      "winter_mortality": 34.7,
+      "falls_hip_65": 943.0,
+      "pension_credit": 4.84,
+      "winter_fuel": 21.4,
+      "phys_act_65": 64.0
+    },
+    "Hoath, Hersden & Littlebourne": {
+      "area_code": "E02005019",
+      "frailty_pct": 7.25,
+      "frailty_n": 118,
+      "frailty_denom": 1628,
+      "fuel_poverty": 12.5,
+      "winter_mortality": 39.6,
+      "falls_hip_65": 714.0,
+      "pension_credit": 7.1,
+      "winter_fuel": 22.7,
+      "phys_act_65": 65.0
+    },
+    "Hoo Peninsula": {
+      "area_code": "E02003314",
+      "frailty_pct": 2.61,
+      "frailty_n": 46,
+      "frailty_denom": 1761,
+      "falls_hip_65": 775.0,
+      "pension_credit": 12.5,
+      "winter_fuel": 24.0,
+      "phys_act_65": 55.6
+    },
+    "Hoo St Werburgh & High Halstow": {
+      "area_code": "E02003316",
+      "frailty_pct": 2.26,
+      "frailty_n": 48,
+      "frailty_denom": 2120,
+      "falls_hip_65": 624.0,
+      "pension_credit": 7.6,
+      "winter_fuel": 16.3,
+      "phys_act_65": 57.5
+    },
+    "Horsted": {
+      "area_code": "E02003346",
+      "frailty_pct": 5.19,
+      "frailty_n": 74,
+      "frailty_denom": 1426,
+      "falls_hip_65": 488.0,
+      "pension_credit": 7.57,
+      "winter_fuel": 19.9,
+      "phys_act_65": 56.2
+    },
+    "Hythe": {
+      "area_code": "E02005111",
+      "frailty_pct": 5.09,
+      "frailty_n": 124,
+      "frailty_denom": 2437,
+      "fuel_poverty": 12.1,
+      "winter_mortality": 34.6,
+      "falls_hip_65": 533.0,
+      "pension_credit": 11.6,
+      "winter_fuel": 33.0,
+      "phys_act_65": 62.7
+    },
+    "Istead Rise & Meopham": {
+      "area_code": "E02005066",
+      "frailty_pct": 3.91,
+      "frailty_n": 82,
+      "frailty_denom": 2098,
+      "fuel_poverty": 8.79,
+      "winter_mortality": 34.1,
+      "falls_hip_65": 527.0,
+      "pension_credit": 3.8,
+      "winter_fuel": 27.8,
+      "phys_act_65": 63.6
+    },
+    "Iwade & Kemsley": {
+      "area_code": "E02005121",
+      "frailty_pct": 3.34,
+      "frailty_n": 62,
+      "frailty_denom": 1857,
+      "fuel_poverty": 6.0,
+      "winter_mortality": 34.4,
+      "falls_hip_65": 576.0,
+      "pension_credit": 10.5,
+      "winter_fuel": 11.7,
+      "phys_act_65": 57.6
+    },
+    "Joydens Wood": {
+      "area_code": "E02005037",
+      "frailty_pct": 2.81,
+      "frailty_n": 36,
+      "frailty_denom": 1283,
+      "fuel_poverty": 7.31,
+      "winter_mortality": 41.5,
+      "falls_hip_65": 468.5,
+      "pension_credit": 5.09,
+      "winter_fuel": 22.2,
+      "phys_act_65": 60.1
+    },
+    "Kearsney, River & Whitfield": {
+      "area_code": "E02005050",
+      "frailty_pct": 5.3,
+      "frailty_n": 131,
+      "frailty_denom": 2474,
+      "fuel_poverty": 8.21,
+      "winter_mortality": 40.6,
+      "falls_hip_65": 742.0,
+      "pension_credit": 6.26,
+      "winter_fuel": 24.1,
+      "phys_act_65": 64.2
+    },
+    "Kemsing & Otford": {
+      "area_code": "E02005095",
+      "frailty_pct": 1.94,
+      "frailty_n": 30,
+      "frailty_denom": 1548,
+      "fuel_poverty": 8.8,
+      "winter_mortality": 35.4,
+      "falls_hip_65": 506.0,
+      "pension_credit": 4.05,
+      "winter_fuel": 22.1,
+      "phys_act_65": 68.0
+    },
+    "Kennington & Little Burton Farm": {
+      "area_code": "E02004998",
+      "frailty_pct": 2.34,
+      "frailty_n": 34,
+      "frailty_denom": 1454,
+      "fuel_poverty": 7.16,
+      "winter_mortality": 32.9,
+      "falls_hip_65": 512.0,
+      "pension_credit": 5.17,
+      "winter_fuel": 21.4,
+      "phys_act_65": 61.0
+    },
+    "Kings Hill & Wateringbury": {
+      "area_code": "E02005155",
+      "frailty_pct": 3.05,
+      "frailty_n": 63,
+      "frailty_denom": 2066,
+      "fuel_poverty": 5.72,
+      "winter_mortality": 38.8,
+      "falls_hip_65": 589.0,
+      "pension_credit": 6.49,
+      "winter_fuel": 14.9,
+      "phys_act_65": 64.7
+    },
+    "Kingsdown & St Margaret's-at-Cliffe": {
+      "area_code": "E02005049",
+      "frailty_pct": 4.08,
+      "frailty_n": 104,
+      "frailty_denom": 2546,
+      "fuel_poverty": 11.5,
+      "winter_mortality": 37.3,
+      "falls_hip_65": 499.2,
+      "pension_credit": 4.22,
+      "winter_fuel": 37.8,
+      "phys_act_65": 65.5
+    },
+    "Kingswood, Langley Heath & Chart Sutton": {
+      "area_code": "E02005082",
+      "frailty_pct": 1.59,
+      "frailty_n": 38,
+      "frailty_denom": 2391,
+      "fuel_poverty": 8.51,
+      "winter_mortality": 32.2,
+      "falls_hip_65": 752.0,
+      "pension_credit": 8.02,
+      "winter_fuel": 17.7,
+      "phys_act_65": 62.8
+    },
+    "Knockholt, Shoreham & Dunton Green": {
+      "area_code": "E02005094",
+      "frailty_pct": 2.56,
+      "frailty_n": 34,
+      "frailty_denom": 1328,
+      "fuel_poverty": 9.74,
+      "winter_mortality": 42.7,
+      "falls_hip_65": 655.0,
+      "pension_credit": 6.6,
+      "winter_fuel": 17.6,
+      "phys_act_65": 67.0
+    },
+    "Langton Green, Speldhurst & Bidborough": {
+      "area_code": "E02005167",
+      "frailty_pct": 5.44,
+      "frailty_n": 86,
+      "frailty_denom": 1581,
+      "fuel_poverty": 9.43,
+      "winter_mortality": 36.1,
+      "falls_hip_65": 495.1,
+      "pension_credit": 4.07,
+      "winter_fuel": 22.1,
+      "phys_act_65": 68.3
+    },
+    "Larkfield & New Hythe": {
+      "area_code": "E02005151",
+      "frailty_pct": 3.8,
+      "frailty_n": 97,
+      "frailty_denom": 2554,
+      "fuel_poverty": 6.64,
+      "winter_mortality": 34.6,
+      "falls_hip_65": 446.7,
+      "pension_credit": 6.68,
+      "winter_fuel": 19.1,
+      "phys_act_65": 61.0
+    },
+    "Longfield, New Barn & Southfleet": {
+      "area_code": "E02005040",
+      "frailty_pct": 7.14,
+      "frailty_n": 131,
+      "frailty_denom": 1836,
+      "fuel_poverty": 7.87,
+      "winter_mortality": 38.1,
+      "falls_hip_65": 495.3,
+      "pension_credit": 3.33,
+      "winter_fuel": 26.6,
+      "phys_act_65": 61.3
+    },
+    "Loose & Coxheath": {
+      "area_code": "E02005083",
+      "frailty_pct": 4.38,
+      "frailty_n": 76,
+      "frailty_denom": 1737,
+      "fuel_poverty": 7.15,
+      "winter_mortality": 37.9,
+      "falls_hip_65": 371.0,
+      "pension_credit": 6.19,
+      "winter_fuel": 21.9,
+      "phys_act_65": 62.5
+    },
+    "Loose Valley & Boughton Monchelsea": {
+      "area_code": "E02005079",
+      "frailty_pct": 4.35,
+      "frailty_n": 89,
+      "frailty_denom": 2046,
+      "fuel_poverty": 7.28,
+      "winter_mortality": 38.7,
+      "falls_hip_65": 558.0,
+      "pension_credit": 5.31,
+      "winter_fuel": 22.5,
+      "phys_act_65": 63.3
+    },
+    "Lordswood": {
+      "area_code": "E02003351",
+      "frailty_pct": 2.31,
+      "frailty_n": 36,
+      "frailty_denom": 1558,
+      "falls_hip_65": 476.7,
+      "pension_credit": 9.71,
+      "winter_fuel": 18.3,
+      "phys_act_65": 57.2
+    },
+    "Luton": {
+      "area_code": "E02003333",
+      "frailty_pct": 4.76,
+      "frailty_n": 34,
+      "frailty_denom": 715,
+      "falls_hip_65": 1575.0,
+      "pension_credit": 23.3,
+      "winter_fuel": 9.04,
+      "phys_act_65": 52.0
+    },
+    "Lydd & Dungeness": {
+      "area_code": "E02005114",
+      "frailty_pct": 2.01,
+      "frailty_n": 35,
+      "frailty_denom": 1745,
+      "fuel_poverty": 14.5,
+      "winter_mortality": 32.9,
+      "falls_hip_65": 570.0,
+      "pension_credit": 10.2,
+      "winter_fuel": 26.6,
+      "phys_act_65": 62.6
+    },
+    "Lyminge, Densole & Elham": {
+      "area_code": "E02005102",
+      "frailty_pct": 1.84,
+      "frailty_n": 37,
+      "frailty_denom": 2014,
+      "fuel_poverty": 14.0,
+      "winter_mortality": 47.5,
+      "falls_hip_65": 330.4,
+      "pension_credit": 6.33,
+      "winter_fuel": 32.7,
+      "phys_act_65": 66.7
+    },
+    "Lympne & Palmarsh": {
+      "area_code": "E02005110",
+      "frailty_pct": 1.94,
+      "frailty_n": 40,
+      "frailty_denom": 2063,
+      "fuel_poverty": 10.3,
+      "winter_mortality": 43.1,
+      "falls_hip_65": 458.6,
+      "pension_credit": 6.33,
+      "winter_fuel": 28.5,
+      "phys_act_65": 65.1
+    },
+    "Maidstone West": {
+      "area_code": "E02005073",
+      "frailty_pct": 5.35,
+      "frailty_n": 78,
+      "frailty_denom": 1458,
+      "fuel_poverty": 10.2,
+      "winter_mortality": 35.0,
+      "falls_hip_65": 927.0,
+      "pension_credit": 13.7,
+      "winter_fuel": 10.3,
+      "phys_act_65": 60.2
+    },
+    "Marden": {
+      "area_code": "E02005085",
+      "frailty_pct": 1.68,
+      "frailty_n": 27,
+      "frailty_denom": 1606,
+      "fuel_poverty": 11.2,
+      "winter_mortality": 33.3,
+      "falls_hip_65": 360.5,
+      "pension_credit": 7.15,
+      "winter_fuel": 18.8,
+      "phys_act_65": 63.8
+    },
+    "Margate Town": {
+      "area_code": "E02005134",
+      "frailty_pct": 6.02,
+      "frailty_n": 65,
+      "frailty_denom": 1079,
+      "fuel_poverty": 21.1,
+      "winter_mortality": 41.9,
+      "falls_hip_65": 905.0,
+      "pension_credit": 24.7,
+      "winter_fuel": 11.5,
+      "phys_act_65": 55.9
+    },
+    "Mill Hill, Upper Deal & Northbourne": {
+      "area_code": "E02005045",
+      "frailty_pct": 1.65,
+      "frailty_n": 31,
+      "frailty_denom": 1875,
+      "fuel_poverty": 10.6,
+      "winter_mortality": 33.7,
+      "falls_hip_65": 554.0,
+      "pension_credit": 9.76,
+      "winter_fuel": 19.8,
+      "phys_act_65": 62.2
+    },
+    "Milton & Chalk": {
+      "area_code": "E02005057",
+      "frailty_pct": 2.68,
+      "frailty_n": 42,
+      "frailty_denom": 1566,
+      "fuel_poverty": 10.8,
+      "winter_mortality": 31.1,
+      "falls_hip_65": 348.1,
+      "pension_credit": 12.2,
+      "winter_fuel": 11.5,
+      "phys_act_65": 56.9
+    },
+    "Minster & St-Nicholas-at-Wade": {
+      "area_code": "E02005145",
+      "frailty_pct": 3.63,
+      "frailty_n": 83,
+      "frailty_denom": 2285,
+      "fuel_poverty": 13.0,
+      "winter_mortality": 36.5,
+      "falls_hip_65": 514.0,
+      "pension_credit": 10.3,
+      "winter_fuel": 23.9,
+      "phys_act_65": 60.8
+    },
+    "Minster North": {
+      "area_code": "E02005117",
+      "frailty_pct": 1.91,
+      "frailty_n": 36,
+      "frailty_denom": 1883,
+      "fuel_poverty": 7.68,
+      "winter_mortality": 39.2,
+      "falls_hip_65": 559.0,
+      "pension_credit": 9.46,
+      "winter_fuel": 26.9,
+      "phys_act_65": 56.5
+    },
+    "Minster South": {
+      "area_code": "E02005118",
+      "frailty_pct": 3.92,
+      "frailty_n": 75,
+      "frailty_denom": 1911,
+      "fuel_poverty": 8.06,
+      "winter_mortality": 42.0,
+      "falls_hip_65": 777.0,
+      "pension_credit": 11.6,
+      "winter_fuel": 16.6,
+      "phys_act_65": 56.3
+    },
+    "Mote Park": {
+      "area_code": "E02005077",
+      "frailty_pct": 4.2,
+      "frailty_n": 62,
+      "frailty_denom": 1477,
+      "fuel_poverty": 10.3,
+      "winter_mortality": 30.5,
+      "falls_hip_65": 708.0,
+      "pension_credit": 11.4,
+      "winter_fuel": 17.6,
+      "phys_act_65": 58.7
+    },
+    "Nethercourt, Pegwell & Cliffsend": {
+      "area_code": "E02005148",
+      "frailty_pct": 4.75,
+      "frailty_n": 110,
+      "frailty_denom": 2316,
+      "fuel_poverty": 8.92,
+      "winter_mortality": 38.8,
+      "falls_hip_65": 486.4,
+      "pension_credit": 9.19,
+      "winter_fuel": 30.1,
+      "phys_act_65": 61.1
+    },
+    "New Ash Green": {
+      "area_code": "E02006832",
+      "frailty_pct": 4.97,
+      "frailty_n": 64,
+      "frailty_denom": 1289,
+      "fuel_poverty": 8.44,
+      "winter_mortality": 48.8,
+      "falls_hip_65": 435.6,
+      "pension_credit": 7.64,
+      "winter_fuel": 22.2,
+      "phys_act_65": 65.7
+    },
+    "New Romney": {
+      "area_code": "E02005113",
+      "frailty_pct": 5.1,
+      "frailty_n": 131,
+      "frailty_denom": 2567,
+      "fuel_poverty": 10.9,
+      "winter_mortality": 33.9,
+      "falls_hip_65": 663.0,
+      "pension_credit": 8.44,
+      "winter_fuel": 31.8,
+      "phys_act_65": 63.4
+    },
+    "Newington": {
+      "area_code": "E02005144",
+      "frailty_pct": 4.91,
+      "frailty_n": 70,
+      "frailty_denom": 1427,
+      "fuel_poverty": 13.5,
+      "winter_mortality": 41.8,
+      "falls_hip_65": 596.0,
+      "pension_credit": 22.0,
+      "winter_fuel": 14.7,
+      "phys_act_65": 54.9
+    },
+    "Newington, Halstow & Upchurch": {
+      "area_code": "E02005122",
+      "frailty_pct": 3.64,
+      "frailty_n": 62,
+      "frailty_denom": 1701,
+      "fuel_poverty": 9.22,
+      "winter_mortality": 39.7,
+      "falls_hip_65": 402.8,
+      "pension_credit": 6.87,
+      "winter_fuel": 20.4,
+      "phys_act_65": 59.4
+    },
+    "Newtown": {
+      "area_code": "E02005032",
+      "frailty_pct": 2.3,
+      "frailty_n": 23,
+      "frailty_denom": 1002,
+      "fuel_poverty": 9.88,
+      "winter_mortality": 32.7,
+      "falls_hip_65": 389.1,
+      "pension_credit": 9.35,
+      "winter_fuel": 9.44,
+      "phys_act_65": 56.2
+    },
+    "Northfleet North": {
+      "area_code": "E02005055",
+      "frailty_pct": 2.59,
+      "frailty_n": 23,
+      "frailty_denom": 889,
+      "fuel_poverty": 14.6,
+      "winter_mortality": 35.8,
+      "falls_hip_65": 737.0,
+      "pension_credit": 18.6,
+      "winter_fuel": 9.13,
+      "phys_act_65": 55.7
+    },
+    "Northfleet South": {
+      "area_code": "E02005060",
+      "frailty_pct": 4.45,
+      "frailty_n": 65,
+      "frailty_denom": 1461,
+      "fuel_poverty": 9.0,
+      "winter_mortality": 31.4,
+      "falls_hip_65": 537.0,
+      "pension_credit": 12.2,
+      "winter_fuel": 15.2,
+      "phys_act_65": 58.5
+    },
+    "Paddock Wood & Five Oak Green": {
+      "area_code": "E02005162",
+      "frailty_pct": 1.22,
+      "frailty_n": 26,
+      "frailty_denom": 2136,
+      "fuel_poverty": 8.67,
+      "winter_mortality": 35.2,
+      "falls_hip_65": 498.8,
+      "pension_credit": 7.74,
+      "winter_fuel": 21.1,
+      "phys_act_65": 65.4
+    },
+    "Park Farm": {
+      "area_code": "E02005004",
+      "frailty_pct": 4.87,
+      "frailty_n": 78,
+      "frailty_denom": 1602,
+      "fuel_poverty": 6.86,
+      "winter_mortality": 47.0,
+      "falls_hip_65": 579.0,
+      "pension_credit": 12.9,
+      "winter_fuel": 11.3,
+      "phys_act_65": 59.6
+    },
+    "Parkwood & Senacre": {
+      "area_code": "E02005080",
+      "frailty_pct": 3.42,
+      "frailty_n": 60,
+      "frailty_denom": 1752,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 45.2,
+      "falls_hip_65": 799.0,
+      "pension_credit": 19.4,
+      "winter_fuel": 13.5,
+      "phys_act_65": 55.8
+    },
+    "Parkwood East": {
+      "area_code": "E02003345",
+      "frailty_pct": 2.14,
+      "frailty_n": 24,
+      "frailty_denom": 1121,
+      "falls_hip_65": null,
+      "pension_credit": 5.35,
+      "winter_fuel": 17.0,
+      "phys_act_65": 59.5
+    },
+    "Parkwood West": {
+      "area_code": "E02003349",
+      "frailty_pct": 3.84,
+      "frailty_n": 63,
+      "frailty_denom": 1642,
+      "falls_hip_65": 459.6,
+      "pension_credit": 6.31,
+      "winter_fuel": 22.8,
+      "phys_act_65": 57.5
+    },
+    "Pembury & Matfield": {
+      "area_code": "E02005165",
+      "frailty_pct": 7.11,
+      "frailty_n": 125,
+      "frailty_denom": 1758,
+      "fuel_poverty": 10.6,
+      "winter_mortality": 36.8,
+      "falls_hip_65": 825.0,
+      "pension_credit": 6.39,
+      "winter_fuel": 23.2,
+      "phys_act_65": 66.2
+    },
+    "Penenden Heath": {
+      "area_code": "E02005069",
+      "frailty_pct": 3.46,
+      "frailty_n": 61,
+      "frailty_denom": 1761,
+      "fuel_poverty": 8.98,
+      "winter_mortality": 41.8,
+      "falls_hip_65": 722.0,
+      "pension_credit": 5.97,
+      "winter_fuel": 18.0,
+      "phys_act_65": 62.2
+    },
+    "Perry Street": {
+      "area_code": "E02005058",
+      "frailty_pct": 6.27,
+      "frailty_n": 72,
+      "frailty_denom": 1148,
+      "fuel_poverty": 14.7,
+      "winter_mortality": 39.2,
+      "falls_hip_65": 840.0,
+      "pension_credit": 14.8,
+      "winter_fuel": 12.3,
+      "phys_act_65": 55.9
+    },
+    "Queenborough": {
+      "area_code": "E02005119",
+      "frailty_pct": 2.06,
+      "frailty_n": 30,
+      "frailty_denom": 1453,
+      "fuel_poverty": 13.3,
+      "winter_mortality": 37.7,
+      "falls_hip_65": 614.0,
+      "pension_credit": 12.0,
+      "winter_fuel": 21.0,
+      "phys_act_65": 55.5
+    },
+    "Rainham North East": {
+      "area_code": "E02003338",
+      "frailty_pct": 2.88,
+      "frailty_n": 40,
+      "frailty_denom": 1388,
+      "falls_hip_65": 472.3,
+      "pension_credit": 10.2,
+      "winter_fuel": 18.5,
+      "phys_act_65": 56.2
+    },
+    "Rainham North West": {
+      "area_code": "E02003336",
+      "frailty_pct": 5.26,
+      "frailty_n": 78,
+      "frailty_denom": 1484,
+      "falls_hip_65": 533.0,
+      "pension_credit": 5.28,
+      "winter_fuel": 23.1,
+      "phys_act_65": 57.3
+    },
+    "Rainham South East": {
+      "area_code": "E02003342",
+      "frailty_pct": 4.48,
+      "frailty_n": 66,
+      "frailty_denom": 1473,
+      "falls_hip_65": 330.3,
+      "pension_credit": 7.02,
+      "winter_fuel": 22.0,
+      "phys_act_65": 57.7
+    },
+    "Rainham South West": {
+      "area_code": "E02003343",
+      "frailty_pct": 3.21,
+      "frailty_n": 56,
+      "frailty_denom": 1744,
+      "falls_hip_65": 389.4,
+      "pension_credit": 4.01,
+      "winter_fuel": 27.4,
+      "phys_act_65": 59.6
+    },
+    "Ramsgate Ellington": {
+      "area_code": "E02005146",
+      "frailty_pct": 5.68,
+      "frailty_n": 67,
+      "frailty_denom": 1180,
+      "fuel_poverty": 19.2,
+      "winter_mortality": 44.6,
+      "falls_hip_65": 666.0,
+      "pension_credit": 13.8,
+      "winter_fuel": 13.4,
+      "phys_act_65": 59.0
+    },
+    "Ramsgate Harbour": {
+      "area_code": "E02005147",
+      "frailty_pct": 4.36,
+      "frailty_n": 77,
+      "frailty_denom": 1766,
+      "fuel_poverty": 17.7,
+      "winter_mortality": 38.3,
+      "falls_hip_65": 606.0,
+      "pension_credit": 23.7,
+      "winter_fuel": 19.4,
+      "phys_act_65": 57.8
+    },
+    "Ramslye & Rusthall": {
+      "area_code": "E02005171",
+      "frailty_pct": 6.5,
+      "frailty_n": 66,
+      "frailty_denom": 1016,
+      "fuel_poverty": 10.9,
+      "winter_mortality": 39.1,
+      "falls_hip_65": 544.0,
+      "pension_credit": 12.0,
+      "winter_fuel": 16.9,
+      "phys_act_65": 63.9
+    },
+    "Rede Common": {
+      "area_code": "E02003321",
+      "frailty_pct": 2.38,
+      "frailty_n": 24,
+      "frailty_denom": 1009,
+      "falls_hip_65": 475.5,
+      "pension_credit": 13.9,
+      "winter_fuel": 15.5,
+      "phys_act_65": 53.7
+    },
+    "Ringlestone & Central Maidstone": {
+      "area_code": "E02005071",
+      "frailty_pct": 2.07,
+      "frailty_n": 29,
+      "frailty_denom": 1402,
+      "fuel_poverty": 11.8,
+      "winter_mortality": 33.3,
+      "falls_hip_65": 750.0,
+      "pension_credit": 19.5,
+      "winter_fuel": 10.2,
+      "phys_act_65": 57.3
+    },
+    "Riverview Park": {
+      "area_code": "E02005062",
+      "frailty_pct": 2.04,
+      "frailty_n": 26,
+      "frailty_denom": 1273,
+      "fuel_poverty": 9.7,
+      "winter_mortality": 39.3,
+      "falls_hip_65": 508.0,
+      "pension_credit": 7.73,
+      "winter_fuel": 18.7,
+      "phys_act_65": 60.2
+    },
+    "Rochester East": {
+      "area_code": "E02003330",
+      "frailty_pct": 4.82,
+      "frailty_n": 46,
+      "frailty_denom": 954,
+      "falls_hip_65": 877.0,
+      "pension_credit": 12.4,
+      "winter_fuel": 13.6,
+      "phys_act_65": 55.9
+    },
+    "Rochester South East": {
+      "area_code": "E02003339",
+      "frailty_pct": 5.25,
+      "frailty_n": 69,
+      "frailty_denom": 1314,
+      "falls_hip_65": 557.0,
+      "pension_credit": 8.13,
+      "winter_fuel": 18.3,
+      "phys_act_65": 56.4
+    },
+    "Rochester South West": {
+      "area_code": "E02003337",
+      "frailty_pct": 5.3,
+      "frailty_n": 63,
+      "frailty_denom": 1189,
+      "falls_hip_65": 453.2,
+      "pension_credit": 11.3,
+      "winter_fuel": 14.6,
+      "phys_act_65": 56.6
+    },
+    "Rochester West": {
+      "area_code": "E02003327",
+      "frailty_pct": 3.7,
+      "frailty_n": 44,
+      "frailty_denom": 1190,
+      "falls_hip_65": 454.6,
+      "pension_credit": 16.7,
+      "winter_fuel": 14.9,
+      "phys_act_65": 57.7
+    },
+    "Salmestone": {
+      "area_code": "E02005135",
+      "frailty_pct": 6.8,
+      "frailty_n": 90,
+      "frailty_denom": 1324,
+      "fuel_poverty": 14.8,
+      "winter_mortality": 41.3,
+      "falls_hip_65": 541.0,
+      "pension_credit": 16.8,
+      "winter_fuel": 16.1,
+      "phys_act_65": 57.7
+    },
+    "Saltwood, Seabrook & Etchinghill": {
+      "area_code": "E02005109",
+      "frailty_pct": 8.11,
+      "frailty_n": 198,
+      "frailty_denom": 2440,
+      "fuel_poverty": 8.61,
+      "winter_mortality": 44.2,
+      "falls_hip_65": 452.7,
+      "pension_credit": 4.33,
+      "winter_fuel": 36.8,
+      "phys_act_65": 67.9
+    },
+    "Sandwich & Eastry": {
+      "area_code": "E02005042",
+      "frailty_pct": 2.86,
+      "frailty_n": 79,
+      "frailty_denom": 2761,
+      "fuel_poverty": 13.5,
+      "winter_mortality": 42.1,
+      "falls_hip_65": 407.9,
+      "pension_credit": 9.06,
+      "winter_fuel": 29.1,
+      "phys_act_65": 63.9
+    },
+    "Seasalter": {
+      "area_code": "E02005018",
+      "frailty_pct": 2.45,
+      "frailty_n": 58,
+      "frailty_denom": 2366,
+      "fuel_poverty": 7.68,
+      "winter_mortality": 47.1,
+      "falls_hip_65": 456.6,
+      "pension_credit": 5.78,
+      "winter_fuel": 26.2,
+      "phys_act_65": 64.5
+    },
+    "Settington": {
+      "area_code": "E02003347",
+      "frailty_pct": 2.85,
+      "frailty_n": 23,
+      "frailty_denom": 807,
+      "falls_hip_65": null,
+      "pension_credit": 9.34,
+      "winter_fuel": 12.0,
+      "phys_act_65": 57.7
+    },
+    "Sevenoaks North": {
+      "area_code": "E02005096",
+      "frailty_pct": 1.66,
+      "frailty_n": 27,
+      "frailty_denom": 1623,
+      "fuel_poverty": 9.91,
+      "winter_mortality": 36.1,
+      "falls_hip_65": 641.0,
+      "pension_credit": 9.35,
+      "winter_fuel": 16.1,
+      "phys_act_65": 65.5
+    },
+    "Sevenoaks Town & Weald": {
+      "area_code": "E02005098",
+      "frailty_pct": 3.29,
+      "frailty_n": 75,
+      "frailty_denom": 2277,
+      "fuel_poverty": 10.2,
+      "winter_mortality": 31.5,
+      "falls_hip_65": 568.0,
+      "pension_credit": 6.29,
+      "winter_fuel": 20.0,
+      "phys_act_65": 69.2
+    },
+    "Sevenoaks West & Chevening": {
+      "area_code": "E02005097",
+      "frailty_pct": 2.3,
+      "frailty_n": 41,
+      "frailty_denom": 1782,
+      "fuel_poverty": 8.43,
+      "winter_mortality": 44.9,
+      "falls_hip_65": 430.2,
+      "pension_credit": 2.4,
+      "winter_fuel": 18.0,
+      "phys_act_65": 69.5
+    },
+    "Sheerness East": {
+      "area_code": "E02005115",
+      "frailty_pct": 2.67,
+      "frailty_n": 21,
+      "frailty_denom": 787,
+      "fuel_poverty": 25.4,
+      "winter_mortality": 40.0,
+      "falls_hip_65": null,
+      "pension_credit": 19.8,
+      "winter_fuel": 10.1,
+      "phys_act_65": 54.5
+    },
+    "Sheerness West": {
+      "area_code": "E02005116",
+      "frailty_pct": 1.93,
+      "frailty_n": 20,
+      "frailty_denom": 1035,
+      "fuel_poverty": 16.3,
+      "winter_mortality": 40.3,
+      "falls_hip_65": 978.0,
+      "pension_credit": 25.3,
+      "winter_fuel": 15.2,
+      "phys_act_65": 51.5
+    },
+    "Sheppey East": {
+      "area_code": "E02005120",
+      "frailty_pct": 1.57,
+      "frailty_n": 34,
+      "frailty_denom": 2161,
+      "fuel_poverty": 15.1,
+      "winter_mortality": 47.5,
+      "falls_hip_65": 650.0,
+      "pension_credit": 14.9,
+      "winter_fuel": 19.8,
+      "phys_act_65": 54.8
+    },
+    "Singlewell": {
+      "area_code": "E02005065",
+      "frailty_pct": 1.9,
+      "frailty_n": 22,
+      "frailty_denom": 1156,
+      "fuel_poverty": 11.5,
+      "winter_mortality": 33.8,
+      "falls_hip_65": 428.6,
+      "pension_credit": 16.7,
+      "winter_fuel": 13.1,
+      "phys_act_65": 57.1
+    },
+    "Sittingbourne Central & Milton Regis": {
+      "area_code": "E02005124",
+      "frailty_pct": 3.24,
+      "frailty_n": 45,
+      "frailty_denom": 1391,
+      "fuel_poverty": 15.3,
+      "winter_mortality": 41.9,
+      "falls_hip_65": 496.7,
+      "pension_credit": 18.1,
+      "winter_fuel": 14.7,
+      "phys_act_65": 53.4
+    },
+    "Sittingbourne East": {
+      "area_code": "E02005125",
+      "frailty_pct": 2.18,
+      "frailty_n": 30,
+      "frailty_denom": 1378,
+      "fuel_poverty": 10.1,
+      "winter_mortality": 40.7,
+      "falls_hip_65": 473.6,
+      "pension_credit": 13.1,
+      "winter_fuel": 15.0,
+      "phys_act_65": 56.3
+    },
+    "Sittingbourne South, Bapchild & Bredgar": {
+      "area_code": "E02005127",
+      "frailty_pct": 2.74,
+      "frailty_n": 55,
+      "frailty_denom": 2007,
+      "fuel_poverty": 8.68,
+      "winter_mortality": 39.5,
+      "falls_hip_65": 575.0,
+      "pension_credit": 4.99,
+      "winter_fuel": 22.1,
+      "phys_act_65": 60.3
+    },
+    "Sittingbourne West": {
+      "area_code": "E02005126",
+      "frailty_pct": 3.38,
+      "frailty_n": 62,
+      "frailty_denom": 1834,
+      "fuel_poverty": 11.6,
+      "winter_mortality": 53.3,
+      "falls_hip_65": 528.0,
+      "pension_credit": 6.52,
+      "winter_fuel": 21.9,
+      "phys_act_65": 57.7
+    },
+    "Snodland": {
+      "area_code": "E02005150",
+      "frailty_pct": 1.42,
+      "frailty_n": 28,
+      "frailty_denom": 1971,
+      "fuel_poverty": 7.86,
+      "winter_mortality": 44.2,
+      "falls_hip_65": 594.0,
+      "pension_credit": 9.52,
+      "winter_fuel": 15.0,
+      "phys_act_65": 59.1
+    },
+    "Sole Street & Vigo": {
+      "area_code": "E02005067",
+      "frailty_pct": 3.23,
+      "frailty_n": 45,
+      "frailty_denom": 1394,
+      "fuel_poverty": 10.7,
+      "winter_mortality": 36.7,
+      "falls_hip_65": 551.0,
+      "pension_credit": 4.95,
+      "winter_fuel": 23.4,
+      "phys_act_65": 64.3
+    },
+    "South Canterbury": {
+      "area_code": "E02005025",
+      "frailty_pct": 4.53,
+      "frailty_n": 79,
+      "frailty_denom": 1745,
+      "fuel_poverty": 15.3,
+      "winter_mortality": 39.5,
+      "falls_hip_65": 332.7,
+      "pension_credit": 6.02,
+      "winter_fuel": 15.6,
+      "phys_act_65": 65.5
+    },
+    "Southborough East & Longfield Road": {
+      "area_code": "E02005164",
+      "frailty_pct": 5.1,
+      "frailty_n": 70,
+      "frailty_denom": 1372,
+      "fuel_poverty": 8.92,
+      "winter_mortality": 41.0,
+      "falls_hip_65": 449.1,
+      "pension_credit": 9.79,
+      "winter_fuel": 14.4,
+      "phys_act_65": 64.2
+    },
+    "Southborough West": {
+      "area_code": "E02005163",
+      "frailty_pct": 6.03,
+      "frailty_n": 76,
+      "frailty_denom": 1261,
+      "fuel_poverty": 9.85,
+      "winter_mortality": 49.3,
+      "falls_hip_65": 453.9,
+      "pension_credit": 5.51,
+      "winter_fuel": 15.7,
+      "phys_act_65": 66.3
+    },
+    "Staplehurst": {
+      "area_code": "E02005086",
+      "frailty_pct": 1.92,
+      "frailty_n": 30,
+      "frailty_denom": 1562,
+      "fuel_poverty": 9.21,
+      "winter_mortality": 48.5,
+      "falls_hip_65": 724.0,
+      "pension_credit": 5.92,
+      "winter_fuel": 21.4,
+      "phys_act_65": 63.3
+    },
+    "Stone & Crossways": {
+      "area_code": "E02005033",
+      "frailty_pct": 4.09,
+      "frailty_n": 38,
+      "frailty_denom": 928,
+      "fuel_poverty": 8.25,
+      "winter_mortality": 35.8,
+      "falls_hip_65": 441.2,
+      "pension_credit": 14.6,
+      "winter_fuel": 11.1,
+      "phys_act_65": 55.6
+    },
+    "Strood North & Frindsbury": {
+      "area_code": "E02003319",
+      "frailty_pct": 6.15,
+      "frailty_n": 68,
+      "frailty_denom": 1105,
+      "falls_hip_65": 1261.0,
+      "pension_credit": 14.1,
+      "winter_fuel": 11.5,
+      "phys_act_65": 54.7
+    },
+    "Strood South & Temple Marsh": {
+      "area_code": "E02003324",
+      "frailty_pct": 1.97,
+      "frailty_n": 23,
+      "frailty_denom": 1167,
+      "falls_hip_65": 697.0,
+      "pension_credit": 11.5,
+      "winter_fuel": 11.1,
+      "phys_act_65": 54.7
+    },
+    "Sturry and Fordwich": {
+      "area_code": "E02005020",
+      "frailty_pct": 1.36,
+      "frailty_n": 22,
+      "frailty_denom": 1622,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 40.4,
+      "falls_hip_65": 340.1,
+      "pension_credit": 10.8,
+      "winter_fuel": 21.4,
+      "phys_act_65": 62.3
+    },
+    "Swanley East & Hextable": {
+      "area_code": "E02005087",
+      "frailty_pct": 7.23,
+      "frailty_n": 116,
+      "frailty_denom": 1604,
+      "fuel_poverty": 8.07,
+      "winter_mortality": 32.5,
+      "falls_hip_65": 638.0,
+      "pension_credit": 4.42,
+      "winter_fuel": 22.7,
+      "phys_act_65": 65.5
+    },
+    "Swanley South & Crockenhill": {
+      "area_code": "E02005089",
+      "frailty_pct": 4.75,
+      "frailty_n": 56,
+      "frailty_denom": 1178,
+      "fuel_poverty": 8.17,
+      "winter_mortality": 42.4,
+      "falls_hip_65": 381.1,
+      "pension_credit": 5.81,
+      "winter_fuel": 19.2,
+      "phys_act_65": 65.0
+    },
+    "Swanley West": {
+      "area_code": "E02005088",
+      "frailty_pct": 6.81,
+      "frailty_n": 117,
+      "frailty_denom": 1717,
+      "fuel_poverty": 9.73,
+      "winter_mortality": 38.0,
+      "falls_hip_65": 519.0,
+      "pension_credit": 15.2,
+      "winter_fuel": 16.3,
+      "phys_act_65": 59.7
+    },
+    "Swanscombe": {
+      "area_code": "E02005031",
+      "frailty_pct": 3.71,
+      "frailty_n": 37,
+      "frailty_denom": 998,
+      "fuel_poverty": 10.9,
+      "winter_mortality": 32.3,
+      "falls_hip_65": 492.4,
+      "pension_credit": 16.3,
+      "winter_fuel": 10.8,
+      "phys_act_65": 55.6
+    },
+    "Temple Hill & Marshes": {
+      "area_code": "E02005028",
+      "frailty_pct": 7.27,
+      "frailty_n": 79,
+      "frailty_denom": 1086,
+      "fuel_poverty": 7.06,
+      "winter_mortality": 41.2,
+      "falls_hip_65": 483.5,
+      "pension_credit": 22.2,
+      "winter_fuel": 6.28,
+      "phys_act_65": 53.1
+    },
+    "Tenterden & Rolvenden": {
+      "area_code": "E02005008",
+      "frailty_pct": 2.35,
+      "frailty_n": 66,
+      "frailty_denom": 2804,
+      "fuel_poverty": 10.5,
+      "winter_mortality": 32.5,
+      "falls_hip_65": 492.5,
+      "pension_credit": 6.55,
+      "winter_fuel": 33.2,
+      "phys_act_65": 62.4
+    },
+    "Teynham & Badlesmere": {
+      "area_code": "E02005130",
+      "frailty_pct": 1.55,
+      "frailty_n": 31,
+      "frailty_denom": 2000,
+      "fuel_poverty": 14.3,
+      "winter_mortality": 29.6,
+      "falls_hip_65": 509.0,
+      "pension_credit": 8.9,
+      "winter_fuel": 19.3,
+      "phys_act_65": 59.3
+    },
+    "Thanington & Chartham": {
+      "area_code": "E02005026",
+      "frailty_pct": 2.6,
+      "frailty_n": 43,
+      "frailty_denom": 1657,
+      "fuel_poverty": 11.0,
+      "winter_mortality": 28.8,
+      "falls_hip_65": 628.0,
+      "pension_credit": 6.1,
+      "winter_fuel": 18.7,
+      "phys_act_65": 65.9
+    },
+    "Tonbridge Higham Wood": {
+      "area_code": "E02005159",
+      "frailty_pct": 2.02,
+      "frailty_n": 34,
+      "frailty_denom": 1683,
+      "fuel_poverty": 9.51,
+      "winter_mortality": 36.8,
+      "falls_hip_65": 448.7,
+      "pension_credit": 5.37,
+      "winter_fuel": 23.5,
+      "phys_act_65": 62.1
+    },
+    "Tonbridge South & Haysden": {
+      "area_code": "E02005161",
+      "frailty_pct": 3.43,
+      "frailty_n": 39,
+      "frailty_denom": 1136,
+      "fuel_poverty": 10.0,
+      "winter_mortality": 45.2,
+      "falls_hip_65": 830.0,
+      "pension_credit": 9.79,
+      "winter_fuel": 13.1,
+      "phys_act_65": 62.2
+    },
+    "Tonbridge Town": {
+      "area_code": "E02005160",
+      "frailty_pct": 3.72,
+      "frailty_n": 68,
+      "frailty_denom": 1827,
+      "fuel_poverty": 9.5,
+      "winter_mortality": 28.7,
+      "falls_hip_65": 404.5,
+      "pension_credit": 8.51,
+      "winter_fuel": 13.3,
+      "phys_act_65": 61.4
+    },
+    "Tonbridge Trench Wood": {
+      "area_code": "E02005157",
+      "frailty_pct": 1.87,
+      "frailty_n": 26,
+      "frailty_denom": 1392,
+      "fuel_poverty": 10.4,
+      "winter_mortality": 30.1,
+      "falls_hip_65": 450.6,
+      "pension_credit": 7.09,
+      "winter_fuel": 22.4,
+      "phys_act_65": 59.6
+    },
+    "Tovil": {
+      "area_code": "E02005076",
+      "frailty_pct": 2.96,
+      "frailty_n": 33,
+      "frailty_denom": 1116,
+      "fuel_poverty": 9.83,
+      "winter_mortality": 33.8,
+      "falls_hip_65": 853.0,
+      "pension_credit": 14.9,
+      "winter_fuel": 10.1,
+      "phys_act_65": 59.1
+    },
+    "Tree Estate": {
+      "area_code": "E02005036",
+      "frailty_pct": 3.93,
+      "frailty_n": 36,
+      "frailty_denom": 917,
+      "fuel_poverty": 12.2,
+      "winter_mortality": 33.3,
+      "falls_hip_65": 700.0,
+      "pension_credit": 16.9,
+      "winter_fuel": 12.6,
+      "phys_act_65": 53.7
+    },
+    "Tunbridge Wells Central": {
+      "area_code": "E02005169",
+      "frailty_pct": 2.29,
+      "frailty_n": 26,
+      "frailty_denom": 1135,
+      "fuel_poverty": 11.0,
+      "winter_mortality": 26.1,
+      "falls_hip_65": 539.0,
+      "pension_credit": 13.4,
+      "winter_fuel": 11.7,
+      "phys_act_65": 64.9
+    },
+    "Tunbridge Wells South": {
+      "area_code": "E02005173",
+      "frailty_pct": 3.97,
+      "frailty_n": 72,
+      "frailty_denom": 1813,
+      "fuel_poverty": 8.77,
+      "winter_mortality": 34.3,
+      "falls_hip_65": 386.0,
+      "pension_credit": 3.58,
+      "winter_fuel": 21.7,
+      "phys_act_65": 69.6
+    },
+    "Tunbridge Wells West": {
+      "area_code": "E02005168",
+      "frailty_pct": 11.2,
+      "frailty_n": 152,
+      "frailty_denom": 1358,
+      "fuel_poverty": 9.46,
+      "winter_mortality": 43.1,
+      "falls_hip_65": 645.0,
+      "pension_credit": 3.88,
+      "winter_fuel": 16.3,
+      "phys_act_65": 68.6
+    },
+    "Twydall": {
+      "area_code": "E02003331",
+      "frailty_pct": 4.29,
+      "frailty_n": 72,
+      "frailty_denom": 1677,
+      "falls_hip_65": 475.1,
+      "pension_credit": 16.2,
+      "winter_fuel": 17.9,
+      "phys_act_65": 54.1
+    },
+    "Wainscott & City Estate": {
+      "area_code": "E02003317",
+      "frailty_pct": 6.03,
+      "frailty_n": 76,
+      "frailty_denom": 1260,
+      "falls_hip_65": 502.0,
+      "pension_credit": 10.3,
+      "winter_fuel": 16.7,
+      "phys_act_65": 56.5
+    },
+    "Walderslade": {
+      "area_code": "E02003350",
+      "frailty_pct": 2.63,
+      "frailty_n": 33,
+      "frailty_denom": 1253,
+      "falls_hip_65": 463.3,
+      "pension_credit": 10.6,
+      "winter_fuel": 18.9,
+      "phys_act_65": 56.4
+    },
+    "Walmer": {
+      "area_code": "E02005047",
+      "frailty_pct": 5.64,
+      "frailty_n": 115,
+      "frailty_denom": 2040,
+      "fuel_poverty": 11.3,
+      "winter_mortality": 35.3,
+      "falls_hip_65": 450.3,
+      "pension_credit": 11.6,
+      "winter_fuel": 26.7,
+      "phys_act_65": 61.7
+    },
+    "Washford & Stanhope": {
+      "area_code": "E02005003",
+      "frailty_pct": 2.07,
+      "frailty_n": 25,
+      "frailty_denom": 1206,
+      "fuel_poverty": 7.73,
+      "winter_mortality": 40.4,
+      "falls_hip_65": 778.0,
+      "pension_credit": 25.4,
+      "winter_fuel": 11.4,
+      "phys_act_65": 55.7
+    },
+    "Wayfield": {
+      "area_code": "E02003340",
+      "frailty_pct": 5.53,
+      "frailty_n": 79,
+      "frailty_denom": 1428,
+      "falls_hip_65": 1055.0,
+      "pension_credit": 18.7,
+      "winter_fuel": 15.7,
+      "phys_act_65": 53.7
+    },
+    "West Kingsdown": {
+      "area_code": "E02005093",
+      "frailty_pct": 6.25,
+      "frailty_n": 81,
+      "frailty_denom": 1296,
+      "fuel_poverty": 9.54,
+      "winter_mortality": 32.5,
+      "falls_hip_65": 600.0,
+      "pension_credit": 8.38,
+      "winter_fuel": 28.1,
+      "phys_act_65": 64.1
+    },
+    "Westbrook & Garlinge": {
+      "area_code": "E02005136",
+      "frailty_pct": 5.22,
+      "frailty_n": 96,
+      "frailty_denom": 1839,
+      "fuel_poverty": 11.3,
+      "winter_mortality": 45.5,
+      "falls_hip_65": 580.0,
+      "pension_credit": 11.6,
+      "winter_fuel": 22.6,
+      "phys_act_65": 59.9
+    },
+    "Westcourt": {
+      "area_code": "E02005061",
+      "frailty_pct": 3.47,
+      "frailty_n": 42,
+      "frailty_denom": 1211,
+      "fuel_poverty": 12.2,
+      "winter_mortality": 48.4,
+      "falls_hip_65": 526.0,
+      "pension_credit": 17.6,
+      "winter_fuel": 15.5,
+      "phys_act_65": 56.3
+    },
+    "Westerham & Brasted": {
+      "area_code": "E02005099",
+      "frailty_pct": 1.81,
+      "frailty_n": 32,
+      "frailty_denom": 1767,
+      "fuel_poverty": 12.3,
+      "winter_mortality": 41.8,
+      "falls_hip_65": 409.0,
+      "pension_credit": 6.07,
+      "winter_fuel": 22.0,
+      "phys_act_65": 68.1
+    },
+    "Westgate": {
+      "area_code": "E02005138",
+      "frailty_pct": 8.56,
+      "frailty_n": 206,
+      "frailty_denom": 2407,
+      "fuel_poverty": 11.9,
+      "winter_mortality": 40.4,
+      "falls_hip_65": 519.0,
+      "pension_credit": 14.3,
+      "winter_fuel": 24.6,
+      "phys_act_65": 59.1
+    },
+    "Westwood, Northwood & Bromstone": {
+      "area_code": "E02005142",
+      "frailty_pct": 7.41,
+      "frailty_n": 157,
+      "frailty_denom": 2120,
+      "fuel_poverty": 10.6,
+      "winter_mortality": 42.6,
+      "falls_hip_65": 606.0,
+      "pension_credit": 9.88,
+      "winter_fuel": 27.9,
+      "phys_act_65": 58.6
+    },
+    "Whitstable Central & Tankerton": {
+      "area_code": "E02005016",
+      "frailty_pct": 2.1,
+      "frailty_n": 42,
+      "frailty_denom": 2003,
+      "fuel_poverty": 9.84,
+      "winter_mortality": 34.2,
+      "falls_hip_65": 588.0,
+      "pension_credit": 9.96,
+      "winter_fuel": 24.7,
+      "phys_act_65": 65.0
+    },
+    "Whitstable West": {
+      "area_code": "E02005017",
+      "frailty_pct": 2.44,
+      "frailty_n": 42,
+      "frailty_denom": 1718,
+      "fuel_poverty": 11.9,
+      "winter_mortality": 41.7,
+      "falls_hip_65": 630.0,
+      "pension_credit": 10.7,
+      "winter_fuel": 23.8,
+      "phys_act_65": 66.0
+    },
+    "Wilmington & Hawley": {
+      "area_code": "E02005038",
+      "frailty_pct": 7.02,
+      "frailty_n": 94,
+      "frailty_denom": 1339,
+      "fuel_poverty": 7.9,
+      "winter_mortality": 45.3,
+      "falls_hip_65": 535.0,
+      "pension_credit": 8.0,
+      "winter_fuel": 22.2,
+      "phys_act_65": 59.9
+    },
+    "Windmill Hill": {
+      "area_code": "E02005059",
+      "frailty_pct": 2.88,
+      "frailty_n": 52,
+      "frailty_denom": 1808,
+      "fuel_poverty": 11.5,
+      "winter_mortality": 35.8,
+      "falls_hip_65": 420.3,
+      "pension_credit": 8.02,
+      "winter_fuel": 17.6,
+      "phys_act_65": 60.4
+    },
+    "Wye, Chilham & Kennington": {
+      "area_code": "E02004996",
+      "frailty_pct": 1.93,
+      "frailty_n": 36,
+      "frailty_denom": 1863,
+      "fuel_poverty": 11.8,
+      "winter_mortality": 34.8,
+      "falls_hip_65": 378.3,
+      "pension_credit": 8.27,
+      "winter_fuel": 20.6,
+      "phys_act_65": 62.5
+    },
+    "Yalding & Farleigh": {
+      "area_code": "E02005081",
+      "frailty_pct": 1.6,
+      "frailty_n": 31,
+      "frailty_denom": 1935,
+      "fuel_poverty": 11.5,
+      "winter_mortality": 37.5,
+      "falls_hip_65": 528.0,
+      "pension_credit": 7.45,
+      "winter_fuel": 26.7,
+      "phys_act_65": 62.8
+    }
+  },
+  "pcn": {
+    "ABC PCN": {
+      "frailty_pct": 2.39,
+      "frailty_n": 141,
+      "period": "November 2025"
+    },
+    "Ashford Medical Partnership PCN": {
+      "frailty_pct": 2.76,
+      "frailty_n": 146,
+      "period": "November 2025"
+    },
+    "Ashford Rural PCN": {
+      "frailty_pct": 3.37,
+      "frailty_n": 354,
+      "period": "November 2025"
+    },
+    "Aspire Medical PCN": {
+      "frailty_pct": 4.1,
+      "frailty_n": 66,
+      "period": "November 2025"
+    },
+    "Athena PCN": {
+      "frailty_pct": 3.9,
+      "frailty_n": 221,
+      "period": "November 2025"
+    },
+    "CARE Kent PCN": {
+      "frailty_pct": 5.75,
+      "frailty_n": 843,
+      "period": "November 2025"
+    },
+    "Canterbury North PCN": {
+      "frailty_pct": 3.4,
+      "frailty_n": 312,
+      "period": "November 2025"
+    },
+    "Canterbury South PCN": {
+      "frailty_pct": 5.73,
+      "frailty_n": 323,
+      "period": "November 2025"
+    },
+    "Dartford Central PCN": {
+      "frailty_pct": 5.91,
+      "frailty_n": 181,
+      "period": "November 2025"
+    },
+    "Dartford Model PCN": {
+      "frailty_pct": 5.84,
+      "frailty_n": 369,
+      "period": "November 2025"
+    },
+    "Deal and Sandwich PCN": {
+      "frailty_pct": 4.42,
+      "frailty_n": 559,
+      "period": "November 2025"
+    },
+    "Dover Town PCN": {
+      "frailty_pct": 3.2,
+      "frailty_n": 212,
+      "period": "November 2025"
+    },
+    "Faversham PCN": {
+      "frailty_pct": 2.21,
+      "frailty_n": 159,
+      "period": "November 2025"
+    },
+    "Folkestone Hythe and Rural PCN": {
+      "frailty_pct": 4.48,
+      "frailty_n": 525,
+      "period": "November 2025"
+    },
+    "Garden City PCN": {
+      "frailty_pct": 3.31,
+      "frailty_n": 240,
+      "period": "November 2025"
+    },
+    "Gillingham South PCN": {
+      "frailty_pct": 4.68,
+      "frailty_n": 261,
+      "period": "November 2025"
+    },
+    "Gravesend Alliance PCN": {
+      "frailty_pct": 3.36,
+      "frailty_n": 292,
+      "period": "November 2025"
+    },
+    "Gravesend Central PCN": {
+      "frailty_pct": 3.04,
+      "frailty_n": 150,
+      "period": "November 2025"
+    },
+    "Herne Bay PCN": {
+      "frailty_pct": 4.02,
+      "frailty_n": 441,
+      "period": "November 2025"
+    },
+    "LMN Care PCN": {
+      "frailty_pct": 6.42,
+      "frailty_n": 444,
+      "period": "November 2025"
+    },
+    "MPA PCN": {
+      "frailty_pct": 4.01,
+      "frailty_n": 126,
+      "period": "November 2025"
+    },
+    "Maidstone Central PCN": {
+      "frailty_pct": 3.87,
+      "frailty_n": 305,
+      "period": "November 2025"
+    },
+    "Malling PCN": {
+      "frailty_pct": 3.31,
+      "frailty_n": 351,
+      "period": "November 2025"
+    },
+    "Margate PCN": {
+      "frailty_pct": 7.25,
+      "frailty_n": 941,
+      "period": "November 2025"
+    },
+    "Medway Central PCN": {
+      "frailty_pct": 4.85,
+      "frailty_n": 204,
+      "period": "November 2025"
+    },
+    "Medway Peninsula PCN": {
+      "frailty_pct": 3.06,
+      "frailty_n": 275,
+      "period": "November 2025"
+    },
+    "Medway Rainham PCN": {
+      "frailty_pct": 3.75,
+      "frailty_n": 456,
+      "period": "November 2025"
+    },
+    "Medway South PCN": {
+      "frailty_pct": 2.4,
+      "frailty_n": 52,
+      "period": "November 2025"
+    },
+    "Medway Valley PCN": {
+      "frailty_pct": 2.47,
+      "frailty_n": 126,
+      "period": "November 2025"
+    },
+    "Mid Kent PCN": {
+      "frailty_pct": 3.44,
+      "frailty_n": 364,
+      "period": "November 2025"
+    },
+    "Ramsgate PCN": {
+      "frailty_pct": 5.15,
+      "frailty_n": 395,
+      "period": "November 2025"
+    },
+    "Sevenoaks PCN": {
+      "frailty_pct": 2.27,
+      "frailty_n": 353,
+      "period": "November 2025"
+    },
+    "Sheppey PCN": {
+      "frailty_pct": 2.34,
+      "frailty_n": 216,
+      "period": "November 2025"
+    },
+    "Sittingbourne PCN": {
+      "frailty_pct": 3.32,
+      "frailty_n": 390,
+      "period": "November 2025"
+    },
+    "Strood PCN": {
+      "frailty_pct": 3.4,
+      "frailty_n": 280,
+      "period": "November 2025"
+    },
+    "Swanley and Rural PCN": {
+      "frailty_pct": 6.49,
+      "frailty_n": 396,
+      "period": "November 2025"
+    },
+    "The Marsh PCN": {
+      "frailty_pct": 3.23,
+      "frailty_n": 196,
+      "period": "November 2025"
+    },
+    "The Mote and Wallis Health PCN": {
+      "frailty_pct": 2.96,
+      "frailty_n": 66,
+      "period": "November 2025"
+    },
+    "The Ridge PCN": {
+      "frailty_pct": 2.11,
+      "frailty_n": 185,
+      "period": "November 2025"
+    },
+    "Tonbridge PCN": {
+      "frailty_pct": 2.57,
+      "frailty_n": 327,
+      "period": "November 2025"
+    },
+    "Total Health Excellence East PCN": {
+      "frailty_pct": 4.01,
+      "frailty_n": 242,
+      "period": "November 2025"
+    },
+    "Total Health Excellence West PCN": {
+      "frailty_pct": 5.6,
+      "frailty_n": 490,
+      "period": "November 2025"
+    },
+    "Tunbridge Wells PCN": {
+      "frailty_pct": 6.13,
+      "frailty_n": 827,
+      "period": "November 2025"
+    },
+    "Weald PCN": {
+      "frailty_pct": 1.88,
+      "frailty_n": 182,
+      "period": "November 2025"
+    },
+    "Whitstable PCN": {
+      "frailty_pct": 2.02,
+      "frailty_n": 192,
+      "period": "November 2025"
+    }
+  }
+}
