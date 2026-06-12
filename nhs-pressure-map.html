@@ -210,7 +210,7 @@ body {
 
 /* ── SIDE PANEL ── */
 .side-panel {
-  width: 415px; background: var(--surface);
+  width: 519px; background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
 }
@@ -394,6 +394,49 @@ body {
   #map { flex: 1; min-height: 200px; }
   .topbar-right { display: none; }
   .currency-left { gap: 0.5rem; }
+}
+
+/* ── DUAL CRISIS MODAL ── */
+.dc-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+  animation: dcFadeIn 0.18s ease;
+}
+@keyframes dcFadeIn { from { opacity:0 } to { opacity:1 } }
+.dc-modal {
+  background: #fff; border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  padding: 1.25rem 1.5rem 1rem;
+  max-width: 92vw; max-height: 92vh;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  animation: dcSlideIn 0.2s ease;
+}
+@keyframes dcSlideIn { from { transform:scale(0.95);opacity:0 } to { transform:scale(1);opacity:1 } }
+.dc-modal-hdr {
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.dc-modal-title {
+  font-family: var(--sans); font-size: 1rem; font-weight: 700; color: var(--text);
+}
+.dc-modal-close {
+  background: none; border: none; font-size: 1.4rem; cursor: pointer;
+  color: var(--text-muted); line-height: 1; padding: 0 0.25rem;
+}
+.dc-modal-close:hover { color: var(--text); }
+.dc-modal svg { width: 100%; height: auto; display: block; }
+.dc-chart-hint {
+  font-family: var(--mono); font-size: 0.6rem; color: var(--text-muted);
+  letter-spacing: 0.06em; text-align: center; margin-top: 0.25rem;
+  cursor: pointer;
+}
+.dc-chart-wrap {
+  cursor: zoom-in; position: relative;
+}
+.dc-chart-wrap::after {
+  content: '⤢ click to expand';
+  position: absolute; bottom: 8px; right: 10px;
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.06em;
+  color: rgba(0,0,0,0.38); pointer-events: none;
 }
 </style>
 </head>
@@ -1283,6 +1326,70 @@ function showDistrictDetail(name) {
   document.getElementById('panel-content').innerHTML = html;
 }
 
+// ── DUAL CRISIS MODAL ────────────────────────────────────────────────────────
+let dcSvgCache = '';
+
+function openDualCrisisModal() {
+  if (!dcSvgCache) return;
+  const backdrop = document.createElement('div');
+  backdrop.className = 'dc-modal-backdrop';
+  backdrop.onclick = e => { if (e.target === backdrop) closeDualCrisisModal(); };
+
+  // Build a larger version of the SVG for the modal
+  const W = 820, H = 580, PAD = 60;
+  // Re-use cached SVG but swap viewBox to larger dimensions for detail
+  const largeSvg = dcSvgCache.replace(
+    /viewBox="0 0 \d+ \d+"/,
+    `viewBox="0 0 460 320"`
+  ).replace(
+    /style="width:100%;max-width:\d+px"/,
+    'style="width:100%;height:auto"'
+  );
+
+  backdrop.innerHTML = `
+    <div class="dc-modal">
+      <div class="dc-modal-hdr">
+        <div class="dc-modal-title">Dual Crisis Matrix — Kent &amp; Medway</div>
+        <button class="dc-modal-close" onclick="closeDualCrisisModal()">×</button>
+      </div>
+      <div style="overflow:auto;flex:1">${largeSvg}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;flex-shrink:0">
+        <div style="background:rgba(153,27,27,0.07);border-left:3px solid #991b1b;border-radius:0 6px 6px 0;padding:0.5rem 0.75rem">
+          <div style="font-size:0.72rem;font-weight:700;color:#991b1b;margin-bottom:2px">Dual Crisis Zone</div>
+          <div style="font-size:0.68rem;color:var(--text-muted);line-height:1.4">High NHS corridor pressure AND high social care demand simultaneously — the feedback loop is active.</div>
+        </div>
+        <div style="background:rgba(180,83,9,0.06);border-left:3px solid #b45309;border-radius:0 6px 6px 0;padding:0.5rem 0.75rem">
+          <div style="font-size:0.72rem;font-weight:700;color:#b45309;margin-bottom:2px">Social Care Pressure</div>
+          <div style="font-size:0.68rem;color:var(--text-muted);line-height:1.4">Lower NHS corridor pressure but high social care demand — discharge delays likely even when wards have capacity.</div>
+        </div>
+        <div style="background:rgba(29,78,216,0.05);border-left:3px solid #1d4ed8;border-radius:0 6px 6px 0;padding:0.5rem 0.75rem">
+          <div style="font-size:0.72rem;font-weight:700;color:#1d4ed8;margin-bottom:2px">NHS Pressure</div>
+          <div style="font-size:0.68rem;color:var(--text-muted);line-height:1.4">High corridor care driven by NHS system factors — social care pipeline is less constrained.</div>
+        </div>
+        <div style="background:rgba(22,101,52,0.05);border-left:3px solid #166534;border-radius:0 6px 6px 0;padding:0.5rem 0.75rem">
+          <div style="font-size:0.72rem;font-weight:700;color:#166534;margin-bottom:2px">Managed</div>
+          <div style="font-size:0.68rem;color:var(--text-muted);line-height:1.4">Lower pressure on both dimensions. Standard planning protocols apply.</div>
+        </div>
+      </div>
+      <p style="font-size:0.62rem;color:var(--text-dim);flex-shrink:0;margin:0">
+        X axis: NHS corridor care avg/day (NHS England monthly, May 2026) · Y axis: social care pressure index (KPHO Pension Credit %, DLA 65+%, unpaid heavy care %) · Click any dot to open district detail.
+      </p>
+    </div>`;
+
+  document.body.appendChild(backdrop);
+  document.addEventListener('keydown', dcEscHandler);
+}
+
+function closeDualCrisisModal() {
+  const b = document.querySelector('.dc-modal-backdrop');
+  if (b) b.remove();
+  document.removeEventListener('keydown', dcEscHandler);
+}
+
+function dcEscHandler(e) {
+  if (e.key === 'Escape') closeDualCrisisModal();
+}
+
 // ── DUAL CRISIS MATRIX ────────────────────────────────────────────────────────
 function renderDualCrisis() {
   // NHS trust corridor pressure vs social care waiting list proxy
@@ -1421,6 +1528,7 @@ function renderDualCrisis() {
     <rect width="${W}" height="${H}" fill="white" rx="8"/>
     ${bgRects}${dividers}${xTicks}${yTicks}${axes}${qLabels}${dots}
   </svg>`;
+  dcSvgCache = svg;
 
   // Build feedback loop table
   const totalDelayCost = points.reduce((s, p) => s + p.delayCost, 0);
@@ -1450,7 +1558,7 @@ function renderDualCrisis() {
         Each day of social-care-delayed discharge costs the NHS approximately £350.
       </p>
 
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem;margin-bottom:1rem">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.75rem;margin-bottom:1rem" class="dc-chart-wrap" onclick="openDualCrisisModal()" title="Click to expand">
         ${svg}
       </div>
 
