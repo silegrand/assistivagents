@@ -136,9 +136,18 @@ def derive_pressure_values():
             vals["emerg_65plus"] = f"{sum(sums):,}"
 
     shmi = get_json("kent-shmi-data.json")
-    rvv = (shmi or {}).get("trusts", {}).get("RVV", {})
-    if rvv.get("shmi_value") is not None:
-        vals["shmi_ek"] = f"{rvv['shmi_value']:.2f}"
+    trusts = (shmi or {}).get("trusts", {})
+    short_names = {"RVV": "East Kent", "RWF": "Maidstone & T. Wells",
+                   "RPA": "Medway", "RN7": "Darent Valley"}
+    worst_code, worst_val = None, None
+    for code, t in trusts.items():
+        v = t.get("shmi_value")
+        if v is not None and (worst_val is None or v > worst_val):
+            worst_code, worst_val = code, v
+    if worst_val is not None:
+        vals["shmi_max"] = f"{worst_val:.2f}"
+        vals["shmi_label"] = (
+            f"SHMI — {short_names.get(worst_code, worst_code)} (highest)")
 
     gp = get_json("kent-gp-reg-data.json")
     if gp and gp.get("districts"):
