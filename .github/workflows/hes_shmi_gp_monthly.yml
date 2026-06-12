@@ -1,4 +1,4 @@
-name: HES + SHMI + GP Registration Monthly Refresh
+name: HES + SHMI + GP Registration + Winter Readiness Monthly Refresh
 
 on:
   schedule:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 openpyxl lxml
+          pip install requests beautifulsoup4 openpyxl lxml fingertips_py pandas
 
       - name: Run HES monthly fetcher
         env:
@@ -34,9 +34,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python fetch_shmi_gp.py
 
+      - name: Run Winter Readiness intelligence fetch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fetch_winter_data.py
+
       - name: Confirm outputs
         run: |
-          for f in kent-hes-data.json kent-shmi-data.json kent-gp-reg-data.json; do
+          for f in kent-hes-data.json kent-shmi-data.json kent-gp-reg-data.json kent-winter-data.json; do
             if [ -f "$f" ]; then
               echo "$f exists"
               python -c "import json; d=json.load(open('$f')); print('  Generated:', d['meta']['generated'][:10])"
