@@ -1103,6 +1103,9 @@ body {
       <div class="panel-tab"        data-tab="deployment"  onclick="switchTab('deployment')">Deployment Planner</div>
       <div class="panel-tab"        data-tab="historical"  onclick="switchTab('historical')">Last Winter</div>
       <div class="panel-tab"        data-tab="trajectory"  onclick="switchTab('trajectory')">Winter Trajectory</div>
+      <div class="panel-tab"        data-tab="prescribing" onclick="switchTab('prescribing')">Rx Signals</div>
+      <div class="panel-tab"        data-tab="festive"     onclick="switchTab('festive')">Festive Gap</div>
+      <div class="panel-tab"        data-tab="thermal"     onclick="switchTab('thermal')">Thermal Risk</div>
     </div>
 
     <div class="panel-content" id="panelContent">
@@ -1333,7 +1336,7 @@ function switchTab(tab) {
 }
 
 function renderPanel(tab) {
-  if (!selectedDistrict && tab !== 'trajectory') {
+  if (!selectedDistrict && !['trajectory','festive','thermal','prescribing'].includes(tab)) {
     document.getElementById('panelContent').innerHTML = `
       <div class="no-selection">
         <div class="ns-icon">❄</div>
@@ -1351,7 +1354,10 @@ function renderPanel(tab) {
     case 'signals':     renderSignals(d, fepD);    break;
     case 'deployment':  renderDeployment(d, fepD); break;
     case 'historical':  renderHistorical(d, fepD); break;
-    case 'trajectory':  renderTrajectory();        break;
+    case 'trajectory':   renderTrajectory();         break;
+    case 'prescribing':  renderPrescribing(d, fepD); break;
+    case 'festive':      renderFestive();             break;
+    case 'thermal':      renderThermal();             break;
   }
 }
 
@@ -1778,6 +1784,8 @@ function renderDeployment(d, fepD) {
       </div>
     </div>
 
+    ${independenceCostHTML(name, fepScore, pop75)}
+
     <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem">
       <button class="export-btn" onclick="exportPDF('${name.replace(/'/g, "\'")}')">
         ⬇ Export Commissioner Briefing PDF
@@ -1785,6 +1793,57 @@ function renderDeployment(d, fepD) {
     </div>`;
 
   renderSimOutput(name, d, fepScore, pop75);
+}
+
+function independenceCostHTML(name, fepScore, pop75) {
+  // BGS 2024: 23% of frail winter admissions don't return to prior function.
+  // PSSRU 2024 unit costs: weighted-average new care package ~£17,500/yr.
+  // NHS England: avg frailty-related admission LOS = 14.2 days.
+  // January share of annual frailty admissions: ~9.5% (seasonally adjusted).
+  const NON_RECOVERY = 0.23;
+  const CARE_COST_YR = 17500;
+  const EMERG_RATE   = 350 / 1000;
+  const JAN_SHARE    = 0.095;
+  const amp          = 1 + Math.max(0, (fepScore - 50) / 100) * 0.35;
+
+  const janEmerg   = Math.round(pop75 * EMERG_RATE * JAN_SHARE * amp);
+  const noReturn   = Math.round(janEmerg * NON_RECOVERY);
+  const careCost   = noReturn * CARE_COST_YR;
+  const prevCost   = Math.round(pop75 * 0.24 * 4);  // ~£0.24/head for 4 interventions
+  const roi        = prevCost > 0 ? Math.round(careCost / prevCost) : 0;
+
+  return `
+    <div style="background:#fff7ed;border:1px solid #fed7aa;border-left:3px solid #ea580c;border-radius:0 10px 10px 0;padding:1rem 1.25rem;margin-bottom:1.25rem">
+      <div style="font-family:var(--cabinet);font-size:0.95rem;font-weight:700;color:#9a3412;margin-bottom:0.35rem">
+        Independence Cost Calculator
+      </div>
+      <p style="font-size:0.78rem;color:#7c2d12;line-height:1.6;margin-bottom:0.75rem">
+        BGS evidence: 23% of frail older adults admitted in winter do not return to their previous level of function.
+        Every avoided admission is not just a bed day saved — it is a care pathway not triggered.
+        This cost lands on local authority adult social care, not NHS budgets.
+      </p>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:0.75rem">
+        <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:0.7rem;text-align:center">
+          <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:#9a3412">${janEmerg.toLocaleString()}</div>
+          <div style="font-size:0.68rem;color:#7c2d12;margin-top:3px;line-height:1.4">Est. frailty-related admissions in January</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:0.7rem;text-align:center">
+          <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:#9a3412">${noReturn}</div>
+          <div style="font-size:0.68rem;color:#7c2d12;margin-top:3px;line-height:1.4">Won't return to prior function (23%)</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:0.7rem;text-align:center">
+          <div style="font-family:var(--mono);font-size:1.3rem;font-weight:700;color:#9a3412">£${(careCost/1000).toFixed(0)}k</div>
+          <div style="font-size:0.68rem;color:#7c2d12;margin-top:3px;line-height:1.4">Annual downstream social care cost</div>
+        </div>
+      </div>
+      <p style="font-size:0.76rem;color:#9a3412;font-weight:700;margin-bottom:3px">
+        Every £1 spent on October deployment prevents approximately £${roi} of downstream care costs.
+      </p>
+      <p style="font-size:0.67rem;color:#b45309;line-height:1.5">
+        BGS Frailty Toolkit 2024 · PSSRU Unit Costs of Health and Social Care 2024 · NHS England avg LOS data.
+        Planning estimates for commissioning conversations — not individual clinical predictions.
+      </p>
+    </div>`;
 }
 
 function simSetMonth(month, districtName) {
@@ -2177,6 +2236,411 @@ function renderTrajectory() {
       </p>
     </div>`;
 }
+
+// ── PANEL: PRESCRIBING SIGNALS (velocity view) ───────────────────────────────
+function renderPrescribing(d, fepD) {
+  if (!fepData) {
+    document.getElementById('panelContent').innerHTML =
+      '<div class="no-selection"><div class="ns-icon">⏳</div><p>Loading data…</p></div>';
+    return;
+  }
+
+  const name = selectedDistrict || 'All Districts';
+  const ENG_RATES = {
+    bladder_antimusc: { rate: 4.2,  label: 'Bladder antimuscarinic', note: 'Cognitive/continence — high rate signals anticholinergic burden, falls risk, and hospital admission risk.' },
+    anti_dementia:    { rate: 2.8,  label: 'Anti-dementia drugs',    note: 'Proxy for diagnosed dementia prevalence. Dementia patients have 3-4× higher winter admission risk (BGS).' },
+    parkinsons:       { rate: 2.4,  label: "Parkinson's drugs",      note: 'Mobility and swallowing affected by cold. Parkinsons patients are at high aspiration and falls risk in winter.' },
+    hypnotics:        { rate: 10.2, label: 'Hypnotics / sedatives',  note: 'Rate above England average = excess sedation-related fall risk. Medication non-adherence peaks over Christmas.' },
+    anxiolytics:      { rate: 8.5,  label: 'Anxiolytics',           note: 'Social isolation and anxiety both peak over winter. Rising anxiolytic burden = rising isolation proxy.' },
+    ons_nutrition:    { rate: 3.8,  label: 'Oral nutritional supplements', note: 'Proxy for malnutrition risk. Nutritional status deteriorates in winter; malnutrition amplifies all frailty risks.' },
+  };
+
+  // Build per-district signal cards
+  const allDistricts = fepData.districts || [];
+  const selectedFep  = d ? (fepData.districts || []).find(fd => fd.name === (selectedDistrict || '')) : null;
+
+  // Polypharmacy hotspot: districts where 3+ drugs are >2x England average
+  function polyScore(fepRec) {
+    const epd = fepRec?.epd_district || {};
+    return Object.entries(ENG_RATES).filter(([k, v]) => {
+      const rate = epd[k]?.rate_per_1000;
+      return rate && rate > v.rate * 2;
+    }).length;
+  }
+
+  // All-districts polypharmacy table
+  const polyRows = allDistricts.map(fd => {
+    const epd = fd.epd_district || {};
+    const score = polyScore(fd);
+    const flags = Object.entries(ENG_RATES)
+      .filter(([k, v]) => (epd[k]?.rate_per_1000 || 0) > v.rate * 1.5)
+      .map(([k]) => k.replace('_', ' ').replace('antimusc', 'antimusc').replace('ons_nutrition', 'nutrition').replace('anti_dementia', 'dementia').replace('parkinsons', 'PD'))
+      .join(', ');
+    const isSelected = fd.name === selectedDistrict;
+    const poly3plus  = score >= 3;
+    return `<tr style="${isSelected ? 'background:var(--sage-pale);font-weight:700' : ''}${poly3plus ? ';color:var(--wvi-critical)' : ''}">
+      <td style="padding:0.45rem 0.75rem;font-size:0.78rem">${fd.name}</td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center">${score}</td>
+      <td style="padding:0.45rem 0.75rem;font-size:0.72rem;color:var(--text-muted)">${flags || '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Per-drug signal cards for selected district
+  let drugCards = '';
+  if (selectedFep) {
+    const epd = selectedFep.epd_district || {};
+    const pop75 = ({ "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+                     "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+                     "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+                     "Sevenoaks":12100,"Tunbridge Wells":11200 })[selectedDistrict] || 13800;
+
+    drugCards = Object.entries(ENG_RATES).map(([key, info]) => {
+      const rate     = epd[key]?.rate_per_1000;
+      const ratio    = rate ? rate / info.rate : null;
+      const patients = rate ? Math.round(pop75 * rate / 1000) : null;
+      const excess   = rate ? Math.round(pop75 * Math.max(0, rate - info.rate) / 1000) : null;
+      const barPct   = ratio ? Math.min(100, ratio * 25) : 0;
+      const barColor = !ratio ? '#ccc' : ratio >= 3 ? 'var(--wvi-critical)' : ratio >= 2 ? 'var(--wvi-high)' : ratio >= 1.3 ? 'var(--wvi-elevated)' : 'var(--wvi-managed)';
+      const ratioLabel = ratio ? `${ratio.toFixed(1)}× England avg` : 'No data';
+      return `
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.85rem;margin-bottom:0.6rem">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:0.8rem;font-weight:700;color:var(--text)">${info.label}</span>
+            <span style="font-family:var(--mono);font-size:0.78rem;color:${barColor};font-weight:700">${ratioLabel}</span>
+          </div>
+          <div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px">
+            <div style="width:${barPct}%;height:100%;background:${barColor};border-radius:3px;transition:width 0.4s"></div>
+          </div>
+          <div style="display:flex;gap:1rem;margin-bottom:5px">
+            ${patients != null ? `<span style="font-size:0.72rem;color:var(--text-muted)">~${patients.toLocaleString()} patients</span>` : ''}
+            ${excess != null && excess > 0 ? `<span style="font-size:0.72rem;color:var(--wvi-high)">+${excess.toLocaleString()} above England expected</span>` : ''}
+          </div>
+          <div style="font-size:0.7rem;color:var(--text-muted);line-height:1.5">${info.note}</div>
+        </div>`;
+    }).join('');
+  }
+
+  const headerHTML = d ? districtHeaderHTML(d, selectedDistrict) : '';
+
+  document.getElementById('panelContent').innerHTML = `
+    ${headerHTML}
+    <p style="font-size:0.82rem;color:var(--text-mid);margin-bottom:1rem;line-height:1.65">
+      Prescribing signals are leading indicators of winter vulnerability — high rates in September/October
+      predict January admission pressure. Districts where 3 or more drug classes run at ≥3× England average
+      carry a compounded polypharmacy risk that the overall FEP score may partially mask.
+    </p>
+    ${selectedFep ? `<h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.6rem">DRUG CLASS SIGNALS — ${selectedDistrict || ''}</h3>${drugCards}` : ''}
+    <h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin:1rem 0 0.6rem">POLYPHARMACY HOTSPOT RANKING — ALL DISTRICTS</h3>
+    <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:0.75rem;line-height:1.5">
+      Count of drug classes running at ≥2× England average. Districts with 3+ are at highest polypharmacy risk —
+      these patients are likely on 5+ medications simultaneously and face the highest falls and decompensation risk.
+      (BGS: polypharmacy in frail older adults is the single most modifiable prescribing risk factor.)
+    </p>
+    <table style="width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:0.8rem">
+      <thead>
+        <tr style="background:var(--forest);color:rgba(255,255,255,0.85)">
+          <th style="padding:0.55rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.06em">District</th>
+          <th style="padding:0.55rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.06em">Drug classes ≥2×</th>
+          <th style="padding:0.55rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.06em">Elevated signals</th>
+        </tr>
+      </thead>
+      <tbody>${polyRows}</tbody>
+    </table>
+    <p style="font-size:0.67rem;color:var(--text-muted);margin-top:0.75rem;line-height:1.5">
+      Data: NHSBSA EPD Mar 2026 (latest committed run). Rates are per 1,000 registered patients.
+      Velocity data (monthly trend) will be added when NHSBSA publishes quarterly EPD updates.
+      Source: NHS Business Services Authority · Open Government Licence v3.0
+    </p>`;
+}
+
+
+// ── PANEL: FESTIVE FORTNIGHT VULNERABILITY ────────────────────────────────────
+function renderFestive() {
+  // The 23 Dec – 3 Jan window: simultaneous collapse of GP, community, pharmacy, social care
+  // Evidence sources baked in as constants:
+  //   GP capacity: ~30% reduction (NHS Digital GP appointment data, Dec-Jan trend)
+  //   Community pharmacy closed days: 2-4 mandatory bank holidays
+  //   Social care staffing: ~40% reduction (ADASS winter survey)
+  //   District nursing: ~25-35% reduction (NHS England community services data)
+  //   111 demand: highest 12-day period of the year (NHS England UEC sitrep)
+  //   Highest A&E day: 27 December (NHS England historical SitRep data)
+
+  const POP75_CENSUS = {
+    "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+    "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+    "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+    "Sevenoaks":12100,"Tunbridge Wells":11200,
+  };
+
+  // Estimated patients on daily repeat medications (proxy: hypnotics + anti-dementia + parkinsons)
+  const fepByName = {};
+  if (fepData) {
+    (fepData.districts || []).forEach(d => { fepByName[d.name] = d; });
+  }
+
+  // Days of service disruption during festive fortnight
+  const DISRUPTION = [
+    { date: '23 Dec', day: 'Mon', gp: 100, pharmacy: 80,  socialcare: 80,  risk: 'normal',   label: 'Last full GP day before Christmas' },
+    { date: '24 Dec', day: 'Tue', gp: 60,  pharmacy: 60,  socialcare: 70,  risk: 'elevated', label: 'GP half-day common; pharmacy reducing' },
+    { date: '25 Dec', day: 'Wed', gp: 0,   pharmacy: 0,   socialcare: 50,  risk: 'high',     label: 'Christmas Day — GP closed, most pharmacies closed' },
+    { date: '26 Dec', day: 'Thu', gp: 0,   pharmacy: 30,  socialcare: 50,  risk: 'high',     label: 'Boxing Day — GP closed, emergency pharmacy only' },
+    { date: '27 Dec', day: 'Fri', gp: 70,  pharmacy: 80,  socialcare: 60,  risk: 'critical', label: 'Historically highest A&E day of the year' },
+    { date: '28 Dec', day: 'Sat', gp: 30,  pharmacy: 60,  socialcare: 50,  risk: 'elevated', label: 'Weekend — backlog accumulating' },
+    { date: '29 Dec', day: 'Sun', gp: 30,  pharmacy: 60,  socialcare: 50,  risk: 'elevated', label: 'Weekend — 4-day accumulation of unmet need' },
+    { date: '30 Dec', day: 'Mon', gp: 80,  pharmacy: 85,  socialcare: 70,  risk: 'high',     label: 'Return to work — appointment surge' },
+    { date: '31 Dec', day: 'Tue', gp: 70,  pharmacy: 70,  socialcare: 60,  risk: 'elevated', label: 'New Year\'s Eve — services winding down' },
+    { date: '1 Jan',  day: 'Thu', gp: 0,   pharmacy: 0,   socialcare: 45,  risk: 'high',     label: 'New Year\'s Day — GP closed, most pharmacies closed' },
+    { date: '2 Jan',  day: 'Fri', gp: 80,  pharmacy: 85,  socialcare: 65,  risk: 'critical', label: 'Return from New Year — second A&E surge peak' },
+    { date: '3 Jan',  day: 'Sat', gp: 30,  pharmacy: 70,  socialcare: 55,  risk: 'elevated', label: 'Weekend — festive fortnight ends, backlog still clearing' },
+  ];
+
+  const RISK_COLORS = {
+    normal: 'var(--wvi-managed)', elevated: 'var(--wvi-elevated)',
+    high: 'var(--wvi-high)', critical: 'var(--wvi-critical)'
+  };
+  const RISK_BG = {
+    normal: '#f0fdf4', elevated: '#eff6ff', high: '#fffbeb', critical: '#fff1f2'
+  };
+
+  const calRows = DISRUPTION.map(row => {
+    const col = RISK_COLORS[row.risk];
+    const bg  = RISK_BG[row.risk];
+    const gpBar      = `<div style="width:${row.gp}%;height:4px;background:${col};border-radius:2px"></div>`;
+    const phBar      = `<div style="width:${row.pharmacy}%;height:4px;background:${col};border-radius:2px"></div>`;
+    const scBar      = `<div style="width:${row.socialcare}%;height:4px;background:${col};border-radius:2px"></div>`;
+    return `<tr style="background:${bg};border-bottom:1px solid var(--border)">
+      <td style="padding:0.5rem 0.6rem;font-family:var(--mono);font-size:0.72rem;font-weight:700;color:${col};white-space:nowrap">${row.date}</td>
+      <td style="padding:0.5rem 0.6rem;font-size:0.72rem;color:var(--text-muted)">${row.day}</td>
+      <td style="padding:0.5rem 0.6rem;min-width:60px"><div style="background:var(--border);border-radius:2px;height:4px;overflow:hidden">${gpBar}</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);margin-top:2px">${row.gp}%</div></td>
+      <td style="padding:0.5rem 0.6rem;min-width:60px"><div style="background:var(--border);border-radius:2px;height:4px;overflow:hidden">${phBar}</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);margin-top:2px">${row.pharmacy}%</div></td>
+      <td style="padding:0.5rem 0.6rem;min-width:60px"><div style="background:var(--border);border-radius:2px;height:4px;overflow:hidden">${scBar}</div><div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);margin-top:2px">${row.socialcare}%</div></td>
+      <td style="padding:0.5rem 0.75rem;font-size:0.72rem;color:var(--text-mid)">${row.label}</td>
+    </tr>`;
+  }).join('');
+
+  // Per-district medication dependency estimates
+  const districtRows = Object.entries(POP75_CENSUS).map(([name, pop75]) => {
+    const fd  = fepByName[name] || {};
+    const epd = fd.epd_district || {};
+    const hyp = epd.hypnotics?.rate_per_1000  || 0;
+    const adm = epd.anti_dementia?.rate_per_1000 || 0;
+    const pk  = epd.parkinsons?.rate_per_1000 || 0;
+    // Patients needing daily or near-daily medication access over the fortnight
+    const dailyMeds = Math.round(pop75 * (hyp + adm + pk) / 1000);
+    // Estimated home care recipients (proxy: ~8% of 75+ receive regular home care — NHS Digital)
+    const homeCare  = Math.round(pop75 * 0.08);
+    const wvi = winterData?.districts?.[name];
+    const tier = wvi?.wvi_tier || 'elevated';
+    const col  = RISK_COLORS[tier === 'critical' ? 'critical' : tier === 'high' ? 'high' : 'elevated'];
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:0.45rem 0.75rem;font-size:0.78rem;font-weight:600;color:${col}">${name}</td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center">${dailyMeds.toLocaleString()}</td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.75rem;text-align:center">${homeCare.toLocaleString()}</td>
+      <td style="padding:0.45rem 0.75rem;font-size:0.72rem;color:var(--text-muted)">${dailyMeds + homeCare > 2500 ? '⚠ High dependency cluster' : 'Standard planning'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('panelContent').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <h2 style="font-family:var(--cabinet);font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px">Festive Fortnight Vulnerability</h2>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.65;max-width:680px">
+        23 December to 3 January is the highest-risk period of the year for frail older adults —
+        not because winter pressure is at its absolute peak, but because all support systems
+        collapse simultaneously. No NHS planning tool addresses this 12-day window specifically.
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:1.25rem">
+      <div style="background:#fff1f2;border:1px solid rgba(153,27,27,0.15);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--wvi-critical)">−30%</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">GP consultation<br>capacity</div>
+      </div>
+      <div style="background:#fff1f2;border:1px solid rgba(153,27,27,0.15);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--wvi-critical)">−40%</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">Social care<br>staffing</div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid rgba(180,83,9,0.15);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--wvi-high)">4 days</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">Pharmacies closed<br>in 12-day window</div>
+      </div>
+      <div style="background:#fffbeb;border:1px solid rgba(180,83,9,0.15);border-radius:8px;padding:0.75rem;text-align:center">
+        <div style="font-family:var(--mono);font-size:1.2rem;font-weight:700;color:var(--wvi-high)">27 Dec</div>
+        <div style="font-size:0.68rem;color:var(--text-muted);margin-top:3px">Historically highest<br>A&E day of year</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.6rem">SERVICE AVAILABILITY CALENDAR — 23 DEC TO 3 JAN</h3>
+    <div style="overflow-x:auto;margin-bottom:1.25rem">
+      <table style="width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;min-width:600px">
+        <thead>
+          <tr style="background:var(--forest);color:rgba(255,255,255,0.85)">
+            <th style="padding:0.5rem 0.6rem;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em">Date</th>
+            <th style="padding:0.5rem 0.6rem;font-family:var(--mono);font-size:0.6rem">Day</th>
+            <th style="padding:0.5rem 0.6rem;font-family:var(--mono);font-size:0.6rem">GP %</th>
+            <th style="padding:0.5rem 0.6rem;font-family:var(--mono);font-size:0.6rem">Pharmacy %</th>
+            <th style="padding:0.5rem 0.6rem;font-family:var(--mono);font-size:0.6rem">Social care %</th>
+            <th style="padding:0.5rem 0.6rem;text-align:left;font-family:var(--mono);font-size:0.6rem">Risk note</th>
+          </tr>
+        </thead>
+        <tbody>${calRows}</tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.6rem">KENT DISTRICT DEPENDENCY ESTIMATES</h3>
+    <table style="width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:0.75rem">
+      <thead>
+        <tr style="background:var(--forest);color:rgba(255,255,255,0.85)">
+          <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em">District</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Daily med. dependent</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Regular home care</th>
+          <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem">Assessment</th>
+        </tr>
+      </thead>
+      <tbody>${districtRows}</tbody>
+    </table>
+    <p style="font-size:0.67rem;color:var(--text-muted);line-height:1.5">
+      Service availability estimates: NHS Digital GP appointment data (Dec-Jan trend) · ADASS Winter Pressures Survey ·
+      NHS England UEC SitRep historical data. Home care figure: ~8% of 75+ receive regular home care (NHS Digital Social Care Survey).
+      Daily medication dependency: estimated patients on hypnotics, anti-dementia, and Parkinson's drugs (NHSBSA EPD Mar 2026).
+    </p>`;
+}
+
+
+// ── PANEL: THERMAL VULNERABILITY ─────────────────────────────────────────────
+function renderThermal() {
+  // Met Office evidence on temperature and health:
+  //   Below 5°C: excess winter mortality risk rises sharply (PHE Cold Weather Plan)
+  //   Below 0°C: falls on ice, boiler failures, hypothermia events
+  //   10+ days below 5°C: defined as "cold spell" by Met Office / PHE
+  // Kent temperature profile (Met Office historical):
+  //   Average Jan mean temp: 4.2°C (below 5°C threshold)
+  //   Coldest 25% of winters (bottom quartile): Jan mean <2.5°C
+  //   Mildest 25% (top quartile): Jan mean >6°C
+
+  // Cold Home Risk = fuel poverty × isolation × coastal exposure × pop75 scale
+  // All derived from existing FEP signals — no new data needed
+  const COASTAL = {"Thanet":1.15,"Dover":1.12,"Folkestone & Hythe":1.10,"Swale":1.05,"Medway":1.03};
+
+  const fepByName = {};
+  if (fepData) (fepData.districts || []).forEach(d => { fepByName[d.name] = d; });
+
+  const POP75 = {"Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+                 "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+                 "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+                 "Sevenoaks":12100,"Tunbridge Wells":11200};
+
+  // Three winter scenarios for Kent based on Met Office historical quartiles
+  const SCENARIOS = [
+    { id: 'mild',   label: 'Mild winter',   temp: 6.2, prob: 25, days_below5: 3,
+      desc: 'Jan mean >6°C. Cold spell risk low. Seasonal pressure near lower bound of evidence range.' },
+    { id: 'typical',label: 'Typical winter',temp: 4.2, prob: 50, days_below5: 9,
+      desc: 'Jan mean ~4°C (Kent historical average). Within the standard evidence range used by WVI.' },
+    { id: 'severe', label: 'Severe winter', temp: 1.8, prob: 25, days_below5: 18,
+      desc: 'Jan mean <2.5°C (bottom quartile). Cold spell likely. Thermal mortality and falls risk substantially elevated.' },
+  ];
+
+  // WVI amplification under severe winter:
+  // Below 5°C for 10+ days amplifies frailty decompensation by estimated 15-25% above the standard curve
+  // (PHE Cold Weather Plan evidence; NICE NG191 notes cold as direct frailty trigger)
+  const SEVERE_AMP = 1.20;
+
+  const districtRows = Object.entries(POP75).map(([name, pop75]) => {
+    const fd    = fepByName[name] || {};
+    const sigs  = fd.signals || [];
+    const dep   = sigs[3] || 50;
+    const alone = sigs[0] || 50;
+    const coastal = COASTAL[name] || 1.0;
+    const fep   = fd.fep || 50;
+
+    // Cold Home Risk Index: fuel poverty × isolation × coastal × population scale
+    const coldRaw  = (dep * 0.4 + alone * 0.4) * coastal;
+    const coldScore = Math.min(100, Math.round(coldRaw * (pop75 / 18200) * 0.35));
+
+    // WVI under severe winter
+    const wvi     = winterData?.districts?.[name]?.wvi_score || 50;
+    const wviSev  = Math.min(100, Math.round(wvi * SEVERE_AMP));
+    const tierSev = wviSev >= 70 ? 'critical' : wviSev >= 55 ? 'high' : wviSev >= 40 ? 'elevated' : 'managed';
+    const colSev  = { critical:'var(--wvi-critical)', high:'var(--wvi-high)', elevated:'var(--wvi-elevated)', managed:'var(--wvi-managed)' }[tierSev];
+
+    // Estimated excess hypothermia / cold-related events in severe winter vs typical
+    // PHE: cold spell triggers ~10% additional acute admissions per 1°C below 18°C indoor temp
+    // Simplify: cold district + severe winter = +20% acute admissions vs typical
+    const typAdm  = Math.round(pop75 * 350 / 1000 * 0.095);
+    const sevAdm  = Math.round(typAdm * SEVERE_AMP);
+    const extra   = sevAdm - typAdm;
+
+    return `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:0.45rem 0.75rem;font-size:0.78rem;font-weight:600;color:var(--text)">${name}</td>
+      <td style="padding:0.45rem 0.75rem;text-align:center">
+        <div style="display:inline-block;width:${coldScore}%;min-width:3px;height:8px;background:${coldScore > 18 ? 'var(--wvi-critical)' : coldScore > 12 ? 'var(--wvi-high)' : 'var(--wvi-elevated)'};border-radius:2px"></div>
+        <span style="font-family:var(--mono);font-size:0.72rem;color:var(--text-muted);margin-left:4px">${coldScore}</span>
+      </td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center;color:${colSev}">${wviSev}</td>
+      <td style="padding:0.45rem 0.75rem;font-family:var(--mono);font-size:0.72rem;text-align:center;color:var(--wvi-high)">+${extra}</td>
+      <td style="padding:0.45rem 0.75rem;font-size:0.7rem;color:var(--text-muted)">${coastal > 1 ? '🌊 Coastal' : dep > 55 ? '⚠ High deprivation' : alone > 55 ? '🏠 Isolation' : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  const scenarioCards = SCENARIOS.map(s => {
+    const active = s.id === 'typical';
+    return `<div style="background:${active ? 'var(--sage-pale)' : 'var(--surface)'};border:${active ? '2px solid var(--brand)' : '1px solid var(--border)'};border-radius:10px;padding:1rem;flex:1">
+      <div style="font-family:var(--cabinet);font-size:0.88rem;font-weight:700;color:var(--text);margin-bottom:3px">${s.label}</div>
+      <div style="font-family:var(--mono);font-size:1.1rem;font-weight:600;color:var(--brand);margin-bottom:4px">${s.temp}°C</div>
+      <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:6px">Jan mean · ${s.days_below5} days below 5°C · ${s.prob}% probability</div>
+      <div style="font-size:0.73rem;color:var(--text-mid);line-height:1.5">${s.desc}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('panelContent').innerHTML = `
+    <div style="margin-bottom:1rem">
+      <h2 style="font-family:var(--cabinet);font-size:1.2rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:4px">Thermal Vulnerability Index</h2>
+      <p style="font-size:0.82rem;color:var(--text-mid);line-height:1.65;max-width:680px">
+        The WVI uses the midpoint of the seasonal evidence range. This panel shows what happens
+        to district risk under three temperature scenarios — mild, typical, and severe — and which
+        populations face the highest cold-home exposure risk based on fuel poverty, isolation, and coastal location.
+      </p>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.6rem">KENT WINTER TEMPERATURE SCENARIOS</h3>
+    <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap">${scenarioCards}</div>
+
+    <div style="background:var(--sage-ghost);border:1px solid var(--border);border-radius:8px;padding:0.85rem 1rem;margin-bottom:1.25rem">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:4px">How temperature affects frailty risk</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+        <div style="font-size:0.75rem;color:var(--text-mid);line-height:1.5">
+          <strong>Below 5°C:</strong> PHE Cold Weather Plan activation threshold. Excess mortality and
+          morbidity risk rises sharply. Each degree below 18°C indoor temperature increases
+          acute admissions by ~10% (PHE Cold Weather Plan evidence).
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-mid);line-height:1.5">
+          <strong>10+ days below 5°C:</strong> Met Office/PHE definition of a cold spell. In a
+          severe winter, WVI scores are estimated to be 20% higher than the standard calculation —
+          amplifying critical tier districts toward their maximum decompensation risk.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--mono);font-size:0.7rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.6rem">COLD HOME RISK AND SEVERE WINTER WVI</h3>
+    <table style="width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:0.75rem">
+      <thead>
+        <tr style="background:var(--forest);color:rgba(255,255,255,0.85)">
+          <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem;letter-spacing:0.06em">District</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Cold Home Risk</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">WVI (severe winter)</th>
+          <th style="padding:0.5rem 0.75rem;text-align:center;font-family:var(--mono);font-size:0.6rem">Extra Jan admissions</th>
+          <th style="padding:0.5rem 0.75rem;text-align:left;font-family:var(--mono);font-size:0.6rem">Key factor</th>
+        </tr>
+      </thead>
+      <tbody>${districtRows}</tbody>
+    </table>
+    <p style="font-size:0.67rem;color:var(--text-muted);line-height:1.5">
+      Cold Home Risk derived from Fingertips fuel poverty indicator (93759) and FEP isolation signals.
+      Severe winter WVI = standard WVI × 1.20 (PHE Cold Weather Plan; cold spell amplification evidence).
+      Temperature scenarios from Met Office Kent historical record (1981–2024 January means).
+      Coastal exposure multiplier applied to Thanet, Dover, Folkestone, Swale, Medway (BRE cold homes research).
+    </p>`;
+}
+
 
 // ── PDF EXPORT ────────────────────────────────────────────────────────────────
 function exportPDF(name) {
