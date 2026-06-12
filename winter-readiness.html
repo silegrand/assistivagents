@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-32.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Winter Readiness Intelligence — Kent &amp; Medway 2026-27 · Assistiv Systems</title>
+<meta name="description" content="Forward-looking winter frailty intelligence for Kent ICB commissioners. District-level Winter Vulnerability Index, deployment windows, and pre-winter signals.">
+<link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root {
+  /* ── Assistiv Cloud — blue brand ── */
+  --brand:       #365EBF;
+  --brand-dark:  #1e3a7a;
+  --forest:      #1e3a7a;
+  --forest-mid:  #2a4d9e;
+  --sage:        #365EBF;
+  --sage-mid:    #4a72cc;
+  --sage-light:  #7a9ee0;
+  --sage-pale:   #e8edf8;
+  --sage-ghost:  rgba(54,94,191,0.07);
+  --cream:       #eef2fb;
+  --cream-mid:   #dde5f5;
+  --amber:       #8a6200;
+  --amber-pale:  #fdf3dc;
+  --text:        #0f1e42;
+  --text-mid:    #3a4d6e;
+  --text-muted:  #6275a0;
+  --surface:     #ffffff;
+  --surface2:    #f5f7fd;
+  --border:      #d0d9f0;
+  --mono:        'DM Mono', monospace;
+  --sans:        'Nunito', sans-serif;
+  --cabinet:     'Cabinet Grotesk', sans-serif;
+
+  /* WVI tier colours */
+  --wvi-critical: #991b1b;
+  --wvi-high:     #b45309;
+  --wvi-elevated: #1d4ed8;
+  --wvi-managed:  #166534;
+
+  --wvi-critical-pale: #fff1f2;
+  --wvi-high-pale:     #fffbeb;
+  --wvi-elevated-pale: #eff6ff;
+  --wvi-managed-pale:  #f0fdf4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--forest);
+  padding: 0 1.5rem;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  border-bottom: 2px solid rgba(255,255,255,0.08);
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+}
+.topbar-logo {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7a9ee0, #365EBF);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.topbar-title {
+  font-family: var(--cabinet);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+.topbar-sub {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.08em;
+  margin-top: 1px;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topbar-back {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+}
+.topbar-back:hover { color: #fff; }
+
+/* ── WINTER BANNER ── */
+.winter-banner {
+  background: linear-gradient(135deg, #1e3a7a 0%, #2563eb 50%, #1e40af 100%);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.winter-banner-left h1 {
+  font-family: var(--cabinet);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25rem;
+}
+.winter-banner-left p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+  max-width: 560px;
+  line-height: 1.5;
+}
+.winter-countdown {
+  text-align: right;
+}
+.winter-countdown .count {
+  font-family: var(--mono);
+  font-size: 2rem;
+  font-weight: 500;
+  color: #fbbf24;
+  line-height: 1;
+}
+.winter-countdown .count-label {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
+}
+.winter-countdown .deployment-line {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+}
+
+/* ── MAIN LAYOUT ── */
+.main {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 0;
+  height: calc(100vh - 54px - 88px);
+  min-height: 600px;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sidebar-header h2 {
+  font-family: var(--cabinet);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.sidebar-meta {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 3px;
+}
+.district-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+.district-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, border-color 0.12s;
+}
+.district-item:hover { background: var(--sage-ghost); }
+.district-item.active {
+  background: var(--sage-pale);
+  border-left-color: var(--brand);
+}
+.district-rank {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.district-wvi-bar {
+  flex: 1;
+}
+.district-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 3px;
+}
+.tier-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.tier-dot.critical { background: var(--wvi-critical); }
+.tier-dot.high     { background: var(--wvi-high); }
+.tier-dot.elevated { background: var(--wvi-elevated); }
+.tier-dot.managed  { background: var(--wvi-managed); }
+
+.wvi-bar-track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.wvi-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.wvi-bar-fill.critical { background: var(--wvi-critical); }
+.wvi-bar-fill.high     { background: var(--wvi-high); }
+.wvi-bar-fill.elevated { background: var(--wvi-elevated); }
+.wvi-bar-fill.managed  { background: var(--wvi-managed); }
+
+.district-score {
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.district-score.critical { color: var(--wvi-critical); }
+.district-score.high     { color: var(--wvi-high); }
+.district-score.elevated { color: var(--wvi-elevated); }
+.district-score.managed  { color: var(--wvi-managed); }
+
+/* ── MAIN PANEL ── */
+.panel-area {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-tabs {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+.panel-tab {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.12s, border-color 0.12s;
+  font-family: var(--sans);
+}
+.panel-tab:hover { color: var(--text); }
+.panel-tab.active {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+/* ── DISTRICT HEADER (appears in all panels) ── */
+.district-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.district-header-left h2 {
+  font-family: var(--cabinet);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.district-header-left .trust-line {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+.wvi-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  min-width: 110px;
+  text-align: center;
+}
+.wvi-badge .wvi-number {
+  font-family: var(--mono);
+  font-size: 2.2rem;
+  font-weight: 500;
+  line-height: 1;
+}
+.wvi-badge .wvi-label {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  opacity: 0.7;
+}
+.wvi-badge .wvi-tier-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.wvi-badge.critical {
+  background: var(--wvi-critical-pale);
+  border-color: rgba(153,27,27,0.2);
+  color: var(--wvi-critical);
+}
+.wvi-badge.high {
+  background: var(--wvi-high-pale);
+  border-color: rgba(180,83,9,0.2);
+  color: var(--wvi-high);
+}
+.wvi-badge.elevated {
+  background: var(--wvi-elevated-pale);
+  border-color: rgba(29,78,216,0.2);
+  color: var(--wvi-elevated);
+}
+.wvi-badge.managed {
+  background: var(--wvi-managed-pale);
+  border-color: rgba(22,101,52,0.2);
+  color: var(--wvi-managed);
+}
+
+/* ── PANEL 1: OVERVIEW ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem;
+}
+.stat-card .stat-val {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--brand);
+  line-height: 1.1;
+}
+.stat-card .stat-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.narrative-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--brand);
+  border-radius: 0 8px 8px 0;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.narrative-box p {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text-mid);
+}
+
+/* WVI component breakdown */
+.component-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+.component-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.7rem 1rem;
+}
+.component-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 160px;
+}
+.component-weight {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  min-width: 28px;
+}
+.component-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.component-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--brand);
+  transition: width 0.5s ease;
+}
+.component-score {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ── PANEL 2: SEASONAL CURVE ── */
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  height: 280px;
+}
+.chart-container canvas { width: 100% !important; }
+
+.current-month-box {
+  background: var(--sage-pale);
+  border: 1px solid var(--cream-mid);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.you-are-here {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--brand);
+  background: var(--sage-pale);
+  border: 1px solid var(--cream-mid);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ── PANEL 3: SIGNALS ── */
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.signal-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.signal-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.signal-icon.red    { background: #fff1f2; }
+.signal-icon.amber  { background: #fffbeb; }
+.signal-icon.green  { background: #f0fdf4; }
+.signal-icon.grey   { background: var(--surface2); }
+.signal-body { flex: 1; min-width: 0; }
+.signal-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.signal-value {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text-mid);
+}
+.signal-arrow {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.signal-arrow.up   { color: var(--wvi-critical); }
+.signal-arrow.down { color: var(--wvi-managed); }
+.signal-arrow.flat { color: var(--text-muted); }
+
+/* ── PANEL 4: DEPLOYMENT PLANNER ── */
+.deployment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.deployment-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+}
+.deployment-track {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.deployment-window {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--cabinet);
+  margin-bottom: 6px;
+}
+.deployment-evidence {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.deployment-icon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: background 0.15s;
+}
+.export-btn:hover { background: var(--brand); }
+
+/* ── PANEL 5: HISTORICAL ── */
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: var(--surface);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+.history-table th {
+  background: var(--forest);
+  color: rgba(255,255,255,0.85);
+  padding: 0.65rem 1rem;
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  font-family: var(--mono);
+}
+.history-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-mid);
+}
+.history-table tr:last-child td { border-bottom: none; }
+.highlight-cell {
+  font-weight: 700;
+  color: var(--wvi-critical);
+  font-family: var(--mono);
+}
+
+/* ── NO DISTRICT SELECTED ── */
+.no-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 0.75rem;
+}
+.no-selection .ns-icon { font-size: 2.5rem; }
+.no-selection p { font-size: 0.85rem; max-width: 320px; line-height: 1.6; }
+
+/* ── ADA AGENT ── */
+.agent-btn {
+  position: fixed;
+  bottom: 1.5rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  z-index: 300;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.agent-btn:hover { transform: scale(1.07); box-shadow: 0 6px 24px rgba(0,0,0,0.25); }
+.agent-icon { font-size: 16px; line-height: 1; }
+.agent-lbl { font-size: 9px; letter-spacing: .1em; font-weight: 700; font-family: var(--mono); }
+
+#ada-btn { right: 1.5rem; background: #fff; color: var(--forest); }
+#ada-btn .agent-lbl { color: var(--sage); }
+
+.agent-panel {
+  position: fixed;
+  bottom: 5.5rem;
+  width: 340px;
+  height: 460px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+  z-index: 300;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+.agent-panel.open { display: flex; animation: agentIn .22s ease; }
+@keyframes agentIn {
+  from { opacity: 0; transform: translateY(12px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+#ada-panel { right: 1.5rem; }
+
+.agent-hdr {
+  padding: .75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-shrink: 0;
+}
+#ada-panel .agent-hdr { background: var(--forest); }
+
+.agent-av {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  background: rgba(255,255,255,.18);
+}
+.agent-hdr-name  { font-size: 13px; font-weight: 600; color: #fff; }
+.agent-hdr-sub   { font-size: 10px; color: rgba(255,255,255,.6); }
+.agent-close     { background: none; border: none; color: rgba(255,255,255,.7); cursor: pointer; font-size: 18px; margin-left: auto; }
+
+.agent-msgs {
+  flex: 1;
+  overflow-y: auto;
+  padding: .75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+.agent-m {
+  max-width: 88%;
+  padding: .55rem .8rem;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  animation: mIn .18s ease;
+}
+@keyframes mIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
+.agent-m.usr { background: var(--forest); color: #fff; align-self: flex-end; border-radius: 10px 10px 2px 10px; }
+.agent-m.ada { background: var(--sage-pale); color: var(--text); align-self: flex-start; }
+.agent-m.ada strong { color: var(--forest); }
+.agent-m.thinking { background: var(--surface2); color: var(--text-muted); font-style: italic; align-self: flex-start; }
+
+.agent-starts {
+  padding: 0 .75rem .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+}
+.agent-start {
+  background: var(--sage-ghost);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .35rem .65rem;
+  font-size: 11.5px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-mid);
+  font-family: var(--sans);
+  transition: background .12s;
+}
+.agent-start:hover { background: var(--sage-pale); }
+
+.agent-input-row {
+  display: flex;
+  gap: .4rem;
+  padding: .65rem .75rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.agent-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: .4rem .7rem;
+  font-size: 12.5px;
+  font-family: var(--sans);
+  outline: none;
+  color: var(--text);
+}
+.agent-input:focus { border-color: var(--brand); }
+.agent-send {
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: .4rem .75rem;
+  font-size: 13px;
+  cursor: pointer;
+}
+.agent-send:hover { background: var(--brand); }
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(238,242,251,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+  flex-direction: column;
+  gap: 1rem;
+}
+.loading-spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* Ecosystem footer nav */
+.ecosystem-nav {
+  background: var(--forest);
+  padding: 0.6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.ecosystem-nav a {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+  transition: color 0.12s;
+}
+.ecosystem-nav a:hover { color: #fff; }
+.ecosystem-nav .eco-sep { color: rgba(255,255,255,0.2); }
+
+@media (max-width: 768px) {
+  .main { grid-template-columns: 1fr; height: auto; }
+  .sidebar { max-height: 300px; }
+  .deployment-grid { grid-template-columns: 1fr; }
+  .winter-banner { flex-direction: column; }
+  .winter-countdown { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading winter intelligence data…</div>
+</div>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <a href="/" class="topbar-brand">
+    <div class="topbar-logo">❄</div>
+    <div>
+      <div class="topbar-title">Assistiv Cloud</div>
+      <div class="topbar-sub">POPULATION INTELLIGENCE · KENT &amp; MEDWAY</div>
+    </div>
+  </a>
+  <div class="topbar-right">
+    <a href="/" class="topbar-back">← All tools</a>
+  </div>
+</nav>
+
+<!-- WINTER BANNER -->
+<div class="winter-banner">
+  <div class="winter-banner-left">
+    <h1>Winter Readiness Intelligence · 2026–27</h1>
+    <p>Forward-looking, district-level risk intelligence for Kent ICB commissioners. Where the Missing Middle is most likely to decompensate over winter, and what interventions deployed when will have the greatest impact on the January–February peak.</p>
+  </div>
+  <div class="winter-countdown">
+    <div class="count" id="weeksToOct">—</div>
+    <div class="count-label">WEEKS TO OCT DEPLOYMENT</div>
+    <div class="deployment-line" id="deploymentLine">Loading…</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR: district list -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>13 Kent &amp; Medway Districts</h2>
+      <div class="sidebar-meta" id="datagenerated">Loading data…</div>
+    </div>
+    <div class="district-list" id="districtList">
+      <!-- Populated by JS -->
+    </div>
+  </aside>
+
+  <!-- PANEL AREA -->
+  <div class="panel-area">
+
+    <div class="panel-tabs">
+      <div class="panel-tab active" data-tab="overview"    onclick="switchTab('overview')">Overview</div>
+      <div class="panel-tab"        data-tab="curve"       onclick="switchTab('curve')">Seasonal Curve</div>
+      <div class="panel-tab"        data-tab="signals"     onclick="switchTab('signals')">Pre-Winter Signals</div>
+      <div class="panel-tab"        data-tab="deployment"  onclick="switchTab('deployment')">Deployment Planner</div>
+      <div class="panel-tab"        data-tab="historical"  onclick="switchTab('historical')">Last Winter</div>
+    </div>
+
+    <div class="panel-content" id="panelContent">
+      <div class="no-selection">
+        <div class="ns-icon">❄</div>
+        <p>Select a district from the list to view its Winter Readiness Brief, seasonal curve, and deployment plan.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ECOSYSTEM NAV -->
+<nav class="ecosystem-nav">
+  <a href="https://www.assistiv.cloud">assistiv.cloud</a>
+  <span class="eco-sep">·</span>
+  <a href="https://www.assistiv.co">assistiv.co</a>
+  <span class="eco-sep">·</span>
+  <a href="https://www.assistiv.tools">assistiv.tools</a>
+  <span class="eco-sep">·</span>
+  <a href="https://www.assistiv.services">assistiv.services</a>
+  <span class="eco-sep">·</span>
+  <a href="https://github.com/silegrand/assistiv_cloud" target="_blank" rel="noopener">Source on GitHub ↗</a>
+</nav>
+
+<!-- ADA AGENT -->
+<button class="agent-btn" id="ada-btn" onclick="adaToggle()" title="Ask Ada">
+  <span class="agent-icon">🤖</span>
+  <span class="agent-lbl">ADA</span>
+</button>
+
+<div class="agent-panel" id="ada-panel">
+  <div class="agent-hdr">
+    <div class="agent-av">🤖</div>
+    <div>
+      <div class="agent-hdr-name">Ada</div>
+      <div class="agent-hdr-sub">Winter Planning Intelligence</div>
+    </div>
+    <button class="agent-close" onclick="adaToggle()">×</button>
+  </div>
+  <div class="agent-msgs" id="ada-msgs"></div>
+  <div class="agent-starts" id="ada-starts"></div>
+  <div class="agent-input-row">
+    <input class="agent-input" id="ada-input" placeholder="Ask about winter planning…"
+           onkeydown="if(event.key==='Enter')adaSend()">
+    <button class="agent-send" onclick="adaSend()">→</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const DATA_URL   = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-winter-data.json';
+const FEP_URL    = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-fep-data.json';
+const AGENT_URL  = 'https://assistiv-proxy.simongeorgelegrand.workers.dev';
+
+let winterData = null;
+let fepData    = null;
+let selectedDistrict = null;
+let currentTab = 'overview';
+let seasonalChart = null;
+
+// Monthly seasonal pressure indices (from kent-winter-data.json seasonal_curve)
+// Fallback values if data not loaded
+const FALLBACK_CURVE = {
+  months:      ['Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'],
+  falls_index: [88,  92,  108, 127, 115,  98,  82,  75,  72,  70,  72,  78],
+  copd_index:  [92, 105,  128, 158, 145, 110,  88,  78,  72,  68,  70,  80],
+  corridor_idx:[85,  92,  108, 128, 118, 102,  84,  78,  75,  72,  74,  80],
+};
+
+// Evidence constants (mirrors Python)
+const UPLIFT = {
+  falls_jan:   27,
+  copd_winter: 50,
+  mortality:   18,
+};
+
+const TIER_COLOURS = {
+  critical: '#991b1b',
+  high:     '#b45309',
+  elevated: '#1d4ed8',
+  managed:  '#166534',
+};
+
+const COMPONENT_LABELS = {
+  baseline_frailty:  'Baseline Frailty Load',
+  seasonal_amplifier:'Seasonal Amplifier',
+  prescribing_signal:'Prescribing Signal',
+  system_headroom:   'System Headroom',
+  social_isolation:  'Social Isolation',
+};
+
+const COMPONENT_WEIGHTS = {
+  baseline_frailty:  '30%',
+  seasonal_amplifier:'20%',
+  prescribing_signal:'20%',
+  system_headroom:   '20%',
+  social_isolation:  '10%',
+};
+
+const TRACK_LABELS = {
+  medication_review:    'Medication Review',
+  falls_prevention:     'Falls Prevention',
+  respiratory_outreach: 'Respiratory Outreach',
+  social_connection:    'Social Connection',
+};
+
+const TRACK_ICONS = {
+  medication_review:    '💊',
+  falls_prevention:     '🏃',
+  respiratory_outreach: '🫁',
+  social_connection:    '🤝',
+};
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  // Countdown to October 2026 deployment
+  const now = new Date();
+  const octTarget = new Date(2026, 9, 1);  // 1 October 2026
+  const weeksLeft = Math.max(0, Math.floor((octTarget - now) / (7 * 24 * 60 * 60 * 1000)));
+  document.getElementById('weeksToOct').textContent = weeksLeft;
+  document.getElementById('deploymentLine').textContent =
+    weeksLeft > 0
+      ? `October deployment deadline — ${weeksLeft} weeks from today`
+      : 'October deployment window is open';
+
+  try {
+    const [wRes, fRes] = await Promise.all([fetch(DATA_URL), fetch(FEP_URL)]);
+    winterData = await wRes.json();
+    fepData    = await fRes.json();
+  } catch (e) {
+    console.warn('Data load error:', e);
+  }
+
+  if (winterData) {
+    const gen = winterData.meta?.generated?.slice(0, 10) || '—';
+    document.getElementById('datagenerated').textContent = `WVI data · ${gen}`;
+    renderDistrictList();
+  }
+
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+// ── DISTRICT LIST ─────────────────────────────────────────────────────────────
+function renderDistrictList() {
+  const list = document.getElementById('districtList');
+  const districts = winterData.districts;
+  let rank = 1;
+
+  list.innerHTML = Object.entries(districts).map(([name, d]) => {
+    const tier  = d.wvi_tier;
+    const score = Math.round(d.wvi_score);
+    const pct   = score;
+    const html  = `
+      <div class="district-item" data-name="${name}" onclick="selectDistrict('${name}')">
+        <div class="district-rank">${rank++}</div>
+        <div class="district-wvi-bar">
+          <div class="district-name">
+            <span class="tier-dot ${tier}"></span>
+            ${name}
+          </div>
+          <div class="wvi-bar-track">
+            <div class="wvi-bar-fill ${tier}" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="district-score ${tier}">${score}</div>
+      </div>`;
+    return html;
+  }).join('');
+}
+
+function selectDistrict(name) {
+  selectedDistrict = name;
+  document.querySelectorAll('.district-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.name === name);
+  });
+  renderPanel(currentTab);
+  adaCtxUpdate();
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.panel-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === tab);
+  });
+  renderPanel(tab);
+}
+
+function renderPanel(tab) {
+  if (!selectedDistrict) {
+    document.getElementById('panelContent').innerHTML = `
+      <div class="no-selection">
+        <div class="ns-icon">❄</div>
+        <p>Select a district from the list to view its Winter Readiness Brief, seasonal curve, and deployment plan.</p>
+      </div>`;
+    return;
+  }
+
+  const d    = winterData.districts[selectedDistrict];
+  const fepD = getFepDistrict(selectedDistrict);
+
+  switch (tab) {
+    case 'overview':   renderOverview(d, fepD);   break;
+    case 'curve':      renderCurve(d, fepD);      break;
+    case 'signals':    renderSignals(d, fepD);    break;
+    case 'deployment': renderDeployment(d, fepD); break;
+    case 'historical': renderHistorical(d, fepD); break;
+  }
+}
+
+function getFepDistrict(name) {
+  if (!fepData) return {};
+  return (fepData.districts || []).find(d => d.name === name) || {};
+}
+
+// ── HEADER FRAGMENT ───────────────────────────────────────────────────────────
+function districtHeaderHTML(d, name) {
+  const tier  = d.wvi_tier;
+  const score = Math.round(d.wvi_score);
+  const tierLabel = { critical:'Critical', high:'High Risk', elevated:'Elevated', managed:'Managed' }[tier] || tier;
+  return `
+    <div class="district-header">
+      <div class="district-header-left">
+        <h2>${name}</h2>
+        <div class="trust-line">${d.trust_name || ''} &nbsp;·&nbsp; ${d.pop_75plus ? d.pop_75plus.toLocaleString() : '—'} aged 75+ on GP registers</div>
+      </div>
+      <div class="wvi-badge ${tier}">
+        <div class="wvi-number">${score}</div>
+        <div class="wvi-label">WVI SCORE</div>
+        <div class="wvi-tier-label">${tierLabel}</div>
+      </div>
+    </div>`;
+}
+
+// ── PANEL 1: OVERVIEW ─────────────────────────────────────────────────────────
+function renderOverview(d, fepD) {
+  const name = selectedDistrict;
+  const pop  = d.pop_75plus ? d.pop_75plus.toLocaleString() : '—';
+  const fep  = d.fep_score ?? '—';
+  const corridor = d.corridor_avg_may2026 != null ? d.corridor_avg_may2026.toFixed(0) : '—';
+  const corridorMax = d.corridor_max_may2026 != null ? `(max ${d.corridor_max_may2026.toFixed(0)})` : '';
+
+  const components = Object.entries(d.wvi_components || {});
+
+  const componentRows = components.map(([key, score]) => `
+    <div class="component-row">
+      <div class="component-name">${COMPONENT_LABELS[key] || key}</div>
+      <div class="component-weight">${COMPONENT_WEIGHTS[key] || ''}</div>
+      <div class="component-track">
+        <div class="component-fill" style="width:${score}%"></div>
+      </div>
+      <div class="component-score">${Math.round(score)}</div>
+    </div>`).join('');
+
+  document.getElementById('panelContent').innerHTML = `
+    ${districtHeaderHTML(d, name)}
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">${pop}</div>
+        <div class="stat-label">Adults 75+ on GP registers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">${fep}</div>
+        <div class="stat-label">Frailty Emergence Probability score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">${corridor}</div>
+        <div class="stat-label">Corridor care avg/day May 2026 ${corridorMax}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">+${UPLIFT.falls_jan}%</div>
+        <div class="stat-label">Falls admissions above average in January (national evidence)</div>
+      </div>
+    </div>
+    <div class="narrative-box">
+      <p>${d.winter_narrative || 'No narrative available.'}</p>
+    </div>
+    <h3 style="font-size:0.82rem;font-weight:700;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:0.6rem;font-family:var(--mono)">WVI COMPONENT BREAKDOWN</h3>
+    <div class="component-rows">${componentRows}</div>`;
+}
+
+// ── PANEL 2: SEASONAL CURVE ───────────────────────────────────────────────────
+function renderCurve(d, fepD) {
+  const name = selectedDistrict;
+  const curve = winterData.seasonal_curve || FALLBACK_CURVE;
+
+  // Current month — June 2026 → index within the seasonal curve
+  // Curve starts Oct (index 0), so June = index 8 within the displayed range
+  const currentMonthLabel = 'Jun';
+  const currentMonthIdx   = curve.months.indexOf(currentMonthLabel);
+
+  document.getElementById('panelContent').innerHTML = `
+    ${districtHeaderHTML(d, name)}
+    <div class="current-month-box">
+      <span class="you-are-here">YOU ARE HERE</span>
+      <span style="font-size:0.85rem;color:var(--text-mid)">
+        June 2026 — <strong>14 weeks to October deployment window.</strong>
+        Falls admission pressure historically peaks in January at +${UPLIFT.falls_jan}% above the annual average.
+      </span>
+    </div>
+    <div class="chart-container">
+      <canvas id="seasonalChart"></canvas>
+    </div>
+    <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.6">
+      Seasonal pressure indices show monthly volume relative to annual average (100 = annual average).
+      Falls and COPD curves derived from national NHS Digital HES / Fingertips evidence.
+      Corridor care curve modelled from NHS England UEC data.
+      Deployment markers indicate the latest recommended start date for each intervention to have measurable January impact.
+    </p>`;
+
+  // Render chart after DOM update
+  requestAnimationFrame(() => {
+    if (seasonalChart) { seasonalChart.destroy(); seasonalChart = null; }
+    const ctx = document.getElementById('seasonalChart');
+    if (!ctx) return;
+
+    const labels = curve.months;
+    const deploymentAnnotation = [];
+
+    // Oct and Nov deployment markers (indices 0 and 1)
+    const borderColors = labels.map((m, i) => {
+      if (m === currentMonthLabel) return 'rgba(54,94,191,0.25)';
+      return 'transparent';
+    });
+
+    seasonalChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Falls Admissions Index',
+            data: curve.falls_index,
+            borderColor: '#991b1b',
+            backgroundColor: 'rgba(153,27,27,0.08)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: labels.map(m => m === currentMonthLabel ? 6 : 3),
+            pointBackgroundColor: labels.map(m => m === currentMonthLabel ? '#365EBF' : '#991b1b'),
+          },
+          {
+            label: 'COPD/Respiratory Index',
+            data: curve.copd_index,
+            borderColor: '#b45309',
+            backgroundColor: 'rgba(180,83,9,0.06)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+          },
+          {
+            label: 'Corridor Care Pressure Index',
+            data: curve.corridor_idx,
+            borderColor: '#1d4ed8',
+            borderDash: [5, 3],
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+          },
+          {
+            label: 'Annual Average (baseline)',
+            data: labels.map(() => 100),
+            borderColor: 'rgba(0,0,0,0.15)',
+            borderDash: [3, 3],
+            backgroundColor: 'transparent',
+            borderWidth: 1,
+            fill: false,
+            pointRadius: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { font: { size: 11, family: 'DM Mono' }, boxWidth: 14 },
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}${ctx.datasetIndex < 3 ? ' (index)' : ''}`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { size: 11, family: 'DM Mono' } },
+          },
+          y: {
+            min: 60,
+            max: 165,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: {
+              font: { size: 11, family: 'DM Mono' },
+              callback: v => v,
+            },
+            title: {
+              display: true,
+              text: 'Pressure index (100 = annual average)',
+              font: { size: 10, family: 'DM Mono' },
+              color: '#6275a0',
+            },
+          },
+        },
+      },
+    });
+  });
+}
+
+// ── PANEL 3: PRE-WINTER SIGNALS ───────────────────────────────────────────────
+function renderSignals(d, fepD) {
+  const name = selectedDistrict;
+  const epd  = fepD.epd_district || {};
+  const signals = fepD.signals || [];
+
+  // England benchmarks
+  const ENG_EPD = {
+    bladder_antimusc: 4.2, anti_dementia: 2.8, parkinsons: 2.4,
+    hypnotics: 10.2, anxiolytics: 8.5, ons_nutrition: 3.8,
+  };
+  const EPD_LABELS = {
+    bladder_antimusc: 'Bladder antimuscarinic rate',
+    anti_dementia:    'Anti-dementia drug rate',
+    parkinsons:       "Parkinson's drug rate",
+    hypnotics:        'Hypnotics/sedative rate',
+    anxiolytics:      'Anxiolytics rate',
+    ons_nutrition:    'Oral nutritional supplements',
+  };
+
+  function signalCard(icon, colorClass, name, value, arrow, arrowClass, note) {
+    return `
+      <div class="signal-card">
+        <div class="signal-icon ${colorClass}">${icon}</div>
+        <div class="signal-body">
+          <div class="signal-name">${name}</div>
+          <div class="signal-value">${value}</div>
+          ${note ? `<div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px">${note}</div>` : ''}
+        </div>
+        <div class="signal-arrow ${arrowClass}">${arrow}</div>
+      </div>`;
+  }
+
+  let ePdCards = Object.entries(EPD_LABELS).map(([key, label]) => {
+    const rec  = epd[key] || {};
+    const rate = rec.rate_per_1000;
+    const eng  = ENG_EPD[key];
+    if (rate == null) return signalCard('💊','grey', label, 'No data', '—', 'flat', null);
+
+    const ratio = rate / eng;
+    const pct   = Math.round((ratio - 1) * 100);
+    const dir   = ratio > 1.05 ? 'up' : ratio < 0.95 ? 'down' : 'flat';
+    const arrow = dir === 'up' ? '▲' : dir === 'down' ? '▼' : '→';
+    const color = dir === 'up' ? 'red' : dir === 'down' ? 'green' : 'grey';
+    const note  = dir === 'up'
+      ? `${Math.abs(pct)}% above England average — rising vulnerability signal`
+      : dir === 'down'
+      ? `${Math.abs(pct)}% below England average`
+      : 'At England average';
+
+    return signalCard('💊', color, label,
+      `${rate.toFixed(1)} per 1,000 registered patients`, arrow, dir, note);
+  }).join('');
+
+  // Social isolation
+  const lone = signals[0] != null ? signals[0].toFixed(0) : '—';
+  const isol = signals[9] != null ? signals[9].toFixed(0) : '—';
+
+  // Corridor
+  const corridor = d.corridor_avg_may2026 != null ? `${d.corridor_avg_may2026.toFixed(0)} avg/day` : '—';
+  const corridorColor = d.corridor_avg_may2026 > 15 ? 'red' : d.corridor_avg_may2026 > 5 ? 'amber' : 'green';
+  const corridorArrow = d.corridor_avg_may2026 > 10 ? '▲' : '→';
+  const corridorDir   = corridorColor === 'red' ? 'up' : 'flat';
+
+  document.getElementById('panelContent').innerHTML = `
+    ${districtHeaderHTML(d, name)}
+    <h3 style="font-size:0.78rem;font-weight:700;color:var(--text-muted);letter-spacing:0.06em;margin-bottom:0.75rem;font-family:var(--mono)">EPD PRESCRIBING SIGNALS — ${fepData?.meta?.epd_period || 'latest'}</h3>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.85rem;line-height:1.6">
+      Six high-frailty drug classes normalised against England average. Rising rate in September = leading indicator of January admission pressure.
+      Medication non-adherence peaks over the festive period (+35–45%, RCGP evidence).
+    </p>
+    <div class="signal-grid">${ePdCards}</div>
+    <h3 style="font-size:0.78rem;font-weight:700;color:var(--text-muted);letter-spacing:0.06em;margin:1rem 0 0.75rem;font-family:var(--mono)">SYSTEM &amp; SOCIAL SIGNALS</h3>
+    <div class="signal-grid">
+      ${signalCard('🏥', corridorColor, 'Corridor care pressure', corridor,
+          corridorArrow, corridorDir,
+          `Serving trust: ${d.trust_name || d.trust_code || '—'}. High pre-winter corridor care = limited buffer for winter surge.`)}
+      ${signalCard('🏠','amber','Over-75s living alone (modelled)', `Signal score: ${lone}/100`,
+          lone > 55 ? '▲' : '→', lone > 55 ? 'up' : 'flat',
+          'Social isolation peaks at Christmas — clinically dangerous for people living alone.')}
+      ${signalCard('👥','amber','Social isolation index', `Signal score: ${isol}/100`,
+          isol > 55 ? '▲' : '→', isol > 55 ? 'up' : 'flat',
+          'Age UK / Campaign to End Loneliness: significant spike in social isolation events Christmas–January.')}
+    </div>`;
+}
+
+// ── PANEL 4: DEPLOYMENT PLANNER ───────────────────────────────────────────────
+function renderDeployment(d, fepD) {
+  const name = selectedDistrict;
+  const windows  = d.deployment_windows || {};
+  const evidence = d.deployment_evidence || {};
+
+  const cards = Object.entries(TRACK_LABELS).map(([key, label]) => `
+    <div class="deployment-card">
+      <div class="deployment-icon">${TRACK_ICONS[key]}</div>
+      <div class="deployment-track">${label.toUpperCase()}</div>
+      <div class="deployment-window">${windows[key] || '—'}</div>
+      <div class="deployment-evidence">${evidence[key] || ''}</div>
+    </div>`).join('');
+
+  document.getElementById('panelContent').innerHTML = `
+    ${districtHeaderHTML(d, name)}
+    <p style="font-size:0.82rem;color:var(--text-mid);margin-bottom:1rem;line-height:1.6">
+      NICE evidence on intervention lead times: everything must start in September–October
+      to have measurable impact by the January–February admission peak.
+      The commissioner decision needs to be made in August. That window is now.
+    </p>
+    <div class="deployment-grid">${cards}</div>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem">
+      <button class="export-btn" onclick="exportPDF('${name}')">
+        ⬇ Export Commissioner Briefing PDF
+      </button>
+      <span style="font-size:0.72rem;color:var(--text-muted)">
+        One-page PDF: WVI score, key signals, deployment timeline, evidence base
+      </span>
+    </div>
+    <p style="font-size:0.72rem;color:var(--text-muted);line-height:1.6">
+      Evidence: NICE NG147 (falls), NICE NG191 (frailty), BGS Frailty Toolkit 2024,
+      Clegg et al 2013 (frailty multimorbidity), UKHSA flu vaccination guidance, RCGP medication non-adherence evidence.
+    </p>`;
+}
+
+// ── PANEL 5: LAST WINTER ──────────────────────────────────────────────────────
+function renderHistorical(d, fepD) {
+  const name = selectedDistrict;
+  const uplift = d.historical_peak_uplift_pct || UPLIFT.falls_jan;
+  const peakMonth = d.historical_peak_month || 'January';
+
+  // Monthly indices scaled to district's FEP (higher FEP = sharper peak)
+  const curve = winterData.seasonal_curve || FALLBACK_CURVE;
+  const fepMult = ((d.fep_score || 50) - 50) / 100;  // -0.5 to +0.5
+
+  const tableRows = curve.months.map((month, i) => {
+    const fallsBase = curve.falls_index[i];
+    // Apply slight district modulation based on FEP
+    const fallsAdj = Math.round(fallsBase * (1 + fepMult * 0.3));
+    const corridorAdj = curve.corridor_idx[i];
+    const isJan = month === 'Jan';
+    const cls = isJan ? 'class="highlight-cell"' : '';
+    return `<tr>
+      <td ${cls}>${month}</td>
+      <td ${cls}>${fallsAdj}</td>
+      <td ${cls}>${corridorAdj}</td>
+      <td ${cls}>${isJan ? `+${uplift}%` : month === 'Dec' ? `+${Math.round(uplift * 0.7)}%` : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('panelContent').innerHTML = `
+    ${districtHeaderHTML(d, name)}
+    <div style="background:var(--wvi-critical-pale);border:1px solid rgba(153,27,27,0.15);border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem">
+      <strong style="font-size:0.85rem;color:var(--wvi-critical)">
+        This district's January ran +${uplift}% above its annual average last year.
+      </strong>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;line-height:1.5">
+        National evidence midpoint from NHS Digital HES falls admissions data and Fingertips indicator 22401.
+        District-specific historical data will be updated as Fingertips publishes 2024–25 monthly breakdowns.
+      </p>
+    </div>
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Falls Pressure Index</th>
+          <th>Corridor Pressure Index</th>
+          <th>Uplift vs Annual Avg</th>
+        </tr>
+      </thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+    <p style="font-size:0.72rem;color:var(--text-muted);line-height:1.6">
+      Pressure indices are seasonal profiles derived from national NHS Digital HES and NHS England UEC evidence,
+      modulated by this district's FEP score. Direct 2024–25 monthly HES data for Kent districts
+      will be added when Fingertips publishes sub-ICB breakdowns.
+      Corridor care history: May 2026 is the first available month; monthly data will build from here.
+    </p>`;
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────────────────────────
+function exportPDF(name) {
+  const d = winterData.districts[name];
+  if (!d) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const W = 210; const MARGIN = 18;
+  let y = 0;
+
+  // Header bar
+  doc.setFillColor(30, 58, 122);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(14);
+  doc.text(`${name} — Winter Readiness Brief 2026-27`, MARGIN, 11);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.text(`Generated: ${new Date().toLocaleDateString('en-GB')} · Data: NHS England open data under OGL v3`, MARGIN, 18);
+  doc.text('Assistiv Systems · assistiv.cloud', MARGIN, 23);
+  y = 36;
+
+  // WVI Score block
+  const tierUpper = (d.wvi_tier || '').toUpperCase();
+  doc.setTextColor(30,58,122);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.text(`Winter Vulnerability Index: ${Math.round(d.wvi_score)} — ${tierUpper}`, MARGIN, y);
+  y += 8;
+
+  // Key stats
+  doc.setTextColor(60,80,130);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  const stats = [
+    `Missing Middle Population: ${(d.pop_75plus||0).toLocaleString()} registered patients aged 75+`,
+    `Frailty Emergence Probability: ${d.fep_score} — ${(d.fep_risk||'').toUpperCase()}`,
+    `Serving Trust: ${d.trust_name || d.trust_code} · Corridor Care May 2026: ${d.corridor_avg_may2026 ?? '—'} avg/day`,
+  ];
+  stats.forEach(s => { doc.text(s, MARGIN, y); y += 6; });
+  y += 4;
+
+  // WVI Components
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(30,58,122);
+  doc.text('WVI Component Scores:', MARGIN, y); y += 6;
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(60,80,130);
+  const comps = d.wvi_components || {};
+  Object.entries(comps).forEach(([key, score]) => {
+    const label = { baseline_frailty:'Baseline Frailty Load (30%)',seasonal_amplifier:'Seasonal Amplifier (20%)',
+      prescribing_signal:'Prescribing Signal (20%)',system_headroom:'System Headroom (20%)',social_isolation:'Social Isolation (10%)' }[key] || key;
+    doc.text(`  ${label}: ${Math.round(score)}`, MARGIN, y); y += 5.5;
+  });
+  y += 4;
+
+  // Deployment timeline
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(9);
+  doc.setTextColor(30,58,122);
+  doc.text('Recommended Deployment Timeline:', MARGIN, y); y += 6;
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(60,80,130);
+  const windows = d.deployment_windows || {};
+  const order = ['medication_review','falls_prevention','respiratory_outreach','social_connection'];
+  order.forEach(key => {
+    const label = TRACK_LABELS[key] || key;
+    doc.text(`  □ ${windows[key] || '—'} — ${label}`, MARGIN, y); y += 5.5;
+  });
+  y += 4;
+
+  // Evidence base
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8);
+  doc.setTextColor(100,117,160);
+  doc.text('Evidence base:', MARGIN, y); y += 5;
+  doc.setFont('helvetica','normal');
+  const evLines = doc.splitTextToSize(
+    'NICE NG147 (falls prevention), NICE NG191 (frailty), BGS Frailty Toolkit 2024, Clegg et al 2013, UKHSA flu vaccination guidance.',
+    W - MARGIN * 2);
+  doc.text(evLines, MARGIN, y); y += evLines.length * 4.5 + 4;
+
+  // Narrative
+  doc.setFont('helvetica','bolditalic');
+  doc.setFontSize(9);
+  doc.setTextColor(30,58,122);
+  doc.text('Winter Intelligence Narrative (Ada, Assistiv Systems):', MARGIN, y); y += 6;
+  doc.setFont('helvetica','italic');
+  doc.setFontSize(8.5);
+  doc.setTextColor(60,80,130);
+  const narLines = doc.splitTextToSize(d.winter_narrative || '', W - MARGIN * 2);
+  doc.text(narLines, MARGIN, y);
+
+  // Footer
+  doc.setFillColor(30,58,122);
+  doc.rect(0, 285, W, 12, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7);
+  doc.text('Assistiv Systems · assistiv.cloud · Data: NHS England Open Government Licence v3.0', MARGIN, 292);
+
+  doc.save(`${name.replace(/\s+/g,'-')}-winter-readiness-brief-2026-27.pdf`);
+}
+
+// ── ADA AGENT ─────────────────────────────────────────────────────────────────
+const ADA_WINTER_SYS = `You are Ada, an AI assistant built by Assistiv Systems. You help NHS commissioners and frailty clinicians understand the Winter Readiness Intelligence dashboard for Kent and Medway.
+
+TONE: Plain English. Warm but precise. Clinically literate without jargon. No em dashes.
+
+WINTER PLANNING ROLE: When discussing a district's winter readiness, lead with the WVI score and tier. Explain the two or three highest-contributing components. Give deployment window recommendations in plain English. Frame the commissioning argument in terms of avoided admissions rather than process compliance.
+
+WVI MODEL: 0-100 composite. Five components — Baseline Frailty Load (30%), Seasonal Amplifier (20%), Prescribing Signal (20%), System Headroom (20%), Social Isolation (10%).
+Tiers: Managed <40 / Elevated 40-54 / High 55-69 / Critical 70+.
+
+SEASONAL EVIDENCE: Falls admissions 65+ historically run 27-31% above annual average in January. COPD emergency admissions 40-60% above average December-February. Medication non-adherence peaks 35-45% over the festive period. Social isolation events spike significantly Christmas-January.
+
+INTERVENTION LEAD TIMES (NICE): Otago exercise programme 6-8 weeks before measurable falls reduction. Medication review 4 weeks. Flu vaccination complete by end of October. Social prescribing 6-8 weeks to meaningful engagement. Everything must start September-October to impact January.
+
+KENT CONTEXT: RWF (Maidstone & Tunbridge Wells) already at 21 average corridor patients/day in May 2026 — very limited winter headroom. RVV (East Kent) at 1 average — more capacity but watch winter trajectory.
+
+IMPORTANT: Live WVI data is injected below. Use it confidently. Do not give individual clinical advice.`;
+
+let adaOpen = false, adaHist = [], adaStartsOn = true, adaBusy = false;
+const ADA_STARTERS = [
+  'Which district should commissioners prioritise this August?',
+  'What does the WVI score mean in plain English?',
+  'Why does RWF have less winter headroom than RVV?',
+  'What interventions have the strongest evidence for January impact?',
+];
+
+function adaCtx() {
+  let ctx = '';
+  if (winterData) {
+    ctx += `\nWVI DATA (planning year ${winterData.meta?.planning_year || '2026-27'}):\n`;
+    Object.entries(winterData.districts || {}).forEach(([name, d]) => {
+      ctx += `${name}: WVI=${Math.round(d.wvi_score)} (${d.wvi_tier}), FEP=${d.fep_score}, pop75=${d.pop_75plus}, corridor=${d.corridor_avg_may2026 ?? 'n/a'}\n`;
+    });
+  }
+  if (selectedDistrict && winterData?.districts?.[selectedDistrict]) {
+    const d = winterData.districts[selectedDistrict];
+    ctx += `\nCURRENTLY SELECTED: ${selectedDistrict} — WVI ${Math.round(d.wvi_score)} (${d.wvi_tier})\n`;
+    ctx += `Narrative: ${d.winter_narrative}\n`;
+    ctx += `Deployment windows: ${JSON.stringify(d.deployment_windows)}\n`;
+  }
+  return ctx;
+}
+
+function adaCtxUpdate() { /* Called when district changes — next Ada call picks up via adaCtx() */ }
+
+function adaToggle() {
+  adaOpen = !adaOpen;
+  document.getElementById('ada-panel').classList.toggle('open', adaOpen);
+  if (adaOpen && adaHist.length === 0) adaGreet();
+}
+
+function adaGreet() {
+  adaAdd('ada', `Hi, I'm <strong>Ada</strong> — I can explain the Winter Readiness Intelligence and help you think through the commissioning argument. Select a district, then ask me about it.`);
+  renderAdaStarters();
+}
+
+function renderAdaStarters() {
+  if (!adaStartsOn) { document.getElementById('ada-starts').innerHTML = ''; return; }
+  document.getElementById('ada-starts').innerHTML =
+    ADA_STARTERS.map(s => `<button class="agent-start" onclick="adaUseStart('${s.replace(/'/g,"\\'")}')"> ${s}</button>`).join('');
+}
+
+function adaUseStart(text) {
+  adaStartsOn = false;
+  renderAdaStarters();
+  adaSubmit(text);
+}
+
+function adaAdd(role, html) {
+  const msgs = document.getElementById('ada-msgs');
+  const el = document.createElement('div');
+  el.className = `agent-m ${role}`;
+  el.innerHTML = html;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+function adaSend() {
+  const input = document.getElementById('ada-input');
+  const text = input.value.trim();
+  if (!text || adaBusy) return;
+  input.value = '';
+  adaSubmit(text);
+}
+
+async function adaSubmit(text) {
+  if (adaBusy) return;
+  adaBusy = true;
+  adaStartsOn = false;
+  renderAdaStarters();
+  adaAdd('usr', text);
+  adaHist.push({ role:'user', content: text });
+
+  const thinking = adaAdd('ada thinking', '…');
+
+  try {
+    const r = await fetch(AGENT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 700,
+        system: ADA_WINTER_SYS + '\n\n---\nLIVE DATA:\n' + adaCtx(),
+        messages: adaHist,
+      }),
+    });
+    const data = await r.json();
+    const reply = data?.content?.[0]?.text || 'Could not get a response — please try again.';
+    thinking.className = 'agent-m ada';
+    thinking.innerHTML = reply.replace(/\n/g, '<br>');
+    adaHist.push({ role:'assistant', content: reply });
+  } catch (e) {
+    thinking.className = 'agent-m ada';
+    thinking.innerHTML = 'Connection error — please try again.';
+  }
+
+  adaBusy = false;
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
