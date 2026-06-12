@@ -1,4 +1,4 @@
-name: HES + SHMI + GP Registration + A&E + Winter Readiness Monthly Refresh
+name: HES + SHMI + GP Registration + A&E + KPHO HSCM + Winter Readiness Monthly Refresh
 
 on:
   schedule:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 openpyxl lxml fingertips_py pandas
+          pip install requests beautifulsoup4 openpyxl lxml fingertips_py pandas xlrd
 
       - name: Run HES monthly fetcher
         env:
@@ -39,6 +39,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python fetch_ae_monthly.py
 
+      - name: Run KPHO Health and Social Care Maps pipeline
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python fetch_hscm.py
+
       - name: Run Winter Readiness intelligence fetch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,7 +51,8 @@ jobs:
 
       - name: Confirm outputs
         run: |
-          for f in kent-hes-data.json kent-shmi-data.json kent-gp-reg-data.json kent-ae-monthly.json kent-winter-data.json; do
+          for f in kent-hes-data.json kent-shmi-data.json kent-gp-reg-data.json \
+                   kent-ae-monthly.json kent-hscm-data.json kent-winter-data.json; do
             if [ -f "$f" ]; then
               echo "$f exists"
               python -c "import json; d=json.load(open('$f')); print('  Generated:', d['meta']['generated'][:10])"
