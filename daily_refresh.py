@@ -48,6 +48,8 @@ FINGERTIPS_INDICATORS = {
     "hip_fractures_65":   (41401, "Hip fractures 65+",           KENT_ICB_ONS),
     "hip_fractures_80":   (41403, "Hip fractures 80+",           KENT_ICB_ONS),
     "fuel_poverty":       (93759, "Fuel poverty",                KENT_ICB_ONS),
+    "copd_emergency":     (41001, "COPD emergency admissions",   KENT_ICB_ONS),  # winter signal
+    "flu_vacc_65plus":    (93096, "Flu vaccination coverage 65+", KENT_ICB_ONS), # winter signal
 }
 
 # LAD codes for all 13 Kent & Medway districts — used to extract district-level
