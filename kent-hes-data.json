@@ -19,7 +19,7 @@
         "Dover",
         "Folkestone & Hythe",
         "Canterbury",
-        "Swale"
+        "Ashford"
       ],
       "total_emerg_65plus": 51015,
       "emerg_by_age_band": {},
@@ -36,12 +36,39 @@
         "Maidstone",
         "Tonbridge & Malling",
         "Tunbridge Wells",
-        "Sevenoaks",
-        "Ashford",
-        "Gravesham",
-        "Dartford"
+        "Sevenoaks"
       ],
       "total_emerg_65plus": 60370,
+      "emerg_by_age_band": {},
+      "geri_total_episodes": null,
+      "geri_emergency_episodes": null,
+      "emerg_65plus_yoy_delta": null,
+      "emerg_65plus_yoy_pct": null,
+      "period_label": "April 2025 - March 2026 (M13)"
+    },
+    "RPA": {
+      "name": "Medway NHS Foundation Trust",
+      "short": "Medway Maritime",
+      "districts": [
+        "Medway",
+        "Swale"
+      ],
+      "total_emerg_65plus": null,
+      "emerg_by_age_band": {},
+      "geri_total_episodes": null,
+      "geri_emergency_episodes": null,
+      "emerg_65plus_yoy_delta": null,
+      "emerg_65plus_yoy_pct": null,
+      "period_label": "April 2025 - March 2026 (M13)"
+    },
+    "RN7": {
+      "name": "Dartford and Gravesham NHS Trust",
+      "short": "Darent Valley",
+      "districts": [
+        "Dartford",
+        "Gravesham"
+      ],
+      "total_emerg_65plus": null,
       "emerg_by_age_band": {},
       "geri_total_episodes": null,
       "geri_emergency_episodes": null,
