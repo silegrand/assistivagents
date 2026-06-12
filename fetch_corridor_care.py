@@ -44,13 +44,22 @@ KENT_TRUSTS = {
     "RVV": {
         "name":      "East Kent Hospitals University NHS Foundation Trust",
         "short":     "East Kent Hospitals",
-        "districts": ["Thanet", "Dover", "Folkestone & Hythe", "Canterbury", "Swale"],
+        "districts": ["Thanet", "Dover", "Folkestone & Hythe", "Canterbury", "Ashford"],
     },
     "RWF": {
         "name":      "Maidstone and Tunbridge Wells NHS Trust",
         "short":     "Maidstone & Tunbridge Wells",
-        "districts": ["Maidstone", "Tonbridge & Malling", "Tunbridge Wells",
-                      "Sevenoaks", "Ashford", "Gravesham", "Dartford"],
+        "districts": ["Maidstone", "Tonbridge & Malling", "Tunbridge Wells", "Sevenoaks"],
+    },
+    "RPA": {
+        "name":      "Medway NHS Foundation Trust",
+        "short":     "Medway Maritime",
+        "districts": ["Medway", "Swale"],
+    },
+    "RN7": {
+        "name":      "Dartford and Gravesham NHS Trust",
+        "short":     "Darent Valley",
+        "districts": ["Dartford", "Gravesham"],
     },
 }
 
@@ -170,7 +179,9 @@ def parse_corridor_csv(csv_content, trust_codes):
                 t_short = KENT_TRUSTS[tc]["short"].upper()
                 if (t_name in org_name or t_short in org_name or
                         ("EAST KENT" in org_name and tc == "RVV") or
-                        ("MAIDSTONE" in org_name and tc == "RWF")):
+                        ("MAIDSTONE" in org_name and tc == "RWF") or
+                        ("MEDWAY" in org_name and tc == "RPA") or
+                        ("DARTFORD" in org_name and tc == "RN7")):
                     matched_code = tc
                     break
 

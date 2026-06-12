@@ -186,6 +186,26 @@ body {
 
 /* ── MAP ── */
 #map { flex: 1; position: relative; z-index: 1; height: 100%; }
+.map-toggle {
+  position: absolute; top: 12px; right: 12px; z-index: 1000;
+  display: flex; background: #fff; border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(15,30,60,0.12);
+}
+.map-toggle button {
+  font-family: inherit; font-size: 0.72rem; font-weight: 700;
+  padding: 0.45rem 0.9rem; border: none; background: #fff; color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.map-toggle button.active { background: #1e3a7a; color: #fff; }
+.map-toggle button:not(.active):hover { background: #e8edf8; color: #1e3a7a; }
+.catchment-note {
+  position: absolute; bottom: 22px; left: 12px; z-index: 1000;
+  background: rgba(255,255,255,0.92); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.35rem 0.65rem;
+  font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted);
+  max-width: 320px; display: none;
+}
+.catchment-note.visible { display: block; }
 
 .leaflet-control-attribution {
   font-family: var(--mono) !important; font-size: 0.5rem !important;
@@ -502,6 +522,14 @@ body {
 <div class="main">
   <div style="position:relative;flex:1;display:flex;flex-direction:column;">
     <div id="map"></div>
+    <div class="map-toggle" role="group" aria-label="Map view mode">
+      <button id="mode-district" class="active" onclick="setMapMode('district')">District pressure</button>
+      <button id="mode-hospital" onclick="setMapMode('hospital')">Hospital systems</button>
+    </div>
+    <div class="catchment-note" id="catchment-note">
+      Approximate catchments based on predominant acute patient flows.
+      Boundary areas (e.g. Sevenoaks, Swale) overlap in practice.
+    </div>
     <div class="map-loading" id="map-loading">
       <div class="loader-ring"></div>
       Loading NHS pressure data
@@ -619,6 +647,68 @@ function tierBorder(tier) {
 
 // ── GLOBAL STATE ──────────────────────────────────────────────────────
 let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null, ae: null, hscm: null };
+let mapMode = 'district';   // 'district' | 'hospital'
+let selectedTrust = null;
+
+// ── HOSPITAL SYSTEM TIER ──────────────────────────────────────────────
+// Trust pressure score (0-100): corridor intensity (0-40) + SHMI banding
+// (0-30) + 65+ emergency admissions per 1,000 registered 75+ in catchment
+// (0-30). Unknown inputs score the moderate midpoint. See the About tab.
+
+function trustCatchmentPop75(code) {
+  if (!DATA.gp?.districts) return null;
+  let sum = 0, found = false;
+  Object.entries(DISTRICT_TRUST).forEach(([d, c]) => {
+    if (c === code && DATA.gp.districts[d]?.pop_75plus != null) {
+      sum += DATA.gp.districts[d].pop_75plus; found = true;
+    }
+  });
+  return found ? sum : null;
+}
+
+function trustAdmRate(code) {
+  const adm = DATA.hes?.trusts?.[code]?.total_emerg_65plus;
+  const pop = trustCatchmentPop75(code);
+  return (adm != null && pop) ? Math.round(adm / pop * 1000) : null;
+}
+
+function computeTrustScore(code) {
+  const corridor = DATA.corridor?.trusts?.[code]?.corridor_total ?? null;
+  const shmiB    = DATA.shmi?.trusts?.[code]?.banding_code ?? null;
+  const rate     = trustAdmRate(code);
+  let score = 0;
+  if      (corridor == null) score += 15;
+  else if (corridor >= 25)   score += 40;
+  else if (corridor >= 10)   score += 30;
+  else if (corridor >= 3)    score += 18;
+  else                       score += 8;
+  score += { '1': 30, '2': 12, '3': 4 }[String(shmiB)] ?? 12;
+  if      (rate == null) score += 15;
+  else if (rate >= 750)  score += 30;
+  else if (rate >= 650)  score += 22;
+  else if (rate >= 550)  score += 14;
+  else                   score += 8;
+  return score;
+}
+
+function getTrustTier(code) {
+  const sc = computeTrustScore(code);
+  if (sc >= 70) return 'critical';
+  if (sc >= 55) return 'high';
+  if (sc >= 35) return 'moderate';
+  return 'low';
+}
+
+function setMapMode(mode) {
+  mapMode = mode;
+  document.getElementById('mode-district').classList.toggle('active', mode === 'district');
+  document.getElementById('mode-hospital').classList.toggle('active', mode === 'hospital');
+  document.getElementById('catchment-note').classList.toggle('visible', mode === 'hospital');
+  selectedDistrict = null; selectedTrust = null;
+  if (geojsonLayer) geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
+  if (currentTab === 'legend') renderLegend();
+  else if (currentTab === 'detail') switchTab('detail');
+}
 let currentTab = 'detail';
 let selectedDistrict = null;
 
@@ -812,16 +902,34 @@ function renderMap(geojson) {
       const tier = getDistrictTier(name);
 
       layer.on('mouseover', () => {
-        if (selectedDistrict !== name) {
+        if (mapMode === 'hospital') {
+          const code = DISTRICT_TRUST[name] || 'RVV';
+          if (selectedTrust !== code) {
+            geojsonLayer.eachLayer(l => {
+              const lc = DISTRICT_TRUST[getDistrictName(l.feature)] || 'RVV';
+              if (lc === code) l.setStyle({ fillOpacity: 0.8, weight: 1.8, color: '#003087' });
+            });
+          }
+        } else if (selectedDistrict !== name) {
           layer.setStyle({ weight: 2.5, fillOpacity: 0.75, color: '#003087' });
         }
       });
       layer.on('mouseout', () => {
-        if (selectedDistrict !== name) {
+        if (mapMode === 'hospital') {
+          geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
+        } else if (selectedDistrict !== name) {
           layer.setStyle(districtStyle(feature, false));
         }
       });
       layer.on('click', () => {
+        if (mapMode === 'hospital') {
+          const code = DISTRICT_TRUST[name] || 'RVV';
+          selectedTrust = code;
+          geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
+          showTrustDetail(code);
+          switchTab('detail');
+          return;
+        }
         selectedDistrict = name;
         geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
         layer.setStyle({ weight: 3, fillOpacity: 0.85, color: '#003087' });
@@ -852,6 +960,18 @@ function getDistrictTier(districtName) {
 
 function districtStyle(feature, selected) {
   const name = getDistrictName(feature);
+  if (mapMode === 'hospital') {
+    const code = DISTRICT_TRUST[name] || 'RVV';
+    const tier = getTrustTier(code);
+    const isSel = selectedTrust === code;
+    return {
+      fillColor:   tierFill(tier),
+      color:       isSel ? '#003087' : '#ffffff',
+      weight:      isSel ? 2.5 : 1.2,
+      fillOpacity: isSel ? 0.85 : 0.62,
+      opacity:     1,
+    };
+  }
   const tier = getDistrictTier(name);
   return {
     fillColor:   tierFill(tier),
@@ -862,6 +982,107 @@ function districtStyle(feature, selected) {
   };
 }
 
+
+
+// ── HOSPITAL SYSTEM DETAIL PANEL ─────────────────────────────────────
+function showTrustDetail(code) {
+  const tier   = getTrustTier(code);
+  const score  = computeTrustScore(code);
+  const corT   = DATA.corridor?.trusts?.[code];
+  const shmiT  = DATA.shmi?.trusts?.[code];
+  const hesT   = DATA.hes?.trusts?.[code];
+  const aeT    = DATA.ae?.trusts?.[code];
+  const name   = corT?.name || TRUST_NAMES[code] || code;
+  const short  = TRUST_NAMES[code] || code;
+  const rate   = trustAdmRate(code);
+  const pop75  = trustCatchmentPop75(code);
+  const fmtV   = v => v == null ? '–' : (typeof v === 'number' ? v.toLocaleString() : v);
+
+  const districts = Object.entries(DISTRICT_TRUST)
+    .filter(([, c]) => c === code).map(([d]) => d);
+  const districtRows = districts.map(d => {
+    const f = DATA.fep?.districts?.find?.(x => x.name === d);
+    const dt = getDistrictTier(d);
+    return `<div class="ranked-row" style="cursor:default">
+      <span class="ranked-name">${d}</span>
+      <div class="ranked-bar-wrap"><div class="ranked-bar" style="width:${f?.fep ?? 0}%;background:${tierBorder(dt)}"></div></div>
+      <span class="ranked-val" style="color:${tierBorder(dt)}">${f?.fep ?? '–'}</span>
+    </div>`;
+  }).join('');
+
+  const cPeak = corT ? (Math.max(corT.corridor_ed_max ?? 0, corT.corridor_ward_max ?? 0) || null) : null;
+  const aePerf = aeT?.perf_4hr_pct;
+
+  let html = `
+    <div class="district-header">
+      <div>
+        <div class="district-name">${short}</div>
+        <div class="district-trust">${name} (${code}) · serves ${districts.join(', ')}</div>
+      </div>
+      <div class="pressure-circle risk-${tier}" style="color:${tierBorder(tier)}">
+        <span class="pressure-num">${score}</span>
+        <span class="pressure-tier">${tier}</span>
+      </div>
+    </div>
+
+    <div class="data-panel corridor">
+      <div class="panel-title">🚨 Hospital System Pressure — ${DATA.corridor?.meta?.period_label || 'latest data'}</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val warn">${fmtV(corT?.corridor_total != null ? Math.round(corT.corridor_total) : null)}</span>
+          <div class="metric-label">Corridor patients<br>per day (average)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val warn">${fmtV(cPeak != null ? Math.round(cPeak) : null)}</span>
+          <div class="metric-label">Worst day<br>this month</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${shmiT?.shmi_value != null ? shmiT.shmi_value.toFixed(2) : '–'}</span>
+          <div class="metric-label">SHMI<br>${shmiT?.banding_label || 'not yet published'}</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val ${aePerf != null && aePerf < 85 ? 'warn' : ''}">${aePerf != null ? aePerf + '%' : '–'}</span>
+          <div class="metric-label">A&amp;E seen within<br>4 hours</div>
+        </div>
+      </div>
+      <div class="metric-grid" style="margin-top:0.4rem">
+        <div class="metric-box">
+          <span class="metric-val blue">${fmtV(hesT?.total_emerg_65plus)}</span>
+          <div class="metric-label">65+ emergency<br>admissions (annual)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val blue">${fmtV(rate)}</span>
+          <div class="metric-label">Admissions per 1,000<br>registered 75+</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmtV(pop75)}</span>
+          <div class="metric-label">75+ registered in<br>catchment</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${districts.length}</span>
+          <div class="metric-label">Districts in<br>catchment</div>
+        </div>
+      </div>
+      <div class="panel-note">
+        Hospital system pressure ${score}/100: corridor intensity (0–40) + SHMI banding (0–30) +
+        65+ emergency admissions per 1,000 registered 75+ (0–30). Unknown inputs score the
+        moderate midpoint. Approximate catchments based on predominant acute flows.
+      </div>
+    </div>
+
+    <div class="data-panel">
+      <div class="panel-title">📍 Districts served — FEP scores</div>
+      ${districtRows}
+      <div class="panel-note">
+        Frailty Emergence Probability by district. Switch to District pressure view
+        for full district detail including demographics, disease prevalence and
+        discharge intelligence.
+      </div>
+    </div>
+  `;
+
+  document.getElementById('panel-content').innerHTML = html;
+}
 
 // ── DISTRICT DETAIL PANEL ─────────────────────────────────────────────
 function showDistrictDetail(name) {
@@ -1742,6 +1963,19 @@ function renderLegend() {
       clinical index. Trust-level data is attributed to districts based on primary
       catchment area. Medway is served primarily by East Kent Hospitals Trust (RVV).
     </div>
+  
+    <div class="legend-section">
+      <div class="legend-heading">Hospital systems view</div>
+      <div class="legend-sub" style="margin-bottom:0.5rem">
+        The Hospital systems toggle recolours the map by acute trust catchment.
+        Trust pressure score (0–100) = corridor intensity (0–40) + SHMI banding (0–30)
+        + 65+ emergency admissions per 1,000 registered 75+ in catchment (0–30).
+        Tiers: 70+ Critical · 55+ High · 35+ Moderate · below 35 Lower.
+        Unknown inputs score the moderate midpoint rather than penalising a trust
+        for unpublished data. Catchments are approximate, based on predominant acute
+        patient flows; boundary areas such as Sevenoaks and Swale overlap in practice.
+      </div>
+    </div>
   `;
 }
 
@@ -1760,7 +1994,9 @@ function switchTab(tab) {
     renderLegend();
   } else if (tab === 'dualcrisis') {
     renderDualCrisis();
-  } else if (tab === 'detail' && selectedDistrict) {
+  } else if (tab === 'detail' && mapMode === 'hospital' && selectedTrust) {
+    showTrustDetail(selectedTrust);
+  } else if (tab === 'detail' && mapMode === 'district' && selectedDistrict) {
     showDistrictDetail(selectedDistrict);
   } else if (tab === 'detail') {
     content.innerHTML = `

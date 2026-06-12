@@ -33,6 +33,8 @@ HEADERS = {
 KENT_TRUSTS = {
     "RVV": "East Kent Hospitals University NHS Foundation Trust",
     "RWF": "Maidstone and Tunbridge Wells NHS Trust",
+    "RPA": "Medway NHS Foundation Trust",
+    "RN7": "Dartford and Gravesham NHS Trust",
 }
 
 KENT_LAD_CODES = {

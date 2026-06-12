@@ -131,10 +131,10 @@ def derive_pressure_values():
         period = (cor.get("meta", {}) or {}).get("period_label", "")
         mon = period.split()[0][:3] if period else ""
         vals["corridor_label"] = (
-            f"Corridor patients/day — {mon}" if mon
-            else "Corridor patients/day")
+            f"Corridor/day — {mon}" if mon else "Corridor/day")
 
         # Hospital corridor strip — mirrors renderTrustStrip() in the page JS
+        # (compact single-line chips). Keep in lockstep with the JS template.
         trust_names = {"RVV": "East Kent Hospitals",
                        "RWF": "Maidstone &amp; T. Wells",
                        "RPA": "Medway Maritime",
@@ -159,19 +159,20 @@ def derive_pressure_values():
                        t.get("corridor_ward_max") or 0) or None
             if avg is None:
                 cards.append(
-                    f'<div class="trust-card c-na"><div class="tc-name">{name}</div>'
-                    f'<div class="tc-row"><span class="tc-avg">&ndash;</span></div>'
-                    f'<div class="tc-sub">awaiting first publication</div></div>')
+                    f'<div class="trust-card c-na">'
+                    f'<span class="tc-name">{name}</span>'
+                    f'<span class="tc-avg">&ndash;</span>'
+                    f'<span class="tc-sub">no data</span></div>')
             else:
-                peak_html = (f'<span class="tc-peak">peak {round(peak)}</span>'
+                peak_html = (f'<span class="tc-peak">pk {round(peak)}</span>'
                              if peak else "")
-                sub = f"corridor patients/day{' &middot; ' + mon if mon else ''}"
+                sub = f"corridor/day{' &middot; ' + mon if mon else ''}"
                 cards.append(
                     f'<div class="trust-card {intensity(avg)}">'
-                    f'<div class="tc-name">{name}</div>'
+                    f'<span class="tc-name">{name}</span>'
                     f'<div class="tc-row"><span class="tc-avg">{round(avg)}</span>'
                     f'{peak_html}</div>'
-                    f'<div class="tc-sub">{sub}</div></div>')
+                    f'<span class="tc-sub">{sub}</span></div>')
         vals["corridor_strip"] = "".join(cards)
 
     hes = get_json("kent-hes-data.json")

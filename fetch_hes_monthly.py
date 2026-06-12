@@ -45,13 +45,22 @@ KENT_TRUSTS = {
     "RVV": {
         "name":      "East Kent Hospitals University NHS Foundation Trust",
         "short":     "East Kent Hospitals",
-        "districts": ["Thanet", "Dover", "Folkestone & Hythe", "Canterbury", "Swale"],
+        "districts": ["Thanet", "Dover", "Folkestone & Hythe", "Canterbury", "Ashford"],
     },
     "RWF": {
         "name":      "Maidstone and Tunbridge Wells NHS Trust",
         "short":     "Maidstone & Tunbridge Wells",
-        "districts": ["Maidstone", "Tonbridge & Malling", "Tunbridge Wells",
-                      "Sevenoaks", "Ashford", "Gravesham", "Dartford"],
+        "districts": ["Maidstone", "Tonbridge & Malling", "Tunbridge Wells", "Sevenoaks"],
+    },
+    "RPA": {
+        "name":      "Medway NHS Foundation Trust",
+        "short":     "Medway Maritime",
+        "districts": ["Medway", "Swale"],
+    },
+    "RN7": {
+        "name":      "Dartford and Gravesham NHS Trust",
+        "short":     "Darent Valley",
+        "districts": ["Dartford", "Gravesham"],
     },
 }
 

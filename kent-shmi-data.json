@@ -36,6 +36,26 @@
       "predicted_deaths": 2315.0,
       "spell_count": 84870,
       "period": "February 2025 - January 2026"
+    },
+    "RPA": {
+      "name": "Medway NHS Foundation Trust",
+      "shmi_value": 1.3048,
+      "banding_code": "1",
+      "banding_label": "Higher than expected",
+      "observed_deaths": 1810,
+      "predicted_deaths": 1385.0,
+      "spell_count": 39605,
+      "period": "February 2025 - January 2026"
+    },
+    "RN7": {
+      "name": "Dartford And Gravesham NHS Trust",
+      "shmi_value": 1.0048,
+      "banding_code": "2",
+      "banding_label": "As expected",
+      "observed_deaths": 1545,
+      "predicted_deaths": 1535.0,
+      "spell_count": 62400,
+      "period": "February 2025 - January 2026"
     }
   },
   "history": [
