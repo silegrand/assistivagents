@@ -37,6 +37,8 @@
   --mono:        'DM Mono', monospace;
   --sans:        'Nunito', sans-serif;
   --cabinet:     'Cabinet Grotesk', sans-serif;
+  --serif:       'Nunito', sans-serif;
+  --text-dim:    #9aabb8;
 
   /* WVI tier colours */
   --wvi-critical: #991b1b;
@@ -62,103 +64,124 @@ body {
 /* ── TOPBAR ── */
 .topbar {
   background: var(--forest);
-  padding: 0 1.5rem;
-  height: 54px;
+  padding: 0 1.25rem;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
+  flex-shrink: 0;
   z-index: 200;
-  border-bottom: 2px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.topbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  text-decoration: none;
-}
-.topbar-logo {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #7a9ee0, #365EBF);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-}
-.topbar-title {
-  font-family: var(--cabinet);
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.01em;
-}
-.topbar-sub {
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.badge {
   font-family: var(--mono);
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 0.08em;
-  margin-top: 1px;
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.65);
 }
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.badge.live {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.45);
+  color: white;
 }
-.topbar-back {
-  font-family: var(--mono);
-  font-size: 0.68rem;
+.badge.live::before { content: '● '; font-size: 0.42rem; }
+.badge.winter {
+  background: rgba(251,191,36,0.18);
+  border-color: rgba(251,191,36,0.5);
+  color: #fbbf24;
+}
+.nav-back {
   color: rgba(255,255,255,0.6);
   text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.65rem;
   letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.15s;
 }
-.topbar-back:hover { color: #fff; }
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
 
-/* ── WINTER BANNER ── */
-.winter-banner {
-  background: linear-gradient(135deg, #1e3a7a 0%, #2563eb 50%, #1e40af 100%);
-  color: #fff;
-  padding: 1.25rem 1.5rem;
+/* Pulse ring logo */
+.logo-ring {
+  position: relative; width: 32px; height: 32px; flex-shrink: 0;
+}
+.logo-ring .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; z-index: 2; }
+.logo-ring .r1  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); border-radius: 50%; }
+.logo-ring .r2  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; }
+
+.brand-label { display: flex; flex-direction: column; gap: 2px; }
+.brand-title {
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
+  color: #fff; letter-spacing: -0.02em; line-height: 1;
+}
+.brand-sub {
+  font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.5); line-height: 1;
+}
+
+/* ── DATA CURRENCY BANNER ── */
+.currency-banner {
+  background: #e8edf8;
+  padding: 0.5rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  flex-shrink: 0;
   flex-wrap: wrap;
+  gap: 0.6rem;
+  border-bottom: 1px solid #c9d4ec;
 }
-.winter-banner-left h1 {
-  font-family: var(--cabinet);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.25rem;
+.currency-left {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
 }
-.winter-banner-left p {
-  font-size: 0.85rem;
-  color: rgba(255,255,255,0.75);
-  max-width: 560px;
-  line-height: 1.5;
+.currency-label {
+  font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #365EBF;
 }
-.winter-countdown {
-  text-align: right;
+.currency-stat {
+  display: flex; align-items: baseline; gap: 0.45rem;
 }
-.winter-countdown .count {
-  font-family: var(--mono);
-  font-size: 2rem;
-  font-weight: 500;
-  color: #fbbf24;
-  line-height: 1;
+.currency-val {
+  font-family: var(--serif); font-size: 1.25rem; font-weight: 700; color: #1e3a7a;
 }
-.winter-countdown .count-label {
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.1em;
-  margin-top: 2px;
+.currency-desc {
+  font-family: var(--mono); font-size: 0.66rem; color: #365EBF;
+  letter-spacing: 0.04em; text-transform: uppercase;
 }
-.winter-countdown .deployment-line {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.6);
-  margin-top: 4px;
+.currency-note {
+  font-family: var(--mono); font-size: 0.6rem; color: #6b7fa8;
+  letter-spacing: 0.03em;
 }
+
+/* ── TRUST STRIP ── */
+.trust-strip {
+  display: flex; gap: 0; flex-shrink: 0;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.trust-card {
+  flex: 1 1 0; min-width: 170px; padding: 0.55rem 1rem 0.6rem;
+  border-left: 4px solid #94a3b8; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.15rem;
+}
+.trust-card:last-child { border-right: none; }
+.trust-card.c-high { border-left-color: #b91c1c; background: rgba(185,28,28,0.06); }
+.trust-card.c-med  { border-left-color: #c2410c; background: rgba(194,65,12,0.05); }
+.trust-card.c-low  { border-left-color: #b45309; background: rgba(180,83,0.04); }
+.trust-card.c-min  { border-left-color: #15803d; }
+.trust-card.c-na   { border-left-color: #94a3b8; opacity: 0.75; }
+.tc-name { font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); white-space: nowrap; }
+.tc-row  { display: flex; align-items: baseline; gap: 0.45rem; }
+.tc-avg  { font-size: 1.15rem; font-weight: 800; color: var(--text); line-height: 1; }
+.tc-peak { font-size: 0.68rem; font-weight: 600; color: #b91c1c; white-space: nowrap; }
+.tc-sub  { font-size: 0.62rem; color: var(--text-dim); white-space: nowrap; }
 
 /* ── MAIN LAYOUT ── */
 .main {
@@ -995,8 +1018,8 @@ body {
   .main { grid-template-columns: 1fr; height: auto; }
   .sidebar { max-height: 300px; }
   .deployment-grid { grid-template-columns: 1fr; }
-  .winter-banner { flex-direction: column; }
-  .winter-countdown { text-align: left; }
+  .topbar-right { display: none; }
+  .currency-left { gap: 0.5rem; }
 }
 </style>
 </head>
@@ -1009,29 +1032,51 @@ body {
 
 <!-- TOPBAR -->
 <nav class="topbar">
-  <a href="/" class="topbar-brand">
-    <div class="topbar-logo">❄</div>
-    <div>
-      <div class="topbar-title">Assistiv Cloud</div>
-      <div class="topbar-sub">POPULATION INTELLIGENCE · KENT &amp; MEDWAY</div>
+  <div class="topbar-left">
+    <a href="index.html" class="nav-back">&#8592; Overview</a>
+    <div class="divider-v"></div>
+    <a href="index.html" style="text-decoration:none">
+      <div class="logo-ring"><div class="dot"></div><div class="r1"></div><div class="r2"></div></div>
+    </a>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title">Winter Readiness Intelligence</span>
+      <span class="brand-sub">2026–27 Planning · Kent &amp; Medway</span>
     </div>
-  </a>
+  </div>
   <div class="topbar-right">
-    <a href="/" class="topbar-back">← All tools</a>
+    <span class="badge">13 Districts</span>
+    <span class="badge winter" id="badge-weeks">— weeks to Oct</span>
+    <span class="badge live" id="data-freshness-badge">Loading data…</span>
   </div>
 </nav>
 
-<!-- WINTER BANNER -->
-<div class="winter-banner">
-  <div class="winter-banner-left">
-    <h1>Winter Readiness Intelligence · 2026–27</h1>
-    <p>Forward-looking, district-level risk intelligence for Kent ICB commissioners. Where the Missing Middle is most likely to decompensate over winter, and what interventions deployed when will have the greatest impact on the January–February peak.</p>
+<!-- DATA CURRENCY BANNER -->
+<div class="currency-banner">
+  <div class="currency-left">
+    <span class="currency-label">Winter Planning ·</span>
+    <div class="currency-stat">
+      <span class="currency-val" id="weeksToOct">—</span>
+      <span class="currency-desc" id="deploymentLine">Weeks to Oct deployment</span>
+    </div>
+    <div class="currency-stat">
+      <span class="currency-val" id="banner-wvi-top">—</span>
+      <span class="currency-desc">Highest WVI district</span>
+    </div>
+    <div class="currency-stat">
+      <span class="currency-val" id="banner-critical-count">—</span>
+      <span class="currency-desc">High-risk districts</span>
+    </div>
+    <div class="currency-stat">
+      <span class="currency-val" id="banner-pop75">—</span>
+      <span class="currency-desc">75+ Kent pop (census)</span>
+    </div>
+    <div class="currency-stat">
+      <span class="currency-val" id="banner-corridor">—</span>
+      <span class="currency-desc" id="banner-corridor-label">Corridor/day (RWF, May)</span>
+    </div>
   </div>
-  <div class="winter-countdown">
-    <div class="count" id="weeksToOct">—</div>
-    <div class="count-label">WEEKS TO OCT DEPLOYMENT</div>
-    <div class="deployment-line" id="deploymentLine">Loading…</div>
-  </div>
+  <div class="currency-note" id="data-currency-note">Loading winter intelligence data…</div>
 </div>
 
 <!-- MAIN -->
@@ -1178,11 +1223,15 @@ async function init() {
   const now = new Date();
   const octTarget = new Date(2026, 9, 1);  // 1 October 2026
   const weeksLeft = Math.max(0, Math.floor((octTarget - now) / (7 * 24 * 60 * 60 * 1000)));
+
+  // Topbar badge
+  const badgeEl = document.getElementById('badge-weeks');
+  if (badgeEl) badgeEl.textContent = weeksLeft > 0 ? `${weeksLeft} weeks to Oct` : 'Oct window open';
+
+  // Currency banner: weeks stat
   document.getElementById('weeksToOct').textContent = weeksLeft;
   document.getElementById('deploymentLine').textContent =
-    weeksLeft > 0
-      ? `October deployment deadline — ${weeksLeft} weeks from today`
-      : 'October deployment window is open';
+    weeksLeft > 0 ? `Weeks to October deployment deadline` : 'October deployment window open';
 
   try {
     const [wRes, fRes] = await Promise.all([fetch(DATA_URL), fetch(FEP_URL)]);
@@ -1195,6 +1244,42 @@ async function init() {
   if (winterData) {
     const gen = winterData.meta?.generated?.slice(0, 10) || '—';
     document.getElementById('datagenerated').textContent = `WVI data · ${gen}`;
+    document.getElementById('data-freshness-badge').textContent = `WVI data · ${gen}`;
+
+    // Banner: highest WVI district
+    const districts = Object.entries(winterData.districts);
+    if (districts.length) {
+      const [topName, topD] = districts[0]; // already sorted by WVI desc
+      document.getElementById('banner-wvi-top').textContent = Math.round(topD.wvi_score);
+      document.getElementById('banner-wvi-top').nextElementSibling.textContent =
+        `WVI — ${topName.split(' ')[0]} (highest)`;
+    }
+
+    // Banner: count of high/critical districts
+    const highCount = districts.filter(([,d]) => d.wvi_tier === 'high' || d.wvi_tier === 'critical').length;
+    document.getElementById('banner-critical-count').textContent = highCount;
+
+    // Banner: total 75+ Kent population
+    const POP75_CENSUS = {
+      "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+      "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+      "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+      "Sevenoaks":12100,"Tunbridge Wells":11200,
+    };
+    const totalPop75 = Object.values(POP75_CENSUS).reduce((a, b) => a + b, 0);
+    document.getElementById('banner-pop75').textContent = totalPop75.toLocaleString();
+
+    // Banner: corridor pressure (RWF — highest corridor trust)
+    const corridor = winterData.districts?.['Maidstone']?.corridor_avg_may2026;
+    if (corridor != null) {
+      document.getElementById('banner-corridor').textContent = Math.round(corridor);
+      document.getElementById('banner-corridor-label').textContent = 'Corridor/day (RWF, May)';
+    }
+
+    // Currency note
+    document.getElementById('data-currency-note').textContent =
+      `WVI generated ${gen} · FEP data: NHS Fingertips daily · Corridor: NHS England May 2026 · Open Government Licence v3`;
+
     renderDistrictList();
   }
 
