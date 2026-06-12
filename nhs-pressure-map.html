@@ -210,7 +210,7 @@ body {
 
 /* ── SIDE PANEL ── */
 .side-panel {
-  width: 330px; background: var(--surface);
+  width: 415px; background: var(--surface);
   border-left: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
 }
@@ -1236,7 +1236,7 @@ function showDistrictDetail(name) {
   const coldScore = Math.min(100, Math.round((fuelNorm * 0.4 + aloneNorm * 0.4) * coastal * (pop75c / 18200) * 0.35));
   const coldColor = coldScore >= 18 ? '#991b1b' : coldScore >= 12 ? '#b45309' : '#1d4ed8';
   const coldLabel = coldScore >= 18 ? 'High thermal risk' : coldScore >= 12 ? 'Elevated thermal risk' : 'Moderate thermal risk';
-  const sevWVI    = Math.min(100, Math.round(((winterData?.districts?.[name]?.wvi_score) || fepScore * 0.9 || 50) * 1.20));
+  const sevWVI    = Math.min(100, Math.round(((fepScore || 50) * 1.1) * 1.20));
 
   if (fuelPov != null || olderAlone != null) {
     html += `
