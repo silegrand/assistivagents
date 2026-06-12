@@ -33,6 +33,30 @@ last_meta  = last.get("meta", {})
 last_epd_d = {d["name"]: d.get("epd_district", {}) for d in last.get("districts", [])}
 print(f"  Last version: {last_meta.get('version','?')} | EPD period: {last_meta.get('epd_period','?')}")
 
+# ── LOAD KPHO HSCM DATA (FEP recalibration signal) ────────────────────
+# kent-hscm-data.json contains GP-recorded Clinical Frailty Scale scores
+# (KPHO Health and Social Care Maps, published quarterly).
+# kpho_frailty_normalised: 0-100, Kent-scaled. Blended at 40% into FEP.
+# Key corrections: Dartford +30 pts (severely underestimated), Maidstone -16 pts.
+HSCM_URL = RAW_URL.replace("kent-fep-data.json", "kent-hscm-data.json")
+KPHO_FEP_WEIGHT = 0.40   # 40% clinical signal, 60% proxy-signal FEP
+kpho_district = {}
+try:
+    rh = requests.get(HSCM_URL, timeout=10)
+    if rh.status_code == 200:
+        hscm = rh.json()
+        for name, rec in hscm.get("districts", {}).items():
+            norm_val = rec.get("kpho_frailty_normalised")
+            if norm_val is not None:
+                kpho_district[name] = norm_val
+        print(f"  KPHO frailty loaded: {len(kpho_district)} districts  "
+              f"(version {hscm.get('meta',{}).get('version','?')}, "
+              f"{hscm.get('meta',{}).get('version_date','?')})")
+    else:
+        print(f"  KPHO data unavailable (HTTP {rh.status_code}) — FEP runs without recalibration")
+except Exception as e:
+    print(f"  KPHO data load error ({e}) — FEP runs without recalibration")
+
 # ── FINGERTIPS FETCH ──────────────────────────────────────────────────
 # Each indicator is fetched at ICB/county level (for the England-benchmarked
 # ICB baseline) AND at district (LAD) level where published. District values
@@ -254,6 +278,21 @@ for name in LAD_CODES:
     fep  = round(min(100, max(0, sum(s * w for s, w in zip(signals, WEIGHTS)))))
     risk = "critical" if fep >= 70 else "high" if fep >= 55 else "moderate" if fep >= 40 else "low"
 
+    # ── KPHO Clinical Frailty Recalibration ──────────────────────────────
+    # Blend GP-recorded CFS scores (40%) with proxy-signal FEP (60%).
+    # kpho_district contains normalised KPHO frailty on 0-100 Kent scale.
+    # Where available this corrects systematic divergences identified in V1.6:
+    #   Dartford: proxy FEP=49, clinical KPHO=79  → blended ~60 (material uplift)
+    #   Maidstone: proxy FEP=60, clinical KPHO=44 → blended ~53 (material reduction)
+    kpho_norm = kpho_district.get(name)
+    if kpho_norm is not None:
+        fep_proxy = fep   # preserve proxy value for diagnostics
+        fep       = round(min(100, max(0, KPHO_FEP_WEIGHT * kpho_norm + (1 - KPHO_FEP_WEIGHT) * fep)))
+        risk      = "critical" if fep >= 70 else "high" if fep >= 55 else "moderate" if fep >= 40 else "low"
+    else:
+        fep_proxy = None
+        kpho_norm = None
+
     # Count how many Fingertips signals resolved to real district data
     real_ft = sum(1 for i,(k,_) in FT_SIGNAL_MAP.items()
                   if fingertips_district.get(name, {}).get(k) is not None)
@@ -263,6 +302,9 @@ for name in LAD_CODES:
         "risk": risk, "signals": signals, "signal_names": SIGNAL_NAMES,
         "pop75": POP75[name],
         "fingertips_district_signals": real_ft,
+        "fep_proxy":  fep_proxy,   # pre-recalibration FEP (None if KPHO unavailable)
+        "kpho_frailty_normalised": kpho_norm,  # KPHO clinical signal used in blend
+        "kpho_recalibrated": kpho_norm is not None,
     }
 
     # CRITICAL: carry the district EPD prescribing data forward. The manual
@@ -278,7 +320,8 @@ for name in LAD_CODES:
         record["list_size"] = _last_rec["list_size"]
 
     districts.append(record)
-    print(f"  {name:<25} FEP {fep:>3}  ({risk})  [{real_ft}/{len(FT_SIGNAL_MAP)} real district signals]")
+    kpho_tag = f"  kpho={kpho_norm:.0f}→{fep}" if kpho_norm is not None else "  (no kpho)"
+    print(f"  {name:<25} FEP {fep:>3}  ({risk})  [{real_ft}/{len(FT_SIGNAL_MAP)} real district signals]{kpho_tag}")
 
 districts.sort(key=lambda x: x["fep"], reverse=True)
 
