@@ -359,10 +359,11 @@ def winter_narrative(district_name, fep_rec, wvi_score, wvi_tier, component_scor
 
     falls_uplift = SEASONAL_UPLIFT["falls_jan_uplift_pct"]
 
+    fep_vs_eng = "above" if fep_score > 50 else "at"
     narrative = (
         f"{district_name} is {tier_phrase}, with {pop75:,} adults aged 75 and over "
         f"on GP registers and a Frailty Emergence Probability of {fep_score} — "
-        f"{"above" if fep_score > 50 else "at"} the England average. "
+        f"{fep_vs_eng} the England average. "
         f"The serving trust ({trust_short}) is already managing an average of {corridor:.0f} "
         f"corridor care patients per day in May 2026, leaving limited buffer before the winter surge "
         f"that historically drives falls admissions {falls_uplift}% above the annual average in January. "
