@@ -128,6 +128,52 @@ def derive_pressure_values():
         if totals:
             vals["corridor_total"] = f"{sum(totals):,.0f}"
 
+        period = (cor.get("meta", {}) or {}).get("period_label", "")
+        mon = period.split()[0][:3] if period else ""
+        vals["corridor_label"] = (
+            f"Corridor patients/day — {mon}" if mon
+            else "Corridor patients/day")
+
+        # Hospital corridor strip — mirrors renderTrustStrip() in the page JS
+        trust_names = {"RVV": "East Kent Hospitals",
+                       "RWF": "Maidstone &amp; T. Wells",
+                       "RPA": "Medway Maritime",
+                       "RN7": "Darent Valley"}
+
+        def intensity(avg):
+            if avg is None:
+                return "c-na"
+            if avg >= 25:
+                return "c-high"
+            if avg >= 10:
+                return "c-med"
+            if avg >= 3:
+                return "c-low"
+            return "c-min"
+
+        cards = []
+        for code, t in cor["trusts"].items():
+            name = trust_names.get(code, t.get("short", code))
+            avg = t.get("corridor_total")
+            peak = max(t.get("corridor_ed_max") or 0,
+                       t.get("corridor_ward_max") or 0) or None
+            if avg is None:
+                cards.append(
+                    f'<div class="trust-card c-na"><div class="tc-name">{name}</div>'
+                    f'<div class="tc-row"><span class="tc-avg">&ndash;</span></div>'
+                    f'<div class="tc-sub">awaiting first publication</div></div>')
+            else:
+                peak_html = (f'<span class="tc-peak">peak {round(peak)}</span>'
+                             if peak else "")
+                sub = f"corridor patients/day{' &middot; ' + mon if mon else ''}"
+                cards.append(
+                    f'<div class="trust-card {intensity(avg)}">'
+                    f'<div class="tc-name">{name}</div>'
+                    f'<div class="tc-row"><span class="tc-avg">{round(avg)}</span>'
+                    f'{peak_html}</div>'
+                    f'<div class="tc-sub">{sub}</div></div>')
+        vals["corridor_strip"] = "".join(cards)
+
     hes = get_json("kent-hes-data.json")
     if hes and hes.get("trusts"):
         sums = [t["total_emerg_65plus"] for t in hes["trusts"].values()
