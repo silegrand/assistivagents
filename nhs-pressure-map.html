@@ -10,6 +10,7 @@
 <title>NHS Pressure Intelligence — Kent & Medway · Assistiv Systems</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
 
@@ -266,6 +267,7 @@ body {
 }
 .data-panel.corridor  { border-left: 4px solid #c04828; }
 .data-panel.emergency { border-left: 4px solid #1d4ed8; }
+.data-panel.ae-panel  { border-left: 4px solid #0369a1; }
 .data-panel.mortality { border-left: 4px solid #6d28d9; }
 .data-panel.population{ border-left: 4px solid #059669; }
 .data-panel.fep       { border-left: 4px solid #0f2d4a; }
@@ -277,6 +279,7 @@ body {
 }
 .corridor  .panel-title { color: #c04828; }
 .emergency .panel-title { color: #1d4ed8; }
+.ae-panel  .panel-title { color: #0369a1; }
 .mortality .panel-title { color: #6d28d9; }
 .population .panel-title { color: #059669; }
 .fep .panel-title { color: #0f2d4a; }
@@ -424,6 +427,10 @@ body {
       <span class="currency-val" id="bv-shmi"><!--INJECT:shmi_max-->1.15<!--/INJECT--></span>
       <span class="currency-desc" id="bv-shmi-label"><!--INJECT:shmi_label-->SHMI — East Kent (highest)<!--/INJECT--></span>
     </div>
+    <div class="currency-stat" id="banner-ae">
+      <span class="currency-val" id="bv-ae">–</span>
+      <span class="currency-desc" id="bv-ae-label">A&amp;E 4hr performance (RWF)</span>
+    </div>
     <div class="currency-stat" id="banner-pop">
       <span class="currency-val" id="bv-pop"><!--INJECT:pop_75plus-->241,986<!--/INJECT--></span>
       <span class="currency-desc">75+ registered Kent</span>
@@ -477,6 +484,7 @@ const SOURCES = {
   shmi:     BASE + 'kent-shmi-data.json',
   gp:       BASE + 'kent-gp-reg-data.json',
   iuc:      BASE + 'kent-111-data.json',
+  ae:       BASE + 'kent-ae-monthly.json',
 };
 
 // ── DISTRICT → TRUST MAPPING ─────────────────────────────────────────
@@ -556,7 +564,7 @@ function tierBorder(tier) {
 }
 
 // ── GLOBAL STATE ──────────────────────────────────────────────────────
-let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null };
+let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null, ae: null };
 let currentTab = 'detail';
 let selectedDistrict = null;
 
@@ -692,12 +700,32 @@ function updateBanner() {
       `111 calls — K&M est.${mon ? ', ' + mon : ''}`;
   }
 
+  // A&E 4hr performance — show lowest performer across Kent trusts
+  if (DATA.ae?.trusts) {
+    let worstPerf = null; let worstTrust = null;
+    Object.entries(DATA.ae.trusts).forEach(([code, t]) => {
+      if (t.perf_4hr_pct != null && (worstPerf == null || t.perf_4hr_pct < worstPerf)) {
+        worstPerf = t.perf_4hr_pct; worstTrust = code;
+      }
+    });
+    if (worstPerf != null) {
+      const aePeriod = DATA.ae.meta?.latest_period || '';
+      const mon = aePeriod ? aePeriod.split(' ')[0].slice(0,3) : '';
+      const nm = (TRUST_NAMES[worstTrust] || worstTrust).split(' ')[0];
+      document.getElementById('bv-ae').textContent = worstPerf + '%';
+      document.getElementById('bv-ae-label').textContent =
+        `A&E 4hr — ${nm}${mon ? ', ' + mon : ''} (lowest)`;
+    }
+  }
+
   // Currency note
   const hesPeriod = DATA.hes?.meta?.period_label || 'latest period';
   const gpSnap    = DATA.gp?.meta?.snapshot_date || null;
+  const aePeriod  = DATA.ae?.meta?.latest_period || null;
   const note      = [
     weekEnding       ? `Corridor: week ${weekEnding}` : null,
     hesFound         ? `HES: ${hesPeriod}` : null,
+    aePeriod         ? `A&E: ${aePeriod}` : null,
     gpSnap           ? `GP reg: ${gpSnap}` : null,
   ].filter(Boolean).join(' · ');
   document.getElementById('data-currency-note').textContent =
@@ -893,6 +921,160 @@ function showDistrictDetail(name) {
       </div>
     </div>
   `;
+
+  // ── A&E MONTHLY ATTENDANCES ──
+  const aeT       = DATA.ae?.trusts?.[trustCode];
+  const aePeriod  = DATA.ae?.meta?.latest_period || '';
+  if (aeT) {
+    const aeTotal    = aeT.total_attendances;
+    const aeType1    = aeT.type1_attendances;
+    const aeType3    = aeT.type3_attendances;
+    const aePerf     = aeT.perf_4hr_pct;
+    const aeEmerg    = aeT.emergency_admissions;
+    const ae4hrAdm   = aeT.over_4hr_decision_to_admit;
+    const ae12hrAdm  = aeT.over_12hr_decision_to_admit;
+    const aeAttYoy   = aeT.att_yoy_pct;
+    const aeAttTrend = aeT.att_trend;
+    const aePerfTrend= aeT.perf_trend;
+
+    const perfColor  = aePerf == null ? 'var(--text-muted)'
+                     : aePerf >= 95   ? 'var(--green)'
+                     : aePerf >= 85   ? 'var(--amber)'
+                     : 'var(--red)';
+    const perfTarget = aePerf != null ? `${aePerf}%` : '–';
+
+    const attTrendArrow = { rising:'▲', falling:'▼', stable:'→', unknown:'–' }[aeAttTrend] || '–';
+    const attTrendCls   = aeAttTrend === 'rising' ? 'trend-up'
+                        : aeAttTrend === 'falling' ? 'trend-down' : 'trend-flat';
+    const perfTrendArrow = { rising:'▲', falling:'▼', stable:'→', unknown:'–' }[aePerfTrend] || '–';
+    const perfTrendCls   = aePerfTrend === 'rising' ? 'trend-down'  // rising 4hr breaches = worse
+                         : aePerfTrend === 'falling' ? 'trend-up'   // falling = improving
+                         : 'trend-flat';
+
+    // Build 12-month sparkline data for the trend chart
+    const aeMonthly = aeT.monthly || {};
+    const sortedMonths = Object.keys(aeMonthly).sort();
+    const chartLabels  = sortedMonths.map(k => aeMonthly[k].period_label?.slice(0, 3) || k.slice(5));
+    const chartAtt     = sortedMonths.map(k => aeMonthly[k].total_attendances ?? null);
+    const chartPerf    = sortedMonths.map(k => aeMonthly[k].perf_4hr_pct ?? null);
+    const chartEmerg   = sortedMonths.map(k => aeMonthly[k].emergency_admissions ?? null);
+
+    const chartId = `ae-chart-${trustCode}`;
+
+    html += `
+      <div class="data-panel ae-panel">
+        <div class="panel-title">🚑 A&amp;E Attendances — ${aePeriod}</div>
+        <div class="metric-grid">
+          <div class="metric-box">
+            <span class="metric-val blue">${aeTotal != null ? aeTotal.toLocaleString() : '–'}</span>
+            <div class="metric-label">Total attendances<br>(all A&amp;E types)</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val" style="color:${perfColor}">${perfTarget}</span>
+            <div class="metric-label">Seen within 4 hours<br>(NHS target: 95%)</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val blue">${aeType1 != null ? aeType1.toLocaleString() : '–'}</span>
+            <div class="metric-label">Major A&amp;E (Type 1)<br>attendances</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val">${aeType3 != null ? aeType3.toLocaleString() : '–'}</span>
+            <div class="metric-label">UTC / MIU / walk-in<br>(Type 3) attendances</div>
+          </div>
+        </div>
+        <div class="metric-grid" style="margin-top:0.4rem">
+          <div class="metric-box">
+            <span class="metric-val warn">${aeEmerg != null ? aeEmerg.toLocaleString() : '–'}</span>
+            <div class="metric-label">Emergency admissions<br>via A&amp;E</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val warn">${ae4hrAdm != null ? ae4hrAdm.toLocaleString() : '–'}</span>
+            <div class="metric-label">&gt;4hr waits after<br>decision to admit</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val ${ae12hrAdm > 0 ? 'warn' : ''}">${ae12hrAdm != null ? ae12hrAdm.toLocaleString() : '–'}</span>
+            <div class="metric-label">&gt;12hr waits after<br>decision to admit</div>
+          </div>
+          <div class="metric-box">
+            <span class="metric-val ${aeAttYoy > 5 ? 'warn' : ''}">${aeAttYoy != null ? (aeAttYoy > 0 ? '+' : '') + aeAttYoy + '%' : '–'}</span>
+            <div class="metric-label">Attendance change<br>year-on-year</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:0.35rem">
+          <div class="trend-row">
+            <span class="trend-arrow ${attTrendCls}">${attTrendArrow}</span>
+            <span>Attendance trend (3-month): ${aeAttTrend || '–'}</span>
+          </div>
+          <div class="trend-row">
+            <span class="trend-arrow ${perfTrendCls}">${perfTrendArrow}</span>
+            <span>4hr performance trend: ${aePerfTrend || '–'}</span>
+          </div>
+        </div>
+        ${chartLabels.length >= 3 ? `
+        <div style="margin-top:0.75rem;background:var(--surface2);border-radius:6px;padding:0.6rem">
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text-muted);letter-spacing:0.06em;margin-bottom:0.4rem">12-MONTH TREND</div>
+          <div style="position:relative;height:90px"><canvas id="${chartId}"></canvas></div>
+        </div>` : ''}
+        <div class="panel-note">
+          NHS England Monthly A&amp;E Attendances · ${trustShort} (${trustCode}) ·
+          Type 3 includes Urgent Treatment Centres and Minor Injury Units ·
+          4hr target: 95% of attendances seen, discharged or admitted within 4 hours
+        </div>
+      </div>
+    `;
+
+    // Render chart after DOM settles
+    if (chartLabels.length >= 3) {
+      requestAnimationFrame(() => {
+        const ctx = document.getElementById(chartId);
+        if (!ctx) return;
+        if (ctx._chartInstance) { ctx._chartInstance.destroy(); }
+        ctx._chartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: chartLabels,
+            datasets: [
+              {
+                label: 'Total attendances',
+                data: chartAtt,
+                borderColor: '#1d4ed8',
+                backgroundColor: 'rgba(29,78,216,0.07)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                yAxisID: 'yAtt',
+                pointRadius: 3,
+              },
+              {
+                label: '4hr performance %',
+                data: chartPerf,
+                borderColor: '#166534',
+                borderDash: [4, 3],
+                backgroundColor: 'transparent',
+                borderWidth: 1.5,
+                tension: 0.35,
+                yAxisID: 'yPerf',
+                pointRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { font: { size: 9, family: 'DM Mono' }, boxWidth: 10 } },
+              tooltip: { titleFont: { size: 9 }, bodyFont: { size: 9 } },
+            },
+            scales: {
+              x:     { ticks: { font: { size: 8, family: 'DM Mono' } }, grid: { display: false } },
+              yAtt:  { position: 'left',  ticks: { font: { size: 8, family: 'DM Mono' }, maxTicksLimit: 4 }, grid: { color: 'rgba(0,0,0,0.05)' } },
+              yPerf: { position: 'right', min: 60, max: 100, ticks: { font: { size: 8, family: 'DM Mono' }, maxTicksLimit: 4, callback: v => v + '%' }, grid: { display: false } },
+            },
+          },
+        });
+      });
+    }
+  }
 
   // ── SHMI ──
   const shmiVal    = shmiT?.shmi_value;
