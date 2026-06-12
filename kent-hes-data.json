@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-11T12:52:24.520803+00:00",
+    "generated": "2026-06-12T08:29:03.368375+00:00",
     "description": "Kent NHS Trust HES 65+ emergency admissions and geriatric medicine",
     "version": "1.1",
     "refresh_type": "monthly \u2014 NHS Digital provisional HES",
@@ -19,7 +19,7 @@
         "Dover",
         "Folkestone & Hythe",
         "Canterbury",
-        "Ashford"
+        "Swale"
       ],
       "total_emerg_65plus": 51015,
       "emerg_by_age_band": {},
@@ -36,39 +36,12 @@
         "Maidstone",
         "Tonbridge & Malling",
         "Tunbridge Wells",
-        "Sevenoaks"
+        "Sevenoaks",
+        "Ashford",
+        "Gravesham",
+        "Dartford"
       ],
       "total_emerg_65plus": 60370,
-      "emerg_by_age_band": {},
-      "geri_total_episodes": null,
-      "geri_emergency_episodes": null,
-      "emerg_65plus_yoy_delta": null,
-      "emerg_65plus_yoy_pct": null,
-      "period_label": "April 2025 - March 2026 (M13)"
-    },
-    "RPA": {
-      "name": "Medway NHS Foundation Trust",
-      "short": "Medway Maritime",
-      "districts": [
-        "Medway",
-        "Swale"
-      ],
-      "total_emerg_65plus": null,
-      "emerg_by_age_band": {},
-      "geri_total_episodes": null,
-      "geri_emergency_episodes": null,
-      "emerg_65plus_yoy_delta": null,
-      "emerg_65plus_yoy_pct": null,
-      "period_label": "April 2025 - March 2026 (M13)"
-    },
-    "RN7": {
-      "name": "Dartford and Gravesham NHS Trust",
-      "short": "Darent Valley",
-      "districts": [
-        "Dartford",
-        "Gravesham"
-      ],
-      "total_emerg_65plus": null,
       "emerg_by_age_band": {},
       "geri_total_episodes": null,
       "geri_emergency_episodes": null,
@@ -80,7 +53,7 @@
   "history": [
     {
       "period_label": "April 2025 - March 2026 (M13)",
-      "fetched": "2026-06-11",
+      "fetched": "2026-06-12",
       "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/provisional-monthly-hospital-episode-statistics-for-admitted-patient-care-outpatient-and-accident-and-emergency-data/april-2025---march-2026-m13-new",
       "trusts": {
         "RVV": {
