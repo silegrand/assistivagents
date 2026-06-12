@@ -1,77 +1,1132 @@
-{
-  "meta": {
-    "generated": "2026-06-11T12:52:25.873155+00:00",
-    "description": "Kent NHS Trust SHMI \u2014 Assistiv Systems",
-    "version": "1.1",
-    "refresh_type": "monthly \u2014 NHS Digital SHMI",
-    "period": "February 2025 - January 2026",
-    "pub_url": "https://digital.nhs.uk/data-and-information/publications/statistical/shmi/2026-06",
-    "source": "NHS Digital Summary Hospital-level Mortality Indicator",
-    "licence": "Open Government Licence v3.0",
-    "shmi_note": "SHMI is a smoke-alarm \u2014 higher than expected does not indicate poor care.",
-    "update_note": "Add CSV URL from publication page to KNOWN_SHMI in fetch_shmi_gp.py",
-    "banding_labels": {
-      "1": "Higher than expected",
-      "2": "As expected",
-      "3": "Lower than expected"
-    }
-  },
-  "trusts": {
-    "RVV": {
-      "name": "East Kent Hospitals University NHS Foundation Trust",
-      "shmi_value": 1.1451,
-      "banding_code": "2",
-      "banding_label": "As expected",
-      "observed_deaths": 3370,
-      "predicted_deaths": 2940.0,
-      "spell_count": 71275,
-      "period": "February 2025 - January 2026"
-    },
-    "RWF": {
-      "name": "Maidstone and Tunbridge Wells NHS Trust",
-      "shmi_value": 0.9372,
-      "banding_code": "2",
-      "banding_label": "As expected",
-      "observed_deaths": 2170,
-      "predicted_deaths": 2315.0,
-      "spell_count": 84870,
-      "period": "February 2025 - January 2026"
-    },
-    "RPA": {
-      "name": "Medway NHS Foundation Trust",
-      "shmi_value": 1.3048,
-      "banding_code": "1",
-      "banding_label": "Higher than expected",
-      "observed_deaths": 1810,
-      "predicted_deaths": 1385.0,
-      "spell_count": 39605,
-      "period": "February 2025 - January 2026"
-    },
-    "RN7": {
-      "name": "Dartford And Gravesham NHS Trust",
-      "shmi_value": 1.0048,
-      "banding_code": "2",
-      "banding_label": "As expected",
-      "observed_deaths": 1545,
-      "predicted_deaths": 1535.0,
-      "spell_count": 62400,
-      "period": "February 2025 - January 2026"
-    }
-  },
-  "history": [
-    {
-      "period": "February 2025 - January 2026",
-      "fetched": "2026-06-11",
-      "trusts": {
-        "RVV": {
-          "shmi_value": 1.1451,
-          "banding_code": "2"
-        },
-        "RWF": {
-          "shmi_value": 0.9372,
-          "banding_code": "2"
-        }
-      }
-    }
-  ]
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-32.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NHS System Pressure Intelligence — Kent & Medway. Corridor care, emergency admissions, SHMI and GP population data mapped to district. Assistiv Systems.">
+<title>NHS Pressure Intelligence — Kent & Medway · Assistiv Systems</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:          #f7f5f0;
+  --surface:     #ffffff;
+  --surface2:    #f0ede6;
+  --border:      #ddd8ce;
+  --text:        #1a2e1e;
+  --text-muted:  #5a7260;
+  --text-dim:    #9aaa9e;
+  --forest:      #0f2d4a;
+  --nhs-blue:    #003087;
+  --nhs-mid:     #1d4ed8;
+  --nhs-pale:    rgba(29,78,216,0.07);
+  --nhs-light:   #eff6ff;
+  --red:         #b91c1c;
+  --amber:       #b45309;
+  --green:       #166534;
+  --purple:      #6d28d9;
+  --mono:        'DM Mono', monospace;
+  --serif:       'Cormorant Garamond', serif;
+  --sans:        'Nunito', sans-serif;
+
+  /* Pressure tier colours */
+  --tier-critical: #991b1b;
+  --tier-high:     #c2410c;
+  --tier-moderate: #1d4ed8;
+  --tier-low:      #166534;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--nhs-blue);
+  padding: 0 1.25rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.badge {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.65);
+}
+.badge.live {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.45);
+  color: white;
+}
+.badge.live::before { content: '● '; font-size: 0.42rem; }
+.nav-back {
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.nav-back:hover { color: white; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+
+/* Pulse ring logo */
+.logo-ring {
+  position: relative; width: 32px; height: 32px; flex-shrink: 0;
+}
+.logo-ring .dot   { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; z-index: 2; }
+.logo-ring .r1    { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); border-radius: 50%; }
+.logo-ring .r2    { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; }
+
+.brand-label {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.brand-title {
+  font-family: var(--sans); font-size: 0.88rem; font-weight: 700;
+  color: #fff; letter-spacing: -0.02em; line-height: 1;
+}
+.brand-sub {
+  font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgba(255,255,255,0.5); line-height: 1;
+}
+
+/* ── DATA CURRENCY BANNER ── */
+.currency-banner {
+  background: #1e3a7a;
+  padding: 0.35rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.currency-left {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+}
+.currency-label {
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.5);
+}
+.currency-stat {
+  display: flex; align-items: baseline; gap: 0.35rem;
+}
+.currency-val {
+  font-family: var(--serif); font-size: 0.95rem; font-weight: 700; color: #fff;
+}
+.currency-desc {
+  font-family: var(--mono); font-size: 0.55rem; color: rgba(255,255,255,0.55);
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.currency-note {
+  font-family: var(--mono); font-size: 0.52rem; color: rgba(255,255,255,0.4);
+  letter-spacing: 0.03em;
+}
+
+/* ── MAIN LAYOUT ── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── MAP ── */
+#map { flex: 1; position: relative; z-index: 1; height: 100%; }
+
+.leaflet-control-attribution {
+  font-family: var(--mono) !important; font-size: 0.5rem !important;
+  background: rgba(247,245,240,0.9) !important;
+}
+
+/* Map loading overlay */
+.map-loading {
+  position: absolute; inset: 0; background: rgba(247,245,240,0.88);
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; z-index: 999; font-family: var(--mono);
+  font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.06em;
+  text-transform: uppercase; gap: 0.75rem; transition: opacity 0.4s;
+}
+.map-loading.hidden { opacity: 0; pointer-events: none; }
+.loader-ring {
+  width: 32px; height: 32px; border: 2px solid var(--border);
+  border-top-color: var(--nhs-mid); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 330px; background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+}
+.panel-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.panel-tab {
+  flex: 1; padding: 0.6rem 0.4rem; font-family: var(--mono);
+  font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase;
+  text-align: center; cursor: pointer; color: var(--text-muted);
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.panel-tab.active { color: var(--nhs-mid); border-bottom-color: var(--nhs-mid); background: var(--surface); }
+.panel-content { flex: 1; overflow-y: auto; padding: 1rem; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--text-muted); }
+.empty-icon { font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.4; }
+.empty-title { font-family: var(--serif); font-size: 1rem; color: var(--text); margin-bottom: 0.4rem; }
+.empty-desc { font-size: 0.72rem; line-height: 1.55; }
+
+/* ── DISTRICT HEADER ── */
+.district-header {
+  margin-bottom: 0.85rem; padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border);
+}
+.district-name {
+  font-family: var(--serif); font-size: 1.45rem; font-weight: 700;
+  color: var(--text); line-height: 1.1; margin-bottom: 0.2rem;
+}
+.district-meta {
+  font-family: var(--mono); font-size: 0.58rem;
+  color: var(--text-muted); letter-spacing: 0.04em;
+}
+
+/* ── PRESSURE SCORE ── */
+.pressure-display {
+  display: flex; align-items: center; gap: 0.75rem; margin: 0.65rem 0;
+}
+.pressure-circle {
+  width: 58px; height: 58px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; flex-shrink: 0; border: 2px solid currentColor;
+}
+.pressure-circle-val { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; line-height: 1; }
+.pressure-circle-label { font-family: var(--mono); font-size: 0.42rem; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.7; }
+.risk-pill {
+  display: inline-flex; align-items: center; font-family: var(--mono);
+  font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 500;
+}
+.risk-critical { background: #fef2f2; color: var(--tier-critical); border: 1px solid #fecaca; }
+.risk-high     { background: #fff7ed; color: var(--tier-high);     border: 1px solid #fed7aa; }
+.risk-moderate { background: var(--nhs-light); color: var(--nhs-mid); border: 1px solid #bfdbfe; }
+.risk-low      { background: #f0fdf4; color: var(--green);           border: 1px solid #bbf7d0; }
+
+/* ── DATA PANELS ── */
+.data-panel {
+  margin-bottom: 0.85rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 0 8px 8px 0;
+  padding: 0.8rem 0.9rem;
+}
+.data-panel.corridor  { border-left: 4px solid #c04828; }
+.data-panel.emergency { border-left: 4px solid #1d4ed8; }
+.data-panel.mortality { border-left: 4px solid #6d28d9; }
+.data-panel.population{ border-left: 4px solid #059669; }
+.data-panel.fep       { border-left: 4px solid #0f2d4a; }
+
+.panel-title {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.35rem;
+}
+.corridor  .panel-title { color: #c04828; }
+.emergency .panel-title { color: #1d4ed8; }
+.mortality .panel-title { color: #6d28d9; }
+.population .panel-title { color: #059669; }
+.fep .panel-title { color: #0f2d4a; }
+
+.metric-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+.metric-box {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 5px; padding: 0.4rem 0.5rem; text-align: center;
+}
+.metric-val {
+  font-family: var(--mono); font-size: 1.05rem; font-weight: 600;
+  display: block; line-height: 1.1;
+}
+.metric-val.warn   { color: #c04828; }
+.metric-val.blue   { color: #1d4ed8; }
+.metric-val.purple { color: #6d28d9; }
+.metric-val.green  { color: #059669; }
+.metric-label {
+  font-size: 0.6rem; color: var(--text-muted); line-height: 1.3; margin-top: 2px;
+}
+
+.trend-row {
+  display: flex; align-items: center; gap: 0.45rem;
+  font-size: 0.68rem; color: var(--text-muted); margin-top: 0.3rem;
+}
+.trend-arrow { font-size: 0.8rem; }
+.trend-up    { color: #c04828; }
+.trend-down  { color: #059669; }
+.trend-flat  { color: var(--text-dim); }
+
+.panel-note {
+  font-size: 0.62rem; color: var(--text-muted); line-height: 1.5;
+  margin-top: 0.5rem; padding-top: 0.4rem;
+  border-top: 1px solid var(--border);
+}
+
+/* SHMI banding chip */
+.shmi-banding {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+  padding: 0.3rem 0.65rem; border-radius: 6px; margin-bottom: 0.5rem;
+}
+.shmi-higher  { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.shmi-as      { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+.shmi-lower   { background: var(--nhs-light); color: var(--nhs-mid); border: 1px solid #bfdbfe; }
+.shmi-unknown { background: var(--surface2); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* Trust name chip */
+.trust-chip {
+  display: inline-block; font-family: var(--mono); font-size: 0.58rem;
+  letter-spacing: 0.04em; padding: 0.15rem 0.45rem; border-radius: 4px;
+  background: var(--nhs-light); color: var(--nhs-mid);
+  border: 1px solid #bfdbfe; margin-bottom: 0.5rem;
+}
+
+/* ── RANKED LIST ── */
+.ranked-item {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.5rem 1rem; margin: 0 -1rem;
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background 0.1s;
+}
+.ranked-item:hover { background: var(--surface2); }
+.ranked-item:last-child { border-bottom: none; }
+.ranked-num { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); min-width: 16px; }
+.ranked-name { font-size: 0.73rem; font-weight: 500; flex: 1; color: var(--text); }
+.ranked-bar-wrap { width: 55px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.ranked-bar { height: 4px; border-radius: 2px; }
+.ranked-val { font-family: var(--mono); font-size: 0.63rem; font-weight: 500; min-width: 28px; text-align: right; }
+
+/* ── LEGEND ── */
+.legend-title {
+  font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--nhs-mid); margin-bottom: 0.55rem;
+  padding-bottom: 0.35rem; border-bottom: 1px solid rgba(29,78,216,0.2);
+}
+.legend-item { display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.5rem; }
+.legend-swatch { width: 28px; height: 14px; border-radius: 3px; flex-shrink: 0; margin-top: 1px; }
+.legend-text { font-size: 0.7rem; color: var(--text); line-height: 1.4; }
+.legend-sub { font-family: var(--mono); font-size: 0.58rem; color: var(--text-muted); }
+
+.legend-section { margin-bottom: 1.2rem; }
+
+/* data currency callout in legend */
+.currency-callout {
+  background: var(--nhs-light); border: 1px solid #bfdbfe;
+  border-radius: 7px; padding: 0.65rem 0.75rem; margin-top: 0.85rem;
+}
+.currency-callout-title {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--nhs-mid);
+  margin-bottom: 0.35rem;
+}
+.currency-callout-text { font-size: 0.68rem; color: #1e40af; line-height: 1.55; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .side-panel { width: 100%; height: 42vh; border-left: none; border-top: 1px solid var(--border); }
+  .main { flex-direction: column; }
+  #map { flex: 1; min-height: 200px; }
+  .topbar-right { display: none; }
+  .currency-left { gap: 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="nav-back">&#8592; Overview</a>
+    <div class="divider-v"></div>
+    <a href="index.html" style="text-decoration:none">
+      <div class="logo-ring"><div class="dot"></div><div class="r1"></div><div class="r2"></div></div>
+    </a>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title">NHS Pressure Intelligence</span>
+      <span class="brand-sub">Layer 2 · System Pressure Map</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge">Kent &amp; Medway · 13 Districts</span>
+    <span class="badge">4 NHS Trusts</span>
+    <span class="badge live" id="data-freshness-badge">Loading data…</span>
+  </div>
+</nav>
+
+<!-- DATA CURRENCY BANNER -->
+<div class="currency-banner">
+  <div class="currency-left">
+    <span class="currency-label">NHS Open Data ·</span>
+    <div class="currency-stat" id="banner-corridor">
+      <span class="currency-val" id="bv-corridor"><!--INJECT:corridor_total-->22<!--/INJECT--></span>
+      <span class="currency-desc">Corridor patients this week</span>
+    </div>
+    <div class="currency-stat" id="banner-emerg">
+      <span class="currency-val" id="bv-emerg"><!--INJECT:emerg_65plus-->111,385<!--/INJECT--></span>
+      <span class="currency-desc">65+ emergency admissions</span>
+    </div>
+    <div class="currency-stat" id="banner-shmi">
+      <span class="currency-val" id="bv-shmi"><!--INJECT:shmi_max-->1.30<!--/INJECT--></span>
+      <span class="currency-desc" id="bv-shmi-label"><!--INJECT:shmi_label-->SHMI — Medway (highest)<!--/INJECT--></span>
+    </div>
+    <div class="currency-stat" id="banner-pop">
+      <span class="currency-val" id="bv-pop"><!--INJECT:pop_75plus-->241,986<!--/INJECT--></span>
+      <span class="currency-desc">75+ registered Kent</span>
+    </div>
+    <div class="currency-stat" id="banner-111">
+      <span class="currency-val" id="bv-111"><!--INJECT:calls_111-->42,120<!--/INJECT--></span>
+      <span class="currency-desc" id="bv-111-label"><!--INJECT:calls_111_label-->111 calls — K&amp;M est., May<!--/INJECT--></span>
+    </div>
+  </div>
+  <div class="currency-note" id="data-currency-note">Data loading…</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div style="position:relative;flex:1;display:flex;flex-direction:column;">
+    <div id="map"></div>
+    <div class="map-loading" id="map-loading">
+      <div class="loader-ring"></div>
+      Loading NHS pressure data
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="side-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-detail"  onclick="switchTab('detail')">District</div>
+      <div class="panel-tab"        id="tab-ranked"  onclick="switchTab('ranked')">Ranked</div>
+      <div class="panel-tab"        id="tab-legend"  onclick="switchTab('legend')">About</div>
+    </div>
+    <div class="panel-content" id="panel-content">
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">🏥</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any district to see NHS system pressure and Missing Middle risk for that area.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA SOURCES ─────────────────────────────────────────────────────
+// All JSON files committed to this repo and updated by GitHub Actions
+const BASE = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
+const SOURCES = {
+  fep:      BASE + 'kent-fep-data.json',
+  corridor: BASE + 'kent-corridor-data.json',
+  hes:      BASE + 'kent-hes-data.json',
+  shmi:     BASE + 'kent-shmi-data.json',
+  gp:       BASE + 'kent-gp-reg-data.json',
+  iuc:      BASE + 'kent-111-data.json',
+};
+
+// ── DISTRICT → TRUST MAPPING ─────────────────────────────────────────
+// Which NHS acute trust primarily serves each district
+const DISTRICT_TRUST = {
+  // Catchments aligned to actual acute patient flows, June 2026
+  'Thanet':              'RVV',   // QEQM Margate
+  'Dover':               'RVV',
+  'Folkestone & Hythe':  'RVV',
+  'Canterbury':          'RVV',   // Kent & Canterbury
+  'Ashford':             'RVV',   // William Harvey Hospital
+  'Maidstone':           'RWF',   // Maidstone Hospital
+  'Tonbridge & Malling': 'RWF',
+  'Tunbridge Wells':     'RWF',   // Tunbridge Wells Hospital, Pembury
+  'Sevenoaks':           'RWF',
+  'Medway':              'RPA',   // Medway Maritime Hospital
+  'Swale':               'RPA',   // Sittingbourne & Sheppey flows to Medway Maritime
+  'Dartford':            'RN7',   // Darent Valley Hospital
+  'Gravesham':           'RN7',
+};
+
+const TRUST_NAMES = {
+  RVV: 'East Kent Hospitals',
+  RWF: 'Maidstone & Tunbridge Wells',
+  RPA: 'Medway Maritime',
+  RN7: 'Darent Valley',
+};
+
+// ── PRESSURE TIER LOGIC ───────────────────────────────────────────────
+// Composite pressure score: corridor intensity + FEP + SHMI banding
+// Displayed on map as fill colour
+
+function computePressureTier(fepScore, corridorTotal, shmiBanding) {
+  let score = 0;
+
+  // FEP contribution (0-40 pts)
+  if      (fepScore >= 70) score += 40;
+  else if (fepScore >= 55) score += 30;
+  else if (fepScore >= 40) score += 20;
+  else                     score += 10;
+
+  // Corridor care contribution (0-35 pts) — trust-level, shared across districts
+  if      (corridorTotal == null)  score += 15;  // unknown = moderate assumption
+  else if (corridorTotal >= 50)    score += 35;
+  else if (corridorTotal >= 25)    score += 25;
+  else if (corridorTotal >= 10)    score += 15;
+  else                             score += 5;
+
+  // SHMI contribution (0-25 pts)
+  if      (shmiBanding === '1')    score += 25;
+  else if (shmiBanding === '2')    score += 12;
+  else if (shmiBanding === '3')    score += 5;
+  else                             score += 12;
+
+  if      (score >= 80) return 'critical';
+  else if (score >= 60) return 'high';
+  else if (fepScore >= 60) return 'high';   // FEP 60+ is always at least High, regardless of trust-level inputs
+  else if (score >= 40) return 'moderate';
+  else                  return 'low';
+}
+
+function tierFill(tier) {
+  return {
+    critical: 'rgba(153,27,27,0.58)',
+    high:     'rgba(194,65,12,0.48)',
+    moderate: 'rgba(29,78,216,0.35)',
+    low:      'rgba(22,101,52,0.28)',
+  }[tier] || 'rgba(29,78,216,0.35)';
+}
+function tierBorder(tier) {
+  return {
+    critical: '#991b1b',
+    high:     '#c2410c',
+    moderate: '#1d4ed8',
+    low:      '#166534',
+  }[tier] || '#1d4ed8';
+}
+
+// ── GLOBAL STATE ──────────────────────────────────────────────────────
+let DATA = { fep: null, corridor: null, hes: null, shmi: null, gp: null, iuc: null };
+let currentTab = 'detail';
+let selectedDistrict = null;
+
+// ── MAP INIT ──────────────────────────────────────────────────────────
+const map = L.map('map', { center: [51.18, 0.62], zoom: 10, zoomControl: true });
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap · © CARTO · ONS Open Geography · NHS England OGL v3',
+  subdomains: 'abcd', maxZoom: 16,
+}).addTo(map);
+
+let geojsonLayer = null;
+
+// ── FETCH ALL DATA ────────────────────────────────────────────────────
+async function fetchAll() {
+  const results = await Promise.allSettled(
+    Object.entries(SOURCES).map(([key, url]) =>
+      fetch(url).then(r => r.ok ? r.json() : null).then(d => [key, d])
+    )
+  );
+
+  results.forEach(r => {
+    if (r.status === 'fulfilled' && r.value) {
+      const [key, data] = r.value;
+      DATA[key] = data;
+    }
+  });
+
+  console.log('Data loaded:', Object.entries(DATA).map(([k,v]) => `${k}:${v?'ok':'null'}`).join(' '));
+
+  updateBanner();
+  loadMap();
+}
+
+function updateBanner() {
+  // Data freshness badge
+  const weekEnding = DATA.corridor?.meta?.week_ending || null;
+  const badge = document.getElementById('data-freshness-badge');
+  if (weekEnding) {
+    badge.textContent = `Week of ${weekEnding}`;
+  } else {
+    badge.textContent = 'Open NHS Data';
+  }
+
+  // Corridor total (sum across both Kent trusts)
+  let corridorSum = 0;
+  let corridorFound = false;
+  if (DATA.corridor?.trusts) {
+    Object.values(DATA.corridor.trusts).forEach(t => {
+      if (t.corridor_total != null) { corridorSum += t.corridor_total; corridorFound = true; }
+    });
+  }
+  document.getElementById('bv-corridor').textContent = corridorFound ? corridorSum.toLocaleString() : '–';
+
+  // HES 65+ emergency admissions sum
+  let hesSum = 0;
+  let hesFound = false;
+  if (DATA.hes?.trusts) {
+    Object.values(DATA.hes.trusts).forEach(t => {
+      if (t.total_emerg_65plus != null) { hesSum += t.total_emerg_65plus; hesFound = true; }
+    });
+  }
+  document.getElementById('bv-emerg').textContent = hesFound ? hesSum.toLocaleString() : '–';
+
+  // SHMI — highest across Kent acute trusts
+  if (DATA.shmi?.trusts) {
+    let worst = null, worstCode = null;
+    Object.entries(DATA.shmi.trusts).forEach(([code, t]) => {
+      if (t.shmi_value != null && (worst == null || t.shmi_value > worst)) {
+        worst = t.shmi_value; worstCode = code;
+      }
+    });
+    if (worst != null) {
+      document.getElementById('bv-shmi').textContent = worst.toFixed(2);
+      const nm = (TRUST_NAMES[worstCode] || worstCode).replace(' Hospitals','').replace(' Maritime','');
+      document.getElementById('bv-shmi-label').textContent = `SHMI — ${nm} (highest)`;
+    }
+  }
+
+  // GP 75+ total
+  let pop75sum = 0;
+  let popFound = false;
+  if (DATA.gp?.districts) {
+    Object.values(DATA.gp.districts).forEach(d => {
+      if (d.pop_75plus != null) { pop75sum += d.pop_75plus; popFound = true; }
+    });
+  }
+  document.getElementById('bv-pop').textContent = popFound ? pop75sum.toLocaleString() : '–';
+
+  // NHS 111 demand — Kent & Medway ICB estimate (demand-side proxy; ICB-level,
+  // population-share estimate, ~6 week publication lag — not used in district tiers)
+  const iuc = DATA.iuc?.kent_icb_estimated;
+  if (iuc?.calls_received != null) {
+    document.getElementById('bv-111').textContent = iuc.calls_received.toLocaleString();
+    const p = DATA.iuc?.meta?.period_nice || '';
+    const mon = p ? p.split(' ')[0].slice(0,3) : '';
+    document.getElementById('bv-111-label').textContent =
+      `111 calls — K&M est.${mon ? ', ' + mon : ''}`;
+  }
+
+  // Currency note
+  const hesPeriod = DATA.hes?.meta?.period_label || 'latest period';
+  const gpSnap    = DATA.gp?.meta?.snapshot_date || null;
+  const note      = [
+    weekEnding       ? `Corridor: week ${weekEnding}` : null,
+    hesFound         ? `HES: ${hesPeriod}` : null,
+    gpSnap           ? `GP reg: ${gpSnap}` : null,
+  ].filter(Boolean).join(' · ');
+  document.getElementById('data-currency-note').textContent =
+    note
+    ? `${note} · All sources: NHS England open data under OGL v3`
+    : 'Data currency shown per district · NHS England open data under OGL v3';
+}
+
+// ── MAP RENDERING ─────────────────────────────────────────────────────
+function loadMap() {
+  // Use the existing kent-districts.geojson from the repo
+  fetch(BASE + 'kent-districts.geojson')
+    .then(r => r.json())
+    .then(gj => renderMap(gj))
+    .catch(() => {
+      document.getElementById('map-loading').innerHTML =
+        '<div style="color:#b91c1c;font-size:0.7rem">Could not load district boundaries</div>';
+    });
+}
+
+function renderMap(geojson) {
+  if (geojsonLayer) map.removeLayer(geojsonLayer);
+
+  geojsonLayer = L.geoJSON(geojson, {
+    style: feature => districtStyle(feature, false),
+    onEachFeature: (feature, layer) => {
+      const name = getDistrictName(feature);
+      const tier = getDistrictTier(name);
+
+      layer.on('mouseover', () => {
+        if (selectedDistrict !== name) {
+          layer.setStyle({ weight: 2.5, fillOpacity: 0.75, color: '#003087' });
+        }
+      });
+      layer.on('mouseout', () => {
+        if (selectedDistrict !== name) {
+          layer.setStyle(districtStyle(feature, false));
+        }
+      });
+      layer.on('click', () => {
+        selectedDistrict = name;
+        geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
+        layer.setStyle({ weight: 3, fillOpacity: 0.85, color: '#003087' });
+        showDistrictDetail(name);
+        switchTab('detail');
+      });
+    }
+  }).addTo(map);
+
+  document.getElementById('map-loading').classList.add('hidden');
+  populateRankedTab();
+  if (currentTab === 'legend') renderLegend();
+}
+
+function getDistrictName(feature) {
+  return feature.properties?.name || feature.properties?.LAD13NM ||
+         feature.properties?.LAD23NM || 'Unknown';
+}
+
+function getDistrictTier(districtName) {
+  const trustCode = DISTRICT_TRUST[districtName] || 'RVV';
+  const fepDistrict = DATA.fep?.districts?.find?.(d => d.name === districtName);
+  const fepScore    = fepDistrict?.fep ?? 50;
+  const corridorT   = DATA.corridor?.trusts?.[trustCode]?.corridor_total ?? null;
+  const shmiB       = DATA.shmi?.trusts?.[trustCode]?.banding_code ?? null;
+  return computePressureTier(fepScore, corridorT, shmiB);
+}
+
+function districtStyle(feature, selected) {
+  const name = getDistrictName(feature);
+  const tier = getDistrictTier(name);
+  return {
+    fillColor:   tierFill(tier),
+    color:       selected ? '#003087' : tierBorder(tier),
+    weight:      selected ? 3 : 1.5,
+    fillOpacity: selected ? 0.85 : 0.55,
+    opacity:     1,
+  };
+}
+
+
+// ── DISTRICT DETAIL PANEL ─────────────────────────────────────────────
+function showDistrictDetail(name) {
+  const trustCode    = DISTRICT_TRUST[name] || 'RVV';
+  const trustShort   = TRUST_NAMES[trustCode];
+  const fepDistrict  = DATA.fep?.districts?.find?.(d => d.name === name);
+  const fepScore     = fepDistrict?.fep ?? null;
+  const fepRisk      = fepDistrict?.risk ?? 'unknown';
+  const corridorT    = DATA.corridor?.trusts?.[trustCode];
+  const hesT         = DATA.hes?.trusts?.[trustCode];
+  const shmiT        = DATA.shmi?.trusts?.[trustCode];
+  const gpD          = DATA.gp?.districts?.[name];
+  const tier         = getDistrictTier(name);
+
+  const tierLabel    = { critical:'Critical Pressure', high:'High Pressure', moderate:'Moderate Pressure', low:'Lower Pressure' }[tier] || tier;
+
+  let html = `
+    <div class="district-header">
+      <div class="district-name">${name}</div>
+      <div class="district-meta">Kent &amp; Medway · ${trustShort}</div>
+      <div class="pressure-display">
+        <div class="pressure-circle risk-${tier}" style="color:${tierBorder(tier)}">
+          <span class="pressure-circle-val">${fepScore ?? '–'}</span>
+          <span class="pressure-circle-label">FEP</span>
+        </div>
+        <div>
+          <div class="risk-pill risk-${tier}">${tierLabel}</div>
+          <div class="district-meta" style="margin-top:0.3rem">
+            <span class="trust-chip">${trustCode} · ${trustShort}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ── CORRIDOR CARE ──
+  const cEd    = corridorT?.corridor_ed;
+  const cWard  = corridorT?.corridor_ward;
+  const cTotal = corridorT?.corridor_total;
+  const c12hr  = corridorT?.twelve_hour_waits;
+  const cBeds  = corridorT?.beds_occupancy_pct;
+  const cTrend = corridorT?.corridor_trend || 'unknown';
+  const weekEnd = corridorT?.week_ending || DATA.corridor?.meta?.week_ending;
+
+  const trendArrow = cTrend === 'rising' ? '▲' : cTrend === 'falling' ? '▼' : '→';
+  const trendClass = cTrend === 'rising' ? 'trend-up' : cTrend === 'falling' ? 'trend-down' : 'trend-flat';
+
+  html += `
+    <div class="data-panel corridor">
+      <div class="panel-title">🚨 Corridor Care</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val warn">${fmt(cTotal)}</span>
+          <div class="metric-label">Total corridor patients${weekEnd ? '<br>week of '+weekEnd : ''}</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmt(c12hr)}</span>
+          <div class="metric-label">12-hour waits<br>in this trust</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmt(cEd)}</span>
+          <div class="metric-label">ED corridor<br>(24h count)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmt(cWard)}</span>
+          <div class="metric-label">Ward corridor<br>(8am snapshot)</div>
+        </div>
+      </div>
+      <div class="trend-row">
+        <span class="trend-arrow ${trendClass}">${trendArrow}</span>
+        <span>Corridor trend: ${cTrend === 'rising' ? 'rising week-on-week' : cTrend === 'falling' ? 'falling week-on-week' : 'stable'}</span>
+      </div>
+      ${bedsBar(cBeds)}
+      <div class="panel-note">
+        NHS England UEC Daily SitRep · ${trustShort} (${trustCode}) ·
+        Corridor care = patient in clinically inappropriate area ≥45 min ·
+        Definition introduced March 2026
+      </div>
+    </div>
+  `;
+
+  // ── EMERGENCY ADMISSIONS ──
+  const emerg65   = hesT?.total_emerg_65plus;
+  const geriTotal = hesT?.geri_total_episodes;
+  const geriEmerg = hesT?.geri_emergency_episodes;
+  const yoyPct    = hesT?.emerg_65plus_yoy_pct;
+  const hesPeriod = hesT?.period_label || DATA.hes?.meta?.period_label;
+
+  const yoyStr = yoyPct != null
+    ? (yoyPct > 0 ? `▲ ${yoyPct}% year-on-year` : `▼ ${Math.abs(yoyPct)}% year-on-year`)
+    : '';
+
+  html += `
+    <div class="data-panel emergency">
+      <div class="panel-title">🏥 Emergency Admissions</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val blue">${fmtK(emerg65)}</span>
+          <div class="metric-label">Total non-elective admissions${hesPeriod ? '<br>'+hesPeriod : ''}</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val blue">${fmtK(geriTotal)}</span>
+          <div class="metric-label">Geriatric medicine episodes (spec 430)</div>
+        </div>
+      </div>
+      ${yoyStr ? `<div class="trend-row"><span class="${yoyPct > 0 ? 'trend-up' : 'trend-down'} trend-arrow">${yoyPct > 0 ? '▲' : '▼'}</span><span>${yoyStr}</span></div>` : ''}
+      <div class="panel-note">
+        NHS Digital HES MAR · ${trustShort} · All-age non-elective admissions · Full year ${hesPeriod || ''}
+      </div>
+    </div>
+  `;
+
+  // ── SHMI ──
+  const shmiVal    = shmiT?.shmi_value;
+  const shmiBand   = shmiT?.banding_code;
+  const shmiLabel  = shmiT?.banding_label;
+  const shmiObs    = shmiT?.observed_deaths;
+  const shmiPred   = shmiT?.predicted_deaths;
+  const shmiPeriod = shmiT?.period || DATA.shmi?.meta?.period;
+
+  const shmiClass = shmiBand === '1' ? 'shmi-higher'
+                  : shmiBand === '3' ? 'shmi-lower'
+                  : shmiBand === '2' ? 'shmi-as'
+                  : 'shmi-unknown';
+  const shmiChip = shmiLabel || 'Data not yet available';
+
+  html += `
+    <div class="data-panel mortality">
+      <div class="panel-title">⚠ SHMI — Mortality Indicator</div>
+      <div class="shmi-banding ${shmiClass}">${shmiChip}</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val purple">${shmiVal != null ? shmiVal.toFixed(2) : '–'}</span>
+          <div class="metric-label">SHMI value<br>(1.0 = England avg)</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmt(shmiObs)}</span>
+          <div class="metric-label">Observed deaths<br>${shmiPeriod || '12-month period'}</div>
+        </div>
+      </div>
+      <div class="panel-note">
+        NHS Digital SHMI · ${trustShort} · ${shmiPeriod || ''} ·
+        The SHMI is a "smoke alarm" — higher than expected does not directly indicate
+        poor care quality. It signals that further investigation is warranted.
+      </div>
+    </div>
+  `;
+
+  // ── POPULATION ──
+  const pop75  = gpD?.pop_75plus;
+  const pop65  = gpD?.pop_65plus;
+  const listSz = gpD?.total_list_size;
+  const gpSnap = gpD?.snapshot_date || DATA.gp?.meta?.snapshot_date;
+
+  const fepPop75 = fepDistrict?.pop75;  // From FEP model (may differ slightly)
+
+  html += `
+    <div class="data-panel population">
+      <div class="panel-title">👥 Missing Middle Population</div>
+      <div class="metric-grid">
+        <div class="metric-box">
+          <span class="metric-val green">${fmt(pop75 || fepPop75)}</span>
+          <div class="metric-label">Registered 75+ patients${gpSnap ? '<br>snapshot '+gpSnap : ''}</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val green">${fmt(pop65)}</span>
+          <div class="metric-label">Registered 65+ patients</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fmtK(listSz)}</span>
+          <div class="metric-label">Total GP list size<br>in district</div>
+        </div>
+        <div class="metric-box">
+          <span class="metric-val">${fepScore ?? '–'}</span>
+          <div class="metric-label">FEP score<br>(${fepRisk} risk)</div>
+        </div>
+      </div>
+      <div class="panel-note">
+        NHS Digital GP Registration · ${name} district ·
+        75+ registered patients = proxy for Missing Middle population size ·
+        Updated monthly
+      </div>
+    </div>
+  `;
+
+  // ── COMMISSIONING SIGNAL ──
+  const signals = getCommissioningSignals(name, trustCode, fepScore, cTotal, shmiBand, pop75 || fepPop75);
+  if (signals.length > 0) {
+    html += `
+      <div class="data-panel fep">
+        <div class="panel-title">📋 Commissioning Signals</div>
+        ${signals.map(s => `
+          <div class="trend-row" style="margin-bottom:0.4rem;align-items:flex-start">
+            <span style="color:${s.urgent ? '#c04828' : '#059669'};font-size:0.8rem;flex-shrink:0">${s.urgent ? '→' : '✓'}</span>
+            <span style="font-size:0.7rem;line-height:1.45">${s.text}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  document.getElementById('panel-content').innerHTML = html;
+}
+
+function bedsBar(pct) {
+  if (pct == null) return '';
+  const val = Math.min(100, Math.round(pct));
+  const col = val >= 95 ? '#c04828' : val >= 85 ? '#b45309' : '#166534';
+  return `
+    <div class="trend-row" style="margin-top:0.4rem">
+      <span style="font-size:0.68rem;min-width:80px">Beds occupied:</span>
+      <div style="flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div style="width:${val}%;height:5px;background:${col};border-radius:3px"></div>
+      </div>
+      <span style="font-family:var(--mono);font-size:0.65rem;min-width:32px;text-align:right">${val}%</span>
+    </div>
+  `;
+}
+
+function getCommissioningSignals(name, trustCode, fepScore, corridorTotal, shmiBanding, pop75) {
+  const signals = [];
+  if (fepScore >= 55 && corridorTotal >= 20) {
+    signals.push({ urgent: true, text: `High FEP (${fepScore}) combined with active corridor pressure at ${TRUST_NAMES[trustCode]} — strongest case for immediate preventative deployment in ${name}.` });
+  }
+  if (shmiBanding === '1' && fepScore >= 40) {
+    signals.push({ urgent: true, text: `${TRUST_NAMES[trustCode]} is above expected SHMI while ${name} carries elevated frailty risk — the pathway from Missing Middle to avoidable mortality is active.` });
+  }
+  if (fepScore >= 55 && pop75 >= 15000) {
+    signals.push({ urgent: false, text: `${pop75?.toLocaleString()} registered 75+ patients in ${name} against a high FEP score — a large addressable population for community frailty screening.` });
+  }
+  if (corridorTotal >= 30) {
+    signals.push({ urgent: true, text: `Corridor care at ${TRUST_NAMES[trustCode]} is significant. Patients reaching A&E from ${name} face a system under pressure. Every avoided admission from this district materially helps.` });
+  }
+  if (fepScore < 45 && (corridorTotal == null || corridorTotal < 15)) {
+    signals.push({ urgent: false, text: `${name} shows lower composite pressure. Early intervention investment here is preventative — maintaining this position is the goal.` });
+  }
+  return signals;
+}
+
+// ── RANKED TAB ────────────────────────────────────────────────────────
+function populateRankedTab() {
+  // Build a composite pressure score for ranking
+  const districts = [];
+  if (DATA.fep?.districts) {
+    DATA.fep.districts.forEach(d => {
+      const tc   = DISTRICT_TRUST[d.name] || 'RVV';
+      const corr = DATA.corridor?.trusts?.[tc]?.corridor_total ?? null;
+      const shmi = DATA.shmi?.trusts?.[tc]?.banding_code ?? null;
+      const tier = computePressureTier(d.fep, corr, shmi);
+      const tierOrder = { critical: 4, high: 3, moderate: 2, low: 1 };
+      districts.push({ name: d.name, fep: d.fep, tier, tierOrder: tierOrder[tier] || 2, corr });
+    });
+  }
+  districts.sort((a, b) => b.tierOrder - a.tierOrder || b.fep - a.fep);
+
+  const html = districts.map((d, i) => `
+    <div class="ranked-item" onclick="clickDistrict('${d.name}')">
+      <span class="ranked-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="ranked-name">${d.name}</span>
+      <div class="ranked-bar-wrap">
+        <div class="ranked-bar" style="width:${d.fep}%;background:${tierBorder(d.tier)}"></div>
+      </div>
+      <span class="ranked-val" style="color:${tierBorder(d.tier)}">${d.fep}</span>
+      <span class="risk-pill risk-${d.tier}" style="font-size:0.52rem;padding:0.12rem 0.4rem">${d.tier}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('panel-content').setAttribute('data-ranked-html', html);
+}
+
+function clickDistrict(name) {
+  selectedDistrict = name;
+  geojsonLayer.eachLayer(layer => {
+    const lname = getDistrictName(layer.feature);
+    if (lname === name) {
+      layer.setStyle({ weight: 3, fillOpacity: 0.85, color: '#003087' });
+      map.fitBounds(layer.getBounds(), { padding: [30, 30] });
+    } else {
+      layer.setStyle(districtStyle(layer.feature, false));
+    }
+  });
+  showDistrictDetail(name);
+  switchTab('detail');
+}
+
+// ── LEGEND TAB ────────────────────────────────────────────────────────
+function renderLegend() {
+  const hesP  = DATA.hes?.meta?.period_label || 'latest period';
+  const shmiP = DATA.shmi?.meta?.period || 'latest period';
+  const corrW = DATA.corridor?.meta?.week_ending || 'latest week';
+  const gpS   = DATA.gp?.meta?.snapshot_date || 'latest snapshot';
+
+  document.getElementById('panel-content').innerHTML = `
+    <div class="legend-section">
+      <div class="legend-title">Map Shading — Composite Pressure Tier</div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(153,27,27,0.58);border:2px solid #991b1b"></div>
+        <div><div class="legend-text">Critical</div><div class="legend-sub">High FEP + corridor pressure + elevated SHMI</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(194,65,12,0.48);border:2px solid #c2410c"></div>
+        <div><div class="legend-text">High</div><div class="legend-sub">Significant combined risk, or FEP score of 60+ — intervention priority</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(29,78,216,0.35);border:2px solid #1d4ed8"></div>
+        <div><div class="legend-text">Moderate</div><div class="legend-sub">Elevated but manageable — monitor closely</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:rgba(22,101,52,0.28);border:2px solid #166534"></div>
+        <div><div class="legend-text">Lower</div><div class="legend-sub">Current position — preserve through early intervention</div></div>
+      </div>
+    </div>
+
+    <div class="legend-section">
+      <div class="legend-title">Four NHS Data Sources</div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#c04828"></div>
+        <div><div class="legend-text">Corridor Care</div><div class="legend-sub">UEC Daily SitRep · week of ${corrW} · NHS England</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#1d4ed8"></div>
+        <div><div class="legend-text">Emergency Admissions 65+</div><div class="legend-sub">Provisional Monthly HES · ${hesP} · NHS Digital</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#6d28d9"></div>
+        <div><div class="legend-text">SHMI</div><div class="legend-sub">Summary Hospital Mortality · ${shmiP} · NHS Digital</div></div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-swatch" style="background:#059669"></div>
+        <div><div class="legend-text">GP Registration</div><div class="legend-sub">75+ patients by district · ${gpS} · NHS Digital</div></div>
+      </div>
+    </div>
+
+    <div class="currency-callout">
+      <div class="currency-callout-title">Data Currency</div>
+      <div class="currency-callout-text">
+        All four datasets are NHS England open data published under the Open Government
+        Licence v3.0. Corridor care and GP registration data is typically 4–6 weeks from
+        event to publication. HES is provisional, approximately 8–10 weeks lag.
+        SHMI covers a rolling 12-month period with approximately 5–6 months lag.
+        <br><br>
+        This tool gives ICB commissioners a more current and direct view of NHS system
+        pressure than most internal reporting chains — not because the data is faster,
+        but because it is presented without intermediary summarisation.
+        <br><br>
+        FEP scores from <a href="/layer2-map-pdf.html" style="color:var(--nhs-mid)">the Frailty Intelligence Map</a>
+        are also shown per district for context.
+      </div>
+    </div>
+
+    <div class="panel-note" style="margin-top:0.85rem">
+      Composite pressure tier combines FEP score (weight ~40%), corridor care intensity
+      (~35%), and SHMI banding (~25%). It is an operational planning aid, not a validated
+      clinical index. Trust-level data is attributed to districts based on primary
+      catchment area. Medway is served primarily by East Kent Hospitals Trust (RVV).
+    </div>
+  `;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['detail','ranked','legend'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+  });
+  const content = document.getElementById('panel-content');
+  if (tab === 'ranked') {
+    const cached = content.getAttribute('data-ranked-html');
+    if (cached) content.innerHTML = cached;
+  } else if (tab === 'legend') {
+    renderLegend();
+  } else if (tab === 'detail' && selectedDistrict) {
+    showDistrictDetail(selectedDistrict);
+  } else if (tab === 'detail') {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon" aria-hidden="true">🏥</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any district to see NHS system pressure and Missing Middle risk for that area.</div>
+      </div>
+    `;
+  }
+}
+
+// ── FORMATTING HELPERS ────────────────────────────────────────────────
+function fmt(val) {
+  if (val == null) return '–';
+  return typeof val === 'number' ? val.toLocaleString() : val;
+}
+function fmtK(val) {
+  if (val == null) return '–';
+  if (val >= 1000) return (val / 1000).toFixed(1) + 'k';
+  return val.toLocaleString();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+fetchAll();
+</script>
+
+<footer style="border-top:1px solid var(--border);background:var(--surface);padding:1.4rem 1.5rem;text-align:center;">
+  <p style="font-family:var(--mono);font-size:0.6rem;color:var(--text-dim);line-height:1.8;max-width:880px;margin:0 auto;">
+    © 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.<br>
+    <a href="index.html" style="color:var(--text-muted);text-decoration:none;">assistiv.cloud</a> ·
+    <a href="datastatus.html" style="color:var(--text-muted);text-decoration:none;">Data status</a> ·
+    <a href="methodology.html" style="color:var(--text-muted);text-decoration:none;">Methodology</a> ·
+    <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener" style="color:var(--text-muted);text-decoration:none;">Governance</a> ·
+    <a href="privacy.html" style="color:var(--text-muted);text-decoration:none;">Privacy</a> ·
+    <a href="terms.html" style="color:var(--text-muted);text-decoration:none;">Terms</a> ·
+    <a href="accessibility.html" style="color:var(--text-muted);text-decoration:none;">Accessibility</a>
+  </p>
+</footer>
+</body>
+</html>
