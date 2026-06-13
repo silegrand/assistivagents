@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-12T15:27:48.880526+00:00",
+    "generated": "2026-06-13T09:36:19.615936+00:00",
     "planning_year": "2026-27",
     "description": "Kent & Medway Winter Vulnerability Index \u2014 Assistiv Systems",
     "version": "1.0",
@@ -77,18 +77,18 @@
   },
   "districts": {
     "Maidstone": {
-      "wvi_score": 67.1,
+      "wvi_score": 62.9,
       "wvi_tier": "high",
       "wvi_components": {
-        "baseline_frailty": 60.2,
+        "baseline_frailty": 46.4,
         "seasonal_amplifier": 79.0,
         "prescribing_signal": 65.8,
         "system_headroom": 76.6,
         "social_isolation": 47.5
       },
       "deployment_windows": {
-        "medication_review": "September 2026 (urgent)",
-        "falls_prevention": "September 2026",
+        "medication_review": "September 2026",
+        "falls_prevention": "October 2026",
         "respiratory_outreach": "October 2026",
         "social_connection": "November 2026"
       },
@@ -98,11 +98,11 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Maidstone is one of Kent's higher-risk districts for winter frailty decompensation, with 16,700 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 60 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Maidstone is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Maidstone is one of Kent's higher-risk districts for winter frailty decompensation, with 16,700 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 37 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Maidstone is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 60,
-      "fep_risk": "high",
+      "fep_score": 37,
+      "fep_risk": "low",
       "pop_75plus": 16700,
       "pop_75plus_gp_reg": 19348,
       "list_size": 196223,
@@ -148,47 +148,11 @@
       "corridor_avg_may2026": 21.0,
       "corridor_max_may2026": 36.0
     },
-    "Gravesham": {
-      "wvi_score": 62.4,
-      "wvi_tier": "high",
-      "wvi_components": {
-        "baseline_frailty": 51.9,
-        "seasonal_amplifier": 69.3,
-        "prescribing_signal": 62.7,
-        "system_headroom": 76.6,
-        "social_isolation": 51.2
-      },
-      "deployment_windows": {
-        "medication_review": "September 2026",
-        "falls_prevention": "October 2026",
-        "respiratory_outreach": "October 2026",
-        "social_connection": "November 2026"
-      },
-      "deployment_evidence": {
-        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
-        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
-        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
-        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
-      },
-      "winter_narrative": "Gravesham is one of Kent's higher-risk districts for winter frailty decompensation, with 11,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 58 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Gravesham is the evidence-supported window to have measurable impact on January admission pressure.",
-      "historical_peak_month": "January",
-      "historical_peak_uplift_pct": 27,
-      "fep_score": 58,
-      "fep_risk": "high",
-      "pop_75plus": 11800,
-      "pop_75plus_gp_reg": 10231,
-      "list_size": 123189,
-      "lad_code": "E07000109",
-      "trust_code": "RWF",
-      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
-      "corridor_avg_may2026": 21.0,
-      "corridor_max_may2026": 36.0
-    },
     "Tunbridge Wells": {
-      "wvi_score": 62.4,
+      "wvi_score": 62.0,
       "wvi_tier": "high",
       "wvi_components": {
-        "baseline_frailty": 48.0,
+        "baseline_frailty": 46.8,
         "seasonal_amplifier": 76.6,
         "prescribing_signal": 66.4,
         "system_headroom": 76.6,
@@ -206,10 +170,10 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Tunbridge Wells is one of Kent's higher-risk districts for winter frailty decompensation, with 11,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 53 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Tunbridge Wells is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Tunbridge Wells is one of Kent's higher-risk districts for winter frailty decompensation, with 11,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 51 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Tunbridge Wells is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 53,
+      "fep_score": 51,
       "fep_risk": "moderate",
       "pop_75plus": 11200,
       "pop_75plus_gp_reg": 49965,
@@ -220,11 +184,47 @@
       "corridor_avg_may2026": 21.0,
       "corridor_max_may2026": 36.0
     },
-    "Sevenoaks": {
-      "wvi_score": 59.9,
+    "Gravesham": {
+      "wvi_score": 59.2,
       "wvi_tier": "high",
       "wvi_components": {
-        "baseline_frailty": 48.1,
+        "baseline_frailty": 41.1,
+        "seasonal_amplifier": 69.3,
+        "prescribing_signal": 62.7,
+        "system_headroom": 76.6,
+        "social_isolation": 51.2
+      },
+      "deployment_windows": {
+        "medication_review": "September 2026",
+        "falls_prevention": "October 2026",
+        "respiratory_outreach": "October 2026",
+        "social_connection": "November 2026"
+      },
+      "deployment_evidence": {
+        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
+        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
+        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
+        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
+      },
+      "winter_narrative": "Gravesham is one of Kent's higher-risk districts for winter frailty decompensation, with 11,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 40 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Gravesham is the evidence-supported window to have measurable impact on January admission pressure.",
+      "historical_peak_month": "January",
+      "historical_peak_uplift_pct": 27,
+      "fep_score": 40,
+      "fep_risk": "moderate",
+      "pop_75plus": 11800,
+      "pop_75plus_gp_reg": 10231,
+      "list_size": 123189,
+      "lad_code": "E07000109",
+      "trust_code": "RWF",
+      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
+      "corridor_avg_may2026": 21.0,
+      "corridor_max_may2026": 36.0
+    },
+    "Sevenoaks": {
+      "wvi_score": 59.2,
+      "wvi_tier": "high",
+      "wvi_components": {
+        "baseline_frailty": 45.7,
         "seasonal_amplifier": 64.8,
         "prescribing_signal": 64.6,
         "system_headroom": 76.6,
@@ -242,10 +242,10 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Sevenoaks is one of Kent's higher-risk districts for winter frailty decompensation, with 12,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 51 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Sevenoaks is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Sevenoaks is one of Kent's higher-risk districts for winter frailty decompensation, with 12,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 47 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Sevenoaks is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 51,
+      "fep_score": 47,
       "fep_risk": "moderate",
       "pop_75plus": 12100,
       "pop_75plus_gp_reg": 10031,
@@ -256,83 +256,11 @@
       "corridor_avg_may2026": 21.0,
       "corridor_max_may2026": 36.0
     },
-    "Tonbridge & Malling": {
-      "wvi_score": 59.4,
-      "wvi_tier": "high",
-      "wvi_components": {
-        "baseline_frailty": 49.6,
-        "seasonal_amplifier": 66.0,
-        "prescribing_signal": 57.2,
-        "system_headroom": 76.6,
-        "social_isolation": 45.7
-      },
-      "deployment_windows": {
-        "medication_review": "September 2026",
-        "falls_prevention": "October 2026",
-        "respiratory_outreach": "October 2026",
-        "social_connection": "November 2026"
-      },
-      "deployment_evidence": {
-        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
-        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
-        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
-        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
-      },
-      "winter_narrative": "Tonbridge & Malling is one of Kent's higher-risk districts for winter frailty decompensation, with 13,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 51 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Tonbridge & Malling is the evidence-supported window to have measurable impact on January admission pressure.",
-      "historical_peak_month": "January",
-      "historical_peak_uplift_pct": 27,
-      "fep_score": 51,
-      "fep_risk": "moderate",
-      "pop_75plus": 13100,
-      "pop_75plus_gp_reg": 13413,
-      "list_size": 127302,
-      "lad_code": "E07000115",
-      "trust_code": "RWF",
-      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
-      "corridor_avg_may2026": 21.0,
-      "corridor_max_may2026": 36.0
-    },
-    "Ashford": {
-      "wvi_score": 57.4,
-      "wvi_tier": "high",
-      "wvi_components": {
-        "baseline_frailty": 50.3,
-        "seasonal_amplifier": 54.9,
-        "prescribing_signal": 54.9,
-        "system_headroom": 76.6,
-        "social_isolation": 50.2
-      },
-      "deployment_windows": {
-        "medication_review": "September 2026",
-        "falls_prevention": "October 2026",
-        "respiratory_outreach": "October 2026",
-        "social_connection": "November 2026"
-      },
-      "deployment_evidence": {
-        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
-        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
-        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
-        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
-      },
-      "winter_narrative": "Ashford is one of Kent's higher-risk districts for winter frailty decompensation, with 13,600 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 51 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Ashford is the evidence-supported window to have measurable impact on January admission pressure.",
-      "historical_peak_month": "January",
-      "historical_peak_uplift_pct": 27,
-      "fep_score": 51,
-      "fep_risk": "moderate",
-      "pop_75plus": 13600,
-      "pop_75plus_gp_reg": 11938,
-      "list_size": 133672,
-      "lad_code": "E07000105",
-      "trust_code": "RWF",
-      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
-      "corridor_avg_may2026": 21.0,
-      "corridor_max_may2026": 36.0
-    },
     "Dartford": {
-      "wvi_score": 56.0,
+      "wvi_score": 57.1,
       "wvi_tier": "high",
       "wvi_components": {
-        "baseline_frailty": 45.0,
+        "baseline_frailty": 48.6,
         "seasonal_amplifier": 48.9,
         "prescribing_signal": 63.0,
         "system_headroom": 76.6,
@@ -350,11 +278,11 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Dartford is one of Kent's higher-risk districts for winter frailty decompensation, with 10,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 49 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Dartford is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Dartford is one of Kent's higher-risk districts for winter frailty decompensation, with 10,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 55 \u2014 above the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Dartford is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 49,
-      "fep_risk": "moderate",
+      "fep_score": 55,
+      "fep_risk": "high",
       "pop_75plus": 10800,
       "pop_75plus_gp_reg": 21604,
       "list_size": 269871,
@@ -364,11 +292,47 @@
       "corridor_avg_may2026": 21.0,
       "corridor_max_may2026": 36.0
     },
-    "Thanet": {
-      "wvi_score": 52.8,
-      "wvi_tier": "elevated",
+    "Tonbridge & Malling": {
+      "wvi_score": 56.0,
+      "wvi_tier": "high",
       "wvi_components": {
-        "baseline_frailty": 63.0,
+        "baseline_frailty": 38.2,
+        "seasonal_amplifier": 66.0,
+        "prescribing_signal": 57.2,
+        "system_headroom": 76.6,
+        "social_isolation": 45.7
+      },
+      "deployment_windows": {
+        "medication_review": "September 2026",
+        "falls_prevention": "October 2026",
+        "respiratory_outreach": "October 2026",
+        "social_connection": "November 2026"
+      },
+      "deployment_evidence": {
+        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
+        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
+        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
+        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
+      },
+      "winter_narrative": "Tonbridge & Malling is one of Kent's higher-risk districts for winter frailty decompensation, with 13,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 32 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Tonbridge & Malling is the evidence-supported window to have measurable impact on January admission pressure.",
+      "historical_peak_month": "January",
+      "historical_peak_uplift_pct": 27,
+      "fep_score": 32,
+      "fep_risk": "low",
+      "pop_75plus": 13100,
+      "pop_75plus_gp_reg": 13413,
+      "list_size": 127302,
+      "lad_code": "E07000115",
+      "trust_code": "RWF",
+      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
+      "corridor_avg_may2026": 21.0,
+      "corridor_max_may2026": 36.0
+    },
+    "Thanet": {
+      "wvi_score": 55.7,
+      "wvi_tier": "high",
+      "wvi_components": {
+        "baseline_frailty": 72.6,
         "seasonal_amplifier": 72.5,
         "prescribing_signal": 60.6,
         "system_headroom": 7.0,
@@ -386,11 +350,11 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Thanet is an elevated-risk district requiring targeted winter planning, with 18,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 61 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Thanet is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Thanet is one of Kent's higher-risk districts for winter frailty decompensation, with 18,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 77 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Thanet is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 61,
-      "fep_risk": "high",
+      "fep_score": 77,
+      "fep_risk": "critical",
       "pop_75plus": 18200,
       "pop_75plus_gp_reg": 14993,
       "list_size": 132994,
@@ -400,11 +364,47 @@
       "corridor_avg_may2026": 1.0,
       "corridor_max_may2026": 14.0
     },
-    "Dover": {
-      "wvi_score": 49.2,
+    "Ashford": {
+      "wvi_score": 54.7,
       "wvi_tier": "elevated",
       "wvi_components": {
-        "baseline_frailty": 54.2,
+        "baseline_frailty": 41.3,
+        "seasonal_amplifier": 54.9,
+        "prescribing_signal": 54.9,
+        "system_headroom": 76.6,
+        "social_isolation": 50.2
+      },
+      "deployment_windows": {
+        "medication_review": "September 2026",
+        "falls_prevention": "October 2026",
+        "respiratory_outreach": "October 2026",
+        "social_connection": "November 2026"
+      },
+      "deployment_evidence": {
+        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
+        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
+        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
+        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
+      },
+      "winter_narrative": "Ashford is an elevated-risk district requiring targeted winter planning, with 13,600 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 36 \u2014 at the England average. The serving trust (Maidstone & Tunbridge Wells) is already managing an average of 21 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Ashford is the evidence-supported window to have measurable impact on January admission pressure.",
+      "historical_peak_month": "January",
+      "historical_peak_uplift_pct": 27,
+      "fep_score": 36,
+      "fep_risk": "low",
+      "pop_75plus": 13600,
+      "pop_75plus_gp_reg": 11938,
+      "list_size": 133672,
+      "lad_code": "E07000105",
+      "trust_code": "RWF",
+      "trust_name": "Maidstone and Tunbridge Wells NHS Trust",
+      "corridor_avg_may2026": 21.0,
+      "corridor_max_may2026": 36.0
+    },
+    "Dover": {
+      "wvi_score": 47.2,
+      "wvi_tier": "elevated",
+      "wvi_components": {
+        "baseline_frailty": 47.6,
         "seasonal_amplifier": 70.1,
         "prescribing_signal": 59.9,
         "system_headroom": 7.0,
@@ -422,11 +422,11 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Dover is an elevated-risk district requiring targeted winter planning, with 13,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 57 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Dover is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Dover is an elevated-risk district requiring targeted winter planning, with 13,800 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 46 \u2014 at the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Dover is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 57,
-      "fep_risk": "high",
+      "fep_score": 46,
+      "fep_risk": "moderate",
       "pop_75plus": 13800,
       "pop_75plus_gp_reg": 13370,
       "list_size": 105906,
@@ -437,10 +437,10 @@
       "corridor_max_may2026": 14.0
     },
     "Canterbury": {
-      "wvi_score": 47.8,
+      "wvi_score": 45.8,
       "wvi_tier": "elevated",
       "wvi_components": {
-        "baseline_frailty": 54.8,
+        "baseline_frailty": 48.2,
         "seasonal_amplifier": 53.3,
         "prescribing_signal": 72.2,
         "system_headroom": 7.0,
@@ -458,10 +458,10 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Canterbury is an elevated-risk district requiring targeted winter planning, with 16,300 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 52 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Canterbury is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Canterbury is an elevated-risk district requiring targeted winter planning, with 16,300 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 41 \u2014 at the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Canterbury is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 52,
+      "fep_score": 41,
       "fep_risk": "moderate",
       "pop_75plus": 16300,
       "pop_75plus_gp_reg": 23268,
@@ -472,47 +472,11 @@
       "corridor_avg_may2026": 1.0,
       "corridor_max_may2026": 14.0
     },
-    "Swale": {
-      "wvi_score": 44.2,
-      "wvi_tier": "elevated",
-      "wvi_components": {
-        "baseline_frailty": 52.6,
-        "seasonal_amplifier": 48.6,
-        "prescribing_signal": 59.3,
-        "system_headroom": 7.0,
-        "social_isolation": 54.2
-      },
-      "deployment_windows": {
-        "medication_review": "September 2026",
-        "falls_prevention": "October 2026",
-        "respiratory_outreach": "October 2026",
-        "social_connection": "November 2026"
-      },
-      "deployment_evidence": {
-        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
-        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
-        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
-        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
-      },
-      "winter_narrative": "Swale is an elevated-risk district requiring targeted winter planning, with 15,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 51 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Swale is the evidence-supported window to have measurable impact on January admission pressure.",
-      "historical_peak_month": "January",
-      "historical_peak_uplift_pct": 27,
-      "fep_score": 51,
-      "fep_risk": "moderate",
-      "pop_75plus": 15200,
-      "pop_75plus_gp_reg": 14813,
-      "list_size": 148829,
-      "lad_code": "E07000113",
-      "trust_code": "RVV",
-      "trust_name": "East Kent Hospitals University NHS Foundation Trust",
-      "corridor_avg_may2026": 1.0,
-      "corridor_max_may2026": 14.0
-    },
     "Folkestone & Hythe": {
-      "wvi_score": 44.1,
+      "wvi_score": 43.7,
       "wvi_tier": "elevated",
       "wvi_components": {
-        "baseline_frailty": 51.6,
+        "baseline_frailty": 50.4,
         "seasonal_amplifier": 48.7,
         "prescribing_signal": 58.9,
         "system_headroom": 7.0,
@@ -530,15 +494,51 @@
         "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
         "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
       },
-      "winter_narrative": "Folkestone & Hythe is an elevated-risk district requiring targeted winter planning, with 14,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 52 \u2014 above the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Folkestone & Hythe is the evidence-supported window to have measurable impact on January admission pressure.",
+      "winter_narrative": "Folkestone & Hythe is an elevated-risk district requiring targeted winter planning, with 14,100 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 50 \u2014 at the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Folkestone & Hythe is the evidence-supported window to have measurable impact on January admission pressure.",
       "historical_peak_month": "January",
       "historical_peak_uplift_pct": 27,
-      "fep_score": 52,
+      "fep_score": 50,
       "fep_risk": "moderate",
       "pop_75plus": 14100,
       "pop_75plus_gp_reg": 11715,
       "list_size": 88498,
       "lad_code": "E07000112",
+      "trust_code": "RVV",
+      "trust_name": "East Kent Hospitals University NHS Foundation Trust",
+      "corridor_avg_may2026": 1.0,
+      "corridor_max_may2026": 14.0
+    },
+    "Swale": {
+      "wvi_score": 40.6,
+      "wvi_tier": "elevated",
+      "wvi_components": {
+        "baseline_frailty": 40.6,
+        "seasonal_amplifier": 48.6,
+        "prescribing_signal": 59.3,
+        "system_headroom": 7.0,
+        "social_isolation": 54.2
+      },
+      "deployment_windows": {
+        "medication_review": "September 2026",
+        "falls_prevention": "October 2026",
+        "respiratory_outreach": "October 2026",
+        "social_connection": "November 2026"
+      },
+      "deployment_evidence": {
+        "medication_review": "NICE NG191 \u2014 4 weeks lead time for structured review to optimise medication pre-winter; reduces emergency admissions and medication non-adherence over festive period.",
+        "falls_prevention": "NICE NG147 \u2014 Otago exercise programme requires 6\u20138 weeks before measurable falls reduction; home hazard assessment 4\u20136 weeks; deploy by October for January impact.",
+        "respiratory_outreach": "UKHSA guidance \u2014 flu vaccination ideally complete by end of October; COPD review identifies patients at highest respiratory risk before winter.",
+        "social_connection": "BGS Frailty Toolkit 2024 \u2014 social prescribing requires 6\u20138 weeks to meaningful engagement; November deployment targets Christmas isolation peak."
+      },
+      "winter_narrative": "Swale is an elevated-risk district requiring targeted winter planning, with 15,200 adults aged 75 and over on GP registers and a Frailty Emergence Probability of 31 \u2014 at the England average. The serving trust (East Kent Hospitals) is already managing an average of 1 corridor care patients per day in May 2026, leaving limited buffer before the winter surge that historically drives falls admissions 27% above the annual average in January. A September\u2013October deployment of medication review and falls prevention outreach in Swale is the evidence-supported window to have measurable impact on January admission pressure.",
+      "historical_peak_month": "January",
+      "historical_peak_uplift_pct": 27,
+      "fep_score": 31,
+      "fep_risk": "low",
+      "pop_75plus": 15200,
+      "pop_75plus_gp_reg": 14813,
+      "list_size": 148829,
+      "lad_code": "E07000113",
       "trust_code": "RVV",
       "trust_name": "East Kent Hospitals University NHS Foundation Trust",
       "corridor_avg_may2026": 1.0,
