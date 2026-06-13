@@ -1,1 +1,117 @@
-
+{
+  "schema": "assistiv.fep.prediction/1",
+  "target_month": "2026-06",
+  "frozen_at": "2026-06-04T00:00:00+00:00 (seeded from history)",
+  "source_file": "history/kent-fep-2026-06-04.json",
+  "source_sha256": "4e4dacf7ba2e3294",
+  "fep_version": "5.0 \u2014 oral nutritional supplements signal added",
+  "epd_period": null,
+  "n_districts": 13,
+  "predictions": [
+    {
+      "name": "Thanet",
+      "lad_code": "E07000114",
+      "fep": 62,
+      "risk": "high",
+      "rank": 1,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Dover",
+      "lad_code": "E07000108",
+      "fep": 56,
+      "risk": "high",
+      "rank": 2,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Folkestone & Hythe",
+      "lad_code": "E07000112",
+      "fep": 56,
+      "risk": "high",
+      "rank": 3,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Swale",
+      "lad_code": "E07000113",
+      "fep": 54,
+      "risk": "moderate",
+      "rank": 4,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Medway",
+      "lad_code": "E06000035",
+      "fep": 53,
+      "risk": "moderate",
+      "rank": 5,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Gravesham",
+      "lad_code": "E07000109",
+      "fep": 51,
+      "risk": "moderate",
+      "rank": 6,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Ashford",
+      "lad_code": "E07000105",
+      "fep": 50,
+      "risk": "moderate",
+      "rank": 7,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Canterbury",
+      "lad_code": "E07000106",
+      "fep": 49,
+      "risk": "moderate",
+      "rank": 8,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Maidstone",
+      "lad_code": "E07000110",
+      "fep": 47,
+      "risk": "moderate",
+      "rank": 9,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Dartford",
+      "lad_code": "E07000107",
+      "fep": 45,
+      "risk": "moderate",
+      "rank": 10,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Tonbridge & Malling",
+      "lad_code": "E07000115",
+      "fep": 41,
+      "risk": "moderate",
+      "rank": 11,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Sevenoaks",
+      "lad_code": "E07000111",
+      "fep": 37,
+      "risk": "low",
+      "rank": 12,
+      "crisis_precursor": null
+    },
+    {
+      "name": "Tunbridge Wells",
+      "lad_code": "E07000116",
+      "fep": 34,
+      "risk": "low",
+      "rank": 13,
+      "crisis_precursor": null
+    }
+  ],
+  "note": "Frozen FEP ranking. Scored later against district-level outcome indicators (falls/emergency admissions 65+) as they publish. Ranking skill is the claim, not absolute risk."
+}
