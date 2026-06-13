@@ -234,6 +234,17 @@ body {
   margin-top: 1rem; font-family: var(--mono); font-size: 0.65rem;
   color: var(--sage); letter-spacing: 0.06em;
 }
+.tool-card-wrap { display: flex; flex-direction: column; }
+.tool-card-wrap .tool-card { flex: 1; }
+.tool-method-link {
+  margin-top: 0.5rem; padding: 0.5rem 0.25rem;
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-muted); text-decoration: none;
+  text-align: center; border: 1px dashed #c8d5ee; border-radius: var(--radius);
+  transition: color var(--tr), border-color var(--tr), background var(--tr);
+}
+.tool-method-link:hover { color: #365EBF; border-color: #365EBF; background: #eef2fb; }
+
 
 /* ── HOW IT WORKS ── */
 .how-section {
@@ -369,7 +380,7 @@ footer {
 }
 .footer-nav {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 .footer-nav-col h5 {
@@ -829,64 +840,64 @@ footer {
     </div>
 
     <div class="tools-grid">
-      <a href="layer2-map-pdf.html" class="tool-card">
+      <div class="tool-card-wrap"><a href="layer2-map-pdf.html" class="tool-card">
         <div class="tool-tag">Primary tool · Layer 2</div>
         <div class="tool-title">Frailty Heat Map</div>
         <div class="tool-desc">Live ONS district boundaries, FEP colour tiers, economic cost of inaction, discharge intelligence, 111 demand, prescribing signals. One-click PDF commissioner briefing.</div>
         <div class="tool-link">Open map →</div>
-      </a>
-      <a href="layer2-fep-light.html" class="tool-card">
+      </a><a href="method-fep-heatmap.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="layer2-fep-light.html" class="tool-card">
         <div class="tool-tag">Scoring engine · Layer 2</div>
         <div class="tool-title">Frailty Emergence Probability (FEP) Configurator</div>
         <div class="tool-desc">21 adjustable signal weights. Commissioner-configurable scoring. Ranked zone results with uncertainty flags. Ada AI explainer built in.</div>
         <div class="tool-link">Open scoring engine →</div>
-      </a>
-      <a href="rural-access-vulnerability.html" class="tool-card">
+      </a><a href="method-fep-configurator.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="rural-access-vulnerability.html" class="tool-card">
         <div class="tool-tag">LSOA hotspot map · Layer 2</div>
         <div class="tool-title">Rural Access Vulnerability</div>
         <div class="tool-desc">1,065 LSOA-level hotspots revealing hidden frailty in Challock, Hever, Appledore and 53 unnamed rural settlements, invisible to district-level FEP scores.</div>
         <div class="tool-link">Open RAVI map →</div>
-      </a>
+      </a><a href="method-ravi.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
     <div class="tools-grid" style="margin-top:1rem">
-      <a href="cbi-fep-map.html" class="tool-card">
+      <div class="tool-card-wrap"><a href="cbi-fep-map.html" class="tool-card">
         <div class="tool-tag">Dual intelligence · Layer 2</div>
         <div class="tool-title">FEP × Carer Burden Quadrant</div>
         <div class="tool-desc">Frailty risk and carer burden overlaid. Identifies districts where both patient and carer systems face simultaneous pressure, the most urgent intervention targets.</div>
         <div class="tool-link">Open CBI map →</div>
-      </a>
-      <a href="reachable-neighbourhoods.html" class="tool-card">
+      </a><a href="method-cbi-fep.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="reachable-neighbourhoods.html" class="tool-card">
         <div class="tool-tag">Neighbourhood shortlist · Layer 2→3</div>
         <div class="tool-title">Reachable Neighbourhoods</div>
         <div class="tool-desc">Drills below district level to 17 named neighbourhoods of ~7,500 residents, ranked by deprivation, solo living, access and three-month prescribing velocity. Plain-English briefing cards tell outreach teams where to set up first.</div>
         <div class="tool-link">Open shortlist →</div>
-      </a>
-      <a href="community-touchpoints.html" class="tool-card">
+      </a><a href="method-reachable-neighbourhoods.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="community-touchpoints.html" class="tool-card">
         <div class="tool-tag">Outreach planning · Layer 3</div>
         <div class="tool-title">Community Touchpoints</div>
         <div class="tool-desc">GP surgeries, pharmacies, libraries, faith communities and VCSE organisations within priority zones, mapped by district for outreach planning. NHS API and OpenStreetMap.</div>
         <div class="tool-link">Open touchpoints →</div>
-      </a>
+      </a><a href="method-community-touchpoints.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
     <div class="tools-grid" style="margin-top:1rem">
-      <a href="nhs-pressure-map.html" class="tool-card">
+      <div class="tool-card-wrap"><a href="nhs-pressure-map.html" class="tool-card">
         <div class="tool-tag">NHS system pressure · Layer 2</div>
         <div class="tool-title">NHS Pressure Intelligence Map</div>
         <div class="tool-desc">Corridor care, non-elective admissions, SHMI mortality and GP population data mapped to district. Four NHS open data sources. Tells commissioners where system pressure and Missing Middle risk converge — updated monthly.</div>
         <div class="tool-link">Open NHS pressure map →</div>
-      </a>
-      <a href="winter-readiness.html" class="tool-card">
+      </a><a href="method-nhs-pressure.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="winter-readiness.html" class="tool-card">
         <div class="tool-tag">2026-27 Planning · Live NHS Data</div>
         <div class="tool-title">Winter Readiness Intelligence</div>
         <div class="tool-desc">District-level Winter Vulnerability Index for all 13 Kent districts. Forward-looking risk scoring across five components — frailty load, seasonal amplifiers, prescribing signals, system headroom, and social isolation. Deployment planner with NICE-evidenced intervention windows. PDF commissioner briefing. Ada winter planning mode.</div>
         <div class="tool-link">Open winter readiness →</div>
-      </a>
-      <a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
+      </a><a href="method-winter-readiness.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
+      <div class="tool-card-wrap"><a href="https://www.assistiv.tools" target="_blank" rel="noopener" class="tool-card">
         <div class="tool-tag">Community screening · Layer 4</div>
         <div class="tool-title">Voice-First Frailty Screen</div>
         <div class="tool-desc">Twelve conversational questions across six life domains. PRISMA-7 and FRAIL Scale scored in real time. Structured GP referral output. Carer pathway integrated. Deployable in any community setting with no clinical training required.</div>
         <div class="tool-link">Open assistiv.tools ↗</div>
-      </a>
+      </a><a href="method-voice-screen.html" class="tool-method-link">Methodology &amp; rationale &rarr;</a></div>
     </div>
   </div>
 </div>
@@ -988,6 +999,7 @@ footer {
     </div>
     <div style="margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--cream-dark);display:flex;gap:1.5rem;flex-wrap:wrap">
       <a href="methodology.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">Read the full methodology →</a>
+      <a href="methodology-hub.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">Per-tool methods →</a>
       <a href="frailty-agent-architecture.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View system architecture →</a>
       <a href="history.html" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View trend history →</a>
       <a href="https://github.com/silegrand/assistivagents" target="_blank" rel="noopener" style="font-family:var(--mono);font-size:0.68rem;color:var(--sage);text-decoration:none;letter-spacing:0.06em">View source on GitHub ↗</a>
@@ -1169,6 +1181,11 @@ footer {
           <a href="#evidence">Evidence</a>
           <a href="datastatus.html">Data status</a>
         <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
+        </div>
+        <div class="footer-nav-col">
+          <h5>Methodology</h5>
+          <a href="methodology.html">Master methodology</a>
+          <a href="methodology-hub.html">Tool methods</a>
         </div>
         <div class="footer-nav-col">
           <h5>Ecosystem</h5>
