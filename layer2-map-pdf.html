@@ -2055,7 +2055,11 @@ fetchWeatherRisk();
 (async function initWithLiveData() {
   const FEP_JSON = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
   try {
-    const res = await fetch(FEP_JSON);
+    // Cache-bust + no-store: the raw.githubusercontent CDN and the browser
+    // both cache aggressively, which can serve a days-old copy and leave the
+    // map showing stale district scores (e.g. Thanet 61 while the ticker says 77).
+    // This forces a fresh pull on every load so the map always matches the live feed.
+    const res = await fetch(FEP_JSON + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const live = await res.json();
 
@@ -2069,7 +2073,12 @@ fetchWeatherRisk();
 
     // Patch the DISTRICTS JS object
     Object.entries(DISTRICTS).forEach(([code, entry]) => {
-      const ld = byCode[code] || byName[entry.name.toLowerCase()];
+      // NOTE: this object's baked-in LAD codes are an OLD scheme — several have
+      // since been recycled onto different districts in the live data (e.g. the
+      // old 'Thanet' code E07000106 is now Canterbury). So we must join by NAME
+      // first (names are stable here) and only fall back to code if the name misses.
+      // The archived 'Shepway' entry has no live counterpart and is simply left as-is.
+      const ld = byName[entry.name.toLowerCase()] || byCode[code];
       if (ld) {
         entry.fep  = ld.fep;
         entry.risk = ld.risk;
@@ -2078,11 +2087,16 @@ fetchWeatherRisk();
       }
     });
 
-    // Patch the baked-in GeoJSON feature properties
+    // Patch the baked-in GeoJSON feature properties.
+    // Here the LAD13CD codes ARE current (they match the live data), so code-first
+    // is correct. We normalise '&'/'and' on the name fallback so a spelling variant
+    // (e.g. 'Folkestone & Hythe' vs 'Folkestone and Hythe') can never silently miss.
+    const norm = s => (s || '').toLowerCase().replace(/\s*&\s*/g, ' and ').replace(/\s+/g, ' ').trim();
+    const byNameNorm = {};
+    (live.districts || []).forEach(d => { if (d.name) byNameNorm[norm(d.name)] = d; });
     (KENT_GEOJSON.features || []).forEach(f => {
       const code = f.properties.LAD13CD || f.properties.lad_code;
-      const name = (f.properties.name || '').toLowerCase();
-      const ld   = (code && byCode[code]) || byName[name];
+      const ld   = (code && byCode[code]) || byNameNorm[norm(f.properties.name)];
       if (ld) {
         f.properties.fep  = ld.fep;
         f.properties.risk = ld.risk;
