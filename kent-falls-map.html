@@ -371,6 +371,21 @@ const FEP_SCORES = {
   "Ashford":51,"Tonbridge & Malling":51,"Sevenoaks":51,"Dartford":49
 };
 
+// ── NAME-TOLERANT LOOKUP ──────────────────────────────────────────────────────
+// The GeoJSON spells one district "Tonbridge and Malling" while our data objects
+// key it "Tonbridge & Malling". A direct lookup misses and the district renders
+// blank. normName() collapses "&"/"and" and whitespace so a lookup can't miss on
+// a spelling variant. lookup(obj, name) is used everywhere instead of obj[name].
+function normName(s) {
+  return (s || '').toLowerCase().replace(/\s*&\s*/g, ' and ').replace(/\s+/g, ' ').trim();
+}
+function lookup(obj, name) {
+  if (obj[name] != null) return obj[name];           // exact hit first
+  const target = normName(name);
+  for (const k in obj) if (normName(k) === target) return obj[k];
+  return undefined;
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let map, geojsonLayer, selectedDistrict = null;
 let currentView   = 'annual';
@@ -396,7 +411,7 @@ function rateColor(rate) {
 }
 
 function getViewValue(name) {
-  const d = FALLS_DATA[name];
+  const d = lookup(FALLS_DATA, name);
   if (!d) return null;
   switch (currentView) {
     case 'annual':  return d.rate;
@@ -407,17 +422,17 @@ function getViewValue(name) {
 }
 
 function getViewColor(name) {
-  const d = FALLS_DATA[name];
+  const d = lookup(FALLS_DATA, name);
   if (!d) return '#ccc';
   if (currentView === 'annual') return rateColor(d.rate);
   if (currentView === 'winter') {
     const avg = (d.monthly.Dec + d.monthly.Jan + d.monthly.Feb) / 3;
-    const r = avg / (POP75[name] / 1000 / 12);
+    const r = avg / (lookup(POP75, name) / 1000 / 12);
     return r > 7 ? '#991b1b' : r > 5 ? '#c2410c' : r > 3 ? '#d97706' : '#15803d';
   }
   if (currentView === 'summer') {
     const avg = (d.monthly.Jun + d.monthly.Jul + d.monthly.Aug) / 3;
-    const r = avg / (POP75[name] / 1000 / 12);
+    const r = avg / (lookup(POP75, name) / 1000 / 12);
     return r > 7 ? '#991b1b' : r > 5 ? '#c2410c' : r > 3 ? '#d97706' : '#15803d';
   }
   if (currentView === 'trend') {
@@ -438,19 +453,18 @@ function districtStyle(feature, selected) {
 }
 
 // ── LIVE FEP OVERLAY ──────────────────────────────────────────────────────────
-// FEP_SCORES above are a baked-in fallback only. The live FEP engine moves daily,
-// so we patch FEP_SCORES in place from kent-fep-data.json before rendering. This
-// stops the falls map from showing stale FEP values that contradict the heat map
-// and the homepage ticker. Cache-busted + no-store so a CDN/browser cache can't
-// re-staleify it; if the fetch fails we silently keep the baked-in numbers.
+// FEP_SCORES above is a baked-in fallback only. The live FEP engine moves daily,
+// so patch FEP_SCORES in place from kent-fep-data.json before rendering so this
+// page never shows FEP values that contradict the heat map / homepage ticker.
+// Cache-busted + no-store; on failure we silently keep the baked-in numbers.
 async function refreshLiveFEP() {
   const FEP_JSON = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
   try {
     const res = await fetch(FEP_JSON + '?t=' + Date.now(), { cache: 'no-store' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const live = await res.json();
-    (live.districts || []).forEach(d => {
-      if (d.name && typeof d.fep === 'number') FEP_SCORES[d.name] = d.fep;
+    (live.districts || []).forEach(dd => {
+      if (dd.name && typeof dd.fep === 'number') FEP_SCORES[dd.name] = dd.fep;
     });
   } catch (e) {
     console.warn('Live FEP fetch failed, using baked-in FEP_SCORES:', e);
@@ -483,7 +497,7 @@ fetch(GEOJSON_URL)
         });
 
         // Tooltip showing count on hover
-        const d = FALLS_DATA[name];
+        const d = lookup(FALLS_DATA, name);
         if (d) {
           layer.bindTooltip(`
             <div style="font-family:DM Mono,monospace;font-size:11px;padding:4px 8px">
@@ -503,7 +517,7 @@ fetch(GEOJSON_URL)
   });
 }
 
-// Patch FEP from the live feed first, then render with whatever FEP values we have.
+// Patch FEP from the live feed first, then render with whatever FEP we have.
 refreshLiveFEP().then(renderFallsMap);
 
 // ── VIEW TOGGLE ───────────────────────────────────────────────────────────────
@@ -544,9 +558,9 @@ function setView(view) {
 
 // ── DISTRICT PANEL ────────────────────────────────────────────────────────────
 function showDistrict(name) {
-  const d   = FALLS_DATA[name];
-  const pop = POP75[name] || 13000;
-  const fep = FEP_SCORES[name] || 51;
+  const d   = lookup(FALLS_DATA, name);
+  const pop = lookup(POP75, name) || 13000;
+  const fep = lookup(FEP_SCORES, name) || 51;
   if (!d) return;
 
   const rateColor = d.rate > 65 ? 'var(--f-crit)' : d.rate > 55 ? 'var(--f-high)' : d.rate > 45 ? 'var(--f-mod)' : 'var(--f-low)';
@@ -572,7 +586,7 @@ function showDistrict(name) {
 
   const medwayNote = name === 'Medway'
     ? (() => {
-        const medFep = FEP_SCORES['Medway'], thaFep = FEP_SCORES['Thanet'];
+        const medFep = lookup(FEP_SCORES, 'Medway'), thaFep = lookup(FEP_SCORES, 'Thanet');
         const fepRel = (medFep != null && thaFep != null)
           ? (medFep < thaFep ? 'a lower FEP score' : medFep > thaFep ? 'a higher FEP score' : 'a comparable FEP score')
           : 'a lower FEP score';
