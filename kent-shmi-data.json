@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-12T15:26:32.796772+00:00",
+    "generated": "2026-06-13T09:35:24.085596+00:00",
     "description": "Kent NHS Trust SHMI \u2014 Assistiv Systems",
     "version": "1.1",
     "refresh_type": "monthly \u2014 NHS Digital SHMI",
@@ -48,7 +48,7 @@
       "period": "February 2025 - January 2026"
     },
     "RN7": {
-      "name": "Dartford And Gravesham NHS Trust",
+      "name": "Dartford and Gravesham NHS Trust",
       "shmi_value": 1.0048,
       "banding_code": "2",
       "banding_label": "As expected",
@@ -61,7 +61,7 @@
   "history": [
     {
       "period": "February 2025 - January 2026",
-      "fetched": "2026-06-12",
+      "fetched": "2026-06-13",
       "trusts": {
         "RVV": {
           "shmi_value": 1.1451,
@@ -69,6 +69,14 @@
         },
         "RWF": {
           "shmi_value": 0.9372,
+          "banding_code": "2"
+        },
+        "RPA": {
+          "shmi_value": 1.3048,
+          "banding_code": "1"
+        },
+        "RN7": {
+          "shmi_value": 1.0048,
           "banding_code": "2"
         }
       }
