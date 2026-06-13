@@ -1,0 +1,321 @@
+{
+  "meta": {
+    "source": "South East Coast Ambulance Service NHS Foundation Trust",
+    "source_type": "Freedom of Information Act 2000 response",
+    "foi_reference": "260608",
+    "response_date": "2026-06-10",
+    "data_period": "2025-01-01 to 2025-12-31",
+    "description": "Emergency callouts for Slips, Trips and Falls \u2014 patients aged 65+ \u2014 by Kent local authority district",
+    "condition_codes": {
+      "34": "Fall Head",
+      "35": "Fall Stairs",
+      "1128": "Fall Injuries Unknown",
+      "1178": "Fall Non-injury"
+    },
+    "note": "Shepway in original data = Folkestone & Hythe (renamed 2016). Tonbridge and Malling normalised to Tonbridge & Malling.",
+    "licence": "Freedom of Information response \u2014 OGL v3 does not apply; data may be used for non-commercial research purposes.",
+    "annual_kent_total": 10720,
+    "seasonal_index": {
+      "Jan": 110,
+      "Feb": 86,
+      "Mar": 98,
+      "Apr": 98,
+      "May": 102,
+      "Jun": 101,
+      "Jul": 96,
+      "Aug": 93,
+      "Sep": 104,
+      "Oct": 105,
+      "Nov": 103,
+      "Dec": 102
+    }
+  },
+  "districts": {
+    "Ashford": {
+      "annual_total": 763,
+      "rate_per_1000_pop75": 56.1,
+      "monthly": {
+        "Jan": 56,
+        "Feb": 50,
+        "Mar": 71,
+        "Apr": 75,
+        "May": 78,
+        "Jun": 68,
+        "Jul": 68,
+        "Aug": 61,
+        "Sep": 55,
+        "Oct": 65,
+        "Nov": 58,
+        "Dec": 58
+      },
+      "peak_month": "May",
+      "trough_month": "Feb",
+      "peak_count": 78,
+      "trough_count": 50
+    },
+    "Canterbury": {
+      "annual_total": 994,
+      "rate_per_1000_pop75": 61.0,
+      "monthly": {
+        "Jan": 100,
+        "Feb": 75,
+        "Mar": 68,
+        "Apr": 80,
+        "May": 74,
+        "Jun": 91,
+        "Jul": 80,
+        "Aug": 84,
+        "Sep": 80,
+        "Oct": 101,
+        "Nov": 80,
+        "Dec": 81
+      },
+      "peak_month": "Oct",
+      "trough_month": "Mar",
+      "peak_count": 101,
+      "trough_count": 68
+    },
+    "Dartford": {
+      "annual_total": 538,
+      "rate_per_1000_pop75": 49.8,
+      "monthly": {
+        "Jan": 58,
+        "Feb": 37,
+        "Mar": 42,
+        "Apr": 45,
+        "May": 40,
+        "Jun": 52,
+        "Jul": 31,
+        "Aug": 43,
+        "Sep": 53,
+        "Oct": 50,
+        "Nov": 50,
+        "Dec": 37
+      },
+      "peak_month": "Jan",
+      "trough_month": "Jul",
+      "peak_count": 58,
+      "trough_count": 31
+    },
+    "Dover": {
+      "annual_total": 714,
+      "rate_per_1000_pop75": 51.7,
+      "monthly": {
+        "Jan": 37,
+        "Feb": 40,
+        "Mar": 54,
+        "Apr": 51,
+        "May": 66,
+        "Jun": 57,
+        "Jul": 76,
+        "Aug": 62,
+        "Sep": 62,
+        "Oct": 66,
+        "Nov": 82,
+        "Dec": 61
+      },
+      "peak_month": "Nov",
+      "trough_month": "Jan",
+      "peak_count": 82,
+      "trough_count": 37
+    },
+    "Folkestone & Hythe": {
+      "annual_total": 894,
+      "rate_per_1000_pop75": 63.4,
+      "monthly": {
+        "Jan": 87,
+        "Feb": 65,
+        "Mar": 65,
+        "Apr": 76,
+        "May": 82,
+        "Jun": 55,
+        "Jul": 83,
+        "Aug": 62,
+        "Sep": 68,
+        "Oct": 94,
+        "Nov": 75,
+        "Dec": 82
+      },
+      "peak_month": "Oct",
+      "trough_month": "Jun",
+      "peak_count": 94,
+      "trough_count": 55
+    },
+    "Gravesham": {
+      "annual_total": 631,
+      "rate_per_1000_pop75": 53.5,
+      "monthly": {
+        "Jan": 45,
+        "Feb": 55,
+        "Mar": 42,
+        "Apr": 55,
+        "May": 56,
+        "Jun": 73,
+        "Jul": 38,
+        "Aug": 65,
+        "Sep": 49,
+        "Oct": 52,
+        "Nov": 47,
+        "Dec": 54
+      },
+      "peak_month": "Jun",
+      "trough_month": "Jul",
+      "peak_count": 73,
+      "trough_count": 38
+    },
+    "Maidstone": {
+      "annual_total": 925,
+      "rate_per_1000_pop75": 55.4,
+      "monthly": {
+        "Jan": 79,
+        "Feb": 58,
+        "Mar": 86,
+        "Apr": 63,
+        "May": 96,
+        "Jun": 87,
+        "Jul": 78,
+        "Aug": 64,
+        "Sep": 85,
+        "Oct": 81,
+        "Nov": 77,
+        "Dec": 71
+      },
+      "peak_month": "May",
+      "trough_month": "Feb",
+      "peak_count": 96,
+      "trough_count": 58
+    },
+    "Medway": {
+      "annual_total": 1558,
+      "rate_per_1000_pop75": 80.3,
+      "monthly": {
+        "Jan": 129,
+        "Feb": 109,
+        "Mar": 132,
+        "Apr": 132,
+        "May": 130,
+        "Jun": 119,
+        "Jul": 127,
+        "Aug": 107,
+        "Sep": 150,
+        "Oct": 130,
+        "Nov": 156,
+        "Dec": 137
+      },
+      "peak_month": "Nov",
+      "trough_month": "Aug",
+      "peak_count": 156,
+      "trough_count": 107
+    },
+    "Sevenoaks": {
+      "annual_total": 663,
+      "rate_per_1000_pop75": 54.8,
+      "monthly": {
+        "Jan": 70,
+        "Feb": 43,
+        "Mar": 46,
+        "Apr": 61,
+        "May": 57,
+        "Jun": 50,
+        "Jul": 54,
+        "Aug": 57,
+        "Sep": 54,
+        "Oct": 62,
+        "Nov": 49,
+        "Dec": 60
+      },
+      "peak_month": "Jan",
+      "trough_month": "Feb",
+      "peak_count": 70,
+      "trough_count": 43
+    },
+    "Swale": {
+      "annual_total": 754,
+      "rate_per_1000_pop75": 49.6,
+      "monthly": {
+        "Jan": 82,
+        "Feb": 72,
+        "Mar": 76,
+        "Apr": 59,
+        "May": 59,
+        "Jun": 60,
+        "Jul": 56,
+        "Aug": 57,
+        "Sep": 59,
+        "Oct": 49,
+        "Nov": 55,
+        "Dec": 70
+      },
+      "peak_month": "Jan",
+      "trough_month": "Oct",
+      "peak_count": 82,
+      "trough_count": 49
+    },
+    "Thanet": {
+      "annual_total": 1022,
+      "rate_per_1000_pop75": 56.2,
+      "monthly": {
+        "Jan": 109,
+        "Feb": 69,
+        "Mar": 93,
+        "Apr": 76,
+        "May": 84,
+        "Jun": 95,
+        "Jul": 73,
+        "Aug": 63,
+        "Sep": 110,
+        "Oct": 86,
+        "Nov": 84,
+        "Dec": 80
+      },
+      "peak_month": "Sep",
+      "trough_month": "Aug",
+      "peak_count": 110,
+      "trough_count": 63
+    },
+    "Tonbridge & Malling": {
+      "annual_total": 665,
+      "rate_per_1000_pop75": 50.8,
+      "monthly": {
+        "Jan": 57,
+        "Feb": 57,
+        "Mar": 54,
+        "Apr": 49,
+        "May": 46,
+        "Jun": 53,
+        "Jul": 47,
+        "Aug": 56,
+        "Sep": 64,
+        "Oct": 54,
+        "Nov": 62,
+        "Dec": 66
+      },
+      "peak_month": "Dec",
+      "trough_month": "May",
+      "peak_count": 66,
+      "trough_count": 46
+    },
+    "Tunbridge Wells": {
+      "annual_total": 599,
+      "rate_per_1000_pop75": 53.5,
+      "monthly": {
+        "Jan": 71,
+        "Feb": 40,
+        "Mar": 44,
+        "Apr": 51,
+        "May": 47,
+        "Jun": 46,
+        "Jul": 49,
+        "Aug": 51,
+        "Sep": 44,
+        "Oct": 51,
+        "Nov": 47,
+        "Dec": 58
+      },
+      "peak_month": "Jan",
+      "trough_month": "Feb",
+      "peak_count": 71,
+      "trough_count": 40
+    }
+  }
+}

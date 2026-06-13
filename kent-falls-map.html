@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Falls Intelligence Map — Kent &amp; Medway 2025 · Assistiv Systems</title>
+  <meta name="description" content="District-level ambulance falls callouts (65+) across Kent and Medway 2025. SECAmb FOI data integrated with NHS Fingertips hip fracture admissions.">
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@500;700&family=DM+Mono:wght@300;400;500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root {
+  /* Assistiv Cloud blue brand */
+  --brand:      #365EBF;
+  --forest:     #1e3a7a;
+  --cream:      #eef2fb;
+  --border:     #d0d9f0;
+  --surface:    #ffffff;
+  --surface2:   #f5f7fd;
+  --text:       #0f1e42;
+  --text-mid:   #3a4d6e;
+  --text-muted: #6275a0;
+  --text-dim:   #9aabb8;
+  --mono:       'DM Mono', monospace;
+  --sans:       'Nunito', sans-serif;
+  --cabinet:    'Cabinet Grotesk', sans-serif;
+
+  /* Falls severity palette — amber → red, deliberate clinical severity progression */
+  --f-low:      #15803d;   /* <45/1k */
+  --f-mod:      #d97706;   /* 45-55/1k */
+  --f-high:     #c2410c;   /* 55-65/1k */
+  --f-crit:     #991b1b;   /* >65/1k */
+
+  --f-low-pale:  #f0fdf4;
+  --f-mod-pale:  #fffbeb;
+  --f-high-pale: #fff7ed;
+  --f-crit-pale: #fff1f2;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--sans);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--forest);
+  padding: 0 1.25rem;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.topbar-left { display: flex; align-items: center; gap: 0.85rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.6rem; }
+.nav-back {
+  color: rgba(255,255,255,0.6); text-decoration: none;
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.06em;
+}
+.nav-back:hover { color: #fff; }
+.divider-v { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+.logo-ring { position: relative; width: 32px; height: 32px; flex-shrink: 0; }
+.logo-ring .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; background: #fff; border-radius: 50%; z-index: 2; }
+.logo-ring .r1  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 18px; height: 18px; border: 1.5px solid rgba(255,255,255,0.6); border-radius: 50%; }
+.logo-ring .r2  { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 30px; height: 30px; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 50%; }
+.brand-label { display: flex; flex-direction: column; gap: 2px; }
+.brand-title { font-family: var(--sans); font-size: 0.88rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+.brand-sub { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.badge { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.65); }
+.badge.foi { background: rgba(255,200,0,0.15); border-color: rgba(255,200,0,0.5); color: #fbbf24; }
+.badge.live::before { content: '● '; font-size: 0.42rem; }
+
+/* ── STAT BANNER ── */
+.stat-banner {
+  background: #e8edf8;
+  padding: 0.45rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  border-bottom: 1px solid #c9d4ec;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.stat-banner-left { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.stat-item { display: flex; align-items: baseline; gap: 0.4rem; }
+.stat-val { font-family: var(--mono); font-size: 1.2rem; font-weight: 700; color: var(--forest); }
+.stat-desc { font-family: var(--mono); font-size: 0.6rem; color: var(--brand); letter-spacing: 0.04em; text-transform: uppercase; }
+.stat-sep { color: #b0bcd8; font-size: 0.7rem; }
+.stat-note { font-family: var(--mono); font-size: 0.55rem; color: #6b7fa8; letter-spacing: 0.02em; }
+
+/* ── MAIN LAYOUT ── */
+.main { display: flex; flex: 1; overflow: hidden; }
+
+/* ── MAP ── */
+#map { flex: 1; position: relative; z-index: 1; height: 100%; }
+.map-loading {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(238,242,251,0.9); z-index: 500; flex-direction: column; gap: 0.75rem;
+  font-family: var(--mono); font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.06em;
+}
+.map-loading.hidden { display: none; }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── SIDE PANEL ── */
+.side-panel {
+  width: 520px; background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+}
+.panel-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.panel-tab {
+  flex: 1; padding: 0.6rem 0.4rem; font-family: var(--mono);
+  font-size: 0.58rem; letter-spacing: 0.05em; text-transform: uppercase;
+  text-align: center; cursor: pointer; color: var(--text-muted);
+  border-bottom: 2px solid transparent; transition: all 0.15s;
+}
+.panel-tab.active { color: var(--forest); border-bottom-color: var(--forest); background: var(--surface); }
+.panel-content { flex: 1; overflow-y: auto; padding: 1rem; }
+
+/* ── DISTRICT PANEL ── */
+.district-header { margin-bottom: 1rem; }
+.district-name { font-family: var(--cabinet); font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+.district-sub  { font-family: var(--mono); font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; }
+.rate-badge {
+  display: inline-flex; align-items: baseline; gap: 0.4rem;
+  padding: 0.5rem 1rem; border-radius: 8px; margin-top: 0.6rem;
+}
+.rate-badge .rate-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 500; line-height: 1; }
+.rate-badge .rate-label { font-size: 0.72rem; font-weight: 600; }
+
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.75rem; }
+.metric-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem; }
+.metric-val { font-family: var(--mono); font-size: 1.2rem; font-weight: 600; color: var(--forest); display: block; }
+.metric-label { font-size: 0.68rem; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
+
+/* Monthly sparkline */
+.sparkline-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; }
+.sparkline-title { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.5rem; }
+.sparkline-chart { height: 80px; position: relative; }
+
+/* Insights box */
+.insight-box {
+  border-radius: 0 8px 8px 0; padding: 0.75rem 1rem; margin-bottom: 0.6rem; border-left-width: 3px; border-left-style: solid;
+}
+.insight-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+.insight-text { font-size: 0.78rem; line-height: 1.55; }
+
+/* Ranked panel */
+.ranked-item {
+  display: flex; align-items: center; gap: 0.6rem;
+  padding: 0.6rem 0.5rem; border-bottom: 1px solid var(--border); cursor: pointer;
+  transition: background 0.1s;
+}
+.ranked-item:hover { background: var(--surface2); }
+.ranked-num { font-family: var(--mono); font-size: 0.58rem; color: var(--text-dim); min-width: 18px; }
+.ranked-name { font-size: 0.78rem; font-weight: 600; flex: 1; color: var(--text); }
+.ranked-bar-wrap { width: 70px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.ranked-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+.ranked-rate { font-family: var(--mono); font-size: 0.7rem; font-weight: 600; min-width: 36px; text-align: right; }
+
+/* About panel */
+.about-section { margin-bottom: 1.25rem; }
+.about-title { font-family: var(--cabinet); font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.about-body { font-size: 0.78rem; color: var(--text-mid); line-height: 1.65; }
+.about-body strong { color: var(--text); }
+
+/* ── MAP LEGEND ── */
+.map-legend {
+  position: absolute; bottom: 28px; left: 12px;
+  background: rgba(255,255,255,0.95); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.6rem 0.85rem; z-index: 400;
+  backdrop-filter: blur(4px);
+}
+.legend-title { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.4rem; }
+.legend-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem; }
+.legend-swatch { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+.legend-label { font-family: var(--mono); font-size: 0.62rem; color: var(--text-mid); }
+
+.map-view-toggle {
+  position: absolute; top: 12px; left: 12px; z-index: 400;
+  background: rgba(255,255,255,0.95); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.4rem 0.5rem;
+  display: flex; flex-direction: column; gap: 0.3rem;
+  backdrop-filter: blur(4px);
+}
+.view-btn {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.05em;
+  padding: 0.28rem 0.6rem; border-radius: 5px; border: 1px solid var(--border);
+  cursor: pointer; background: transparent; color: var(--text-muted); text-align: left;
+  transition: all 0.12s;
+}
+.view-btn.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+.view-btn:hover:not(.active) { background: var(--surface2); color: var(--text); }
+
+/* ── EMPTY STATE ── */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: var(--text-muted); gap: 0.6rem; padding: 2rem; }
+.empty-icon { font-size: 2.2rem; }
+.empty-title { font-family: var(--cabinet); font-size: 1rem; font-weight: 700; color: var(--text); }
+.empty-desc { font-size: 0.8rem; line-height: 1.6; max-width: 280px; }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--border); background: var(--surface); padding: 0.3rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+footer span { font-family: var(--mono); font-size: 0.52rem; color: var(--text-dim); }
+footer a { color: var(--text-muted); text-decoration: none; }
+
+@media (max-width: 768px) {
+  .side-panel { width: 100%; height: 45vh; border-left: none; border-top: 1px solid var(--border); }
+  .main { flex-direction: column; }
+  #map { flex: 1; min-height: 200px; }
+  .topbar-right { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="nav-back">← Overview</a>
+    <div class="divider-v"></div>
+    <div class="logo-ring"><div class="dot"></div><div class="r1"></div><div class="r2"></div></div>
+    <div class="divider-v"></div>
+    <div class="brand-label">
+      <span class="brand-title">Falls Intelligence Map</span>
+      <span class="brand-sub">Kent &amp; Medway · 2025 · SECAmb + Fingertips</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge foi">FOI 260608 · SECAmb</span>
+    <span class="badge">13 Districts</span>
+  </div>
+</nav>
+
+<!-- STAT BANNER -->
+<div class="stat-banner">
+  <div class="stat-banner-left">
+    <span class="stat-desc">2025 ·</span>
+    <div class="stat-item">
+      <span class="stat-val">10,720</span>
+      <span class="stat-desc">Ambulance falls callouts 65+ (Kent)</span>
+    </div>
+    <span class="stat-sep">·</span>
+    <div class="stat-item">
+      <span class="stat-val">893</span>
+      <span class="stat-desc">Monthly average</span>
+    </div>
+    <span class="stat-sep">·</span>
+    <div class="stat-item">
+      <span class="stat-val">80.3</span>
+      <span class="stat-desc">Highest rate/1k pop75 (Medway)</span>
+    </div>
+    <span class="stat-sep">·</span>
+    <div class="stat-item">
+      <span class="stat-val">110</span>
+      <span class="stat-desc">January index (100 = annual avg)</span>
+    </div>
+  </div>
+  <span class="stat-note">Source: SECAmb FOI 260608 · Jan–Dec 2025 · Condition codes 34, 35, 1128, 1178</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- MAP -->
+  <div style="position:relative;flex:1">
+    <div class="map-loading" id="map-loading">
+      <div class="spinner"></div>
+      Loading falls map…
+    </div>
+    <div id="map"></div>
+
+    <!-- View toggle -->
+    <div class="map-view-toggle">
+      <div style="font-family:var(--mono);font-size:0.55rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:2px">SHOW</div>
+      <button class="view-btn active" id="btn-annual" onclick="setView('annual')">Annual rate</button>
+      <button class="view-btn" id="btn-winter"  onclick="setView('winter')">Winter callouts</button>
+      <button class="view-btn" id="btn-summer"  onclick="setView('summer')">Summer callouts</button>
+      <button class="view-btn" id="btn-trend"   onclick="setView('trend')">Sep/Aug trend</button>
+    </div>
+
+    <!-- Legend -->
+    <div class="map-legend">
+      <div class="legend-title" id="legend-title">CALLOUTS PER 1,000 POP 75+</div>
+      <div class="legend-row"><div class="legend-swatch" style="background:var(--f-crit)"></div><span class="legend-label" id="l4">&gt; 65 — Critical</span></div>
+      <div class="legend-row"><div class="legend-swatch" style="background:var(--f-high)"></div><span class="legend-label" id="l3">55–65 — High</span></div>
+      <div class="legend-row"><div class="legend-swatch" style="background:var(--f-mod)"></div><span class="legend-label" id="l2">45–55 — Moderate</span></div>
+      <div class="legend-row"><div class="legend-swatch" style="background:var(--f-low)"></div><span class="legend-label" id="l1">&lt; 45 — Lower</span></div>
+    </div>
+  </div>
+
+  <!-- SIDE PANEL -->
+  <div class="side-panel">
+    <div class="panel-tabs">
+      <div class="panel-tab active" id="tab-district" onclick="switchTab('district')">District</div>
+      <div class="panel-tab"        id="tab-ranked"   onclick="switchTab('ranked')">Ranked</div>
+      <div class="panel-tab"        id="tab-seasonal" onclick="switchTab('seasonal')">Seasonal</div>
+      <div class="panel-tab"        id="tab-about"    onclick="switchTab('about')">Data Notes</div>
+    </div>
+    <div class="panel-content" id="panel-content">
+      <div class="empty-state">
+        <div class="empty-icon">🏃</div>
+        <div class="empty-title">Select a district</div>
+        <div class="empty-desc">Click any district on the map to see its falls profile, monthly trend, and clinical intelligence.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2026 Assistiv Systems Ltd · Falls data: SECAmb FOI 260608 (Jan–Dec 2025) · Population: ONS census · Research use only</span>
+  <span style="display:flex;gap:0.75rem">
+    <a href="index.html">Home</a>
+    <a href="nhs-pressure-map.html">NHS Pressure Map</a>
+    <a href="winter-readiness.html">Winter Readiness</a>
+  </span>
+</footer>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const GEOJSON_URL = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/kent-districts.geojson';
+const BASE_URL    = 'https://raw.githubusercontent.com/silegrand/assistiv_cloud/main/';
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+const FALLS_DATA = {
+  "Ashford":              { annual:763,  rate:56.1, monthly:{Jan:56,Feb:50,Mar:71,Apr:75,May:78,Jun:68,Jul:68,Aug:61,Sep:55,Oct:65,Nov:58,Dec:58} },
+  "Canterbury":           { annual:994,  rate:61.0, monthly:{Jan:100,Feb:75,Mar:68,Apr:80,May:74,Jun:91,Jul:80,Aug:84,Sep:80,Oct:101,Nov:80,Dec:81} },
+  "Dartford":             { annual:538,  rate:49.8, monthly:{Jan:58,Feb:37,Mar:42,Apr:45,May:40,Jun:52,Jul:31,Aug:43,Sep:53,Oct:50,Nov:50,Dec:37} },
+  "Dover":                { annual:714,  rate:51.7, monthly:{Jan:37,Feb:40,Mar:54,Apr:51,May:66,Jun:57,Jul:76,Aug:62,Sep:62,Oct:66,Nov:82,Dec:61} },
+  "Folkestone & Hythe":   { annual:894,  rate:63.4, monthly:{Jan:87,Feb:65,Mar:65,Apr:76,May:82,Jun:55,Jul:83,Aug:62,Sep:68,Oct:94,Nov:75,Dec:82} },
+  "Gravesham":            { annual:631,  rate:53.5, monthly:{Jan:45,Feb:55,Mar:42,Apr:55,May:56,Jun:73,Jul:38,Aug:65,Sep:49,Oct:52,Nov:47,Dec:54} },
+  "Maidstone":            { annual:925,  rate:55.4, monthly:{Jan:79,Feb:58,Mar:86,Apr:63,May:96,Jun:87,Jul:78,Aug:64,Sep:85,Oct:81,Nov:77,Dec:71} },
+  "Medway":               { annual:1558, rate:80.3, monthly:{Jan:129,Feb:109,Mar:132,Apr:132,May:130,Jun:119,Jul:127,Aug:107,Sep:150,Oct:130,Nov:156,Dec:137} },
+  "Sevenoaks":            { annual:663,  rate:54.8, monthly:{Jan:70,Feb:43,Mar:46,Apr:61,May:57,Jun:50,Jul:54,Aug:57,Sep:54,Oct:62,Nov:49,Dec:60} },
+  "Swale":                { annual:754,  rate:49.6, monthly:{Jan:82,Feb:72,Mar:76,Apr:59,May:59,Jun:60,Jul:56,Aug:57,Sep:59,Oct:49,Nov:55,Dec:70} },
+  "Thanet":               { annual:1022, rate:56.2, monthly:{Jan:109,Feb:69,Mar:93,Apr:76,May:84,Jun:95,Jul:73,Aug:63,Sep:110,Oct:86,Nov:84,Dec:80} },
+  "Tonbridge & Malling":  { annual:665,  rate:50.8, monthly:{Jan:57,Feb:57,Mar:54,Apr:49,May:46,Jun:53,Jul:47,Aug:56,Sep:64,Oct:54,Nov:62,Dec:66} },
+  "Tunbridge Wells":      { annual:599,  rate:53.5, monthly:{Jan:71,Feb:40,Mar:44,Apr:51,May:47,Jun:46,Jul:49,Aug:51,Sep:44,Oct:51,Nov:47,Dec:58} },
+};
+
+const POP75 = {
+  "Thanet":18200,"Folkestone & Hythe":14100,"Dover":13800,"Swale":15200,
+  "Medway":19400,"Gravesham":11800,"Ashford":13600,"Canterbury":16300,
+  "Dartford":10800,"Maidstone":16700,"Tonbridge & Malling":13100,
+  "Sevenoaks":12100,"Tunbridge Wells":11200
+};
+
+const FEP_SCORES = {
+  "Thanet":61,"Maidstone":60,"Gravesham":58,"Dover":57,"Medway":54,
+  "Tunbridge Wells":53,"Folkestone & Hythe":52,"Canterbury":52,"Swale":51,
+  "Ashford":51,"Tonbridge & Malling":51,"Sevenoaks":51,"Dartford":49
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let map, geojsonLayer, selectedDistrict = null;
+let currentView   = 'annual';
+let currentTab    = 'district';
+let sparkChart    = null;
+let seasonalChart = null;
+
+// ── MAP SETUP ─────────────────────────────────────────────────────────────────
+map = L.map('map', { zoomControl: false, attributionControl: true });
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap contributors © CARTO',
+  maxZoom: 14,
+}).addTo(map);
+
+// ── COLOUR FUNCTIONS ──────────────────────────────────────────────────────────
+function rateColor(rate) {
+  if (rate == null) return '#ccc';
+  if (rate > 65) return getComputedStyle(document.documentElement).getPropertyValue('--f-crit').trim() || '#991b1b';
+  if (rate > 55) return '#c2410c';
+  if (rate > 45) return '#d97706';
+  return '#15803d';
+}
+
+function getViewValue(name) {
+  const d = FALLS_DATA[name];
+  if (!d) return null;
+  switch (currentView) {
+    case 'annual':  return d.rate;
+    case 'winter':  return Math.round((d.monthly.Dec + d.monthly.Jan + d.monthly.Feb) / 3);
+    case 'summer':  return Math.round((d.monthly.Jun + d.monthly.Jul + d.monthly.Aug) / 3);
+    case 'trend':   return d.monthly.Sep && d.monthly.Aug ? Math.round((d.monthly.Sep / d.monthly.Aug - 1) * 100) : 0;
+  }
+}
+
+function getViewColor(name) {
+  const d = FALLS_DATA[name];
+  if (!d) return '#ccc';
+  if (currentView === 'annual') return rateColor(d.rate);
+  if (currentView === 'winter') {
+    const avg = (d.monthly.Dec + d.monthly.Jan + d.monthly.Feb) / 3;
+    const r = avg / (POP75[name] / 1000 / 12);
+    return r > 7 ? '#991b1b' : r > 5 ? '#c2410c' : r > 3 ? '#d97706' : '#15803d';
+  }
+  if (currentView === 'summer') {
+    const avg = (d.monthly.Jun + d.monthly.Jul + d.monthly.Aug) / 3;
+    const r = avg / (POP75[name] / 1000 / 12);
+    return r > 7 ? '#991b1b' : r > 5 ? '#c2410c' : r > 3 ? '#d97706' : '#15803d';
+  }
+  if (currentView === 'trend') {
+    const pct = Math.round((d.monthly.Sep / d.monthly.Aug - 1) * 100);
+    return pct > 40 ? '#991b1b' : pct > 20 ? '#c2410c' : pct > 5 ? '#d97706' : '#15803d';
+  }
+  return '#999';
+}
+
+function districtStyle(feature, selected) {
+  const name = feature.properties?.name || '';
+  return {
+    fillColor:   getViewColor(name),
+    weight:      selected ? 3 : 1.5,
+    color:       selected ? '#003087' : '#fff',
+    fillOpacity: selected ? 0.88 : 0.72,
+  };
+}
+
+// ── GEOJSON RENDER ────────────────────────────────────────────────────────────
+fetch(GEOJSON_URL)
+  .then(r => r.json())
+  .then(geojson => {
+    geojsonLayer = L.geoJSON(geojson, {
+      style: f => districtStyle(f, false),
+      onEachFeature: (feature, layer) => {
+        const name = feature.properties?.name || '';
+        layer.on('mouseover', () => {
+          if (selectedDistrict !== name)
+            layer.setStyle({ weight: 2.5, fillOpacity: 0.85, color: '#1e3a7a' });
+        });
+        layer.on('mouseout', () => {
+          if (selectedDistrict !== name)
+            layer.setStyle(districtStyle(feature, false));
+        });
+        layer.on('click', () => {
+          selectedDistrict = name;
+          geojsonLayer.eachLayer(l => l.setStyle(districtStyle(l.feature, false)));
+          layer.setStyle({ weight: 3, fillOpacity: 0.9, color: '#003087' });
+          switchTab('district');
+          showDistrict(name);
+        });
+
+        // Tooltip showing count on hover
+        const d = FALLS_DATA[name];
+        if (d) {
+          layer.bindTooltip(`
+            <div style="font-family:DM Mono,monospace;font-size:11px;padding:4px 8px">
+              <strong>${name}</strong><br>
+              ${d.annual.toLocaleString()} callouts · ${d.rate}/1k
+            </div>`, { sticky: true, className: 'falls-tooltip' });
+        }
+      }
+    }).addTo(map);
+
+    map.fitBounds(geojsonLayer.getBounds(), { padding: [20, 20] });
+    document.getElementById('map-loading').classList.add('hidden');
+    populateRankedTab();
+  })
+  .catch(() => {
+    document.getElementById('map-loading').innerHTML = '<div style="color:#c04828;font-family:DM Mono,monospace;font-size:0.75rem">Could not load district boundaries</div>';
+  });
+
+// ── VIEW TOGGLE ───────────────────────────────────────────────────────────────
+function setView(view) {
+  currentView = view;
+  ['annual','winter','summer','trend'].forEach(v => {
+    document.getElementById(`btn-${v}`)?.classList.toggle('active', v === view);
+  });
+
+  // Update legend
+  const titles = {
+    annual:  'CALLOUTS PER 1,000 POP 75+',
+    winter:  'AVG MONTHLY CALLOUTS (DEC–FEB)',
+    summer:  'AVG MONTHLY CALLOUTS (JUN–AUG)',
+    trend:   'SEP vs AUG CHANGE (%)',
+  };
+  document.getElementById('legend-title').textContent = titles[view];
+
+  if (view === 'trend') {
+    document.getElementById('l4').textContent = '> +40% — Sharp rise';
+    document.getElementById('l3').textContent = '+20–40% — Elevated';
+    document.getElementById('l2').textContent = '+5–20% — Moderate';
+    document.getElementById('l1').textContent = '< +5% — Stable';
+  } else {
+    document.getElementById('l4').textContent = view === 'annual' ? '> 65 — Critical' : '> 7 — Critical';
+    document.getElementById('l3').textContent = view === 'annual' ? '55–65 — High' : '5–7 — High';
+    document.getElementById('l2').textContent = view === 'annual' ? '45–55 — Moderate' : '3–5 — Moderate';
+    document.getElementById('l1').textContent = view === 'annual' ? '< 45 — Lower' : '< 3 — Lower';
+  }
+
+  if (geojsonLayer) {
+    geojsonLayer.eachLayer(l => {
+      const name = l.feature?.properties?.name;
+      l.setStyle(districtStyle(l.feature, name === selectedDistrict));
+    });
+  }
+}
+
+// ── DISTRICT PANEL ────────────────────────────────────────────────────────────
+function showDistrict(name) {
+  const d   = FALLS_DATA[name];
+  const pop = POP75[name] || 13000;
+  const fep = FEP_SCORES[name] || 51;
+  if (!d) return;
+
+  const rateColor = d.rate > 65 ? 'var(--f-crit)' : d.rate > 55 ? 'var(--f-high)' : d.rate > 45 ? 'var(--f-mod)' : 'var(--f-low)';
+  const rateLabel = d.rate > 65 ? 'Critical' : d.rate > 55 ? 'High' : d.rate > 45 ? 'Moderate' : 'Lower';
+  const ratePaleBg = d.rate > 65 ? 'var(--f-crit-pale)' : d.rate > 55 ? 'var(--f-high-pale)' : d.rate > 45 ? 'var(--f-mod-pale)' : 'var(--f-low-pale)';
+
+  // Winter vs summer
+  const winterAvg = Math.round((d.monthly.Dec + d.monthly.Jan + d.monthly.Feb) / 3);
+  const summerAvg = Math.round((d.monthly.Jun + d.monthly.Jul + d.monthly.Aug) / 3);
+  const seasonDiff = winterAvg - summerAvg;
+
+  // September surge
+  const sepSurge = d.monthly.Aug > 0 ? Math.round((d.monthly.Sep / d.monthly.Aug - 1) * 100) : 0;
+  const peakMonth = Object.entries(d.monthly).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+  const troughMonth = Object.entries(d.monthly).reduce((a, b) => b[1] < a[1] ? b : a)[0];
+
+  // Dover reversal insight
+  const doverReversalNote = name === 'Dover'
+    ? `<div class="insight-box" style="background:var(--f-mod-pale);border-color:var(--f-mod)">
+        <div class="insight-label" style="color:var(--f-mod)">⚑ Unusual seasonal pattern</div>
+        <div class="insight-text">Dover is the only Kent district where autumn/winter callout volumes are consistently higher than spring. January: 37 callouts — the lowest in the dataset — rising to 82 in November. Likely reflects cold-weather + coastal isolation compounding winter falls risk.</div>
+      </div>` : '';
+
+  const medwayNote = name === 'Medway'
+    ? `<div class="insight-box" style="background:var(--f-crit-pale);border-color:var(--f-crit)">
+        <div class="insight-label" style="color:var(--f-crit)">⚑ Highest burden in Kent</div>
+        <div class="insight-text">Medway records 80.3 callouts per 1,000 pop 75+ — 43% above Thanet despite a lower FEP score. November 2025 peak of 156 callouts is the single highest monthly count in the dataset. The FEP model may be underestimating Medway's true operational falls burden.</div>
+      </div>` : '';
+
+  const sepNote = sepSurge > 30
+    ? `<div class="insight-box" style="background:var(--f-high-pale);border-color:var(--f-high)">
+        <div class="insight-label" style="color:var(--f-high)">⚑ September resurgence (+${sepSurge}%)</div>
+        <div class="insight-text">${name} saw a sharp rise from August to September — above the Kent average. This pre-winter acceleration is an early deployment signal: falls prevention programmes started in September can interrupt this trajectory before the winter peak.</div>
+      </div>` : '';
+
+  const chartId = `sparkline-${name.replace(/\s+/g,'')}`;
+
+  document.getElementById('panel-content').innerHTML = `
+    <div class="district-header">
+      <div class="district-name">${name}</div>
+      <div class="district-sub">Pop 75+: ${pop.toLocaleString()} · FEP: ${fep}/100 · ${pop.toLocaleString()} registered</div>
+      <div class="rate-badge" style="background:${ratePaleBg};border:1px solid ${rateColor}33">
+        <span class="rate-num" style="color:${rateColor}">${d.rate}</span>
+        <span class="rate-label" style="color:${rateColor}">callouts / 1,000 pop 75+ · ${rateLabel}</span>
+      </div>
+    </div>
+
+    <div class="metric-grid">
+      <div class="metric-box">
+        <span class="metric-val">${d.annual.toLocaleString()}</span>
+        <div class="metric-label">Annual callouts<br>(Jan–Dec 2025)</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">${Math.round(d.annual / 12)}</span>
+        <div class="metric-label">Monthly average<br>callouts</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val" style="color:${seasonDiff > 10 ? 'var(--f-high)' : 'inherit'}">${winterAvg}</span>
+        <div class="metric-label">Winter avg/month<br>(Dec–Feb)</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">${summerAvg}</span>
+        <div class="metric-label">Summer avg/month<br>(Jun–Aug)</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">${d.monthly[peakMonth]}</span>
+        <div class="metric-label">Peak month<br>${peakMonth} 2025</div>
+      </div>
+      <div class="metric-box">
+        <span class="metric-val">${d.monthly[troughMonth]}</span>
+        <div class="metric-label">Trough month<br>${troughMonth} 2025</div>
+      </div>
+    </div>
+
+    <div class="sparkline-wrap">
+      <div class="sparkline-title">MONTHLY CALLOUTS 2025 · AGES 65+</div>
+      <div class="sparkline-chart"><canvas id="${chartId}"></canvas></div>
+    </div>
+
+    ${doverReversalNote}${medwayNote}${sepNote}
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:0.75rem">
+      <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5rem">DEPLOYMENT SIGNAL</div>
+      <p style="font-size:0.75rem;color:var(--text-mid);line-height:1.6">
+        ${d.rate > 60
+          ? `${name}'s falls callout rate of <strong>${d.rate}/1k</strong> is above the Kent high-risk threshold. An Otago falls prevention programme deployed in <strong>September</strong> would reach full effect by January — the month most likely to see the highest callout volume.`
+          : `${name}'s callout rate of <strong>${d.rate}/1k</strong> is in the moderate-to-elevated range. Standard falls prevention protocols, deployed in October, are the appropriate response. The September resurgence${sepSurge > 20 ? ` (+${sepSurge}%)` : ''} warrants monitoring.`
+        }
+      </p>
+    </div>
+
+    <p style="font-size:0.65rem;color:var(--text-dim);line-height:1.5">
+      Source: SECAmb FOI 260608 · Condition codes 34 (Fall Head), 35 (Fall Stairs), 1128 (Fall Injuries Unknown), 1178 (Fall Non-injury) · Patients aged 65+ · Jan–Dec 2025.
+      Rates per 1,000 use ONS census-derived 75+ population. Ambulance callouts ≠ hospital admissions — many falls attended by SECAmb are not admitted. This data complements Fingertips indicator 22401 (hip fracture admissions).
+    </p>`;
+
+  // Render sparkline
+  requestAnimationFrame(() => {
+    if (sparkChart) { sparkChart.destroy(); sparkChart = null; }
+    const ctx = document.getElementById(chartId);
+    if (!ctx) return;
+
+    const vals    = MONTHS.map(m => d.monthly[m]);
+    const maxVal  = Math.max(...vals);
+    const bgCols  = vals.map(v => v === maxVal ? 'rgba(153,27,27,0.75)' : 'rgba(54,94,191,0.45)');
+    const bdCols  = vals.map(v => v === maxVal ? '#991b1b' : '#365EBF');
+
+    sparkChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: MONTHS,
+        datasets: [{
+          data: vals,
+          backgroundColor: bgCols,
+          borderColor: bdCols,
+          borderWidth: 1.5,
+          borderRadius: 3,
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.parsed.y} callouts` } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9, family: 'DM Mono' } } },
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 9, family: 'DM Mono' }, maxTicksLimit: 4 } }
+        }
+      }
+    });
+  });
+}
+
+// ── RANKED TAB ────────────────────────────────────────────────────────────────
+function populateRankedTab() {
+  const sorted = Object.entries(FALLS_DATA).sort((a, b) => b[1].rate - a[1].rate);
+  const maxRate = sorted[0][1].rate;
+
+  const rows = sorted.map(([name, d], i) => {
+    const col = rateColor(d.rate);
+    return `<div class="ranked-item" onclick="selectDistrict('${name}')">
+      <div class="ranked-num">${i+1}</div>
+      <div class="ranked-name">${name}</div>
+      <div class="ranked-bar-wrap">
+        <div class="ranked-bar-fill" style="width:${d.rate/maxRate*100}%;background:${col}"></div>
+      </div>
+      <div class="ranked-rate" style="color:${col}">${d.rate}</div>
+    </div>`;
+  }).join('');
+
+  const panel = document.getElementById('panel-content');
+  if (panel.getAttribute('data-ranked')) return;
+  panel.setAttribute('data-ranked-html', `
+    <div style="margin-bottom:0.75rem">
+      <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.6">
+        Ranked by annual callouts per 1,000 population aged 75+ (census-derived). Medway's rate of 80.3 is 43% above the next highest district.
+      </p>
+    </div>
+    ${rows}
+    <p style="font-size:0.65rem;color:var(--text-dim);margin-top:0.75rem;line-height:1.5">Source: SECAmb FOI 260608 · Jan–Dec 2025. Click a district to see its monthly profile.</p>
+  `);
+}
+
+// ── SEASONAL TAB ──────────────────────────────────────────────────────────────
+function renderSeasonalTab() {
+  const monthly_totals = MONTHS.map(m => {
+    return Object.values(FALLS_DATA).reduce((s, d) => s + (d.monthly[m] || 0), 0);
+  });
+  const annual_avg = monthly_totals.reduce((a,b) => a+b, 0) / 12;
+  const indices = monthly_totals.map(v => Math.round(v / annual_avg * 100));
+
+  document.getElementById('panel-content').innerHTML = `
+    <h3 style="font-family:var(--cabinet);font-size:1rem;font-weight:700;margin-bottom:0.4rem">Kent Seasonal Falls Pattern</h3>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">
+      Monthly callout volumes across all 13 Kent districts combined. Index 100 = monthly average.
+      The SECAmb data shows a notably flatter seasonal curve than hospital hip fracture admissions
+      — ambulance data captures the full community falls burden, not just those severe enough for admission.
+    </p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem;margin-bottom:1rem;height:200px;position:relative">
+      <canvas id="seasonal-chart"></canvas>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem">
+      <div style="background:var(--f-crit-pale);border:1px solid rgba(153,27,27,0.15);border-radius:8px;padding:0.7rem">
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--f-crit);margin-bottom:4px">HIGHEST MONTH</div>
+        <div style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--f-crit)">January (index 110)</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px">980 callouts across Kent</div>
+      </div>
+      <div style="background:var(--f-low-pale);border:1px solid rgba(21,128,61,0.15);border-radius:8px;padding:0.7rem">
+        <div style="font-family:var(--mono);font-size:0.62rem;color:var(--f-low);margin-bottom:4px">LOWEST MONTH</div>
+        <div style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--f-low)">February (index 86)</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px">770 callouts — post-January dip</div>
+      </div>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:0.85rem;margin-bottom:0.75rem">
+      <div style="font-family:var(--mono);font-size:0.62rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.5rem">KEY FINDINGS</div>
+      <ul style="font-size:0.78rem;color:var(--text-mid);line-height:1.7;padding-left:1.1rem">
+        <li>January is the peak at index 110 — but only 10% above average, far flatter than the +27% seen in HES hip fracture admissions data.</li>
+        <li>September shows a resurgence (index 104) after the August trough — Thanet +75%, Medway +40%, Maidstone +33%. This pre-winter signal is the deployment window.</li>
+        <li>Dover shows the reverse seasonal pattern — winter higher than spring — unique in Kent. Consistent with cold exposure and coastal isolation.</li>
+        <li>Medway November (156 callouts) is the single highest monthly count in the dataset. Unlike other districts, Medway's peak is November not January.</li>
+      </ul>
+    </div>
+    <p style="font-size:0.65rem;color:var(--text-dim);line-height:1.5">
+      SECAmb captures ambulance-attended falls: includes falls where no injury occurred and patient was not admitted. Fingertips indicator 22401 (hip fracture admissions 65+) captures only the subset requiring hospitalisation. Both signals together provide the most complete picture of community falls burden.
+    </p>`;
+
+  requestAnimationFrame(() => {
+    if (seasonalChart) { seasonalChart.destroy(); seasonalChart = null; }
+    const ctx = document.getElementById('seasonal-chart');
+    if (!ctx) return;
+    const cols = indices.map(v => v >= 105 ? 'rgba(153,27,27,0.7)' : v >= 100 ? 'rgba(194,65,12,0.55)' : 'rgba(54,94,191,0.4)');
+    seasonalChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: MONTHS,
+        datasets: [
+          { data: indices, backgroundColor: cols, borderColor: cols.map(c => c.replace('0.7','1').replace('0.55','1').replace('0.4','1')), borderWidth: 1.5, borderRadius: 3, label: 'Seasonal index' },
+          { data: MONTHS.map(() => 100), type: 'line', borderColor: 'rgba(0,0,0,0.2)', borderDash: [4,3], borderWidth: 1.5, fill: false, pointRadius: 0, label: 'Annual average' }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.datasetIndex === 0 ? ` Index ${c.parsed.y}` : ' Average (100)' } } },
+        scales: {
+          x: { grid: { display: false }, ticks: { font: { size: 9, family: 'DM Mono' } } },
+          y: { min: 70, max: 125, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 9, family: 'DM Mono' }, maxTicksLimit: 5 } }
+        }
+      }
+    });
+  });
+}
+
+// ── ABOUT TAB ─────────────────────────────────────────────────────────────────
+function renderAboutTab() {
+  document.getElementById('panel-content').innerHTML = `
+    <div class="about-section">
+      <div class="about-title">Data source</div>
+      <div class="about-body">
+        This map uses data released by <strong>South East Coast Ambulance Service NHS Foundation Trust (SECAmb)</strong>
+        in response to an FOI request (reference 260608) submitted by Assistiv Systems.
+        The data covers emergency callouts for <strong>patients aged 65 and over where the primary condition was a fall</strong>,
+        January to December 2025, broken down by Kent local authority district.
+      </div>
+    </div>
+    <div class="about-section">
+      <div class="about-title">What is counted</div>
+      <div class="about-body">
+        SECAmb provided counts where an ambulance was dispatched and the patient age was 65+, with one of four ConditionIDs:
+        <ul style="margin: 0.5rem 0 0 1.1rem;line-height:1.8">
+          <li><strong>34</strong> — Fall Head</li>
+          <li><strong>35</strong> — Fall Stairs</li>
+          <li><strong>1128</strong> — Fall Injuries Unknown</li>
+          <li><strong>1178</strong> — Fall Non-injury</li>
+        </ul>
+        <br>Ambulance callouts include many falls that are <strong>not subsequently admitted to hospital</strong>.
+        This makes the SECAmb data a better measure of the total community falls burden than HES hospital admissions data alone.
+      </div>
+    </div>
+    <div class="about-section">
+      <div class="about-title">Name notes</div>
+      <div class="about-body">
+        SECAmb used <strong>Shepway</strong> (the pre-2016 name) — this is mapped to Folkestone &amp; Hythe.
+        <strong>Tonbridge and Malling</strong> is mapped to Tonbridge &amp; Malling.
+        <strong>Unknown</strong> rows (address not geocoded to a district) are excluded from district rates; they represent 5–15 callouts per month across Kent (1.5% of total).
+      </div>
+    </div>
+    <div class="about-section">
+      <div class="about-title">Rates and population</div>
+      <div class="about-body">
+        Rates are per 1,000 population aged 75+, using census-derived figures consistent with the Assistiv FEP model (not GP-registered 75+ which can be inflated by cross-boundary catchment in some districts).
+      </div>
+    </div>
+    <div class="about-section">
+      <div class="about-title">Integration with other Assistiv data</div>
+      <div class="about-body">
+        This ambulance falls data is a new signal not previously available at district level. The FEP model uses Fingertips indicator 22401 (hospital hip fracture admissions 65+) — a different metric measuring only the most severe falls. Integrating both signals gives a more complete picture of community falls burden. The Medway anomaly (rate 80.3/1k — 43% above Thanet despite lower FEP) suggests the FEP model may be underestimating Medway's operational burden.
+      </div>
+    </div>
+    <div class="about-section">
+      <div class="about-title">Licence</div>
+      <div class="about-body">
+        FOI responses are not published under the Open Government Licence unless explicitly stated. This data is used for non-commercial research and planning purposes consistent with the Freedom of Information Act 2000. Assistiv Systems holds the original response document (reference 260608, dated 10 June 2026).
+      </div>
+    </div>`;
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  currentTab = tab;
+  ['district','ranked','seasonal','about'].forEach(t => {
+    document.getElementById(`tab-${t}`)?.classList.toggle('active', t === tab);
+  });
+  const content = document.getElementById('panel-content');
+  if (tab === 'ranked') {
+    const cached = content.getAttribute('data-ranked-html');
+    if (cached) content.innerHTML = cached;
+  } else if (tab === 'seasonal') {
+    renderSeasonalTab();
+  } else if (tab === 'about') {
+    renderAboutTab();
+  } else if (tab === 'district' && selectedDistrict) {
+    showDistrict(selectedDistrict);
+  } else if (tab === 'district') {
+    content.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🏃</div>
+      <div class="empty-title">Select a district</div>
+      <div class="empty-desc">Click any district on the map to see its falls profile, monthly trend, and clinical intelligence.</div>
+    </div>`;
+  }
+}
+
+function selectDistrict(name) {
+  selectedDistrict = name;
+  if (geojsonLayer) {
+    geojsonLayer.eachLayer(l => {
+      const n = l.feature?.properties?.name;
+      l.setStyle(districtStyle(l.feature, n === name));
+    });
+  }
+  switchTab('district');
+  showDistrict(name);
+}
+</script>
+</body>
+</html>
