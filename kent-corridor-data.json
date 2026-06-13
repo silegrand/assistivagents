@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-12T08:28:28.056670+00:00",
+    "generated": "2026-06-13T09:34:55.533816+00:00",
     "description": "Kent NHS Trust corridor care \u2014 Assistiv Systems",
     "version": "2.0",
     "refresh_type": "monthly \u2014 NHS England Corridor Care publication",
@@ -72,18 +72,18 @@
         "Medway",
         "Swale"
       ],
-      "corridor_ed": null,
-      "corridor_ward": null,
-      "corridor_total": null,
-      "corridor_ed_max": null,
-      "corridor_ward_max": null,
-      "days_submitted": null,
+      "corridor_ed": 31.0,
+      "corridor_ward": 0.0,
+      "corridor_total": 31.0,
+      "corridor_ed_max": 100.0,
+      "corridor_ward_max": 17.0,
+      "days_submitted": 256,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
-      "corridor_trend": null,
-      "period_label": null
+      "corridor_trend": "unknown",
+      "period_label": "May 2026"
     },
     "RN7": {
       "name": "Dartford and Gravesham NHS Trust",
@@ -92,18 +92,18 @@
         "Dartford",
         "Gravesham"
       ],
-      "corridor_ed": null,
-      "corridor_ward": null,
-      "corridor_total": null,
-      "corridor_ed_max": null,
-      "corridor_ward_max": null,
-      "days_submitted": null,
+      "corridor_ed": 17.0,
+      "corridor_ward": 8.0,
+      "corridor_total": 25.0,
+      "corridor_ed_max": 28.0,
+      "corridor_ward_max": 15.0,
+      "days_submitted": 128,
       "twelve_hour_waits": null,
       "beds_occupancy_pct": null,
       "delayed_discharges": null,
       "corridor_delta": null,
-      "corridor_trend": null,
-      "period_label": null
+      "corridor_trend": "unknown",
+      "period_label": "May 2026"
     }
   },
   "history": [
@@ -126,7 +126,7 @@
     },
     {
       "period_label": "May 2026",
-      "fetched": "2026-06-12",
+      "fetched": "2026-06-13",
       "csv_url": "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2026/06/Corridor-Care-Publication-2026.05-May-prov-v2-csv.csv",
       "trusts": {
         "RVV": {
@@ -142,6 +142,20 @@
           "corridor_ward": 2.0,
           "name": "Maidstone and Tunbridge Wells NHS Trust",
           "short": "Maidstone & Tunbridge Wells"
+        },
+        "RPA": {
+          "corridor_total": 31.0,
+          "corridor_ed": 31.0,
+          "corridor_ward": 0.0,
+          "name": "Medway NHS Foundation Trust",
+          "short": "Medway Maritime"
+        },
+        "RN7": {
+          "corridor_total": 25.0,
+          "corridor_ed": 17.0,
+          "corridor_ward": 8.0,
+          "name": "Dartford and Gravesham NHS Trust",
+          "short": "Darent Valley"
         }
       }
     }
