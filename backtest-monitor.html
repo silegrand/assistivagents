@@ -113,6 +113,25 @@ footer{background:var(--white);padding:4rem 0 2.25rem;border-top:1px solid var(-
   </section>
 
   <section>
+    <h2>What is tested here — and what is not</h2>
+    <div class="section-sub">Honesty about scope: only a tool that makes a falsifiable prediction can be scored against outcomes. We do not claim to validate tools that are not forecasts.</div>
+    <table>
+      <thead><tr><th>Tool</th><th>Makes a prediction?</th><th>In the backtest?</th></tr></thead>
+      <tbody>
+        <tr><td>FEP — Frailty Emergence Probability</td><td>Yes — a daily district-level forecast of emerging frailty</td><td><span class="pill ok">Under test</span></td></tr>
+        <tr><td>Winter Readiness Index</td><td>Yes — a forward seasonal forecast</td><td><span class="pill wait">Joins once a winter season closes</span></td></tr>
+        <tr><td>Rural Access Vulnerability (RAVI)</td><td>No — identifies current hotspots</td><td><span class="pill" style="background:var(--cream-mid);color:var(--ink-muted)">Intelligence, not a forecast</span></td></tr>
+        <tr><td>FEP × Carer Burden Quadrant</td><td>No — overlays two current measures</td><td><span class="pill" style="background:var(--cream-mid);color:var(--ink-muted)">Intelligence, not a forecast</span></td></tr>
+        <tr><td>Reachable Neighbourhoods</td><td>No — ranks current need for outreach</td><td><span class="pill" style="background:var(--cream-mid);color:var(--ink-muted)">Intelligence, not a forecast</span></td></tr>
+        <tr><td>Community Touchpoints</td><td>No — maps existing community assets</td><td><span class="pill" style="background:var(--cream-mid);color:var(--ink-muted)">Intelligence, not a forecast</span></td></tr>
+        <tr><td>NHS Pressure Intelligence Map</td><td>No — describes current system strain</td><td><span class="pill" style="background:var(--cream-mid);color:var(--ink-muted)">Intelligence, not a forecast</span></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><div class="k">Why only FEP</div>
+      Most of the suite are <em>intelligence instruments</em> — they describe where need is now, which is useful but not a claim about the future that reality can later confirm or refute. FEP is different: it forecasts where frailty is <em>emerging</em>, so it can be frozen and scored against what actually happens. Winter Readiness is also a genuine forecast and will enter the backtest once a season completes and its outcomes publish. We score what can honestly be scored, and say so plainly about the rest.</div>
+  </section>
+
+  <section>
     <h2>Latest scorecard</h2>
     <div class="section-sub">How the most recently scored prediction performed against realised outcomes.</div>
     <div id="scorecard"></div>
