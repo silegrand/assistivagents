@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-06-13T09:25:37.547296+00:00",
+    "generated": "2026-06-13T09:38:09.476710+00:00",
     "description": "Kent & Medway FEP scores \u2014 Assistiv Systems Layer 2",
     "version": "5.1 \u2014 real LAD-level Fingertips (district scoring)",
     "refresh_type": "daily \u2014 Fingertips at LAD level (EPD reused from last manual run)",
@@ -452,9 +452,9 @@
         }
       },
       "list_size": 132994,
-      "fep_delta": 16,
-      "fep_delta_direction": "rising",
-      "crisis_precursor": true
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Dartford",
@@ -603,9 +603,9 @@
         }
       },
       "list_size": 269871,
-      "fep_delta": 6,
-      "fep_delta_direction": "rising",
-      "crisis_precursor": true
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
+      "crisis_precursor": false
     },
     {
       "name": "Medway",
@@ -905,8 +905,8 @@
         }
       },
       "list_size": 377485,
-      "fep_delta": -2,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1056,8 +1056,8 @@
         }
       },
       "list_size": 88498,
-      "fep_delta": -2,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1207,8 +1207,8 @@
         }
       },
       "list_size": 85004,
-      "fep_delta": -4,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1358,8 +1358,8 @@
         }
       },
       "list_size": 105906,
-      "fep_delta": -11,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1509,8 +1509,8 @@
         }
       },
       "list_size": 210006,
-      "fep_delta": -11,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1660,8 +1660,8 @@
         }
       },
       "list_size": 123189,
-      "fep_delta": -18,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1811,8 +1811,8 @@
         }
       },
       "list_size": 196223,
-      "fep_delta": -23,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -1962,8 +1962,8 @@
         }
       },
       "list_size": 133672,
-      "fep_delta": -15,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -2113,8 +2113,8 @@
         }
       },
       "list_size": 127302,
-      "fep_delta": -19,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     },
     {
@@ -2264,8 +2264,8 @@
         }
       },
       "list_size": 148829,
-      "fep_delta": -20,
-      "fep_delta_direction": "falling",
+      "fep_delta": 0,
+      "fep_delta_direction": "stable",
       "crisis_precursor": false
     }
   ]
