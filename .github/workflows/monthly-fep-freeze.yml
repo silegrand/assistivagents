@@ -1,0 +1,56 @@
+name: Monthly FEP Prediction Freeze
+
+# Freezes the current FEP scores as an immutable monthly prediction for the
+# backtest harness (roadmap move #1). Runs on the 1st of each month at 09:00
+# UTC — three hours after the 06:00 daily FEP refresh — so it always freezes
+# the freshest scores.
+#
+# NOTE ON MECHANISM: fep_freeze.py writes files into the checkout (it does NOT
+# self-commit like daily_refresh.py). So this workflow checks out, runs the
+# freeze, then commits and pushes any new prediction. Because the freeze only
+# writes when a new month is due, the commit step is a safe no-op on reruns —
+# `git diff --staged --quiet` guards the empty commit.
+#
+# IMMUTABILITY: fep_freeze.py refuses to overwrite an existing month's
+# prediction, so even if this runs twice the first frozen value stands.
+
+on:
+  schedule:
+    - cron: '0 9 1 * *'    # 09:00 UTC on the 1st of each month
+  workflow_dispatch:         # manual trigger from the Actions tab
+
+permissions:
+  contents: write            # required to push the frozen prediction back
+
+jobs:
+  freeze-prediction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ASSISTIV_GITHUB_TOKEN }}
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Freeze current FEP as this month's prediction
+        run: python fep_freeze.py
+
+      - name: Show ledger state
+        run: |
+          if [ -f backtest/ledger.json ]; then
+            python -c "import json; l=json.load(open('backtest/ledger.json')); print('Frozen predictions:', len(l['predictions'])); [print('  ', p['target_month'], 'scored' if p['scored'] else 'awaiting outcome') for p in l['predictions']]"
+          fi
+
+      - name: Commit frozen prediction
+        run: |
+          git config user.name  "Assistiv Data Bot"
+          git config user.email "bot@assistiv.health"
+          git add backtest/predictions/ backtest/ledger.json
+          git diff --staged --quiet || git commit -m "FEP prediction frozen — $(date -u '+%Y-%m')"
+          git push
