@@ -7,7 +7,7 @@
 <meta name="description" content="Live monitor for the Assistiv FEP backtest: frozen predictions, scored outcomes and data-source freshness.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=DM+Mono:wght@400;500&family=Nunito:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
   --forest:#0f2318;--forest-mid:#365EBF;--sage:#365EBF;--sage-mid:#2a4d9e;
@@ -17,6 +17,7 @@
   --warn:#9e5412;--warn-pale:#fbf0e3;--wait:#6b7f71;
   --mono:'DM Mono',monospace;--serif:'Source Serif 4',Georgia,serif;
   --display:'Cormorant Garamond',Georgia,serif;--tr:.18s ease;--radius:10px;
+  --sans:'Nunito',sans-serif;--brand:#365EBF;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--cream);color:var(--ink);font-family:var(--serif);line-height:1.7;-webkit-font-smoothing:antialiased}
@@ -63,8 +64,22 @@ td.mono,th.mono{font-family:var(--mono);font-size:.78rem}
 .err{font-family:var(--mono);font-size:.75rem;color:var(--warn);padding:.6rem 0}
 .muted{color:var(--ink-dim)}
 .rank-up{color:var(--ok)}.rank-down{color:var(--warn)}
-footer{background:var(--forest);color:rgba(255,255,255,.6);padding:2rem;text-align:center;font-family:var(--mono);font-size:.62rem;line-height:1.8;margin-top:2rem}
-footer a{color:var(--sage-light);text-decoration:none}
+footer{background:var(--white);padding:4rem 0 2.25rem;border-top:1px solid var(--cream-dark);margin-top:2rem}
+.footer-inner{max-width:1200px;margin:0 auto;padding:0 2rem}
+.footer-top{display:grid;grid-template-columns:240px 1fr;gap:4rem;padding-bottom:3rem;border-bottom:1px solid var(--cream-dark);margin-bottom:2rem}
+.footer-brand{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+.footer-tagline{font-size:.82rem;color:var(--ink-muted);line-height:1.75;max-width:220px}
+.footer-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.footer-nav-col h5{font-family:var(--sans);font-size:.66rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--brand);margin-bottom:1rem}
+.footer-nav-col a{display:block;font-size:.82rem;color:var(--ink-mid);margin-bottom:.55rem;text-decoration:none;transition:color var(--tr)}
+.footer-nav-col a:hover{color:var(--brand)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.footer-copy{font-family:var(--mono);font-size:.65rem;color:var(--ink-dim);line-height:1.6}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:.75rem;color:var(--ink-dim);text-decoration:none;transition:color var(--tr)}
+.footer-links a:hover{color:var(--brand)}
+@media(max-width:700px){.footer-top{grid-template-columns:1fr;gap:2rem}.footer-nav{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.footer-nav{grid-template-columns:1fr}.footer-bottom{flex-direction:column;text-align:center}}
 @media(max-width:640px){.page{padding:80px 1.2rem 3rem}nav{padding:0 1rem}.nav-right{gap:.9rem}table{font-size:.78rem}}
 </style>
 </head>
@@ -111,9 +126,60 @@ footer a{color:var(--sage-light);text-decoration:none}
 </div>
 
 <footer>
-  Assistiv Systems Limited · Faversham, Kent · &copy; 2026<br>
-  Backtest monitor — open data, no patient identifiers. For research and commissioning intelligence purposes only.<br>
-  <a href="backtest/README.md">Methodology</a> &middot; <a href="methodology-hub.html">Tool methods</a> &middot; <a href="index.html">Overview</a>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">
+          <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div style="border-radius:50%;position:absolute;width:9px;height:9px;background:#365EBF;z-index:2"></div>
+            <div style="border-radius:50%;position:absolute;width:20px;height:20px;border:1.5px solid #365EBF;opacity:.55;background:none"></div>
+            <div style="border-radius:50%;position:absolute;width:33px;height:33px;border:1.5px solid #365EBF;opacity:.22;background:none"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px">
+            <span style="font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:-.03em;line-height:1.1;color:#1e3a7a">Assistiv</span>
+            <span style="font-family:'DM Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;line-height:1;color:#365EBF;opacity:.85">Cloud</span>
+          </div>
+        </div>
+        <p class="footer-tagline">Frailty intelligence for the NHS. Finding older adults at risk before the system has to respond.</p>
+        <p style="font-size:0.72rem;color:var(--ink-dim);margin-top:0.75rem;">Powered by Anthropic technologies</p>
+      </div>
+      <div class="footer-nav">
+        <div class="footer-nav-col">
+          <h5>Platform</h5>
+          <a href="index.html#tools">Tools</a>
+          <a href="index.html#how-it-works">How it works</a>
+          <a href="index.html#evidence">Evidence</a>
+          <a href="datastatus.html">Data status</a>
+        <a href="https://www.assistiv.co/governance.html" target="_blank" rel="noopener">Governance &amp; Assurance</a>
+        </div>
+        <div class="footer-nav-col">
+          <h5>Methodology</h5>
+          <a href="methodology.html">Master methodology</a>
+          <a href="methodology-hub.html">Tool methods</a>
+          <a href="backtest-monitor.html">Backtest monitor</a>
+        </div>
+        <div class="footer-nav-col">
+          <h5>Ecosystem</h5>
+          <a href="https://www.assistiv.services" target="_blank" rel="noopener">assistiv.services</a>
+          <a href="https://www.assistiv.tools" target="_blank" rel="noopener">assistiv.tools</a>
+          <a href="https://www.assistiv.co" target="_blank" rel="noopener">assistiv.co</a>
+        </div>
+        <div class="footer-nav-col">
+          <h5>Contact</h5>
+          <a href="index.html#contact">Get in touch</a>
+          <a href="mailto:simon@assistiv.co">simon@assistiv.co</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Assistiv Systems Limited. Registered in England and Wales. Company number 17082597. Open Data: NHS Fingertips, NHSBSA EPD, ONS Census 2021, MHCLG IMD 2025. For research and commissioning intelligence purposes only.</p>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="accessibility.html">Accessibility</a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script>
