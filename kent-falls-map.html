@@ -437,7 +437,28 @@ function districtStyle(feature, selected) {
   };
 }
 
+// ── LIVE FEP OVERLAY ──────────────────────────────────────────────────────────
+// FEP_SCORES above are a baked-in fallback only. The live FEP engine moves daily,
+// so we patch FEP_SCORES in place from kent-fep-data.json before rendering. This
+// stops the falls map from showing stale FEP values that contradict the heat map
+// and the homepage ticker. Cache-busted + no-store so a CDN/browser cache can't
+// re-staleify it; if the fetch fails we silently keep the baked-in numbers.
+async function refreshLiveFEP() {
+  const FEP_JSON = 'https://raw.githubusercontent.com/silegrand/assistivagents/main/kent-fep-data.json';
+  try {
+    const res = await fetch(FEP_JSON + '?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const live = await res.json();
+    (live.districts || []).forEach(d => {
+      if (d.name && typeof d.fep === 'number') FEP_SCORES[d.name] = d.fep;
+    });
+  } catch (e) {
+    console.warn('Live FEP fetch failed, using baked-in FEP_SCORES:', e);
+  }
+}
+
 // ── GEOJSON RENDER ────────────────────────────────────────────────────────────
+function renderFallsMap() {
 fetch(GEOJSON_URL)
   .then(r => r.json())
   .then(geojson => {
@@ -480,6 +501,10 @@ fetch(GEOJSON_URL)
   .catch(() => {
     document.getElementById('map-loading').innerHTML = '<div style="color:#c04828;font-family:DM Mono,monospace;font-size:0.75rem">Could not load district boundaries</div>';
   });
+}
+
+// Patch FEP from the live feed first, then render with whatever FEP values we have.
+refreshLiveFEP().then(renderFallsMap);
 
 // ── VIEW TOGGLE ───────────────────────────────────────────────────────────────
 function setView(view) {
@@ -546,10 +571,16 @@ function showDistrict(name) {
       </div>` : '';
 
   const medwayNote = name === 'Medway'
-    ? `<div class="insight-box" style="background:var(--f-crit-pale);border-color:var(--f-crit)">
+    ? (() => {
+        const medFep = FEP_SCORES['Medway'], thaFep = FEP_SCORES['Thanet'];
+        const fepRel = (medFep != null && thaFep != null)
+          ? (medFep < thaFep ? 'a lower FEP score' : medFep > thaFep ? 'a higher FEP score' : 'a comparable FEP score')
+          : 'a lower FEP score';
+        return `<div class="insight-box" style="background:var(--f-crit-pale);border-color:var(--f-crit)">
         <div class="insight-label" style="color:var(--f-crit)">⚑ Highest burden in Kent</div>
-        <div class="insight-text">Medway records 80.3 callouts per 1,000 pop 75+ — 43% above Thanet despite a lower FEP score. November 2025 peak of 156 callouts is the single highest monthly count in the dataset. The FEP model may be underestimating Medway's true operational falls burden.</div>
-      </div>` : '';
+        <div class="insight-text">Medway records 80.3 callouts per 1,000 pop 75+ — 43% above Thanet despite ${fepRel}. November 2025 peak of 156 callouts is the single highest monthly count in the dataset. The FEP model may be underestimating Medway's true operational falls burden.</div>
+      </div>`;
+      })() : '';
 
   const sepNote = sepSurge > 30
     ? `<div class="insight-box" style="background:var(--f-high-pale);border-color:var(--f-high)">
@@ -675,7 +706,7 @@ function populateRankedTab() {
   panel.setAttribute('data-ranked-html', `
     <div style="margin-bottom:0.75rem">
       <p style="font-size:0.75rem;color:var(--text-muted);line-height:1.6">
-        Ranked by annual callouts per 1,000 population aged 75+ (census-derived). Medway's rate of 80.3 is 43% above the next highest district.
+        Ranked by annual callouts per 1,000 population aged 75+ (census-derived). Medway's rate of 80.3 is the highest in Kent — 27% above the next highest district and 43% above Thanet.
       </p>
     </div>
     ${rows}
