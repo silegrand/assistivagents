@@ -550,6 +550,41 @@ TOOLS.append({
 })
 
 
+TOOLS.append({
+  "slug": "kent-falls",
+  "short": "Kent Falls Hotspot Map",
+  "layer": "Falls intelligence \u00b7 SECAmb FOI",
+  "badge": ("live", "Live"),
+  "url": "kent-falls-map.html",
+  "geo": "13 Kent & Medway districts",
+  "refresh": "Static (2025 FOI release)",
+  "title_html": 'Where the ambulances <em>actually go.</em>',
+  "meta": "Why district-level ambulance falls data adds an operational signal the risk model alone cannot see.",
+  "lede": "Most falls intelligence is modelled upstream. This map starts from what actually happened: every ambulance callout for a fall in the over-65 population across Kent in 2025, obtained by Freedom of Information request and mapped by district. It is the operational counterpart to the FEP risk model, and the two do not always agree.",
+  "sections": [
+    {"kicker":"What it claims","h":"What this tool does, and what it does not",
+     "body":"<p>The map renders 10,720 ambulance falls callouts for ages 65 and over across the thirteen Kent and Medway districts in 2025, by annual rate per 1,000 population aged 75-plus and by month. It is an <em>operational</em> signal: it shows where the ambulance service was actually dispatched for fallers, as distinct from the modelled, upstream risk the FEP engine estimates.</p>"
+       "<p>It is not a clinical tool, it does not score individuals, and the single year of data it rests on cannot establish causation or trend. It is best read as one honest lens placed alongside another: the operational reality of falls, next to the predicted risk of frailty.</p>"},
+    {"kicker":"Rationale","h":"Why an operational falls signal is worth holding next to the risk model","body":"<p>Frailty risk models and operational demand answer different questions. FEP estimates where a population is drifting toward crisis; ambulance callout data records where crises already arrive. When the two diverge, that divergence is itself the intelligence. Medway is the clearest case: it carries the highest falls callout rate in Kent, yet sits only mid-table on FEP. A commissioner who trusted the risk model alone would under-resource exactly the place the operational data flags hardest. Holding both signals together is what makes that visible.</p>"},
+    {"kicker":"Data and proxies","h":"The data, and what it can and cannot carry","body":"<p>The callout counts are not a proxy. They are a direct operational record, supplied by South East Coast Ambulance Service under FOI for the 2025 calendar year, broken down by district and month. Because it is a one-off FOI response rather than a live feed, hardcoding the data in the page is appropriate; it does not go stale the way a modelled signal would. The rate denominator (population aged 75-plus) is census-derived, which is the standard fair comparator between large and small districts. The FEP score shown alongside each district <em>is</em> drawn live from the frailty engine, so the comparison always reflects the current model.</p>"},
+    {"kicker":"Method","h":"How the map is built","body":"<p>Each district is shaded by its annual callout rate per 1,000 population aged 75-plus, so a small district and a large one can be compared fairly. Selecting a district reveals its monthly profile and its current live FEP score, making the operational-versus-modelled comparison explicit. A seasonal view contrasts the late-summer trough with the autumn rise.</p>"},
+    {"kicker":"Strengths","h":"What this tool does well","body":"<p><strong>A genuinely novel signal.</strong> District-level ambulance falls data is not otherwise available at this granularity; the FOI route surfaces something no modelled index contains.</p>"
+       "<p><strong>The divergence is the insight.</strong> Placing operational demand next to modelled risk turns a single number into a question a commissioner can act on: where do reality and model disagree, and why?</p>"
+       "<p><strong>Honest denominators.</strong> Rates are population-adjusted, so the ranking is not simply a map of where the most people live.</p>"},
+    {"kicker":"Honesty","h":"Weaknesses and honest caveats","body":"<div class=\"callout warn\"><div class=\"section-kicker\">Stated limitations</div>"
+       "<p><strong>One year, no trend.</strong> This is a single FOI year. It cannot establish whether 2025 was typical, and it cannot support any claim about a trend over time. A second year of data would change what the map can honestly say.</p>"
+       "<p><strong>The seasonal rise is partly an artefact.</strong> August is the trough month for several districts, so a large \"September surge\" is in part mean-reversion off an artificially low base rather than a uniquely dangerous month. The autumn rise into winter is plausible on independent grounds, but this single year cannot prove it, and the page does not treat a September-versus-August ratio as a confirmed intervention window.</p>"
+       "<p><strong>Callouts are not falls.</strong> An ambulance dispatch records a fall serious enough to summon help; it misses falls handled at home, by GPs, or not reported at all. The map measures operational demand, not true falls incidence.</p>"
+       "<p><strong>Small monthly counts are noisy.</strong> In districts with a few dozen callouts a month, month-to-month movement is substantially noise. Monthly detail is a prompt to look closer, not a finding.</p></div>"},
+  ],
+  "refs": [
+    "South East Coast Ambulance Service NHS Foundation Trust. FOI response ref 260608, ambulance callouts for slips, trips and falls (65+), 2025.",
+    "OHID/NHS Fingertips. Emergency hospital admissions for hip fracture (65+), indicator 22401.",
+    "ONS. Census 2021 population aged 75 and over, by district (rate denominator).",
+  ],
+})
+
+
 def build_hub():
     cards = "".join(
         f'<a class="hub-card" href="method-{t["slug"]}.html">'
